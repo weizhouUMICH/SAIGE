@@ -19,6 +19,12 @@ Rcpp, RcppArmadillo, RcppParallel, data.table, SPAtest, RcppEigen, Matrix, metho
 
 ## Running SAIGE for genetic association analysis
 
+SAIGE contains 2 main steps:
+1. Fitting the null logistic mixed model to estiamte variance component and other model parameters
+    run the **fitNULLGLMM** function for step 1
+2. Testing for association between each genetic variant and phenotypes by applyting SPA to the score test
+    run the **SPAGMMATtest**
+
 
 
 
