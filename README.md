@@ -27,6 +27,14 @@ SAIGE contains 2 main steps:
 2. Testing for association between each genetic variant and phenotypes by applyting SPA to the score test
     
     Run the **SPAGMMATtest** function for step 2
+    
+### Examples
+
+Examplary data and script can be found in ./extdata. Run 
+
+    bash cmd.sh
+
+to run the 2 steps. 
 
 
 
