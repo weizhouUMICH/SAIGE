@@ -13,9 +13,12 @@ Installation from the binary file in linux
 
     R CMD INSTALL SAIGE_0.13_R_x86_64-pc-linux-gnu.tar.gz
 
-The following R pakages need to be installed for running SAIGE: Rcpp, RcppArmadillo, RcppParallel, data.table, SPAtest, RcppEigen, Matrix, methods
+The following R pakages need to be installed for running SAIGE:
 
-## RUNNING SAIGE
+Rcpp, RcppArmadillo, RcppParallel, data.table, SPAtest, RcppEigen, Matrix, methods
+
+## Running SAIGE for genetic association analysis
+
 
 
 
