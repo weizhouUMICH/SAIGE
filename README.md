@@ -15,7 +15,7 @@ Installation from the binary file in linux
 
 The following R pakages need to be installed for running SAIGE:
 
-Rcpp, RcppArmadillo, RcppParallel, data.table, SPAtest, RcppEigen, Matrix, methods
+*Rcpp, RcppArmadillo, RcppParallel, data.table, SPAtest, RcppEigen, Matrix, methods
 
 ## Running SAIGE
 
