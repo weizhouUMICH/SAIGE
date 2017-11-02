@@ -7,6 +7,8 @@ and large scale optimization techniques to calibrate case-control ratios in logi
 
 *This R package is still under development
 
+The SAIGE manuscript can be found in the bioRxiv https://www.biorxiv.org/content/early/2017/11/01/212357.article-metrics
+
 ## Installation
 
 Installation from the binary file in linux
@@ -38,6 +40,15 @@ Examplary data and script can be found in ./extdata. Run
 to run the 2 steps. 
 
 The R package optparse is required to run this script
+
+## UK Biobank GWAS Results
+
+The GWAS results for binary phenotypes in UK Biobank using SAIGE are currently available for public download at
+https://www.dropbox.com/sh/wuj4y8wsqjz78om/AAACfAJK54KtvnzSTAoaZTLma?dl=0
+
+We will continue to populate the public download repository with results for all UK Biobank phenotypes (> 1,600) with the PheCodes3 constructed based on ICD codes. 
+*This research has been conducted using the UK Biobank Resource under application number 24460. 
+
 
 
 
