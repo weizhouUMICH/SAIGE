@@ -18,7 +18,7 @@ option_list <- list(
     help="end genome position in the vcf to be tested. If not specified, the whole genome will be tested"),
   make_option("--minMAF", type="numeric", default=0,
     help="minimum minor allele frequency for markers to be tested"),
-  make_option("--minMAC", type="numeric", default=0,
+  make_option("--minMAC", type="numeric", default=1,
     help="minimum minor allele count for markers to be tested. Note final threshold will be the greater one between minMAF and minMAC"),
   make_option("--sampleFile", type="character",default="",
     help="File contains one column for IDs of samples in the dosage file"),
