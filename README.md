@@ -15,13 +15,13 @@ The SAIGE manuscript can be found in the bioRxiv https://www.biorxiv.org/content
 
 Installation from the binary file in linux
 
-    R CMD INSTALL SAIGE_0.17_R_x86_64-pc-linux-gnu.tar.gz
+    R CMD INSTALL SAIGE_0.18_R_x86_64-pc-linux-gnu.tar.gz
 
 The following R pakages need to be installed for running SAIGE:
 
 *Rcpp, RcppArmadillo, RcppParallel, data.table, SPAtest, RcppEigen, Matrix, methods*
 
-The source code is SAIGE_0.17.tar.gz
+The source code is SAIGE_0.18.tar.gz (https://www.dropbox.com/s/b49tth3ymr1ldtx/SAIGE_0.18.tar.gz?dl=0)
 
 ## Running SAIGE
 
