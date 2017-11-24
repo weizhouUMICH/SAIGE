@@ -1,0 +1,72 @@
+# Your Makefile should include this Makefile after defining:
+#   EXE - the executable name
+#   TOOLBASE - the base filename for files with .h & .cpp versions
+#   SRCONLY - any cpp files without headers.
+#   HDRONLY - any header files without cpp
+#   COMPILE_ANY_CHANGE - any files that should be compiled if any of the
+#                        files change.  These files MUST also be
+#                        included in TOOLBASE or SRCONLY.  Here they are
+#                        just the base name without the extension.
+#    VERSION - if not version in Makefile.include
+#   BINDIR if it is not ../bin
+#   USER_INCLUDES if any additional directories need to be included to pick up
+#                 header files (example: USER_INCLUDES=-ImyDir1 -ImyDir2)
+#   INSTALLDIR if not /usr/local/bin
+EXE ?=
+BINDIR ?= ../bin
+TESTDIR ?= ../test
+
+MAKEFILES_PATH := $(dir $(lastword $(MAKEFILE_LIST)))
+include $(MAKEFILES_PATH)Makefile.common
+
+# Set the bins for each build type
+BINDIR_OPT ?= $(BINDIR)$(SUBDIR_OPT)
+BINDIR_DEBUG ?= $(BINDIR)$(SUBDIR_DEBUG)
+BINDIR_PROFILE ?= $(BINDIR)$(SUBDIR_PROFILE)
+
+PROG_OPT ?= $(BINDIR_OPT)/$(EXE)
+PROG_DEBUG ?= $(BINDIR_DEBUG)/$(EXE)
+PROG_PROFILE ?= $(BINDIR_PROFILE)/$(EXE)
+
+.PHONY: $(STAT_GEN_LIB_OPT) $(STAT_GEN_LIB_DEBUG) $(STAT_GEN_LIB_PROFILE)
+
+# Build the appropriate program
+opt: $(PROG_OPT)
+debug: $(PROG_DEBUG)
+profile: $(PROG_PROFILE)
+
+# Build with the appropriate dependencies
+$(PROG_OPT): $(USER_LIBS) $(REQ_LIBS_OPT) $(OBJECTS_OPT) | $(BINDIR_OPT)
+	$(OPT_BUILD)
+
+$(PROG_DEBUG): $(USER_LIBS) $(REQ_LIBS_DEBUG) $(OBJECTS_DEBUG) | $(BINDIR_DEBUG)
+	$(DEBUG_BUILD)
+
+$(PROG_PROFILE): $(USER_LIBS) $(REQ_LIBS_PROFILE) $(OBJECTS_PROFILE) | $(BINDIR_PROFILE)
+	$(PROFILE_BUILD)
+
+# Build the statgen lib if necessary
+$(STAT_GEN_LIB_OPT):
+	$(MAKE) -C $(@D) --no-print-directory opt
+$(STAT_GEN_LIB_DEBUG): 
+	$(MAKE) -C $(@D) --no-print-directory debug
+$(STAT_GEN_LIB_PROFILE): 
+	$(MAKE) -C $(@D) --no-print-directory profile
+
+
+
+.SECONDEXPANSION:
+$(OBJECTS_OPT): TYPE = OPT
+$(OBJECTS_DEBUG): TYPE=DEBUG
+$(OBJECTS_PROFILE): TYPE:=PROFILE
+
+$(OBJECTS_OPT): $(INCLUDE_PATH)/*h | $(STAT_GEN_LIB_OPT)
+$(OBJECTS_DEBUG): $(INCLUDE_PATH)/*h | $(STAT_GEN_LIB_DEBUG)
+$(OBJECTS_PROFILE): $(INCLUDE_PATH)/*h | $(STAT_GEN_LIB_PROFILE)
+
+$(INCLUDE_PATH)/*h: $$(STAT_GEN_LIB_$$(TYPE))
+
+
+$(BINDIR_OPT) $(BINDIR_DEBUG) $(BINDIR_PROFILE):
+	mkdir -p $@
+

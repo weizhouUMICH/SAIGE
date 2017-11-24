@@ -1,0 +1,35 @@
+# Your Makefile should include this Makefile after defining:
+#   EXE - the library name
+#   TOOLBASE - the base filename for files with .h & .cpp versions
+#   SRCONLY - any cpp files without headers.
+#   HDRONLY - any header files without cpp
+#   COMPILE_ANY_CHANGE - any files that should be compiled if any of the
+#                        files change.  These files MUST also be
+#                        included in TOOLBASE or SRCONLY.  Here they are
+#                        just the base name without the extension.
+#   VERSION - if not version in Makefile.include
+#   BINDIR if it is not ../lib
+#   TESTDIR if it is not ../test
+#   USER_INCLUDES if any additional directories need to be included to pick up
+#                 header files (example: USER_INCLUDES=-ImyDir1 -ImyDir2)
+EXE ?=
+BINDIR ?= ../lib
+TESTDIR ?= ../test
+
+MAKEFILES_PATH := $(dir $(lastword $(MAKEFILE_LIST)))
+include $(MAKEFILES_PATH)Makefile.ext
+
+# Set the build commands for library
+OPT_BUILD     = ar -cr $(PROG_OPT)     $(OBJECTS_OPT)
+DEBUG_BUILD   = ar -cr $(PROG_DEBUG)   $(OBJECTS_DEBUG)
+PROFILE_BUILD = ar -cr $(PROG_PROFILE) $(OBJECTS_PROFILE)
+
+specific_clean :
+	-$(AR) d $(PROG_OPT) $(OBJECTS_OPT)
+	-$(RANLIB) $(PROG_OPT)
+	-$(AR) d $(PROG_DEBUG) $(OBJECTS_DEBUG)
+	-$(RANLIB) $(PROG_DEBUG)
+	-$(AR) d $(PROG_PROFILE) $(OBJECTS_PROFILE)
+	-$(RANLIB) $(PROG_PROFILE)
+
+

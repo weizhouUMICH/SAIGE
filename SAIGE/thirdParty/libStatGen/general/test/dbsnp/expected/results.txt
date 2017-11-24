@@ -1,0 +1,14 @@
+
+Standard VCF DBSNP test
+Load dbSNP file 'testFiles/dbsnp.vcf': (as text file) GenomeSequence::populateDBSNP: ignored 1 SNP positions due to invalid format of line.
+DONE!
+dbsnp 10232: 0
+dbsnp 10233: 1
+dbsnp 10234: 0
+
+GZIP VCF DBSNP test
+Load dbSNP file 'testFiles/dbsnp.vcf.gz': (as text file) GenomeSequence::populateDBSNP: ignored 1 SNP positions due to invalid format of line.
+DONE!
+dbsnp 10232: 0
+dbsnp 10233: 1
+dbsnp 10234: 0

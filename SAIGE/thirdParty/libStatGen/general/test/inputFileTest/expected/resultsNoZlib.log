@@ -1,0 +1,10 @@
+
+UncompressedFileType Tests:
+  Passed test_readFromFile
+  Passed test_readTilChar
+  Passed test_ifeof_ifrewind
+  Passed test_ifread_ifgetc
+  Passed test_ifclose
+  Passed test_ifseek
+
+Additional Tests: 

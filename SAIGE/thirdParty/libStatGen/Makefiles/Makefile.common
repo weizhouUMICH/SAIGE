@@ -1,0 +1,145 @@
+# This makefile is common for both Makefile.lib and Makefile.src
+TOOLBASE ?= 
+COMPILE_ANY_CHANGE ?= 
+SRCONLY ?= 
+HDRONLY ?= 
+USER_REMOVES ?=
+# USER_REMOVES are additional things that should be removed by clean.
+
+MAKEFILES_PATH := $(dir $(lastword $(MAKEFILE_LIST)))
+include $(MAKEFILES_PATH)Makefile.include
+
+MAKE_DEPENDS=Makefile.depends
+
+# Source File Set
+TOOLHDR = $(TOOLBASE:=.h) $(HDRONLY)
+TOOLSRC = $(TOOLBASE:=.cpp) $(SRCONLY)
+TOOLOBJ = $(patsubst %.f,%.o,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(TOOLSRC))))
+
+# Define the directory structure for opt/debug/profile for objs & bins
+SUBDIR_OPT ?= 
+SUBDIR_DEBUG ?= /debug
+SUBDIR_PROFILE ?= /profile
+
+#Objs default to the obj directory.
+OBJDIR ?= ../obj
+OBJDIR_OPT ?= $(OBJDIR)$(SUBDIR_OPT)
+OBJDIR_DEBUG ?= $(OBJDIR)$(SUBDIR_DEBUG)
+OBJDIR_PROFILE ?= $(OBJDIR)$(SUBDIR_PROFILE)
+
+#Needed for cleaning up the library - need all three.
+OBJECTS_OPT := $(patsubst %,$(OBJDIR_OPT)/%,$(TOOLOBJ))
+OBJECTS_DEBUG := $(patsubst %,$(OBJDIR_DEBUG)/%,$(TOOLOBJ))
+OBJECTS_PROFILE := $(patsubst %,$(OBJDIR_PROFILE)/%,$(TOOLOBJ))
+
+# Tests go in the test directory.
+TESTDIR ?= test
+
+ALWAYS_COMP_OBJ_OPT = $(patsubst %,$(OBJDIR_OPT)/%,$(COMPILE_ANY_CHANGE:=.o))
+ALWAYS_COMP_OBJ_DEBUG = $(patsubst %,$(OBJDIR_DEBUG)/%,$(COMPILE_ANY_CHANGE:=.o))
+ALWAYS_COMP_OBJ_PROFILE = $(patsubst %,$(OBJDIR_PROFILE)/%,$(COMPILE_ANY_CHANGE:=.o))
+
+CCOMPILE=$(CC) $(COMPFLAGS) -o $@ -c $*.c 
+CXXCOMPILE=$(CXX) $(COMPFLAGS) -o $@ -c $*.cpp -DVERSION="\"$(VERSION)\""
+
+.PHONY: all test clean opt debug profile specific_clean
+
+# all, build as opt, debug, and profile.
+all: opt debug profile
+
+opt: OPTFLAG=$(OPTFLAG_OPT)
+debug: OPTFLAG=$(OPTFLAG_DEBUG)
+profile: OPTFLAG=$(OPTFLAG_PROFILE)
+
+#########
+# Help
+include $(MAKEFILES_PATH)Makefile.help
+
+#######
+# Objects
+# The objects are dependent on the object directory.
+$(OBJECTS_OPT): | $(OBJDIR_OPT)
+$(OBJECTS_DEBUG): | $(OBJDIR_DEBUG)
+$(OBJECTS_PROFILE): | $(OBJDIR_PROFILE)
+
+# Create the object directory
+$(OBJDIR_OPT) $(OBJDIR_DEBUG) $(OBJDIR_PROFILE):
+	mkdir -p $@
+
+# Compile the source 
+# Must keep the 3 types (opt, debug, profile) separate,
+# otherwise on a "make all" makefile will think it has already compiled the
+# target.
+$(OBJDIR_OPT)/%.o: %.c
+	$(CCOMPILE)
+$(OBJDIR_DEBUG)/%.o: %.c
+	$(CCOMPILE)
+$(OBJDIR_PROFILE)/%.o: %.c
+	$(CCOMPILE)
+
+$(OBJDIR_OPT)/%.o: %.cpp 
+	$(CXXCOMPILE)
+$(OBJDIR_DEBUG)/%.o: %.cpp 
+	$(CXXCOMPILE)
+$(OBJDIR_PROFILE)/%.o: %.cpp 
+	$(CXXCOMPILE)
+
+ifneq ($(COMPILE_ANY_CHANGE),)
+$(ALWAYS_COMP_OBJ_OPT):  $(COMPILE_ANY_CHANGE:=.cpp)  $(filter-out $(ALWAYS_COMP_OBJ_OPT),$(OBJECTS_OPT))
+	$(CXX) $(COMPFLAGS) -o $@ -c  $(*F).cpp -DVERSION="\"$(VERSION)\""
+$(ALWAYS_COMP_OBJ_DEBUG):  $(COMPILE_ANY_CHANGE:=.cpp)  $(filter-out $(ALWAYS_COMP_OBJ_DEBUG),$(OBJECTS_DEBUG))
+	$(CXX) $(COMPFLAGS) -o $@ -c  $(*F).cpp -DVERSION="\"$(VERSION)\""
+$(ALWAYS_COMP_OBJ_PROFILE):  $(COMPILE_ANY_CHANGE:=.cpp)  $(filter-out $(ALWAYS_COMP_OBJ_PROFILE),$(OBJECTS_PROFILE))
+	$(CXX) $(COMPFLAGS) -o $@ -c  $(*F).cpp -DVERSION="\"$(VERSION)\""
+endif
+
+#########
+# Test
+test: all
+	@if test -f $(TESTDIR)/Makefile; \
+        then \
+	$(MAKE) -C $(TESTDIR) --no-print-directory $@; \
+        fi
+
+#########
+# clean
+clean : specific_clean
+	$(USER_REMOVES)
+	-rm -f $(OBJDIR_OPT)/*.o $(OBJDIR_DEBUG)/*.o $(OBJDIR_PROFILE)/*.o *~ 
+	@if test -f $(TESTDIR)/Makefile; \
+        then \
+	$(MAKE) -C $(TESTDIR) --no-print-directory $@; \
+        fi
+
+.SUFFIXES : .cpp .c .o .X.o $(SUFFIXES)
+
+#
+# The newest version of astyle will remove parens in a statement
+# header (the character following if/while/do).  The current
+# version in Ubuntu does not.
+#
+# See http://astyle.sourceforge.net/astyle.html#_Padding_Options
+#
+style:
+	(command -v astyle || echo "astyle not installed.")
+	(command -v astyle && astyle --style=ansi --preserve-date --unpad-paren --indent-switches *.cpp *.h)
+
+###############
+# Dependencies
+DFLAGS=-Y $(COMPFLAGS)
+
+cleandepend:
+	        makedepend -- $(DFLAGS) --
+
+depend:
+	touch $(MAKE_DEPENDS)
+	makedepend -f$(MAKE_DEPENDS) -p$$\(OBJDIR_OPT\)/ -- $(DFLAGS) -- $(TOOLSRC) >/dev/null 2>&1
+	makedepend -f$(MAKE_DEPENDS) -a -p$$\(OBJDIR_DEBUG\)/ -- $(DFLAGS) -- $(TOOLSRC) >/dev/null 2>&1
+	makedepend -f$(MAKE_DEPENDS) -a -p$$\(OBJDIR_PROFILE\)/ -- $(DFLAGS) -- $(TOOLSRC) >/dev/null 2>&1
+
+
+ifeq ($(wildcard $(MAKE_DEPENDS)),)
+$(OBJECTS_OPT) $(OBJECTS_DEBUG) $(OBJECTS_PROFILE) : $(TOOLHDR)
+else
+include $(MAKE_DEPENDS)
+endif

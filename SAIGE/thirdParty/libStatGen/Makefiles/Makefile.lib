@@ -1,0 +1,63 @@
+# Your Makefile should include this Makefile after defining:
+#   TOOLBASE - the base filename for files with .h & .cpp versions
+#   SRCONLY - any cpp files without headers.
+#   HDRONLY - any header files without cpp
+#   VERSION - if not version in Makefile.include
+
+MAKEFILES_PATH := $(dir $(lastword $(MAKEFILE_LIST)))
+
+OBJDIR = obj
+include $(MAKEFILES_PATH)Makefile.common
+
+HEADERS=$(TOOLHDR)
+
+
+
+.PHONY: all test clean debug profile param install specific_clean $(STAT_GEN_LIB) $(STAT_GEN_LIB_DEBUG) $(STAT_GEN_LIB_PROFILE)
+
+# make everything, ensure headers are in the include direcotry.
+opt debug profile : $(addprefix $(INCLUDE_PATH)/, $(HEADERS)) 
+
+install: opt
+
+# Link into the include directory
+$(INCLUDE_PATH)/%.h: %.h
+	-ln -s ../$(DIR_NAME)/$< $@
+
+
+#########
+# Build the library
+opt: $(STAT_GEN_LIB_OPT)
+debug: $(STAT_GEN_LIB_DEBUG)
+profile: $(STAT_GEN_LIB_PROFILE)
+
+# To build the library, build the objects
+# Then add them to the library
+$(STAT_GEN_LIB_OPT): $(OBJECTS_OPT)
+	ar -cru $@ $(OBJECTS_OPT)
+$(STAT_GEN_LIB_DEBUG): $(OBJECTS_DEBUG)
+	ar -cru $@ $(OBJECTS_DEBUG)
+$(STAT_GEN_LIB_PROFILE): $(OBJECTS_PROFILE)
+	ar -cru $@ $(OBJECTS_PROFILE)
+
+UNAME=$(shell uname)
+
+ifeq ($(UNAME), Darwin)
+specific_clean:
+	-rm -f  $(addprefix $(INCLUDE_PATH)/, $(HEADERS))
+	-$(AR) d $(STAT_GEN_LIB_OPT) $(OBJECTS_OPT)
+	-$(RANLIB) $(STAT_GEN_LIB_OPT)
+	-$(AR) d $(STAT_GEN_LIB_DEBUG) $(OBJECTS_DEBUG)
+	-$(RANLIB) $(STAT_GEN_LIB_DEBUG)
+	-$(AR) d $(STAT_GEN_LIB_PROFILE) $(OBJECTS_PROFILE)
+	-$(RANLIB) $(STAT_GEN_LIB_PROFILE)
+else
+specific_clean:
+	-rm -f  $(addprefix $(INCLUDE_PATH)/, $(HEADERS))
+	$(AR) d $(STAT_GEN_LIB_OPT) $(OBJECTS_OPT)
+	$(RANLIB) $(STAT_GEN_LIB_OPT)
+	$(AR) d $(STAT_GEN_LIB_DEBUG) $(OBJECTS_DEBUG)
+	$(RANLIB) $(STAT_GEN_LIB_DEBUG)
+	$(AR) d $(STAT_GEN_LIB_PROFILE) $(OBJECTS_PROFILE)
+	$(RANLIB) $(STAT_GEN_LIB_PROFILE)
+endif

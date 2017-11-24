@@ -1,0 +1,51 @@
+# Your Makefile should include this Makefile after defining:
+#   EXE - the executable name
+#   TOOLBASE - the base filename for files with .h & .cpp versions
+#   SRCONLY - any cpp files without headers.
+#   HDRONLY - any header files without cpp
+#   COMPILE_ANY_CHANGE - any files that should be compiled if any of the
+#                        files change.  These files MUST also be
+#                        included in TOOLBASE or SRCONLY.  Here they are
+#                        just the base name without the extension.
+#    VERSION - if not version in Makefile.include
+#   BINDIR if it is not ../bin
+#   USER_INCLUDES if any additional directories need to be included to pick up
+#                 header files (example: USER_INCLUDES=-ImyDir1 -ImyDir2)
+#   INSTALLDIR if not /usr/local/bin
+EXE ?=
+BINDIR ?= ../bin
+TESTDIR ?= ../test
+
+MAKEFILES_PATH := $(dir $(lastword $(MAKEFILE_LIST)))
+include $(MAKEFILES_PATH)Makefile.ext
+
+# Set the build commands for executable
+OPT_BUILD =     $(CXX) $(COMPFLAGS) $(USER_LINK_OPTIONS) -o $(PROG_OPT)     $(OBJECTS_OPT)     $(USER_LIBS) $(REQ_LIBS_OPT)     -lm $(ZLIB_LIB) $(UNAME_LIBS) $(OTHER_LIBS)
+DEBUG_BUILD =   $(CXX) $(COMPFLAGS) $(USER_LINK_OPTIONS) -o $(PROG_DEBUG)   $(OBJECTS_DEBUG)   $(USER_LIBS) $(REQ_LIBS_DEBUG)   -lm $(ZLIB_LIB) $(UNAME_LIBS) $(OTHER_LIBS)
+PROFILE_BUILD = $(CXX) $(COMPFLAGS) $(USER_LINK_OPTIONS) -o $(PROG_PROFILE) $(OBJECTS_PROFILE) $(USER_LIBS) $(REQ_LIBS_PROFILE) -lm $(ZLIB_LIB) $(UNAME_LIBS) $(OTHER_LIBS)
+
+ADDITIONAL_HELP= @echo "make install      Install binaries in $(INSTALLDIR)";\
+	echo "make install INSTALLDIR=directory_for_binaries";\
+	echo "                  Install binaries in directory_for_binaries"
+
+.PHONY: install
+
+install : all $(INSTALLDIR)
+	@echo " "
+	@echo Installing to directory $(INSTALLDIR)
+	@echo To select a different directory, run
+	@echo " "
+	@echo make install INSTALLDIR=your_preferred_dir
+	@echo " "
+	cp $(PROG_OPT) $(INSTALLDIR)
+
+$(INSTALLDIR) :
+	@echo " "
+	@echo Creating directory $(INSTALLDIR)
+	@echo " "
+	@mkdir -p $(INSTALLDIR)
+
+specific_clean :
+	-rm -f $(BINDIR_OPT)/$(EXE)
+	-rm -rf $(BINDIR_DEBUG)
+	-rm -rf $(BINDIR_PROFILE)

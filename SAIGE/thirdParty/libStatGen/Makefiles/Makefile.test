@@ -1,0 +1,71 @@
+# Your Makefile should include this Makefile after defining:
+#   TEST_COMMAND - the commands to run under make test
+#   EXE - executable built for this test.
+#   TOOLBASE - the base filename for files with .h & .cpp versions
+#   SRCONLY - any cpp files without headers.
+#   HDRONLY - any header files without cpp
+#   VERSION - if not 0.0.1
+TEST_COMMAND ?=
+EXE ?=
+TOOLBASE ?= 
+SRCONLY ?= 
+HDRONLY ?= 
+VERSION ?= 0.0.1
+
+MAKEFILES_PATH := $(dir $(lastword $(MAKEFILE_LIST)))
+include $(MAKEFILES_PATH)Makefile.include
+
+# Use debug opt flag.
+OPTFLAG?=$(OPTFLAG_DEBUG)
+OBJDIR?=obj
+#
+# Goncalo's Generic Makefile -- Compiles and installs a Generic Goncalo Tool
+# (c) 2000-2007 Goncalo Abecasis
+#
+
+# Source File Set
+# For best results, consider editing this manually ...
+TOOLHDR = $(TOOLBASE:=.h) $(HDRONLY)
+TOOLSRC = $(TOOLBASE:=.cpp) $(SRCONLY)
+TOOLOBJ = $(TOOLSRC:.cpp=.o)
+LIBRARY = $(REQ_LIBS_DEBUG)
+OBJECTS=$(patsubst %,$(OBJDIR)/%,$(TOOLOBJ))
+
+.DEFAULT_GOAL := all
+
+# make everything
+all debug: $(EXE)
+
+# dependencies for executables
+$(EXE) : $(LIBRARY) $(OBJECTS)
+	$(CXX) $(COMPFLAGS) -o  $@ $(OBJECTS) $(LIBRARY) -lm $(ZLIB_LIB) $(UNAME_LIBS)
+
+$(OBJECTS): $(TOOLHDR) $(LIBHDR) | $(OBJDIR)
+
+$(OBJDIR):
+	mkdir $(OBJDIR)
+
+clean : 
+	-rm -rf $(OBJDIR) $(EXE) *~ results/*
+	$(TEST_CLEAN)
+
+test : all
+	$(TEST_COMMAND)
+
+$(OBJDIR)/%.o: %.c
+	$(CXX) $(COMPFLAGS) -o $@ -c $*.c 
+
+$(OBJDIR)/%.o: %.cpp 
+	$(CXX) $(COMPFLAGS) -o $@ -c $*.cpp -DVERSION="\"$(VERSION)\""
+
+.SUFFIXES : .cpp .c .o .X.o $(SUFFIXES)
+
+DFLAGS=-Y
+
+cleandepend:
+	        makedepend -- $(DFLAGS) --
+
+depend:
+	        makedepend -- $(DFLAGS) -- $(TOOLSRC) >/dev/null 2>&1
+
+# DO NOT DELETE THIS LINE -- make depend depends on it
