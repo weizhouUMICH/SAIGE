@@ -1,0 +1,102 @@
+ERROR: Trying to read a fastq file but no file is open.
+ERROR: Failed to open file: noexist.txt
+ERROR on Line 2: Invalid character ('.') in base sequence.
+ERROR on Line 2: Invalid character ('0') in base sequence.
+ERROR on Line 2: Invalid character ('1') in base sequence.
+ERROR on Line 2: Invalid character ('2') in base sequence.
+ERROR on Line 2: Invalid character ('3') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 11: Invalid character ('2') in base sequence.
+ERROR on Line 11: Invalid character ('3') in base sequence.
+ERROR on Line 11: Invalid character ('.') in base sequence.
+ERROR on Line 11: Invalid character ('0') in base sequence.
+ERROR on Line 11: Invalid character ('3') in base sequence.
+ERROR on Line 11: Invalid character ('2') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 11: Invalid character ('.') in base sequence.
+ERROR on Line 11: Invalid character ('0') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 25: The sequence identifier line was too short.
+ERROR on Line 29: First line of a sequence does not begin with @
+ERROR on Line 33: No Sequence Identifier specified before the comment.
+ERROR on Line 2: Invalid character ('.') in base sequence.
+ERROR on Line 2: Invalid character ('0') in base sequence.
+ERROR on Line 2: Invalid character ('1') in base sequence.
+ERROR on Line 2: Invalid character ('2') in base sequence.
+ERROR on Line 2: Invalid character ('3') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 11: Invalid character ('2') in base sequence.
+ERROR on Line 11: Invalid character ('3') in base sequence.
+ERROR on Line 11: Invalid character ('.') in base sequence.
+ERROR on Line 11: Invalid character ('0') in base sequence.
+ERROR on Line 11: Invalid character ('3') in base sequence.
+ERROR on Line 11: Invalid character ('2') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 11: Invalid character ('.') in base sequence.
+ERROR on Line 11: Invalid character ('0') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 25: The sequence identifier line was too short.
+ERROR on Line 29: First line of a sequence does not begin with @
+ERROR on Line 33: No Sequence Identifier specified before the comment.
+ERROR on Line 2: Invalid character ('C') in base sequence.
+ERROR on Line 2: Invalid character ('T') in base sequence.
+ERROR on Line 2: Invalid character ('G') in base sequence.
+ERROR on Line 2: Invalid character ('N') in base sequence.
+ERROR on Line 2: Invalid character ('a') in base sequence.
+ERROR on Line 2: Invalid character ('c') in base sequence.
+ERROR on Line 2: Invalid character ('t') in base sequence.
+ERROR on Line 2: Invalid character ('n') in base sequence.
+ERROR on Line 2: Invalid character ('g') in base sequence.
+ERROR on Line 6: Invalid character ('C') in base sequence.
+ERROR on Line 6: Invalid character ('T') in base sequence.
+ERROR on Line 6: Invalid character ('G') in base sequence.
+ERROR on Line 6: Invalid character ('A') in base sequence.
+ERROR on Line 6: Invalid character ('C') in base sequence.
+ERROR on Line 6: Invalid character ('T') in base sequence.
+ERROR on Line 6: Invalid character ('N') in base sequence.
+ERROR on Line 6: Invalid character ('a') in base sequence.
+ERROR on Line 6: Invalid character ('c') in base sequence.
+ERROR on Line 6: Invalid character ('t') in base sequence.
+ERROR on Line 6: Invalid character ('n') in base sequence.
+ERROR on Line 2: Invalid character ('.') in base sequence.
+ERROR on Line 2: Invalid character ('0') in base sequence.
+ERROR on Line 2: Invalid character ('1') in base sequence.
+ERROR on Line 2: Invalid character ('2') in base sequence.
+ERROR on Line 2: Invalid character ('3') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 11: Invalid character ('2') in base sequence.
+ERROR on Line 11: Invalid character ('3') in base sequence.
+ERROR on Line 11: Invalid character ('.') in base sequence.
+ERROR on Line 11: Invalid character ('0') in base sequence.
+ERROR on Line 11: Invalid character ('3') in base sequence.
+ERROR on Line 11: Invalid character ('2') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 11: Invalid character ('.') in base sequence.
+ERROR on Line 11: Invalid character ('0') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 25: The sequence identifier line was too short.
+ERROR on Line 29: First line of a sequence does not begin with @
+ERROR on Line 33: No Sequence Identifier specified before the comment.
+ERROR on Line 2: Invalid character ('.') in base sequence.
+ERROR on Line 2: Invalid character ('0') in base sequence.
+ERROR on Line 2: Invalid character ('1') in base sequence.
+ERROR on Line 2: Invalid character ('2') in base sequence.
+ERROR on Line 2: Invalid character ('3') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 11: Invalid character ('2') in base sequence.
+ERROR on Line 11: Invalid character ('3') in base sequence.
+ERROR on Line 11: Invalid character ('.') in base sequence.
+ERROR on Line 11: Invalid character ('0') in base sequence.
+ERROR on Line 11: Invalid character ('3') in base sequence.
+ERROR on Line 11: Invalid character ('2') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 11: Invalid character ('.') in base sequence.
+ERROR on Line 11: Invalid character ('0') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 11: Invalid character ('1') in base sequence.
+ERROR on Line 25: The sequence identifier line was too short.
+ERROR on Line 29: First line of a sequence does not begin with @
+ERROR on Line 33: No Sequence Identifier specified before the comment.

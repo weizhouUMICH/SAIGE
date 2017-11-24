@@ -1,0 +1,1216 @@
+# DO NOT DELETE
+
+$(OBJDIR_OPT)/SamFileHeader.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_OPT)/SamFileHeader.o: ../include/StringArray.h
+$(OBJDIR_OPT)/SamFileHeader.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/SamFileHeader.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_OPT)/SamFileHeader.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_OPT)/SamFileHeader.o: ../include/Hash.h ../include/IntArray.h
+$(OBJDIR_OPT)/SamFileHeader.o: SamHeaderHD.h SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_OPT)/SamFileHeader.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_OPT)/SamFile.o: SamFile.h SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_OPT)/SamFile.o: ../include/ErrorHandler.h ../include/InputFile.h
+$(OBJDIR_OPT)/SamFile.o: ../include/FileType.h SamFileHeader.h
+$(OBJDIR_OPT)/SamFile.o: SamReferenceInfo.h ../include/StringArray.h
+$(OBJDIR_OPT)/SamFile.o: ../include/StringBasics.h ../include/StringHash.h
+$(OBJDIR_OPT)/SamFile.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_OPT)/SamFile.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_OPT)/SamFile.o: SamHeaderRecord.h SamHeaderTag.h SamHeaderSQ.h
+$(OBJDIR_OPT)/SamFile.o: SamHeaderRG.h SamHeaderPG.h SamRecord.h
+$(OBJDIR_OPT)/SamFile.o: ../include/GenomeSequence.h
+$(OBJDIR_OPT)/SamFile.o: ../include/MemoryMapArray.h ../include/Generic.h
+$(OBJDIR_OPT)/SamFile.o: ../include/MemoryMap.h ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/SamFile.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_OPT)/SamFile.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_OPT)/SamFile.o: ../include/MathVector.h ../include/CigarRoller.h
+$(OBJDIR_OPT)/SamFile.o: ../include/Cigar.h GenericSamInterface.h BamIndex.h
+$(OBJDIR_OPT)/SamFile.o: ../include/IndexBase.h SamStatistics.h
+$(OBJDIR_OPT)/SamFile.o: BamInterface.h SamInterface.h
+$(OBJDIR_OPT)/SamFile.o: ../include/BgzfFileType.h ../include/bgzf.h
+$(OBJDIR_OPT)/GenericSamInterface.o: GenericSamInterface.h SamStatus.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/StatGenStatus.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/ErrorHandler.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/InputFile.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/FileType.h SamFileHeader.h
+$(OBJDIR_OPT)/GenericSamInterface.o: SamReferenceInfo.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/StringArray.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/StringHash.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_OPT)/GenericSamInterface.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_OPT)/GenericSamInterface.o: SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_OPT)/GenericSamInterface.o: SamHeaderPG.h SamRecord.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/GenomeSequence.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/MemoryMapArray.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/Generic.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/MemoryMap.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/MathVector.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/CigarRoller.h
+$(OBJDIR_OPT)/GenericSamInterface.o: ../include/Cigar.h
+$(OBJDIR_OPT)/SamInterface.o: SamInterface.h GenericSamInterface.h
+$(OBJDIR_OPT)/SamInterface.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/ErrorHandler.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_OPT)/SamInterface.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/StringArray.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/Hash.h ../include/IntArray.h
+$(OBJDIR_OPT)/SamInterface.o: SamHeaderHD.h SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_OPT)/SamInterface.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_OPT)/SamInterface.o: SamRecord.h ../include/GenomeSequence.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/MemoryMapArray.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/MathVector.h
+$(OBJDIR_OPT)/SamInterface.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_OPT)/SamInterface.o: SamRecordHelper.h
+$(OBJDIR_OPT)/BamInterface.o: BamInterface.h GenericSamInterface.h
+$(OBJDIR_OPT)/BamInterface.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/ErrorHandler.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_OPT)/BamInterface.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/StringArray.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/Hash.h ../include/IntArray.h
+$(OBJDIR_OPT)/BamInterface.o: SamHeaderHD.h SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_OPT)/BamInterface.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_OPT)/BamInterface.o: SamRecord.h ../include/GenomeSequence.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/MemoryMapArray.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/MathVector.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_OPT)/BamInterface.o: ../include/CharBuffer.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/bam.h SamRecord.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/GenomeSequence.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/MemoryMapArray.h ../include/Generic.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/MemoryMap.h ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/StringBasics.h ../include/InputFile.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/FileType.h ../include/StringArray.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/StatGenStatus.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/ErrorHandler.h ../include/LongHash.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/Error.h ../include/MathVector.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_OPT)/SamRecord.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_OPT)/SamRecord.o: SamHeaderHD.h SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_OPT)/SamRecord.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_OPT)/SamRecord.o: SamValidation.h SamFile.h GenericSamInterface.h
+$(OBJDIR_OPT)/SamRecord.o: BamIndex.h ../include/IndexBase.h SamStatistics.h
+$(OBJDIR_OPT)/SamRecord.o: ../include/BaseUtilities.h
+$(OBJDIR_OPT)/SamRecord.o: SamQuerySeqWithRefHelper.h
+$(OBJDIR_OPT)/BamIndex.o: BamIndex.h ../include/IndexBase.h
+$(OBJDIR_OPT)/BamIndex.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_OPT)/BamIndex.o: ../include/StatGenStatus.h
+$(OBJDIR_OPT)/BamIndex.o: ../include/ErrorHandler.h SamStatus.h
+$(OBJDIR_OPT)/SamHeaderHD.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_OPT)/SamHeaderHD.o: ../include/StringArray.h
+$(OBJDIR_OPT)/SamHeaderHD.o: ../include/StringBasics.h ../include/InputFile.h
+$(OBJDIR_OPT)/SamHeaderHD.o: ../include/FileType.h ../include/StringHash.h
+$(OBJDIR_OPT)/SamHeaderHD.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_OPT)/SamHeaderHD.o: SamHeaderTag.h
+$(OBJDIR_OPT)/SamHeaderPG.o: SamHeaderPG.h SamHeaderRecord.h
+$(OBJDIR_OPT)/SamHeaderPG.o: ../include/StringArray.h
+$(OBJDIR_OPT)/SamHeaderPG.o: ../include/StringBasics.h ../include/InputFile.h
+$(OBJDIR_OPT)/SamHeaderPG.o: ../include/FileType.h ../include/StringHash.h
+$(OBJDIR_OPT)/SamHeaderPG.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_OPT)/SamHeaderPG.o: SamHeaderTag.h
+$(OBJDIR_OPT)/SamHeaderRecord.o: SamHeaderRecord.h ../include/StringArray.h
+$(OBJDIR_OPT)/SamHeaderRecord.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/SamHeaderRecord.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_OPT)/SamHeaderRecord.o: ../include/StringHash.h
+$(OBJDIR_OPT)/SamHeaderRecord.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_OPT)/SamHeaderRecord.o: SamHeaderTag.h
+$(OBJDIR_OPT)/SamHeaderSQ.o: SamHeaderSQ.h SamHeaderRecord.h
+$(OBJDIR_OPT)/SamHeaderSQ.o: ../include/StringArray.h
+$(OBJDIR_OPT)/SamHeaderSQ.o: ../include/StringBasics.h ../include/InputFile.h
+$(OBJDIR_OPT)/SamHeaderSQ.o: ../include/FileType.h ../include/StringHash.h
+$(OBJDIR_OPT)/SamHeaderSQ.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_OPT)/SamHeaderSQ.o: SamHeaderTag.h
+$(OBJDIR_OPT)/SamHeaderRG.o: SamHeaderRG.h SamHeaderRecord.h
+$(OBJDIR_OPT)/SamHeaderRG.o: ../include/StringArray.h
+$(OBJDIR_OPT)/SamHeaderRG.o: ../include/StringBasics.h ../include/InputFile.h
+$(OBJDIR_OPT)/SamHeaderRG.o: ../include/FileType.h ../include/StringHash.h
+$(OBJDIR_OPT)/SamHeaderRG.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_OPT)/SamHeaderRG.o: SamHeaderTag.h
+$(OBJDIR_OPT)/SamHeaderTag.o: SamHeaderTag.h
+$(OBJDIR_OPT)/SamValidation.o: SamValidation.h SamFile.h SamStatus.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/StatGenStatus.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/ErrorHandler.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_OPT)/SamValidation.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/StringArray.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/Hash.h ../include/IntArray.h
+$(OBJDIR_OPT)/SamValidation.o: SamHeaderHD.h SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_OPT)/SamValidation.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_OPT)/SamValidation.o: SamRecord.h ../include/GenomeSequence.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/MemoryMapArray.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/MathVector.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_OPT)/SamValidation.o: GenericSamInterface.h BamIndex.h
+$(OBJDIR_OPT)/SamValidation.o: ../include/IndexBase.h SamStatistics.h
+$(OBJDIR_OPT)/SamValidation.o: SamTags.h
+$(OBJDIR_OPT)/SamStatistics.o: SamStatistics.h SamRecord.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/GenomeSequence.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/MemoryMapArray.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/StringArray.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/StatGenStatus.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/ErrorHandler.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/MathVector.h ../include/IntArray.h
+$(OBJDIR_OPT)/SamStatistics.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/Hash.h SamHeaderHD.h
+$(OBJDIR_OPT)/SamStatistics.o: SamHeaderRecord.h SamHeaderTag.h SamHeaderSQ.h
+$(OBJDIR_OPT)/SamStatistics.o: SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_OPT)/SamStatistics.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_OPT)/SamStatistics.o: SamFlag.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: SamQuerySeqWithRefHelper.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: SamRecord.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/GenomeSequence.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/MemoryMapArray.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/Generic.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/MemoryMap.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/InputFile.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/FileType.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/StringArray.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: SamStatus.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/StatGenStatus.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/ErrorHandler.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/LongHash.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/Error.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/MathVector.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/IntArray.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/StringHash.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/Constant.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/Hash.h SamHeaderHD.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: SamHeaderPG.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/CigarRoller.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/Cigar.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: ../include/BaseUtilities.h
+$(OBJDIR_OPT)/SamQuerySeqWithRefHelper.o: SamFlag.h
+$(OBJDIR_OPT)/SamFilter.o: SamFilter.h SamRecord.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/GenomeSequence.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/MemoryMapArray.h ../include/Generic.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/MemoryMap.h ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/StringBasics.h ../include/InputFile.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/FileType.h ../include/StringArray.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/StatGenStatus.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/ErrorHandler.h ../include/LongHash.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/Error.h ../include/MathVector.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_OPT)/SamFilter.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_OPT)/SamFilter.o: SamHeaderHD.h SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_OPT)/SamFilter.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_OPT)/SamFilter.o: SamQuerySeqWithRefHelper.h
+$(OBJDIR_OPT)/SamFilter.o: ../include/BaseUtilities.h SamFlag.h
+$(OBJDIR_OPT)/PileupElement.o: PileupElement.h SamRecord.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/GenomeSequence.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/MemoryMapArray.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/StringArray.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/StatGenStatus.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/ErrorHandler.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/MathVector.h ../include/IntArray.h
+$(OBJDIR_OPT)/PileupElement.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/Hash.h SamHeaderHD.h
+$(OBJDIR_OPT)/PileupElement.o: SamHeaderRecord.h SamHeaderTag.h SamHeaderSQ.h
+$(OBJDIR_OPT)/PileupElement.o: SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_OPT)/PileupElement.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: PileupElementBaseQual.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: PileupElement.h SamRecord.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/GenomeSequence.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/MemoryMapArray.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/Generic.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/MemoryMap.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/InputFile.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/FileType.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/StringArray.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/ErrorHandler.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/LongHash.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/Error.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/MathVector.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: SamReferenceInfo.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/StringHash.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/Constant.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/Hash.h SamHeaderHD.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: SamHeaderPG.h ../include/CigarRoller.h
+$(OBJDIR_OPT)/PileupElementBaseQual.o: ../include/Cigar.h
+$(OBJDIR_OPT)/SamReferenceInfo.o: SamReferenceInfo.h ../include/StringArray.h
+$(OBJDIR_OPT)/SamReferenceInfo.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/SamReferenceInfo.o: ../include/InputFile.h
+$(OBJDIR_OPT)/SamReferenceInfo.o: ../include/FileType.h
+$(OBJDIR_OPT)/SamReferenceInfo.o: ../include/StringHash.h
+$(OBJDIR_OPT)/SamReferenceInfo.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_OPT)/SamReferenceInfo.o: ../include/IntArray.h
+$(OBJDIR_OPT)/SamTags.o: SamTags.h SamRecord.h ../include/GenomeSequence.h
+$(OBJDIR_OPT)/SamTags.o: ../include/MemoryMapArray.h ../include/Generic.h
+$(OBJDIR_OPT)/SamTags.o: ../include/MemoryMap.h ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/SamTags.o: ../include/StringBasics.h ../include/InputFile.h
+$(OBJDIR_OPT)/SamTags.o: ../include/FileType.h ../include/StringArray.h
+$(OBJDIR_OPT)/SamTags.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_OPT)/SamTags.o: ../include/StatGenStatus.h ../include/ErrorHandler.h
+$(OBJDIR_OPT)/SamTags.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_OPT)/SamTags.o: ../include/MathVector.h ../include/IntArray.h
+$(OBJDIR_OPT)/SamTags.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_OPT)/SamTags.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_OPT)/SamTags.o: ../include/Hash.h SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_OPT)/SamTags.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_OPT)/SamTags.o: SamHeaderPG.h ../include/CigarRoller.h
+$(OBJDIR_OPT)/SamTags.o: ../include/Cigar.h ../include/BaseUtilities.h
+$(OBJDIR_OPT)/PosList.o: PosList.h
+$(OBJDIR_OPT)/CigarHelper.o: CigarHelper.h SamRecord.h
+$(OBJDIR_OPT)/CigarHelper.o: ../include/GenomeSequence.h
+$(OBJDIR_OPT)/CigarHelper.o: ../include/MemoryMapArray.h ../include/Generic.h
+$(OBJDIR_OPT)/CigarHelper.o: ../include/MemoryMap.h ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/CigarHelper.o: ../include/StringBasics.h ../include/InputFile.h
+$(OBJDIR_OPT)/CigarHelper.o: ../include/FileType.h ../include/StringArray.h
+$(OBJDIR_OPT)/CigarHelper.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_OPT)/CigarHelper.o: ../include/StatGenStatus.h
+$(OBJDIR_OPT)/CigarHelper.o: ../include/ErrorHandler.h ../include/LongHash.h
+$(OBJDIR_OPT)/CigarHelper.o: ../include/Error.h ../include/MathVector.h
+$(OBJDIR_OPT)/CigarHelper.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_OPT)/CigarHelper.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_OPT)/CigarHelper.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_OPT)/CigarHelper.o: SamHeaderHD.h SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_OPT)/CigarHelper.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_OPT)/CigarHelper.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_OPT)/SamRecordPool.o: SamRecordPool.h SamRecord.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/GenomeSequence.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/MemoryMapArray.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/StringArray.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/StatGenStatus.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/ErrorHandler.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/MathVector.h ../include/IntArray.h
+$(OBJDIR_OPT)/SamRecordPool.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/Hash.h SamHeaderHD.h
+$(OBJDIR_OPT)/SamRecordPool.o: SamHeaderRecord.h SamHeaderTag.h SamHeaderSQ.h
+$(OBJDIR_OPT)/SamRecordPool.o: SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_OPT)/SamRecordPool.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_OPT)/SamCoordOutput.o: SamCoordOutput.h SamFile.h SamStatus.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/StatGenStatus.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/ErrorHandler.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_OPT)/SamCoordOutput.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/StringArray.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/Hash.h ../include/IntArray.h
+$(OBJDIR_OPT)/SamCoordOutput.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_OPT)/SamCoordOutput.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_OPT)/SamCoordOutput.o: SamHeaderPG.h SamRecord.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/GenomeSequence.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/MemoryMapArray.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/MathVector.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_OPT)/SamCoordOutput.o: GenericSamInterface.h BamIndex.h
+$(OBJDIR_OPT)/SamCoordOutput.o: ../include/IndexBase.h SamStatistics.h
+$(OBJDIR_OPT)/SamCoordOutput.o: SamRecordPool.h SamHelper.h
+$(OBJDIR_OPT)/SamRecordHelper.o: SamRecordHelper.h SamRecord.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/GenomeSequence.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/MemoryMapArray.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/BaseAsciiMap.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/StringArray.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_OPT)/SamRecordHelper.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/ErrorHandler.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/MathVector.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_OPT)/SamRecordHelper.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_OPT)/SamRecordHelper.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_OPT)/SamRecordHelper.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_OPT)/SamRecordHelper.o: SamHeaderPG.h ../include/CigarRoller.h
+$(OBJDIR_OPT)/SamRecordHelper.o: ../include/Cigar.h
+
+$(OBJDIR_DEBUG)/SamFileHeader.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_DEBUG)/SamFileHeader.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamFileHeader.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamFileHeader.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/SamFileHeader.o: ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamFileHeader.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/SamFileHeader.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_DEBUG)/SamFileHeader.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamFileHeader.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_DEBUG)/SamFile.o: SamFile.h SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/ErrorHandler.h ../include/InputFile.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/FileType.h SamFileHeader.h
+$(OBJDIR_DEBUG)/SamFile.o: SamReferenceInfo.h ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/StringBasics.h ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_DEBUG)/SamFile.o: SamHeaderRecord.h SamHeaderTag.h SamHeaderSQ.h
+$(OBJDIR_DEBUG)/SamFile.o: SamHeaderRG.h SamHeaderPG.h SamRecord.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/MemoryMapArray.h ../include/Generic.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/MemoryMap.h ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/MathVector.h ../include/CigarRoller.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/Cigar.h GenericSamInterface.h
+$(OBJDIR_DEBUG)/SamFile.o: BamIndex.h ../include/IndexBase.h SamStatistics.h
+$(OBJDIR_DEBUG)/SamFile.o: BamInterface.h SamInterface.h
+$(OBJDIR_DEBUG)/SamFile.o: ../include/BgzfFileType.h ../include/bgzf.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: GenericSamInterface.h SamStatus.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/ErrorHandler.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/InputFile.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/FileType.h SamFileHeader.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: SamReferenceInfo.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/StringHash.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/Constant.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/Hash.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: SamHeaderPG.h SamRecord.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/MemoryMapArray.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/Generic.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/MemoryMap.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/LongHash.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/Error.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/MathVector.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/CigarRoller.h
+$(OBJDIR_DEBUG)/GenericSamInterface.o: ../include/Cigar.h
+$(OBJDIR_DEBUG)/SamInterface.o: SamInterface.h GenericSamInterface.h
+$(OBJDIR_DEBUG)/SamInterface.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/ErrorHandler.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/SamInterface.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/Hash.h ../include/IntArray.h
+$(OBJDIR_DEBUG)/SamInterface.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_DEBUG)/SamInterface.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_DEBUG)/SamInterface.o: SamHeaderPG.h SamRecord.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/MemoryMapArray.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/MathVector.h
+$(OBJDIR_DEBUG)/SamInterface.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_DEBUG)/SamInterface.o: SamRecordHelper.h
+$(OBJDIR_DEBUG)/BamInterface.o: BamInterface.h GenericSamInterface.h
+$(OBJDIR_DEBUG)/BamInterface.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/ErrorHandler.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/BamInterface.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/Hash.h ../include/IntArray.h
+$(OBJDIR_DEBUG)/BamInterface.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_DEBUG)/BamInterface.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_DEBUG)/BamInterface.o: SamHeaderPG.h SamRecord.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/MemoryMapArray.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/MathVector.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_DEBUG)/BamInterface.o: ../include/CharBuffer.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/bam.h SamRecord.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/MemoryMapArray.h ../include/Generic.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/MemoryMap.h ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/StringBasics.h ../include/InputFile.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/FileType.h ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/ErrorHandler.h ../include/LongHash.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/Error.h ../include/MathVector.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_DEBUG)/SamRecord.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/SamRecord.o: SamHeaderHD.h SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamRecord.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_DEBUG)/SamRecord.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_DEBUG)/SamRecord.o: SamValidation.h SamFile.h GenericSamInterface.h
+$(OBJDIR_DEBUG)/SamRecord.o: BamIndex.h ../include/IndexBase.h
+$(OBJDIR_DEBUG)/SamRecord.o: SamStatistics.h ../include/BaseUtilities.h
+$(OBJDIR_DEBUG)/SamRecord.o: SamQuerySeqWithRefHelper.h
+$(OBJDIR_DEBUG)/BamIndex.o: BamIndex.h ../include/IndexBase.h
+$(OBJDIR_DEBUG)/BamIndex.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/BamIndex.o: ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/BamIndex.o: ../include/ErrorHandler.h SamStatus.h
+$(OBJDIR_DEBUG)/SamHeaderHD.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_DEBUG)/SamHeaderHD.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamHeaderHD.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamHeaderHD.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/SamHeaderHD.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_DEBUG)/SamHeaderHD.o: ../include/Hash.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamHeaderPG.o: SamHeaderPG.h SamHeaderRecord.h
+$(OBJDIR_DEBUG)/SamHeaderPG.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamHeaderPG.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamHeaderPG.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/SamHeaderPG.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_DEBUG)/SamHeaderPG.o: ../include/Hash.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamHeaderRecord.o: SamHeaderRecord.h ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamHeaderRecord.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamHeaderRecord.o: ../include/InputFile.h
+$(OBJDIR_DEBUG)/SamHeaderRecord.o: ../include/FileType.h
+$(OBJDIR_DEBUG)/SamHeaderRecord.o: ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamHeaderRecord.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/SamHeaderRecord.o: SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamHeaderSQ.o: SamHeaderSQ.h SamHeaderRecord.h
+$(OBJDIR_DEBUG)/SamHeaderSQ.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamHeaderSQ.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamHeaderSQ.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/SamHeaderSQ.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_DEBUG)/SamHeaderSQ.o: ../include/Hash.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamHeaderRG.o: SamHeaderRG.h SamHeaderRecord.h
+$(OBJDIR_DEBUG)/SamHeaderRG.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamHeaderRG.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamHeaderRG.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/SamHeaderRG.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_DEBUG)/SamHeaderRG.o: ../include/Hash.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamHeaderTag.o: SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamValidation.o: SamValidation.h SamFile.h SamStatus.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/ErrorHandler.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/SamValidation.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_DEBUG)/SamValidation.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamValidation.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_DEBUG)/SamValidation.o: SamRecord.h ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/MemoryMapArray.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/MathVector.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_DEBUG)/SamValidation.o: GenericSamInterface.h BamIndex.h
+$(OBJDIR_DEBUG)/SamValidation.o: ../include/IndexBase.h SamStatistics.h
+$(OBJDIR_DEBUG)/SamValidation.o: SamTags.h
+$(OBJDIR_DEBUG)/SamStatistics.o: SamStatistics.h SamRecord.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/MemoryMapArray.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/SamStatistics.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/ErrorHandler.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/MathVector.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_DEBUG)/SamStatistics.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/SamStatistics.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_DEBUG)/SamStatistics.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_DEBUG)/SamStatistics.o: SamHeaderPG.h ../include/CigarRoller.h
+$(OBJDIR_DEBUG)/SamStatistics.o: ../include/Cigar.h SamFlag.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: SamQuerySeqWithRefHelper.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: SamRecord.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/MemoryMapArray.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/Generic.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/MemoryMap.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/InputFile.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/FileType.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: SamStatus.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/ErrorHandler.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/LongHash.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/Error.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/MathVector.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/IntArray.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: SamFileHeader.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: SamReferenceInfo.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/Constant.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/Hash.h SamHeaderHD.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: SamHeaderPG.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/CigarRoller.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/Cigar.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: ../include/BaseUtilities.h
+$(OBJDIR_DEBUG)/SamQuerySeqWithRefHelper.o: SamFlag.h
+$(OBJDIR_DEBUG)/SamFilter.o: SamFilter.h SamRecord.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/MemoryMapArray.h ../include/Generic.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/MemoryMap.h ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/StringBasics.h ../include/InputFile.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/FileType.h ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/ErrorHandler.h ../include/LongHash.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/Error.h ../include/MathVector.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_DEBUG)/SamFilter.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/SamFilter.o: SamHeaderHD.h SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamFilter.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_DEBUG)/SamFilter.o: SamQuerySeqWithRefHelper.h
+$(OBJDIR_DEBUG)/SamFilter.o: ../include/BaseUtilities.h SamFlag.h
+$(OBJDIR_DEBUG)/PileupElement.o: PileupElement.h SamRecord.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/MemoryMapArray.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/PileupElement.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/ErrorHandler.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/MathVector.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_DEBUG)/PileupElement.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/PileupElement.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_DEBUG)/PileupElement.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_DEBUG)/PileupElement.o: SamHeaderPG.h ../include/CigarRoller.h
+$(OBJDIR_DEBUG)/PileupElement.o: ../include/Cigar.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: PileupElementBaseQual.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: PileupElement.h SamRecord.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/MemoryMapArray.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/Generic.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/MemoryMap.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/InputFile.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/FileType.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: SamStatus.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/ErrorHandler.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/LongHash.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/Error.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/MathVector.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/IntArray.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/StringHash.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/Constant.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/Hash.h SamHeaderHD.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: SamHeaderPG.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/CigarRoller.h
+$(OBJDIR_DEBUG)/PileupElementBaseQual.o: ../include/Cigar.h
+$(OBJDIR_DEBUG)/SamReferenceInfo.o: SamReferenceInfo.h
+$(OBJDIR_DEBUG)/SamReferenceInfo.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamReferenceInfo.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamReferenceInfo.o: ../include/InputFile.h
+$(OBJDIR_DEBUG)/SamReferenceInfo.o: ../include/FileType.h
+$(OBJDIR_DEBUG)/SamReferenceInfo.o: ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamReferenceInfo.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/SamReferenceInfo.o: ../include/IntArray.h
+$(OBJDIR_DEBUG)/SamTags.o: SamTags.h SamRecord.h ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/SamTags.o: ../include/MemoryMapArray.h ../include/Generic.h
+$(OBJDIR_DEBUG)/SamTags.o: ../include/MemoryMap.h ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/SamTags.o: ../include/StringBasics.h ../include/InputFile.h
+$(OBJDIR_DEBUG)/SamTags.o: ../include/FileType.h ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamTags.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_DEBUG)/SamTags.o: ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/SamTags.o: ../include/ErrorHandler.h ../include/LongHash.h
+$(OBJDIR_DEBUG)/SamTags.o: ../include/Error.h ../include/MathVector.h
+$(OBJDIR_DEBUG)/SamTags.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_DEBUG)/SamTags.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamTags.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/SamTags.o: SamHeaderHD.h SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamTags.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_DEBUG)/SamTags.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_DEBUG)/SamTags.o: ../include/BaseUtilities.h
+$(OBJDIR_DEBUG)/PosList.o: PosList.h
+$(OBJDIR_DEBUG)/CigarHelper.o: CigarHelper.h SamRecord.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/MemoryMapArray.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/ErrorHandler.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/MathVector.h ../include/IntArray.h
+$(OBJDIR_DEBUG)/CigarHelper.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/Hash.h SamHeaderHD.h
+$(OBJDIR_DEBUG)/CigarHelper.o: SamHeaderRecord.h SamHeaderTag.h SamHeaderSQ.h
+$(OBJDIR_DEBUG)/CigarHelper.o: SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_DEBUG)/CigarHelper.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: SamRecordPool.h SamRecord.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/MemoryMapArray.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/ErrorHandler.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/MathVector.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: SamHeaderPG.h ../include/CigarRoller.h
+$(OBJDIR_DEBUG)/SamRecordPool.o: ../include/Cigar.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: SamCoordOutput.h SamFile.h SamStatus.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/ErrorHandler.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/InputFile.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/FileType.h SamFileHeader.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: SamReferenceInfo.h ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: SamRecord.h ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/MemoryMapArray.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/MathVector.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: GenericSamInterface.h BamIndex.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: ../include/IndexBase.h SamStatistics.h
+$(OBJDIR_DEBUG)/SamCoordOutput.o: SamRecordPool.h SamHelper.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: SamRecordHelper.h SamRecord.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/GenomeSequence.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/MemoryMapArray.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/Generic.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/MemoryMap.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/BaseAsciiMap.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/InputFile.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/FileType.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/StringArray.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/ErrorHandler.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/MathVector.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: SamHeaderPG.h ../include/CigarRoller.h
+$(OBJDIR_DEBUG)/SamRecordHelper.o: ../include/Cigar.h
+
+$(OBJDIR_PROFILE)/SamFileHeader.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_PROFILE)/SamFileHeader.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamFileHeader.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamFileHeader.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/SamFileHeader.o: ../include/FileType.h
+$(OBJDIR_PROFILE)/SamFileHeader.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamFileHeader.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamFileHeader.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_PROFILE)/SamFileHeader.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_PROFILE)/SamFileHeader.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_PROFILE)/SamFile.o: SamFile.h SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/SamFile.o: ../include/ErrorHandler.h ../include/InputFile.h
+$(OBJDIR_PROFILE)/SamFile.o: ../include/FileType.h SamFileHeader.h
+$(OBJDIR_PROFILE)/SamFile.o: SamReferenceInfo.h ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamFile.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamFile.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_PROFILE)/SamFile.o: ../include/Hash.h ../include/IntArray.h
+$(OBJDIR_PROFILE)/SamFile.o: SamHeaderHD.h SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_PROFILE)/SamFile.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_PROFILE)/SamFile.o: SamRecord.h ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/SamFile.o: ../include/MemoryMapArray.h ../include/Generic.h
+$(OBJDIR_PROFILE)/SamFile.o: ../include/MemoryMap.h ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/SamFile.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/SamFile.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_PROFILE)/SamFile.o: ../include/MathVector.h ../include/CigarRoller.h
+$(OBJDIR_PROFILE)/SamFile.o: ../include/Cigar.h GenericSamInterface.h
+$(OBJDIR_PROFILE)/SamFile.o: BamIndex.h ../include/IndexBase.h
+$(OBJDIR_PROFILE)/SamFile.o: SamStatistics.h BamInterface.h SamInterface.h
+$(OBJDIR_PROFILE)/SamFile.o: ../include/BgzfFileType.h ../include/bgzf.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: GenericSamInterface.h SamStatus.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/FileType.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/Constant.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/Hash.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: SamHeaderPG.h SamRecord.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/Generic.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/LongHash.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/Error.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/MathVector.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/CigarRoller.h
+$(OBJDIR_PROFILE)/GenericSamInterface.o: ../include/Cigar.h
+$(OBJDIR_PROFILE)/SamInterface.o: SamInterface.h GenericSamInterface.h
+$(OBJDIR_PROFILE)/SamInterface.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/FileType.h SamFileHeader.h
+$(OBJDIR_PROFILE)/SamInterface.o: SamReferenceInfo.h ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_PROFILE)/SamInterface.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_PROFILE)/SamInterface.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_PROFILE)/SamInterface.o: SamRecord.h ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/MathVector.h
+$(OBJDIR_PROFILE)/SamInterface.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_PROFILE)/SamInterface.o: SamRecordHelper.h
+$(OBJDIR_PROFILE)/BamInterface.o: BamInterface.h GenericSamInterface.h
+$(OBJDIR_PROFILE)/BamInterface.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/FileType.h SamFileHeader.h
+$(OBJDIR_PROFILE)/BamInterface.o: SamReferenceInfo.h ../include/StringArray.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_PROFILE)/BamInterface.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_PROFILE)/BamInterface.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_PROFILE)/BamInterface.o: SamRecord.h ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/MathVector.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_PROFILE)/BamInterface.o: ../include/CharBuffer.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/bam.h SamRecord.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/MathVector.h ../include/IntArray.h
+$(OBJDIR_PROFILE)/SamRecord.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/Hash.h SamHeaderHD.h
+$(OBJDIR_PROFILE)/SamRecord.o: SamHeaderRecord.h SamHeaderTag.h SamHeaderSQ.h
+$(OBJDIR_PROFILE)/SamRecord.o: SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_PROFILE)/SamRecord.o: SamValidation.h SamFile.h
+$(OBJDIR_PROFILE)/SamRecord.o: GenericSamInterface.h BamIndex.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/IndexBase.h SamStatistics.h
+$(OBJDIR_PROFILE)/SamRecord.o: ../include/BaseUtilities.h
+$(OBJDIR_PROFILE)/SamRecord.o: SamQuerySeqWithRefHelper.h
+$(OBJDIR_PROFILE)/BamIndex.o: BamIndex.h ../include/IndexBase.h
+$(OBJDIR_PROFILE)/BamIndex.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_PROFILE)/BamIndex.o: ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/BamIndex.o: ../include/ErrorHandler.h SamStatus.h
+$(OBJDIR_PROFILE)/SamHeaderHD.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_PROFILE)/SamHeaderHD.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamHeaderHD.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamHeaderHD.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_PROFILE)/SamHeaderHD.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamHeaderHD.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamHeaderHD.o: SamHeaderTag.h
+$(OBJDIR_PROFILE)/SamHeaderPG.o: SamHeaderPG.h SamHeaderRecord.h
+$(OBJDIR_PROFILE)/SamHeaderPG.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamHeaderPG.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamHeaderPG.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_PROFILE)/SamHeaderPG.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamHeaderPG.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamHeaderPG.o: SamHeaderTag.h
+$(OBJDIR_PROFILE)/SamHeaderRecord.o: SamHeaderRecord.h
+$(OBJDIR_PROFILE)/SamHeaderRecord.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamHeaderRecord.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamHeaderRecord.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/SamHeaderRecord.o: ../include/FileType.h
+$(OBJDIR_PROFILE)/SamHeaderRecord.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamHeaderRecord.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamHeaderRecord.o: SamHeaderTag.h
+$(OBJDIR_PROFILE)/SamHeaderSQ.o: SamHeaderSQ.h SamHeaderRecord.h
+$(OBJDIR_PROFILE)/SamHeaderSQ.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamHeaderSQ.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamHeaderSQ.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_PROFILE)/SamHeaderSQ.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamHeaderSQ.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamHeaderSQ.o: SamHeaderTag.h
+$(OBJDIR_PROFILE)/SamHeaderRG.o: SamHeaderRG.h SamHeaderRecord.h
+$(OBJDIR_PROFILE)/SamHeaderRG.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamHeaderRG.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamHeaderRG.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_PROFILE)/SamHeaderRG.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamHeaderRG.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamHeaderRG.o: SamHeaderTag.h
+$(OBJDIR_PROFILE)/SamHeaderTag.o: SamHeaderTag.h
+$(OBJDIR_PROFILE)/SamValidation.o: SamValidation.h SamFile.h SamStatus.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/FileType.h SamFileHeader.h
+$(OBJDIR_PROFILE)/SamValidation.o: SamReferenceInfo.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_PROFILE)/SamValidation.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_PROFILE)/SamValidation.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_PROFILE)/SamValidation.o: SamRecord.h ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/Generic.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/MathVector.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/CigarRoller.h
+$(OBJDIR_PROFILE)/SamValidation.o: ../include/Cigar.h GenericSamInterface.h
+$(OBJDIR_PROFILE)/SamValidation.o: BamIndex.h ../include/IndexBase.h
+$(OBJDIR_PROFILE)/SamValidation.o: SamStatistics.h SamTags.h
+$(OBJDIR_PROFILE)/SamStatistics.o: SamStatistics.h SamRecord.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/Generic.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/FileType.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/SamStatistics.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/MathVector.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_PROFILE)/SamStatistics.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamStatistics.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_PROFILE)/SamStatistics.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_PROFILE)/SamStatistics.o: SamHeaderPG.h ../include/CigarRoller.h
+$(OBJDIR_PROFILE)/SamStatistics.o: ../include/Cigar.h SamFlag.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: SamQuerySeqWithRefHelper.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: SamRecord.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/Generic.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/FileType.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: SamStatus.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/LongHash.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/Error.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/MathVector.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/IntArray.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: SamFileHeader.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: SamReferenceInfo.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/Constant.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/Hash.h SamHeaderHD.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: SamHeaderRecord.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: SamHeaderTag.h SamHeaderSQ.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/CigarRoller.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/Cigar.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: ../include/BaseUtilities.h
+$(OBJDIR_PROFILE)/SamQuerySeqWithRefHelper.o: SamFlag.h
+$(OBJDIR_PROFILE)/SamFilter.o: SamFilter.h SamRecord.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/MathVector.h ../include/IntArray.h
+$(OBJDIR_PROFILE)/SamFilter.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/StringHash.h ../include/Constant.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/Hash.h SamHeaderHD.h
+$(OBJDIR_PROFILE)/SamFilter.o: SamHeaderRecord.h SamHeaderTag.h SamHeaderSQ.h
+$(OBJDIR_PROFILE)/SamFilter.o: SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_PROFILE)/SamFilter.o: SamQuerySeqWithRefHelper.h
+$(OBJDIR_PROFILE)/SamFilter.o: ../include/BaseUtilities.h SamFlag.h
+$(OBJDIR_PROFILE)/PileupElement.o: PileupElement.h SamRecord.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/Generic.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/FileType.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/PileupElement.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/MathVector.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_PROFILE)/PileupElement.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/PileupElement.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_PROFILE)/PileupElement.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_PROFILE)/PileupElement.o: SamHeaderPG.h ../include/CigarRoller.h
+$(OBJDIR_PROFILE)/PileupElement.o: ../include/Cigar.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: PileupElementBaseQual.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: PileupElement.h SamRecord.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/Generic.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/FileType.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: SamStatus.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/LongHash.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/Error.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/MathVector.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/IntArray.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: SamFileHeader.h SamReferenceInfo.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/Constant.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/Hash.h SamHeaderHD.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: SamHeaderPG.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/CigarRoller.h
+$(OBJDIR_PROFILE)/PileupElementBaseQual.o: ../include/Cigar.h
+$(OBJDIR_PROFILE)/SamReferenceInfo.o: SamReferenceInfo.h
+$(OBJDIR_PROFILE)/SamReferenceInfo.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamReferenceInfo.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamReferenceInfo.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/SamReferenceInfo.o: ../include/FileType.h
+$(OBJDIR_PROFILE)/SamReferenceInfo.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamReferenceInfo.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamReferenceInfo.o: ../include/IntArray.h
+$(OBJDIR_PROFILE)/SamTags.o: SamTags.h SamRecord.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/MemoryMapArray.h ../include/Generic.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/MemoryMap.h ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/StringBasics.h ../include/InputFile.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/FileType.h ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/GenomeSequenceHelpers.h SamStatus.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/ErrorHandler.h ../include/LongHash.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/Error.h ../include/MathVector.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_PROFILE)/SamTags.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamTags.o: SamHeaderHD.h SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_PROFILE)/SamTags.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/CigarRoller.h ../include/Cigar.h
+$(OBJDIR_PROFILE)/SamTags.o: ../include/BaseUtilities.h
+$(OBJDIR_PROFILE)/PosList.o: PosList.h
+$(OBJDIR_PROFILE)/CigarHelper.o: CigarHelper.h SamRecord.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/Generic.h ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/InputFile.h ../include/FileType.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/CigarHelper.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/MathVector.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_PROFILE)/CigarHelper.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/CigarHelper.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_PROFILE)/CigarHelper.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_PROFILE)/CigarHelper.o: SamHeaderPG.h ../include/CigarRoller.h
+$(OBJDIR_PROFILE)/CigarHelper.o: ../include/Cigar.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: SamRecordPool.h SamRecord.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/Generic.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/FileType.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/MathVector.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: SamReferenceInfo.h ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: SamHeaderTag.h SamHeaderSQ.h SamHeaderRG.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: SamHeaderPG.h ../include/CigarRoller.h
+$(OBJDIR_PROFILE)/SamRecordPool.o: ../include/Cigar.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: SamCoordOutput.h SamFile.h SamStatus.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/FileType.h SamFileHeader.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: SamReferenceInfo.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/IntArray.h SamHeaderHD.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: SamHeaderRecord.h SamHeaderTag.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: SamHeaderSQ.h SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: SamRecord.h ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/Generic.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/MathVector.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/CigarRoller.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: ../include/Cigar.h GenericSamInterface.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: BamIndex.h ../include/IndexBase.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: SamStatistics.h SamRecordPool.h
+$(OBJDIR_PROFILE)/SamCoordOutput.o: SamHelper.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: SamRecordHelper.h SamRecord.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/GenomeSequence.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/MemoryMapArray.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/Generic.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/MemoryMap.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/BaseAsciiMap.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/InputFile.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/FileType.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/StringArray.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: SamStatus.h ../include/StatGenStatus.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/ErrorHandler.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/LongHash.h ../include/Error.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/MathVector.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/IntArray.h SamFileHeader.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: SamReferenceInfo.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/StringHash.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/Constant.h ../include/Hash.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: SamHeaderHD.h SamHeaderRecord.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: SamHeaderTag.h SamHeaderSQ.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: SamHeaderRG.h SamHeaderPG.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/CigarRoller.h
+$(OBJDIR_PROFILE)/SamRecordHelper.o: ../include/Cigar.h

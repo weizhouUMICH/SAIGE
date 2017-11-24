@@ -1,0 +1,480 @@
+# DO NOT DELETE
+
+$(OBJDIR_OPT)/BaseAsciiMap.o: BaseAsciiMap.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/BaseAsciiMap.o: FileType.h
+$(OBJDIR_OPT)/BaseQualityHelper.o: BaseQualityHelper.h
+$(OBJDIR_OPT)/BaseUtilities.o: BaseUtilities.h BaseAsciiMap.h StringBasics.h
+$(OBJDIR_OPT)/BaseUtilities.o: InputFile.h FileType.h
+$(OBJDIR_OPT)/BasicHash.o: BasicHash.h Error.h
+$(OBJDIR_OPT)/BgzfFileType.o: BgzfFileType.h ../include/bgzf.h FileType.h
+$(OBJDIR_OPT)/BgzfFileTypeRecovery.o: BgzfFileTypeRecovery.h FileType.h
+$(OBJDIR_OPT)/CharBuffer.o: CharBuffer.h InputFile.h FileType.h
+$(OBJDIR_OPT)/Chromosome.o: Chromosome.h GenomeSequence.h MemoryMapArray.h
+$(OBJDIR_OPT)/Chromosome.o: Generic.h MemoryMap.h BaseAsciiMap.h
+$(OBJDIR_OPT)/Chromosome.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_OPT)/Chromosome.o: StringArray.h GenomeSequenceHelpers.h
+$(OBJDIR_OPT)/Cigar.o: Cigar.h Generic.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/Cigar.o: FileType.h STLUtilities.h
+$(OBJDIR_OPT)/CigarRoller.o: CigarRoller.h Cigar.h Generic.h StringBasics.h
+$(OBJDIR_OPT)/CigarRoller.o: InputFile.h FileType.h
+$(OBJDIR_OPT)/Error.o: Error.h PhoneHome.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/Error.o: FileType.h
+$(OBJDIR_OPT)/ErrorHandler.o: ErrorHandler.h PhoneHome.h StringBasics.h
+$(OBJDIR_OPT)/ErrorHandler.o: InputFile.h FileType.h
+$(OBJDIR_OPT)/FileType.o: FileType.h
+$(OBJDIR_OPT)/FortranFormat.o: FortranFormat.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/FortranFormat.o: FileType.h IntArray.h Error.h
+$(OBJDIR_OPT)/GenomeSequence.o: Error.h Generic.h GenomeSequence.h
+$(OBJDIR_OPT)/GenomeSequence.o: MemoryMapArray.h MemoryMap.h BaseAsciiMap.h
+$(OBJDIR_OPT)/GenomeSequence.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_OPT)/GenomeSequence.o: StringArray.h GenomeSequenceHelpers.h
+$(OBJDIR_OPT)/GenomeSequence.o: CSG_MD5.h
+$(OBJDIR_OPT)/GenotypeLists.o: GenotypeLists.h Pedigree.h Constant.h
+$(OBJDIR_OPT)/GenotypeLists.o: PedigreeAlleles.h LongInt.h PedigreePerson.h
+$(OBJDIR_OPT)/GenotypeLists.o: PedigreeGlobals.h StringArray.h StringBasics.h
+$(OBJDIR_OPT)/GenotypeLists.o: InputFile.h FileType.h StringHash.h Hash.h
+$(OBJDIR_OPT)/GenotypeLists.o: IntArray.h MathVector.h PedigreeFamily.h
+$(OBJDIR_OPT)/GenotypeLists.o: PedigreeDescription.h PedigreeAlleleFreq.h
+$(OBJDIR_OPT)/glfHandler.o: glfHandler.h InputFile.h FileType.h
+$(OBJDIR_OPT)/glfHandler.o: StringBasics.h BaseQualityHelper.h
+$(OBJDIR_OPT)/GzipFileType.o: GzipFileType.h FileType.h
+$(OBJDIR_OPT)/GzipHeader.o: GzipHeader.h
+$(OBJDIR_OPT)/Hash.o: Hash.h
+$(OBJDIR_OPT)/IndexBase.o: IndexBase.h InputFile.h FileType.h StatGenStatus.h
+$(OBJDIR_OPT)/IndexBase.o: ErrorHandler.h
+$(OBJDIR_OPT)/Input.o: Input.h Error.h Constant.h
+$(OBJDIR_OPT)/InputFile.o: InputFile.h FileType.h StringBasics.h GzipHeader.h
+$(OBJDIR_OPT)/InputFile.o: BgzfFileType.h ../include/bgzf.h
+$(OBJDIR_OPT)/InputFile.o: BgzfFileTypeRecovery.h GzipFileType.h
+$(OBJDIR_OPT)/InputFile.o: UncompressedFileType.h
+$(OBJDIR_OPT)/IntArray.o: IntArray.h Error.h Hash.h Sort.h Constant.h
+$(OBJDIR_OPT)/IntHash.o: IntHash.h Error.h
+$(OBJDIR_OPT)/LongLongCounter.o: LongLongCounter.h LongHash.h Error.h
+$(OBJDIR_OPT)/MapFunction.o: MapFunction.h MathConstant.h
+$(OBJDIR_OPT)/MathMatrix.o: MathMatrix.h MathVector.h StringBasics.h
+$(OBJDIR_OPT)/MathMatrix.o: InputFile.h FileType.h Error.h MathConstant.h
+$(OBJDIR_OPT)/MathMatrix.o: Sort.h Constant.h
+$(OBJDIR_OPT)/MathVector.o: MathVector.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/MathVector.o: FileType.h MathMatrix.h Error.h MathConstant.h
+$(OBJDIR_OPT)/MathVector.o: Sort.h Constant.h
+$(OBJDIR_OPT)/MemoryAllocators.o: MemoryAllocators.h
+$(OBJDIR_OPT)/MemoryInfo.o: MemoryInfo.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/MemoryInfo.o: FileType.h
+$(OBJDIR_OPT)/MemoryMapArray.o: MemoryMapArray.h Generic.h MemoryMap.h
+$(OBJDIR_OPT)/MemoryMap.o: MemoryMap.h
+$(OBJDIR_OPT)/MiniDeflate.o: MiniDeflate.h
+$(OBJDIR_OPT)/NonOverlapRegions.o: NonOverlapRegions.h
+$(OBJDIR_OPT)/Parameters.o: Parameters.h StringMap.h StringBasics.h
+$(OBJDIR_OPT)/Parameters.o: InputFile.h FileType.h PhoneHome.h Constant.h
+$(OBJDIR_OPT)/Parameters.o: MathConstant.h Error.h
+$(OBJDIR_OPT)/PedigreeAlleleFreq.o: PedigreeAlleleFreq.h Pedigree.h
+$(OBJDIR_OPT)/PedigreeAlleleFreq.o: Constant.h PedigreeAlleles.h LongInt.h
+$(OBJDIR_OPT)/PedigreeAlleleFreq.o: PedigreePerson.h PedigreeGlobals.h
+$(OBJDIR_OPT)/PedigreeAlleleFreq.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/PedigreeAlleleFreq.o: FileType.h StringHash.h Hash.h IntArray.h
+$(OBJDIR_OPT)/PedigreeAlleleFreq.o: MathVector.h PedigreeFamily.h
+$(OBJDIR_OPT)/PedigreeAlleleFreq.o: PedigreeDescription.h QuickIndex.h
+$(OBJDIR_OPT)/PedigreeAlleleFreq.o: StringMap.h Error.h
+$(OBJDIR_OPT)/Pedigree.o: Pedigree.h Constant.h PedigreeAlleles.h LongInt.h
+$(OBJDIR_OPT)/Pedigree.o: PedigreePerson.h PedigreeGlobals.h StringArray.h
+$(OBJDIR_OPT)/Pedigree.o: StringBasics.h InputFile.h FileType.h StringHash.h
+$(OBJDIR_OPT)/Pedigree.o: Hash.h IntArray.h MathVector.h PedigreeFamily.h
+$(OBJDIR_OPT)/Pedigree.o: PedigreeDescription.h PedigreeAlleleFreq.h
+$(OBJDIR_OPT)/Pedigree.o: GenotypeLists.h MemoryInfo.h Error.h Sort.h
+$(OBJDIR_OPT)/PedigreeDescription.o: PedigreeDescription.h PedigreeGlobals.h
+$(OBJDIR_OPT)/PedigreeDescription.o: Constant.h StringArray.h StringBasics.h
+$(OBJDIR_OPT)/PedigreeDescription.o: InputFile.h FileType.h StringHash.h
+$(OBJDIR_OPT)/PedigreeDescription.o: Hash.h IntArray.h MathVector.h
+$(OBJDIR_OPT)/PedigreeDescription.o: PedigreePerson.h PedigreeAlleles.h
+$(OBJDIR_OPT)/PedigreeDescription.o: LongInt.h MapFunction.h FortranFormat.h
+$(OBJDIR_OPT)/PedigreeDescription.o: Error.h
+$(OBJDIR_OPT)/PedigreeFamily.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_OPT)/PedigreeFamily.o: LongInt.h PedigreePerson.h PedigreeGlobals.h
+$(OBJDIR_OPT)/PedigreeFamily.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/PedigreeFamily.o: FileType.h StringHash.h Hash.h IntArray.h
+$(OBJDIR_OPT)/PedigreeFamily.o: MathVector.h PedigreeFamily.h
+$(OBJDIR_OPT)/PedigreeFamily.o: PedigreeDescription.h PedigreeAlleleFreq.h
+$(OBJDIR_OPT)/PedigreeFamily.o: MathConstant.h Error.h
+$(OBJDIR_OPT)/PedigreeGlobals.o: PedigreeGlobals.h Constant.h StringArray.h
+$(OBJDIR_OPT)/PedigreeGlobals.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_OPT)/PedigreeGlobals.o: StringHash.h Hash.h IntArray.h MathVector.h
+$(OBJDIR_OPT)/PedigreeGlobals.o: Sort.h Error.h
+$(OBJDIR_OPT)/PedigreePerson.o: PedigreePerson.h Constant.h PedigreeAlleles.h
+$(OBJDIR_OPT)/PedigreePerson.o: LongInt.h PedigreeGlobals.h StringArray.h
+$(OBJDIR_OPT)/PedigreePerson.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_OPT)/PedigreePerson.o: StringHash.h Hash.h IntArray.h MathVector.h
+$(OBJDIR_OPT)/PedigreePerson.o: Error.h
+$(OBJDIR_OPT)/PhoneHome.o: PhoneHome.h StringBasics.h InputFile.h FileType.h
+$(OBJDIR_OPT)/PhoneHome.o: ../include/knetfile.h
+$(OBJDIR_OPT)/QuickIndex.o: QuickIndex.h MathVector.h StringBasics.h
+$(OBJDIR_OPT)/QuickIndex.o: InputFile.h FileType.h StringArray.h StringHash.h
+$(OBJDIR_OPT)/QuickIndex.o: Constant.h Hash.h IntArray.h StringMap.h Error.h
+$(OBJDIR_OPT)/Random.o: Random.h MathConstant.h Error.h
+$(OBJDIR_OPT)/ReferenceSequence.o: Error.h Generic.h ReferenceSequence.h
+$(OBJDIR_OPT)/ReferenceSequence.o: BaseAsciiMap.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/ReferenceSequence.o: FileType.h PackedVector.h
+$(OBJDIR_OPT)/SmithWaterman.o: SmithWaterman.h CigarRoller.h Cigar.h
+$(OBJDIR_OPT)/SmithWaterman.o: Generic.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/SmithWaterman.o: FileType.h
+$(OBJDIR_OPT)/Sort.o: Sort.h Constant.h Error.h
+$(OBJDIR_OPT)/STLUtilities.o: STLUtilities.h
+$(OBJDIR_OPT)/StatGenStatus.o: StatGenStatus.h ErrorHandler.h
+$(OBJDIR_OPT)/StringAlias.o: StringAlias.h StringArray.h StringBasics.h
+$(OBJDIR_OPT)/StringAlias.o: InputFile.h FileType.h StringHash.h Constant.h
+$(OBJDIR_OPT)/StringAlias.o: Hash.h
+$(OBJDIR_OPT)/StringArray.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/StringArray.o: FileType.h Sort.h Constant.h Error.h
+$(OBJDIR_OPT)/StringBasics.o: StringBasics.h InputFile.h FileType.h Error.h
+$(OBJDIR_OPT)/StringBasics.o: Constant.h MathConstant.h
+$(OBJDIR_OPT)/StringHash.o: StringHash.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/StringHash.o: FileType.h Constant.h Hash.h Error.h
+$(OBJDIR_OPT)/StringMap.o: StringMap.h StringBasics.h InputFile.h FileType.h
+$(OBJDIR_OPT)/Tabix.o: Tabix.h IndexBase.h InputFile.h FileType.h
+$(OBJDIR_OPT)/Tabix.o: StatGenStatus.h ErrorHandler.h StringBasics.h
+$(OBJDIR_OPT)/UncompressedFileType.o: UncompressedFileType.h FileType.h
+$(OBJDIR_OPT)/PedigreeLoader.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_OPT)/PedigreeLoader.o: LongInt.h PedigreePerson.h PedigreeGlobals.h
+$(OBJDIR_OPT)/PedigreeLoader.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/PedigreeLoader.o: FileType.h StringHash.h Hash.h IntArray.h
+$(OBJDIR_OPT)/PedigreeLoader.o: MathVector.h PedigreeFamily.h
+$(OBJDIR_OPT)/PedigreeLoader.o: PedigreeDescription.h PedigreeAlleleFreq.h
+$(OBJDIR_OPT)/PedigreeLoader.o: FortranFormat.h Error.h
+$(OBJDIR_OPT)/PedigreeTrim.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_OPT)/PedigreeTrim.o: LongInt.h PedigreePerson.h PedigreeGlobals.h
+$(OBJDIR_OPT)/PedigreeTrim.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/PedigreeTrim.o: FileType.h StringHash.h Hash.h IntArray.h
+$(OBJDIR_OPT)/PedigreeTrim.o: MathVector.h PedigreeFamily.h
+$(OBJDIR_OPT)/PedigreeTrim.o: PedigreeDescription.h PedigreeAlleleFreq.h
+$(OBJDIR_OPT)/PedigreeTwin.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_OPT)/PedigreeTwin.o: LongInt.h PedigreePerson.h PedigreeGlobals.h
+$(OBJDIR_OPT)/PedigreeTwin.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_OPT)/PedigreeTwin.o: FileType.h StringHash.h Hash.h IntArray.h
+$(OBJDIR_OPT)/PedigreeTwin.o: MathVector.h PedigreeFamily.h
+$(OBJDIR_OPT)/PedigreeTwin.o: PedigreeDescription.h PedigreeAlleleFreq.h
+$(OBJDIR_OPT)/PedigreeTwin.o: Error.h
+
+$(OBJDIR_DEBUG)/BaseAsciiMap.o: BaseAsciiMap.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/BaseAsciiMap.o: FileType.h
+$(OBJDIR_DEBUG)/BaseQualityHelper.o: BaseQualityHelper.h
+$(OBJDIR_DEBUG)/BaseUtilities.o: BaseUtilities.h BaseAsciiMap.h
+$(OBJDIR_DEBUG)/BaseUtilities.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/BasicHash.o: BasicHash.h Error.h
+$(OBJDIR_DEBUG)/BgzfFileType.o: BgzfFileType.h ../include/bgzf.h FileType.h
+$(OBJDIR_DEBUG)/BgzfFileTypeRecovery.o: BgzfFileTypeRecovery.h FileType.h
+$(OBJDIR_DEBUG)/CharBuffer.o: CharBuffer.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/Chromosome.o: Chromosome.h GenomeSequence.h MemoryMapArray.h
+$(OBJDIR_DEBUG)/Chromosome.o: Generic.h MemoryMap.h BaseAsciiMap.h
+$(OBJDIR_DEBUG)/Chromosome.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/Chromosome.o: StringArray.h GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/Cigar.o: Cigar.h Generic.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/Cigar.o: FileType.h STLUtilities.h
+$(OBJDIR_DEBUG)/CigarRoller.o: CigarRoller.h Cigar.h Generic.h StringBasics.h
+$(OBJDIR_DEBUG)/CigarRoller.o: InputFile.h FileType.h
+$(OBJDIR_DEBUG)/Error.o: Error.h PhoneHome.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/Error.o: FileType.h
+$(OBJDIR_DEBUG)/ErrorHandler.o: ErrorHandler.h PhoneHome.h StringBasics.h
+$(OBJDIR_DEBUG)/ErrorHandler.o: InputFile.h FileType.h
+$(OBJDIR_DEBUG)/FileType.o: FileType.h
+$(OBJDIR_DEBUG)/FortranFormat.o: FortranFormat.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/FortranFormat.o: FileType.h IntArray.h Error.h
+$(OBJDIR_DEBUG)/GenomeSequence.o: Error.h Generic.h GenomeSequence.h
+$(OBJDIR_DEBUG)/GenomeSequence.o: MemoryMapArray.h MemoryMap.h BaseAsciiMap.h
+$(OBJDIR_DEBUG)/GenomeSequence.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/GenomeSequence.o: StringArray.h GenomeSequenceHelpers.h
+$(OBJDIR_DEBUG)/GenomeSequence.o: CSG_MD5.h
+$(OBJDIR_DEBUG)/GenotypeLists.o: GenotypeLists.h Pedigree.h Constant.h
+$(OBJDIR_DEBUG)/GenotypeLists.o: PedigreeAlleles.h LongInt.h PedigreePerson.h
+$(OBJDIR_DEBUG)/GenotypeLists.o: PedigreeGlobals.h StringArray.h
+$(OBJDIR_DEBUG)/GenotypeLists.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/GenotypeLists.o: StringHash.h Hash.h IntArray.h MathVector.h
+$(OBJDIR_DEBUG)/GenotypeLists.o: PedigreeFamily.h PedigreeDescription.h
+$(OBJDIR_DEBUG)/GenotypeLists.o: PedigreeAlleleFreq.h
+$(OBJDIR_DEBUG)/glfHandler.o: glfHandler.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/glfHandler.o: StringBasics.h BaseQualityHelper.h
+$(OBJDIR_DEBUG)/GzipFileType.o: GzipFileType.h FileType.h
+$(OBJDIR_DEBUG)/GzipHeader.o: GzipHeader.h
+$(OBJDIR_DEBUG)/Hash.o: Hash.h
+$(OBJDIR_DEBUG)/IndexBase.o: IndexBase.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/IndexBase.o: StatGenStatus.h ErrorHandler.h
+$(OBJDIR_DEBUG)/Input.o: Input.h Error.h Constant.h
+$(OBJDIR_DEBUG)/InputFile.o: InputFile.h FileType.h StringBasics.h
+$(OBJDIR_DEBUG)/InputFile.o: GzipHeader.h BgzfFileType.h ../include/bgzf.h
+$(OBJDIR_DEBUG)/InputFile.o: BgzfFileTypeRecovery.h GzipFileType.h
+$(OBJDIR_DEBUG)/InputFile.o: UncompressedFileType.h
+$(OBJDIR_DEBUG)/IntArray.o: IntArray.h Error.h Hash.h Sort.h Constant.h
+$(OBJDIR_DEBUG)/IntHash.o: IntHash.h Error.h
+$(OBJDIR_DEBUG)/LongLongCounter.o: LongLongCounter.h LongHash.h Error.h
+$(OBJDIR_DEBUG)/MapFunction.o: MapFunction.h MathConstant.h
+$(OBJDIR_DEBUG)/MathMatrix.o: MathMatrix.h MathVector.h StringBasics.h
+$(OBJDIR_DEBUG)/MathMatrix.o: InputFile.h FileType.h Error.h MathConstant.h
+$(OBJDIR_DEBUG)/MathMatrix.o: Sort.h Constant.h
+$(OBJDIR_DEBUG)/MathVector.o: MathVector.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/MathVector.o: FileType.h MathMatrix.h Error.h MathConstant.h
+$(OBJDIR_DEBUG)/MathVector.o: Sort.h Constant.h
+$(OBJDIR_DEBUG)/MemoryAllocators.o: MemoryAllocators.h
+$(OBJDIR_DEBUG)/MemoryInfo.o: MemoryInfo.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/MemoryInfo.o: FileType.h
+$(OBJDIR_DEBUG)/MemoryMapArray.o: MemoryMapArray.h Generic.h MemoryMap.h
+$(OBJDIR_DEBUG)/MemoryMap.o: MemoryMap.h
+$(OBJDIR_DEBUG)/MiniDeflate.o: MiniDeflate.h
+$(OBJDIR_DEBUG)/NonOverlapRegions.o: NonOverlapRegions.h
+$(OBJDIR_DEBUG)/Parameters.o: Parameters.h StringMap.h StringBasics.h
+$(OBJDIR_DEBUG)/Parameters.o: InputFile.h FileType.h PhoneHome.h Constant.h
+$(OBJDIR_DEBUG)/Parameters.o: MathConstant.h Error.h
+$(OBJDIR_DEBUG)/PedigreeAlleleFreq.o: PedigreeAlleleFreq.h Pedigree.h
+$(OBJDIR_DEBUG)/PedigreeAlleleFreq.o: Constant.h PedigreeAlleles.h LongInt.h
+$(OBJDIR_DEBUG)/PedigreeAlleleFreq.o: PedigreePerson.h PedigreeGlobals.h
+$(OBJDIR_DEBUG)/PedigreeAlleleFreq.o: StringArray.h StringBasics.h
+$(OBJDIR_DEBUG)/PedigreeAlleleFreq.o: InputFile.h FileType.h StringHash.h
+$(OBJDIR_DEBUG)/PedigreeAlleleFreq.o: Hash.h IntArray.h MathVector.h
+$(OBJDIR_DEBUG)/PedigreeAlleleFreq.o: PedigreeFamily.h PedigreeDescription.h
+$(OBJDIR_DEBUG)/PedigreeAlleleFreq.o: QuickIndex.h StringMap.h Error.h
+$(OBJDIR_DEBUG)/Pedigree.o: Pedigree.h Constant.h PedigreeAlleles.h LongInt.h
+$(OBJDIR_DEBUG)/Pedigree.o: PedigreePerson.h PedigreeGlobals.h StringArray.h
+$(OBJDIR_DEBUG)/Pedigree.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/Pedigree.o: StringHash.h Hash.h IntArray.h MathVector.h
+$(OBJDIR_DEBUG)/Pedigree.o: PedigreeFamily.h PedigreeDescription.h
+$(OBJDIR_DEBUG)/Pedigree.o: PedigreeAlleleFreq.h GenotypeLists.h MemoryInfo.h
+$(OBJDIR_DEBUG)/Pedigree.o: Error.h Sort.h
+$(OBJDIR_DEBUG)/PedigreeDescription.o: PedigreeDescription.h
+$(OBJDIR_DEBUG)/PedigreeDescription.o: PedigreeGlobals.h Constant.h
+$(OBJDIR_DEBUG)/PedigreeDescription.o: StringArray.h StringBasics.h
+$(OBJDIR_DEBUG)/PedigreeDescription.o: InputFile.h FileType.h StringHash.h
+$(OBJDIR_DEBUG)/PedigreeDescription.o: Hash.h IntArray.h MathVector.h
+$(OBJDIR_DEBUG)/PedigreeDescription.o: PedigreePerson.h PedigreeAlleles.h
+$(OBJDIR_DEBUG)/PedigreeDescription.o: LongInt.h MapFunction.h
+$(OBJDIR_DEBUG)/PedigreeDescription.o: FortranFormat.h Error.h
+$(OBJDIR_DEBUG)/PedigreeFamily.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_DEBUG)/PedigreeFamily.o: LongInt.h PedigreePerson.h
+$(OBJDIR_DEBUG)/PedigreeFamily.o: PedigreeGlobals.h StringArray.h
+$(OBJDIR_DEBUG)/PedigreeFamily.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/PedigreeFamily.o: StringHash.h Hash.h IntArray.h MathVector.h
+$(OBJDIR_DEBUG)/PedigreeFamily.o: PedigreeFamily.h PedigreeDescription.h
+$(OBJDIR_DEBUG)/PedigreeFamily.o: PedigreeAlleleFreq.h MathConstant.h Error.h
+$(OBJDIR_DEBUG)/PedigreeGlobals.o: PedigreeGlobals.h Constant.h StringArray.h
+$(OBJDIR_DEBUG)/PedigreeGlobals.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/PedigreeGlobals.o: StringHash.h Hash.h IntArray.h
+$(OBJDIR_DEBUG)/PedigreeGlobals.o: MathVector.h Sort.h Error.h
+$(OBJDIR_DEBUG)/PedigreePerson.o: PedigreePerson.h Constant.h
+$(OBJDIR_DEBUG)/PedigreePerson.o: PedigreeAlleles.h LongInt.h
+$(OBJDIR_DEBUG)/PedigreePerson.o: PedigreeGlobals.h StringArray.h
+$(OBJDIR_DEBUG)/PedigreePerson.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/PedigreePerson.o: StringHash.h Hash.h IntArray.h MathVector.h
+$(OBJDIR_DEBUG)/PedigreePerson.o: Error.h
+$(OBJDIR_DEBUG)/PhoneHome.o: PhoneHome.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/PhoneHome.o: FileType.h ../include/knetfile.h
+$(OBJDIR_DEBUG)/QuickIndex.o: QuickIndex.h MathVector.h StringBasics.h
+$(OBJDIR_DEBUG)/QuickIndex.o: InputFile.h FileType.h StringArray.h
+$(OBJDIR_DEBUG)/QuickIndex.o: StringHash.h Constant.h Hash.h IntArray.h
+$(OBJDIR_DEBUG)/QuickIndex.o: StringMap.h Error.h
+$(OBJDIR_DEBUG)/Random.o: Random.h MathConstant.h Error.h
+$(OBJDIR_DEBUG)/ReferenceSequence.o: Error.h Generic.h ReferenceSequence.h
+$(OBJDIR_DEBUG)/ReferenceSequence.o: BaseAsciiMap.h StringBasics.h
+$(OBJDIR_DEBUG)/ReferenceSequence.o: InputFile.h FileType.h PackedVector.h
+$(OBJDIR_DEBUG)/SmithWaterman.o: SmithWaterman.h CigarRoller.h Cigar.h
+$(OBJDIR_DEBUG)/SmithWaterman.o: Generic.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/SmithWaterman.o: FileType.h
+$(OBJDIR_DEBUG)/Sort.o: Sort.h Constant.h Error.h
+$(OBJDIR_DEBUG)/STLUtilities.o: STLUtilities.h
+$(OBJDIR_DEBUG)/StatGenStatus.o: StatGenStatus.h ErrorHandler.h
+$(OBJDIR_DEBUG)/StringAlias.o: StringAlias.h StringArray.h StringBasics.h
+$(OBJDIR_DEBUG)/StringAlias.o: InputFile.h FileType.h StringHash.h Constant.h
+$(OBJDIR_DEBUG)/StringAlias.o: Hash.h
+$(OBJDIR_DEBUG)/StringArray.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/StringArray.o: FileType.h Sort.h Constant.h Error.h
+$(OBJDIR_DEBUG)/StringBasics.o: StringBasics.h InputFile.h FileType.h Error.h
+$(OBJDIR_DEBUG)/StringBasics.o: Constant.h MathConstant.h
+$(OBJDIR_DEBUG)/StringHash.o: StringHash.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/StringHash.o: FileType.h Constant.h Hash.h Error.h
+$(OBJDIR_DEBUG)/StringMap.o: StringMap.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/StringMap.o: FileType.h
+$(OBJDIR_DEBUG)/Tabix.o: Tabix.h IndexBase.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/Tabix.o: StatGenStatus.h ErrorHandler.h StringBasics.h
+$(OBJDIR_DEBUG)/UncompressedFileType.o: UncompressedFileType.h FileType.h
+$(OBJDIR_DEBUG)/PedigreeLoader.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_DEBUG)/PedigreeLoader.o: LongInt.h PedigreePerson.h
+$(OBJDIR_DEBUG)/PedigreeLoader.o: PedigreeGlobals.h StringArray.h
+$(OBJDIR_DEBUG)/PedigreeLoader.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_DEBUG)/PedigreeLoader.o: StringHash.h Hash.h IntArray.h MathVector.h
+$(OBJDIR_DEBUG)/PedigreeLoader.o: PedigreeFamily.h PedigreeDescription.h
+$(OBJDIR_DEBUG)/PedigreeLoader.o: PedigreeAlleleFreq.h FortranFormat.h
+$(OBJDIR_DEBUG)/PedigreeLoader.o: Error.h
+$(OBJDIR_DEBUG)/PedigreeTrim.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_DEBUG)/PedigreeTrim.o: LongInt.h PedigreePerson.h PedigreeGlobals.h
+$(OBJDIR_DEBUG)/PedigreeTrim.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/PedigreeTrim.o: FileType.h StringHash.h Hash.h IntArray.h
+$(OBJDIR_DEBUG)/PedigreeTrim.o: MathVector.h PedigreeFamily.h
+$(OBJDIR_DEBUG)/PedigreeTrim.o: PedigreeDescription.h PedigreeAlleleFreq.h
+$(OBJDIR_DEBUG)/PedigreeTwin.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_DEBUG)/PedigreeTwin.o: LongInt.h PedigreePerson.h PedigreeGlobals.h
+$(OBJDIR_DEBUG)/PedigreeTwin.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_DEBUG)/PedigreeTwin.o: FileType.h StringHash.h Hash.h IntArray.h
+$(OBJDIR_DEBUG)/PedigreeTwin.o: MathVector.h PedigreeFamily.h
+$(OBJDIR_DEBUG)/PedigreeTwin.o: PedigreeDescription.h PedigreeAlleleFreq.h
+$(OBJDIR_DEBUG)/PedigreeTwin.o: Error.h
+
+$(OBJDIR_PROFILE)/BaseAsciiMap.o: BaseAsciiMap.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/BaseAsciiMap.o: FileType.h
+$(OBJDIR_PROFILE)/BaseQualityHelper.o: BaseQualityHelper.h
+$(OBJDIR_PROFILE)/BaseUtilities.o: BaseUtilities.h BaseAsciiMap.h
+$(OBJDIR_PROFILE)/BaseUtilities.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/BasicHash.o: BasicHash.h Error.h
+$(OBJDIR_PROFILE)/BgzfFileType.o: BgzfFileType.h ../include/bgzf.h FileType.h
+$(OBJDIR_PROFILE)/BgzfFileTypeRecovery.o: BgzfFileTypeRecovery.h FileType.h
+$(OBJDIR_PROFILE)/CharBuffer.o: CharBuffer.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/Chromosome.o: Chromosome.h GenomeSequence.h
+$(OBJDIR_PROFILE)/Chromosome.o: MemoryMapArray.h Generic.h MemoryMap.h
+$(OBJDIR_PROFILE)/Chromosome.o: BaseAsciiMap.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/Chromosome.o: FileType.h StringArray.h
+$(OBJDIR_PROFILE)/Chromosome.o: GenomeSequenceHelpers.h
+$(OBJDIR_PROFILE)/Cigar.o: Cigar.h Generic.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/Cigar.o: FileType.h STLUtilities.h
+$(OBJDIR_PROFILE)/CigarRoller.o: CigarRoller.h Cigar.h Generic.h
+$(OBJDIR_PROFILE)/CigarRoller.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/Error.o: Error.h PhoneHome.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/Error.o: FileType.h
+$(OBJDIR_PROFILE)/ErrorHandler.o: ErrorHandler.h PhoneHome.h StringBasics.h
+$(OBJDIR_PROFILE)/ErrorHandler.o: InputFile.h FileType.h
+$(OBJDIR_PROFILE)/FileType.o: FileType.h
+$(OBJDIR_PROFILE)/FortranFormat.o: FortranFormat.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/FortranFormat.o: FileType.h IntArray.h Error.h
+$(OBJDIR_PROFILE)/GenomeSequence.o: Error.h Generic.h GenomeSequence.h
+$(OBJDIR_PROFILE)/GenomeSequence.o: MemoryMapArray.h MemoryMap.h
+$(OBJDIR_PROFILE)/GenomeSequence.o: BaseAsciiMap.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/GenomeSequence.o: FileType.h StringArray.h
+$(OBJDIR_PROFILE)/GenomeSequence.o: GenomeSequenceHelpers.h CSG_MD5.h
+$(OBJDIR_PROFILE)/GenotypeLists.o: GenotypeLists.h Pedigree.h Constant.h
+$(OBJDIR_PROFILE)/GenotypeLists.o: PedigreeAlleles.h LongInt.h
+$(OBJDIR_PROFILE)/GenotypeLists.o: PedigreePerson.h PedigreeGlobals.h
+$(OBJDIR_PROFILE)/GenotypeLists.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/GenotypeLists.o: FileType.h StringHash.h Hash.h IntArray.h
+$(OBJDIR_PROFILE)/GenotypeLists.o: MathVector.h PedigreeFamily.h
+$(OBJDIR_PROFILE)/GenotypeLists.o: PedigreeDescription.h PedigreeAlleleFreq.h
+$(OBJDIR_PROFILE)/glfHandler.o: glfHandler.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/glfHandler.o: StringBasics.h BaseQualityHelper.h
+$(OBJDIR_PROFILE)/GzipFileType.o: GzipFileType.h FileType.h
+$(OBJDIR_PROFILE)/GzipHeader.o: GzipHeader.h
+$(OBJDIR_PROFILE)/Hash.o: Hash.h
+$(OBJDIR_PROFILE)/IndexBase.o: IndexBase.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/IndexBase.o: StatGenStatus.h ErrorHandler.h
+$(OBJDIR_PROFILE)/Input.o: Input.h Error.h Constant.h
+$(OBJDIR_PROFILE)/InputFile.o: InputFile.h FileType.h StringBasics.h
+$(OBJDIR_PROFILE)/InputFile.o: GzipHeader.h BgzfFileType.h ../include/bgzf.h
+$(OBJDIR_PROFILE)/InputFile.o: BgzfFileTypeRecovery.h GzipFileType.h
+$(OBJDIR_PROFILE)/InputFile.o: UncompressedFileType.h
+$(OBJDIR_PROFILE)/IntArray.o: IntArray.h Error.h Hash.h Sort.h Constant.h
+$(OBJDIR_PROFILE)/IntHash.o: IntHash.h Error.h
+$(OBJDIR_PROFILE)/LongLongCounter.o: LongLongCounter.h LongHash.h Error.h
+$(OBJDIR_PROFILE)/MapFunction.o: MapFunction.h MathConstant.h
+$(OBJDIR_PROFILE)/MathMatrix.o: MathMatrix.h MathVector.h StringBasics.h
+$(OBJDIR_PROFILE)/MathMatrix.o: InputFile.h FileType.h Error.h MathConstant.h
+$(OBJDIR_PROFILE)/MathMatrix.o: Sort.h Constant.h
+$(OBJDIR_PROFILE)/MathVector.o: MathVector.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/MathVector.o: FileType.h MathMatrix.h Error.h
+$(OBJDIR_PROFILE)/MathVector.o: MathConstant.h Sort.h Constant.h
+$(OBJDIR_PROFILE)/MemoryAllocators.o: MemoryAllocators.h
+$(OBJDIR_PROFILE)/MemoryInfo.o: MemoryInfo.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/MemoryInfo.o: FileType.h
+$(OBJDIR_PROFILE)/MemoryMapArray.o: MemoryMapArray.h Generic.h MemoryMap.h
+$(OBJDIR_PROFILE)/MemoryMap.o: MemoryMap.h
+$(OBJDIR_PROFILE)/MiniDeflate.o: MiniDeflate.h
+$(OBJDIR_PROFILE)/NonOverlapRegions.o: NonOverlapRegions.h
+$(OBJDIR_PROFILE)/Parameters.o: Parameters.h StringMap.h StringBasics.h
+$(OBJDIR_PROFILE)/Parameters.o: InputFile.h FileType.h PhoneHome.h Constant.h
+$(OBJDIR_PROFILE)/Parameters.o: MathConstant.h Error.h
+$(OBJDIR_PROFILE)/PedigreeAlleleFreq.o: PedigreeAlleleFreq.h Pedigree.h
+$(OBJDIR_PROFILE)/PedigreeAlleleFreq.o: Constant.h PedigreeAlleles.h
+$(OBJDIR_PROFILE)/PedigreeAlleleFreq.o: LongInt.h PedigreePerson.h
+$(OBJDIR_PROFILE)/PedigreeAlleleFreq.o: PedigreeGlobals.h StringArray.h
+$(OBJDIR_PROFILE)/PedigreeAlleleFreq.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/PedigreeAlleleFreq.o: StringHash.h Hash.h IntArray.h
+$(OBJDIR_PROFILE)/PedigreeAlleleFreq.o: MathVector.h PedigreeFamily.h
+$(OBJDIR_PROFILE)/PedigreeAlleleFreq.o: PedigreeDescription.h QuickIndex.h
+$(OBJDIR_PROFILE)/PedigreeAlleleFreq.o: StringMap.h Error.h
+$(OBJDIR_PROFILE)/Pedigree.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_PROFILE)/Pedigree.o: LongInt.h PedigreePerson.h PedigreeGlobals.h
+$(OBJDIR_PROFILE)/Pedigree.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/Pedigree.o: FileType.h StringHash.h Hash.h IntArray.h
+$(OBJDIR_PROFILE)/Pedigree.o: MathVector.h PedigreeFamily.h
+$(OBJDIR_PROFILE)/Pedigree.o: PedigreeDescription.h PedigreeAlleleFreq.h
+$(OBJDIR_PROFILE)/Pedigree.o: GenotypeLists.h MemoryInfo.h Error.h Sort.h
+$(OBJDIR_PROFILE)/PedigreeDescription.o: PedigreeDescription.h
+$(OBJDIR_PROFILE)/PedigreeDescription.o: PedigreeGlobals.h Constant.h
+$(OBJDIR_PROFILE)/PedigreeDescription.o: StringArray.h StringBasics.h
+$(OBJDIR_PROFILE)/PedigreeDescription.o: InputFile.h FileType.h StringHash.h
+$(OBJDIR_PROFILE)/PedigreeDescription.o: Hash.h IntArray.h MathVector.h
+$(OBJDIR_PROFILE)/PedigreeDescription.o: PedigreePerson.h PedigreeAlleles.h
+$(OBJDIR_PROFILE)/PedigreeDescription.o: LongInt.h MapFunction.h
+$(OBJDIR_PROFILE)/PedigreeDescription.o: FortranFormat.h Error.h
+$(OBJDIR_PROFILE)/PedigreeFamily.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_PROFILE)/PedigreeFamily.o: LongInt.h PedigreePerson.h
+$(OBJDIR_PROFILE)/PedigreeFamily.o: PedigreeGlobals.h StringArray.h
+$(OBJDIR_PROFILE)/PedigreeFamily.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/PedigreeFamily.o: StringHash.h Hash.h IntArray.h
+$(OBJDIR_PROFILE)/PedigreeFamily.o: MathVector.h PedigreeFamily.h
+$(OBJDIR_PROFILE)/PedigreeFamily.o: PedigreeDescription.h
+$(OBJDIR_PROFILE)/PedigreeFamily.o: PedigreeAlleleFreq.h MathConstant.h
+$(OBJDIR_PROFILE)/PedigreeFamily.o: Error.h
+$(OBJDIR_PROFILE)/PedigreeGlobals.o: PedigreeGlobals.h Constant.h
+$(OBJDIR_PROFILE)/PedigreeGlobals.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/PedigreeGlobals.o: FileType.h StringHash.h Hash.h
+$(OBJDIR_PROFILE)/PedigreeGlobals.o: IntArray.h MathVector.h Sort.h Error.h
+$(OBJDIR_PROFILE)/PedigreePerson.o: PedigreePerson.h Constant.h
+$(OBJDIR_PROFILE)/PedigreePerson.o: PedigreeAlleles.h LongInt.h
+$(OBJDIR_PROFILE)/PedigreePerson.o: PedigreeGlobals.h StringArray.h
+$(OBJDIR_PROFILE)/PedigreePerson.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/PedigreePerson.o: StringHash.h Hash.h IntArray.h
+$(OBJDIR_PROFILE)/PedigreePerson.o: MathVector.h Error.h
+$(OBJDIR_PROFILE)/PhoneHome.o: PhoneHome.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/PhoneHome.o: FileType.h ../include/knetfile.h
+$(OBJDIR_PROFILE)/QuickIndex.o: QuickIndex.h MathVector.h StringBasics.h
+$(OBJDIR_PROFILE)/QuickIndex.o: InputFile.h FileType.h StringArray.h
+$(OBJDIR_PROFILE)/QuickIndex.o: StringHash.h Constant.h Hash.h IntArray.h
+$(OBJDIR_PROFILE)/QuickIndex.o: StringMap.h Error.h
+$(OBJDIR_PROFILE)/Random.o: Random.h MathConstant.h Error.h
+$(OBJDIR_PROFILE)/ReferenceSequence.o: Error.h Generic.h ReferenceSequence.h
+$(OBJDIR_PROFILE)/ReferenceSequence.o: BaseAsciiMap.h StringBasics.h
+$(OBJDIR_PROFILE)/ReferenceSequence.o: InputFile.h FileType.h PackedVector.h
+$(OBJDIR_PROFILE)/SmithWaterman.o: SmithWaterman.h CigarRoller.h Cigar.h
+$(OBJDIR_PROFILE)/SmithWaterman.o: Generic.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/SmithWaterman.o: FileType.h
+$(OBJDIR_PROFILE)/Sort.o: Sort.h Constant.h Error.h
+$(OBJDIR_PROFILE)/STLUtilities.o: STLUtilities.h
+$(OBJDIR_PROFILE)/StatGenStatus.o: StatGenStatus.h ErrorHandler.h
+$(OBJDIR_PROFILE)/StringAlias.o: StringAlias.h StringArray.h StringBasics.h
+$(OBJDIR_PROFILE)/StringAlias.o: InputFile.h FileType.h StringHash.h
+$(OBJDIR_PROFILE)/StringAlias.o: Constant.h Hash.h
+$(OBJDIR_PROFILE)/StringArray.o: StringArray.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/StringArray.o: FileType.h Sort.h Constant.h Error.h
+$(OBJDIR_PROFILE)/StringBasics.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/StringBasics.o: Error.h Constant.h MathConstant.h
+$(OBJDIR_PROFILE)/StringHash.o: StringHash.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/StringHash.o: FileType.h Constant.h Hash.h Error.h
+$(OBJDIR_PROFILE)/StringMap.o: StringMap.h StringBasics.h InputFile.h
+$(OBJDIR_PROFILE)/StringMap.o: FileType.h
+$(OBJDIR_PROFILE)/Tabix.o: Tabix.h IndexBase.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/Tabix.o: StatGenStatus.h ErrorHandler.h StringBasics.h
+$(OBJDIR_PROFILE)/UncompressedFileType.o: UncompressedFileType.h FileType.h
+$(OBJDIR_PROFILE)/PedigreeLoader.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_PROFILE)/PedigreeLoader.o: LongInt.h PedigreePerson.h
+$(OBJDIR_PROFILE)/PedigreeLoader.o: PedigreeGlobals.h StringArray.h
+$(OBJDIR_PROFILE)/PedigreeLoader.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/PedigreeLoader.o: StringHash.h Hash.h IntArray.h
+$(OBJDIR_PROFILE)/PedigreeLoader.o: MathVector.h PedigreeFamily.h
+$(OBJDIR_PROFILE)/PedigreeLoader.o: PedigreeDescription.h
+$(OBJDIR_PROFILE)/PedigreeLoader.o: PedigreeAlleleFreq.h FortranFormat.h
+$(OBJDIR_PROFILE)/PedigreeLoader.o: Error.h
+$(OBJDIR_PROFILE)/PedigreeTrim.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_PROFILE)/PedigreeTrim.o: LongInt.h PedigreePerson.h
+$(OBJDIR_PROFILE)/PedigreeTrim.o: PedigreeGlobals.h StringArray.h
+$(OBJDIR_PROFILE)/PedigreeTrim.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/PedigreeTrim.o: StringHash.h Hash.h IntArray.h MathVector.h
+$(OBJDIR_PROFILE)/PedigreeTrim.o: PedigreeFamily.h PedigreeDescription.h
+$(OBJDIR_PROFILE)/PedigreeTrim.o: PedigreeAlleleFreq.h
+$(OBJDIR_PROFILE)/PedigreeTwin.o: Pedigree.h Constant.h PedigreeAlleles.h
+$(OBJDIR_PROFILE)/PedigreeTwin.o: LongInt.h PedigreePerson.h
+$(OBJDIR_PROFILE)/PedigreeTwin.o: PedigreeGlobals.h StringArray.h
+$(OBJDIR_PROFILE)/PedigreeTwin.o: StringBasics.h InputFile.h FileType.h
+$(OBJDIR_PROFILE)/PedigreeTwin.o: StringHash.h Hash.h IntArray.h MathVector.h
+$(OBJDIR_PROFILE)/PedigreeTwin.o: PedigreeFamily.h PedigreeDescription.h
+$(OBJDIR_PROFILE)/PedigreeTwin.o: PedigreeAlleleFreq.h Error.h

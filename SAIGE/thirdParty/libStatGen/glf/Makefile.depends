@@ -1,0 +1,58 @@
+# DO NOT DELETE
+
+$(OBJDIR_OPT)/GlfException.o: GlfException.h GlfStatus.h
+$(OBJDIR_OPT)/GlfFile.o: GlfFile.h ../include/InputFile.h
+$(OBJDIR_OPT)/GlfFile.o: ../include/FileType.h GlfHeader.h
+$(OBJDIR_OPT)/GlfFile.o: ../include/CharBuffer.h GlfRefSection.h GlfRecord.h
+$(OBJDIR_OPT)/GlfFile.o: GlfStatus.h GlfException.h
+$(OBJDIR_OPT)/GlfHeader.o: GlfHeader.h ../include/InputFile.h
+$(OBJDIR_OPT)/GlfHeader.o: ../include/FileType.h ../include/CharBuffer.h
+$(OBJDIR_OPT)/GlfHeader.o: GlfStatus.h GlfException.h
+$(OBJDIR_OPT)/GlfHeader.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/GlfRecord.o: GlfRecord.h ../include/InputFile.h
+$(OBJDIR_OPT)/GlfRecord.o: ../include/FileType.h ../include/CharBuffer.h
+$(OBJDIR_OPT)/GlfRecord.o: GlfException.h GlfStatus.h
+$(OBJDIR_OPT)/GlfRecord.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/GlfRefSection.o: GlfRefSection.h ../include/InputFile.h
+$(OBJDIR_OPT)/GlfRefSection.o: ../include/FileType.h ../include/CharBuffer.h
+$(OBJDIR_OPT)/GlfRefSection.o: GlfException.h GlfStatus.h
+$(OBJDIR_OPT)/GlfRefSection.o: ../include/StringBasics.h
+$(OBJDIR_OPT)/GlfStatus.o: GlfStatus.h
+
+$(OBJDIR_DEBUG)/GlfException.o: GlfException.h GlfStatus.h
+$(OBJDIR_DEBUG)/GlfFile.o: GlfFile.h ../include/InputFile.h
+$(OBJDIR_DEBUG)/GlfFile.o: ../include/FileType.h GlfHeader.h
+$(OBJDIR_DEBUG)/GlfFile.o: ../include/CharBuffer.h GlfRefSection.h
+$(OBJDIR_DEBUG)/GlfFile.o: GlfRecord.h GlfStatus.h GlfException.h
+$(OBJDIR_DEBUG)/GlfHeader.o: GlfHeader.h ../include/InputFile.h
+$(OBJDIR_DEBUG)/GlfHeader.o: ../include/FileType.h ../include/CharBuffer.h
+$(OBJDIR_DEBUG)/GlfHeader.o: GlfStatus.h GlfException.h
+$(OBJDIR_DEBUG)/GlfHeader.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/GlfRecord.o: GlfRecord.h ../include/InputFile.h
+$(OBJDIR_DEBUG)/GlfRecord.o: ../include/FileType.h ../include/CharBuffer.h
+$(OBJDIR_DEBUG)/GlfRecord.o: GlfException.h GlfStatus.h
+$(OBJDIR_DEBUG)/GlfRecord.o: ../include/StringBasics.h
+$(OBJDIR_DEBUG)/GlfRefSection.o: GlfRefSection.h ../include/InputFile.h
+$(OBJDIR_DEBUG)/GlfRefSection.o: ../include/FileType.h
+$(OBJDIR_DEBUG)/GlfRefSection.o: ../include/CharBuffer.h GlfException.h
+$(OBJDIR_DEBUG)/GlfRefSection.o: GlfStatus.h ../include/StringBasics.h
+$(OBJDIR_DEBUG)/GlfStatus.o: GlfStatus.h
+
+$(OBJDIR_PROFILE)/GlfException.o: GlfException.h GlfStatus.h
+$(OBJDIR_PROFILE)/GlfFile.o: GlfFile.h ../include/InputFile.h
+$(OBJDIR_PROFILE)/GlfFile.o: ../include/FileType.h GlfHeader.h
+$(OBJDIR_PROFILE)/GlfFile.o: ../include/CharBuffer.h GlfRefSection.h
+$(OBJDIR_PROFILE)/GlfFile.o: GlfRecord.h GlfStatus.h GlfException.h
+$(OBJDIR_PROFILE)/GlfHeader.o: GlfHeader.h ../include/InputFile.h
+$(OBJDIR_PROFILE)/GlfHeader.o: ../include/FileType.h ../include/CharBuffer.h
+$(OBJDIR_PROFILE)/GlfHeader.o: GlfStatus.h GlfException.h
+$(OBJDIR_PROFILE)/GlfHeader.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/GlfRecord.o: GlfRecord.h ../include/InputFile.h
+$(OBJDIR_PROFILE)/GlfRecord.o: ../include/FileType.h ../include/CharBuffer.h
+$(OBJDIR_PROFILE)/GlfRecord.o: GlfException.h GlfStatus.h
+$(OBJDIR_PROFILE)/GlfRecord.o: ../include/StringBasics.h
+$(OBJDIR_PROFILE)/GlfRefSection.o: GlfRefSection.h ../include/InputFile.h
+$(OBJDIR_PROFILE)/GlfRefSection.o: ../include/FileType.h
+$(OBJDIR_PROFILE)/GlfRefSection.o: ../include/CharBuffer.h GlfException.h
+$(OBJDIR_PROFILE)/GlfRefSection.o: GlfStatus.h ../include/StringBasics.h
+$(OBJDIR_PROFILE)/GlfStatus.o: GlfStatus.h

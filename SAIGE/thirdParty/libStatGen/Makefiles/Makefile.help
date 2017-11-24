@@ -1,0 +1,13 @@
+help : 
+	@echo "Makefile help"
+	@echo "-------------"
+	@echo "Type...           To..."
+	@echo "make              Compile opt "
+	@echo "make help         Display this help screen"
+	@echo "make all          Compile everything (opt, debug, & profile)"
+	@echo "make opt          Compile optimized"
+	@echo "make debug        Compile for debug"
+	@echo "make profile      Compile for profile"
+	@echo "make clean        Delete temporary files"
+	@echo "make test         Execute tests (if there are any)"
+	$(ADDITIONAL_HELP)

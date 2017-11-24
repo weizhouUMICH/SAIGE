@@ -1,0 +1,27 @@
+##fileformat=VCFv4.0
+##filedate=20110211
+##source=glfMultiples
+##minDepth=2526
+##maxDepth=2526000
+##minMapQuality=0
+##minPosterior=0.5000
+##contig=<ID=1,length=62435964,assembly=B36,md5=f126cdf8a6e0c7f379d618ff66beb2da,species="Homo sapiens",taxonomy=x>
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+##INFO=<ID=MQ,Number=1,Type=Integer,Description="Root Mean Squared Mapping Quality">
+##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples with coverage">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles (with coverage)">
+##INFO=<ID=AC,Number=.,Type=Integer,Description="Alternative allele count (with coverage)">
+##INFO=<ID=AF,Number=.,Type=Float,Description="Alternate allele frequency">
+##INFO=<ID=AB,Number=1,Type=Float,Description="Estimated allele balance between the alleles">
+##FILTER=<ID=dp2526,Description="Total Read Depth less than 2526">
+##FILTER=<ID=DP2526000,Description="Total Read Depth greater than 2526000">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Most Likely Genotype">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Call Quality">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
+##FORMAT=<ID=GL,Number=3,Type=Integer,"Genotype Likelihoods for Genotypes 0/0,0/1,1/1">
+##FORMAT=<ID=GL3,Number=6,Type=Integer,"Genotype Likelihoods for Genotypes 0/0,0/1,1/1,0/2,1/2,2/2">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	P1	P2	P3	P4	P5	P6
+1	32768	r1	A	G	100	PASS	.	GT:DP:GQ:GL	0/1:0:5:0,0,0	1/0:0:5:0,0,0	0/0:0:5:0,0,0	0/1:1:7:19,3,0	0/0:2:11:0,6,22	0/1:1:5:12,3,0
+1	65537	r2	T	G	100	PASS	.	GT:DP:GQ:GL	0/0:0:13:0,0,0	0/0:38:100:0,114,226	0/1:1:16:0,3,20	0/0:39:100:0,117,255	0/0:35:100:0,102,255	0/0:29:100:0,87,255
+3	32768	r1	GAA	G	100	PASS	.	GT:DP:GQ:GL	0/1:0:5:0,0,0	1/0:0:5:0,0,0	0/0:0:5:0,0,0	0/1:1:7:19,3,0	0/0:2:11:0,6,22	0/1:1:5:12,3,0
+3	32780	r2	T	G	100	PASS	.	GT:DP:GQ:GL	0/0:0:13:0,0,0	0/0:38:100:0,114,226	0/1:1:16:0,3,20	0/0:39:100:0,117,255	0/0:35:100:0,102,255	0/0:29:100:0,87,255
