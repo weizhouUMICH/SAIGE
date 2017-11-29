@@ -1,3 +1,0 @@
-  Hello, I am a testFile.  
-  This is my 2nd line.  
- ThirdLine. 
