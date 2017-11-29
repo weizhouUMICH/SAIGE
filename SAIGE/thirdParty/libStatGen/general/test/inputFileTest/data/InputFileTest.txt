@@ -1,3 +1,0 @@
-ABCDabcd1234
-EFGefg567
-hijklHIJKL8910

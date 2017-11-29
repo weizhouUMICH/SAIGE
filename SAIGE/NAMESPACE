@@ -1,5 +1,0 @@
-useDynLib(SAIGE)
-importFrom(Rcpp, evalCpp)
-importFrom(RcppParallel, RcppParallelLibs)
-import(Matrix)
-exportPattern("^[[:alpha:]]+")

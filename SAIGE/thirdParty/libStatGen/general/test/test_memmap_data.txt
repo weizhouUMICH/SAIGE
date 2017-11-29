@@ -1,4 +1,0 @@
-This is a test file for testing memmap.cpp - it does not have anything
-useful or interesting in it.
-If the size of this file changes, be sure to update memmap::test in 
-memmap.cpp...

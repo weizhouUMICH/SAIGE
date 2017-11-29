@@ -1,2 +1,0 @@
-def build( bld ):
-	bld.recurse( [ 'boost_1_55_0', 'sqlite3', 'zstd-1.1.0' ] )
