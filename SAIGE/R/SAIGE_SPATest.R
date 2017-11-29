@@ -53,7 +53,7 @@ SPAGMMATtest = function(dosageFile = "",
 		 idstoIncludeFile = "",
 		 rangestoExcludeFile = "",
 		 rangestoIncludeFile = "",
-		 chrom = "",
+		 chrom = "0",
 		 start = 0,
 		 end = 0,	
 		 minMAC = 1, 
@@ -111,6 +111,7 @@ SPAGMMATtest = function(dosageFile = "",
     ydat = data.table:::fread(phenoFile, header=T, stringsAsFactors=FALSE)
     data = data.frame(ydat)
 
+    print(c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile))
     for (i in c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile)){	
       if (!(i %in% colnames(data))){
         stop("ERROR! column for ", i, " does not exsit in the phenoFile \n")
@@ -240,7 +241,7 @@ SPAGMMATtest = function(dosageFile = "",
 
   }else if (dosageFileType == "bgen"){
     if(idstoExcludeFile != ""){
-      idsExclude = fread(idstoExcludeFile, header=F)
+      idsExclude = data.table:::fread(idstoExcludeFile, header=F,sep=" ", stringsAsFactors=FALSE, colClasses=c("character"))
       idsExclude = data.frame(idsExclude)
       ids_to_exclude = as.character(as.vector(idsExclude[,1]))
     }else{
@@ -248,7 +249,7 @@ SPAGMMATtest = function(dosageFile = "",
     }	
 
     if(idstoIncludeFile != ""){
-      idsInclude = fread(idstoIncludeFile, header=F)
+      idsInclude = data.table:::fread(idstoIncludeFile, header=F, sep=" ", stringsAsFactors=FALSE, colClasses=c("character"))
       idsInclude = data.frame(idsInclude)
       ids_to_include = as.character(as.vector(idsInclude[,1]))
     }else{
@@ -256,7 +257,7 @@ SPAGMMATtest = function(dosageFile = "",
     }
 
     if(rangestoExcludeFile != ""){
-      rangesExclude = fread(rangestoExcludeFile, header=F)
+      rangesExclude = data.table:::fread(rangestoExcludeFile, header=F)
       ranges_to_exclude = data.frame(rangesExclude)
       colnames(ranges_to_exclude) = c("chromosome","start","end")  
     }else{
@@ -264,7 +265,7 @@ SPAGMMATtest = function(dosageFile = "",
     }
 
     if(rangestoIncludeFile != ""){
-      rangesInclude = fread(rangestoIncludeFile, header=F)
+      rangesInclude = data.table:::fread(rangestoIncludeFile, header=F)
       ranges_to_include = data.frame(rangesInclude)
       colnames(ranges_to_include) = c("chromosome","start","end")
     }else{
@@ -373,7 +374,7 @@ SPAGMMATtest = function(dosageFile = "",
       AF = Gx$variants$AF
 
       rowHeader=as.vector(unlist(Gx$variants))
-      if(Mtest == 0){isVariant = FALSE}
+      if(Mtest == mth){isVariant = FALSE}
     }else if(dosageFileType == "vcf"){
       markerInfo = 1 ##markerInfo is nor provided
       Gx = getGenoOfnthVar_vcfDosage(mth)
@@ -397,7 +398,7 @@ SPAGMMATtest = function(dosageFile = "",
 	  OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader),AFCase, AFCtrl))
         }
       }else if(traitType == "quantitative"){
-        out1 = scoreTest_SAIGE_quantitativeTrait(G0, AF, AC, N, obj.noK, AC, y, mu, varRatio, tauVec)
+        out1 = scoreTest_SAIGE_quantitativeTrait(G0, obj.noK, AC, y, mu, varRatio, tauVec)
         OUT = rbind(OUT, c(rowHeader, N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
       }
     } #end of the if(MAF >= bgenMinMaf & markerInfo >= bgenMinInfo)
@@ -433,7 +434,7 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, y, mu, varRatio, tau
   Tstat = (q-m1)/tauVec[1]
   p.value = pchisq(Tstat^2/var1, lower.tail = FALSE, df=1)
   BETA = (Tstat/var1)/sqrt(AC)
-  SE = abs(BETA/qnorm(out1$p.value/2))
+  SE = abs(BETA/qnorm(p.value/2))
 
   out1 = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2)
   return(out1)
