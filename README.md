@@ -21,7 +21,7 @@ The following R pakages need to be installed for running SAIGE:
 
 *Rcpp, RcppArmadillo, RcppParallel, data.table, SPAtest, RcppEigen, Matrix, methods*
 
-The source code is SAIGE_0.20.tar.gz (https://www.dropbox.com/s/b49tth3ymr1ldtx/SAIGE_0.18.tar.gz?dl=0)
+The source code is SAIGE_0.20.tar.gz (https://www.dropbox.com/s/spkogvluhnkqmel/SAIGE_0.20.tar.gz?dl=0)
 
 ## Running SAIGE
 
