@@ -335,7 +335,7 @@ SPAGMMATtest = function(dosageFile = "",
     }
     obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.null, dataMerge_sort)
     obj.glm.null = glm(formula.null, data=dataMerge_sort,family=gaussian(link = "identity"))
-
+   
     resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
     write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
     tauVec = obj.glmm.null$theta
@@ -346,6 +346,12 @@ SPAGMMATtest = function(dosageFile = "",
     mth = 0
     sampleIndex = sampleIndex - 1
     N = length(y)
+
+    mu.a<-as.vector(mu)
+    obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1)
+    obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
+    obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+
   }else{
     stop("ERROR! The type of the trait has to be either binary or quantitative\n")
   }
@@ -377,12 +383,16 @@ SPAGMMATtest = function(dosageFile = "",
       if(Mtest == mth){isVariant = FALSE}
     }else if(dosageFileType == "vcf"){
       markerInfo = 1 ##markerInfo is nor provided
+      #startTimeGx = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
       Gx = getGenoOfnthVar_vcfDosage(mth)
       G0 = Gx$dosages
       AC = Gx$variants$AC
       AF = Gx$variants$AF
       rowHeader=as.vector(unlist(Gx$variants))
       isVariant = getGenoOfnthVar_vcfDosage_pre()
+      #endTimeGx = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
+      #timeGx = endTimeGx - startTimeGx
+      #cat("timeGx ", timeGx, "Seconds\n")
     }
 
    
@@ -398,7 +408,22 @@ SPAGMMATtest = function(dosageFile = "",
 	  OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader),AFCase, AFCtrl))
         }
       }else if(traitType == "quantitative"){
-        out1 = scoreTest_SAIGE_quantitativeTrait(G0, obj.noK, AC, y, mu, varRatio, tauVec)
+        #startTimeTest = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
+        #out1 = scoreTest_SAIGE_quantitativeTrait_old(G0, obj.noK, AC, y, mu, varRatio, tauVec)
+
+        #out1 = scoreTest_SAIGE_quantitativeTrait(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec)
+	#endTimeTest = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
+        #timeTest = endTimeTest - startTimeTest
+        #cat("timeTest ", timeTest, "Seconds\n")
+
+        #startTimeTest = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
+        #out1 = scoreTest_SAIGE_quantitativeTrait_old(G0, obj.noK, AC, y, mu, varRatio, tauVec)
+        out1 = scoreTest_SAIGE_quantitativeTrait(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec)
+        #endTimeTest = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
+        #timeTest = endTimeTest - startTimeTest
+        #cat("timeTest sparse", timeTest, "Seconds\n")
+
+
         OUT = rbind(OUT, c(rowHeader, N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
       }
     } #end of the if(MAF >= bgenMinMaf & markerInfo >= bgenMinInfo)
@@ -412,6 +437,7 @@ SPAGMMATtest = function(dosageFile = "",
       write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
       OUT = NULL
     }
+  #if(mth == 100){break}
   } ####end of while(isVariant)
 
   endTime = as.numeric(Sys.time()) #end time of the SPAGMMAT tests
@@ -422,8 +448,8 @@ SPAGMMATtest = function(dosageFile = "",
 }
 
 
-
-scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, y, mu, varRatio, tauVec){
+#No Sparsity
+scoreTest_SAIGE_quantitativeTrait_old=function(G0, obj.noK, AC, y, mu, varRatio, tauVec){
   XVG0 = eigenMapMatMult(obj.noK$XV, G0)
   G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted 
   g = G/sqrt(AC)
@@ -435,10 +461,70 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, y, mu, varRatio, tau
   p.value = pchisq(Tstat^2/var1, lower.tail = FALSE, df=1)
   BETA = (Tstat/var1)/sqrt(AC)
   SE = abs(BETA/qnorm(p.value/2))
-
   out1 = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2)
   return(out1)
 }
+
+#Use Sparsity trick for rare variants
+scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec){
+  N = length(G0)
+  if(AF > 0.5){
+    G0 = 2-G0
+    AC2 = 2*N - AC
+  }else{
+    AC2 = AC
+  }
+  maf = min(AF, 1-AF)
+  if(maf < 0.05){
+    idx_no0<-which(G0>0)
+    #cat("length(idx_no0): ", length(idx_no0), "\n")
+    #cat("maf: ", maf, "\n")
+    g1<-G0[idx_no0]/sqrt(AC2)
+    A1<-obj.noK$XVX_inv_XV[idx_no0,]
+    X1<-obj.noK$X1[idx_no0,]
+    mu1<-mu[idx_no0]
+    y1<-obj.noK$y[idx_no0]
+
+
+## V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv
+    if(length(idx_no0) > 1){
+      Z = t(A1) %*% g1
+      B<-X1 %*% Z
+      g_tilde1 = g1 - B
+      var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2) + sum(g_tilde1^2)
+      var1 = var2 * varRatio
+      S1 = crossprod(y1-mu1, g_tilde1)
+      S_a2 = obj.noK$S_a - colSums(X1 * (y1 - mu1))
+      S2 = -S_a2 %*% Z
+    }else{
+      Z = A1 * g1    
+      B<-X1 %*% Z
+      g_tilde1 = g1 - B
+      var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2) + sum(g_tilde1^2)
+      var1 = var2 * varRatio
+      S1 = crossprod(y1-mu1, g_tilde1)
+      S_a2 = obj.noK$S_a - X1 * (y1 - mu1)
+      S2 = -S_a2 %*% Z
+    }
+    S<- S1+S2
+    Tstat = S/tauVec[1]
+  }else{
+    XVG0 = eigenMapMatMult(obj.noK$XV, G0)
+    G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
+    g = G/sqrt(AC2)
+    q = innerProduct(g, y)
+    m1 = innerProduct(mu, g)
+    var2 = innerProduct(g, g)
+    var1 = var2 * varRatio
+    Tstat = (q-m1)/tauVec[1]
+  }
+  p.value = pchisq(Tstat^2/var1, lower.tail = FALSE, df=1)
+  BETA = (Tstat/var1)/sqrt(AC2)
+  SE = abs(BETA/qnorm(p.value/2))
+  out1 = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2)
+  return(out1)
+}
+
 
 Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
   # mu=mu.a; mu2= mu2.a; G=G0; obj.null=obj.noK

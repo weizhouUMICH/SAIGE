@@ -232,7 +232,7 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
   XV = t(X1 * V)
   XVX_inv = solve(t(X1) %*% (X1 * V))
   XXVX_inv = X1 %*% XVX_inv
-  re = list(y = glmfit$y, mu = mu, res = res, V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv)
+  re = list(y = glmfit$y, mu = mu, res = res, V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv)
   class(re) = "SA_NULL"
   return(re)
 }
