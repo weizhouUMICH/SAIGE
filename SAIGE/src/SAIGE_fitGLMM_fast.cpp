@@ -342,7 +342,8 @@ public:
 				}else if(bufferGeno == 2){	
 					setGenotype(&geno1, u, HOM_REF);	
 				}else{
-					setGenotype(&geno1, u, MISSING); 	
+					setGenotype(&geno1, u, MISSING);
+					m_OneSNP_Geno[j] = 0;  //12-18-2017 	
 				}
 
 				if(u == 3){
