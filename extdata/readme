@@ -1,2 +1,19 @@
-bash cmd.sh
+plink-1.9 --bfile /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/manuscript/experiments/simulations/familyBased_UKBMAF_alphaAdjust/geno/output/nfam_1000_step1_kin_poly --keep 1000.list --make-bed --out plinkforGRM_1000samples --maf 0.000000001
 
+head -n 10000 plinkforGRM_1000samples.bim | awk '{print $2}' > 10000marker.list
+
+
+head -n 1001 /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/manuscript/experiments/simulations/familyBased_UKBMAF_alphaAdjust/pheno/output/Prev_0.1_nfam_1000.pheno_withCovTRUE_seed_1_tau_1 > pheno_1000samples.txt
+
+head -n 11 /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/manuscript/experiments/simulations/familyBased_UKBMAF_alphaAdjust/geno/output/nfam_1000_n.index_1_minMAF0.001.traw | cut -f1-1006 > dosage_10markers.txt
+
+
+plink-1.9 --bfile /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/manuscript/experiments/simulations/familyBased_UKBMAF_alphaAdjust/geno/output/nfam_1000_n.index_1 --recode vcf-iid  --keep sampleIDindosage_twoCols.txt --extract file_10markers.txt --out dosage_10markers
+
+plink-1.9 --bfile /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/manuscript/experiments/simulations/familyBased_UKBMAF_alphaAdjust/geno/output/nfam_1000_n.index_1 --keep sampleIDindosage_twoCols.txt --extract file_10markers.txt --make-bed --out dosage_10markers
+
+
+plink-1.9 --tfile /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/manuscript/experiments/simulations/familyBased_UKBMAF_alphaAdjust/geno/output/nfam_1000_n.index_1_minMAF0.001 --recode vcf-iid bgz --keep sampleIDindosage_twoCols.txt --extract file_10markers.txt --out dosage_10markers.vcf
+
+
+cat dosage_10markers.vcf.header <(paste <(tail -n +8 dosage_10markers.vcf) <(cut -f7- dosage_10markers.txt | tail -n +2)) > dosage_10markers.vcfv2

@@ -47,4 +47,21 @@ Rscript step2_SPATests_dosage_vcf.R \
 	--numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE	
 
+Rscript step2_SPATests_dosage_vcf.R \
+        --vcfFile=./input/genotype_10markers.vcf.gz \
+        --vcfFileIndex=./input/genotype_10markers.vcf.gz.tbi \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --phenoFile=./input/pheno_1000samples.txt \
+        --phenoCol=y \
+        --covarColList=X2,X3 \
+        --sampleIDColinphenoFile=IID \
+        --GMMATmodelFile=./output/example.rda \
+        --varianceRatioFile=./output/example.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example.SAIGE.vcf.genotype.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE
 
