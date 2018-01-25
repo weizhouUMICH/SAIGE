@@ -169,8 +169,8 @@ setTestField <- function(testFieldInput) {
     invisible(.Call('_SAIGE_setTestField', PACKAGE = 'SAIGE', testFieldInput))
 }
 
-setgenoTest_vcfDosage <- function(vcfFileName, vcfFileIndex, ids_to_exclude_vcf, ids_to_include_vcf, chromNam, start = 0L, end = 0L) {
-    .Call('_SAIGE_setgenoTest_vcfDosage', PACKAGE = 'SAIGE', vcfFileName, vcfFileIndex, ids_to_exclude_vcf, ids_to_include_vcf, chromNam, start, end)
+setgenoTest_vcfDosage <- function(vcfFileName, vcfFileIndex, vcfField, ids_to_exclude_vcf, ids_to_include_vcf, chromNam, start = 0L, end = 0L) {
+    .Call('_SAIGE_setgenoTest_vcfDosage', PACKAGE = 'SAIGE', vcfFileName, vcfFileIndex, vcfField, ids_to_exclude_vcf, ids_to_include_vcf, chromNam, start, end)
 }
 
 getNumofSamples <- function() {

@@ -43,11 +43,9 @@ test_stdGeno = function(subSampleInGeno){
 }
 
 #Fit the null glmm for binary traits
-glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno) {
+glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform) {
   subSampleInGeno = subPheno$IndexGeno
   #print(subSampleInGeno[1:100])
-
-
   print("Start reading genotype plink file here")
   re1 = system.time({setgeno(genofile, subSampleInGeno)})
   print("Genotype reading is done")
@@ -117,13 +115,15 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0
   converged = ifelse(i < maxiter, TRUE, FALSE)
   res = y - mu
 
-  return(list(theta=tau, coefficients=alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID))
+  coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+
+  return(list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID, obj.noK=obj.noK, obj.glm.null=fit0, traitType="binary"))
 }
 
 
 
 
-glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno) {
+glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform) {
 
   subSampleInGeno = subPheno$IndexGeno
   print("Start reading genotype plink file here")
@@ -208,7 +208,9 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau 
   Sigma_iy = getSigma_G(W, tau, res, maxiterPCG, tolPCG)
   Sigma_iX = getSigma_X(W, tau, X1, maxiterPCG, tolPCG)
 
-  return(list(theta=tau, coefficients=alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged, sampleID = subPheno$IID, Sigma_iy = Sigma_iy, Sigma_iX = Sigma_iX))
+  coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+
+  return(list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged, sampleID = subPheno$IID, Sigma_iy = Sigma_iy, Sigma_iX = Sigma_iX, obj.noK=obj.noK, obj.glm.null=fit0, traitType="quantitative"))
 }
 
 
@@ -360,20 +362,48 @@ fitNULLGLMM = function(plinkFile = "",
     }
   }
 
+  if(invNormalize){
+      cat("Perform the inverse nomalization for ", phenoCol, "\n")
+      invPheno = qnorm((rank(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)], na.last="keep")-0.5)/sum(!is.na(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)])))
+      dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
+  }
+
+  out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
+  
+
+  formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
+  if(length(out.transform$Param.transform$X_name) > 1){
+      for(i in c(2:length(out.transform$Param.transform$X_name))){
+        formulaNewList = c(formulaNewList, "+", out.transform$Param.transform$X_name[i])
+      }
+  }
+
+
+  formula.new = as.formula(paste0(formulaNewList, collapse=""))
+  data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
+  colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
+  cat("colnames(data.new) is ", colnames(data.new), "\n")
+  cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
+
 
   if(traitType == "binary"){
     cat(phenoCol, " is a binary trait\n")
-    uniqPheno = sort(unique(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)]))
+  #  uniqPheno = sort(unique(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)]))
+    uniqPheno = sort(unique(out.transform$Y))
     if (uniqPheno[1] != 0 | uniqPheno[2] != 1){
       stop("ERROR! phenotype value needs to be 0 or 1 \n")
     }
-    fit0 = glm(formula.null,data=dataMerge_sort, family=binomial)
+    #fit0 = glm(formula.null,data=dataMerge_sort, family=binomial)
+    #fit0 = glm(out.transform$Y ~ out.transform$X1,family=binomial)
+    fit0 = glm(formula.new, data=data.new, family=binomial)
     print(fit0)
-    obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.null, data = dataMerge_sort)
+    
+    #obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.null, data = dataMerge_sort)
+    obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.new, data = data.new)
 
 
     if(!skipModelFitting){
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform))
       save(modglmm, file = modelOut)
     }else{
       setgeno(plinkFile, dataMerge_sort$IndexGeno)
@@ -393,18 +423,21 @@ fitNULLGLMM = function(plinkFile = "",
   }else if(traitType == "quantitative"){
 
     cat(phenoCol, " is a quantitative trait\n")
-    if(invNormalize){
-      cat("Perform the inverse nomalization for ", phenoCol, "\n")
-      invPheno = qnorm((rank(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)], na.last="keep")-0.5)/sum(!is.na(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)])))
-      dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
-    }
+#    if(invNormalize){
+#      cat("Perform the inverse nomalization for ", phenoCol, "\n")
+#      invPheno = qnorm((rank(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)], na.last="keep")-0.5)/sum(!is.na(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)])))
+#      dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
+#    }
 
-    obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.null, dataMerge_sort)
-    fit0 = glm(formula.null, data=dataMerge_sort,family=gaussian(link = "identity"))
+    #obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.null, dataMerge_sort)
+    #fit0 = glm(formula.null, data=dataMerge_sort,family=gaussian(link = "identity"))
  
+    obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.new, data.new)
+    fit0 = glm(formula.new, data=data.new,family=gaussian(link = "identity"))
+
     if(!skipModelFitting){
 
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform))
       save(modglmm, file = modelOut)
       print("step2")
     }else{
@@ -641,4 +674,54 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   cat("varRatio", varRatio, "\n")
   write(varRatio, varRatioOutFile)
   print(varRatio)
+}
+
+
+##suggested by Shawn 01-19-2018
+Covariate_Transform<-function(formula, data){
+  X1<-model.matrix(formula,data=data)
+#  X1=X1[,c(2:ncol(X1))] #remove intercept
+  formula.frame<-model.frame(formula,data=data)
+  Y = model.response(formula.frame, type = "any")
+  X_name = colnames(X1)
+		
+  # First run linear regression to identify multi collinearity 
+  out.lm<-lm(Y ~ X1-1, data=data)
+#  out.lm<-lm(Y ~ X1, data=data)
+  idx.na<-which(is.na(out.lm$coef))
+
+  if(length(idx.na)> 0){
+	X1<-X1[, -idx.na]
+	X_name = X_name[-idx.na]		
+        cat("Warning: multi collinearity is detected in covariates! ", X_name[idx.na], " will be excluded in the model\n")
+  }
+
+  if(!(1 %in% idx.na)){
+    X_name[1] = "1"
+  }
+
+	
+ # QR decomposition
+  Xqr = qr(X1)
+  X1_Q = qr.Q(Xqr)
+  qrr = qr.R(Xqr)
+	
+  N<-nrow(X1)
+	
+  # Make square summation=N (so mean=1)
+  X1_new<-X1_Q * sqrt(N)	
+  Param.transform<-list(qrr=qrr, N=N, X_name = X_name, idx.na=idx.na)
+  re<-list(Y =Y, X1 = X1_new, Param.transform=Param.transform)
+}
+
+# In case to recover original scale coefficients
+# X \beta = Q R \beta = (Q \sqrt(N)) ( R \beta / \sqrt(N))
+# So coefficient from fit.new is the same as R \beta / \sqrt(N)
+Covariate_Transform_Back<-function(coef, Param.transform){	
+	#coef<-fit.new$coef; Param.transform=out.transform$Param.transform
+	coef1<-coef * sqrt(Param.transform$N)
+	coef.org<-solve(Param.transform$qrr, coef1)
+	
+	names(coef.org)<-Param.transform$X_name
+	return(coef.org)
 }

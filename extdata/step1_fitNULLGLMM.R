@@ -1,7 +1,7 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
-library(SAIGE)
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/01232018/SAIGE_install")
 require(optparse) #install.packages("optparse")
 
 ## set list of cmd line arguments

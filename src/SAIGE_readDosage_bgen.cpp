@@ -636,7 +636,6 @@ Rcpp::List getDosage_inner_bgen_noquery(){
   AC=0; AF=0;
   markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF);
 
-
   DataFrame variants = DataFrame::create(
                 Named("chromosome") = chromosome,
                 Named("position") = position,

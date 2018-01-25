@@ -5,11 +5,13 @@ options(stringsAsFactors=F)
 #' @param dosageFileNrowSkip integer(>=0). Number of lines to be skiped in the dosage file.
 #' @param dosageFileNcolSkip integer(>=0). Number of columns to be skiped in the dosage file
 #' @param dosageFilecolnamesSkip vector of characters. The column names of the skipped columns. Default: c("SNPID", "CHR", "POS", "Allele0", "Allele1") 
-#' @param bgenFile character. Path to bgen file
+#' @param bgenFile character. Path to bgen file. Currently version 1.2 with 8 bit compression is supported
 #' @param bgenFileIndex character. Path to the .bgi file (index of the bgen file)
 #' @param vcfFile character. Path to vcf file
 #' @param vcfFileIndex character. Path to index for vcf file by tabix, ".tbi" by "tabix -p vcf file.vcf.gz"
 #' @param vcfField character. genotype field in vcf file to use. "DS" for dosages or "GT" for genotypes. By default, "DS".
+#' @param savFile character. Path to sav file
+#' @param savFileIndex character. Path to index for sav file .s1r
 #' @param idstoExcludeFile character. Path to the file containing variant ids to be excluded from the bgen or vcf file
 #' @param idstoIncludeFile character. Path to the file containing variant ids to be included from the bgen or vcf file
 #' @param rangestoExcludeFile character. Path to the file containing genome regions to be excluded from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header 
@@ -17,19 +19,10 @@ options(stringsAsFactors=F)
 #' @param chrom character. string for the chromosome to include from vcf file. If not speficied, the entire vcf will be tested 
 #' @param start numeric. start genome position to include from vcf file. 
 #' @param end numeric. end genome position to include from vcf file. 
-
 #' @param minMAC numeric. Minimum minor allele count of markers to test. By default, 1. The higher threshold between minMAC and minMAF will be used
 #' @param minMAF numeric. Minimum minor allele frequency of markers to test. By default 0. The higher threshold between minMAC and minMAF will be used
 #' @param minInfo numeric. Minimum imputation info of markers to test (in bgen file)
-#' @param sampleFile character. Path to the file that contains one column for IDs of samples in the dosage, vcf  or bgen file with NO header
-#' @param phenoFile character. Path to the phenotype file
-#' @param phenoCol character. Column name for the trait e.g. "CAD"
-#' @param traitType character. e.g. "binary" or "quantitative". By default, "binary" 
-#' @param invNormalize logical. Whether to perform the inverse normalization of the trait or not. E.g. TRUE or FALSE. iBy default, FALSE
-#' @param covarColList vector of characters. Covariates to be used in the glm model e.g c("Sex", "Age")
-#' @param qCovarCol vector of characters. Categorical covariates to be used in the glm model (NOT work yet)
-#' @param sampleIDColinphenoFile character.  Column name for the sample IDs in the phenotype file e.g. "IID".
-#' @param centerVariables vector of characters.  Covariates to be centered (around the mean) e.g. c("birthYear")
+#' @param sampleFile character. Path to the file that contains one column for IDs of samples in the dosage, vcf, sav, or bgen file with NO header
 #' @param GMMATmodelFile character. Path to the input file containing the glmm model, which is output from previous step. Will be used by load()
 #' @param varianceRatioFile character. Path to the input file containing the variance ratio, which is output from the previous step
 #' @param Cutoff by default = 2 (SPA test would be used when p value < 0.05 under the normal approximation)
@@ -48,25 +41,19 @@ SPAGMMATtest = function(dosageFile = "",
 		 vcfFile = "",
                  vcfFileIndex = "",
 		 vcfField = "DS",
+		 savFile = "",
+		 savFileIndex = "",
 		 sampleFile = "", 
 		 idstoExcludeFile = "",
 		 idstoIncludeFile = "",
 		 rangestoExcludeFile = "",
 		 rangestoIncludeFile = "",
 		 chrom = "0",
-		 start = 0,
-		 end = 0,	
+		 start = 1,
+		 end = 250000000,	
 		 minMAC = 1, 
                  minMAF = 0,
         	 minInfo = 0,
-                 phenoFile = "",
-		 phenoCol = "",
-                 traitType = "binary",
-		 invNormalize = FALSE,
-		 covarColList = NULL,
-                 qCovarCol = NULL,
-		 sampleIDColinphenoFile = "", 
-                 centerVariables=NULL, 
                  GMMATmodelFile = "", 
                  varianceRatioFile = "", 
                  Cutoff=2, 
@@ -94,6 +81,9 @@ SPAGMMATtest = function(dosageFile = "",
     sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
     cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
     #print(sampleInModel$IID[1:10])
+    obj.glm.null = obj.glmm.null$obj.glm.null
+    obj.noK = obj.glmm.null$obj.noK   
+    traitType = obj.glmm.null$traitType 
   }
 
   if(!file.exists(varianceRatioFile)){
@@ -104,41 +94,72 @@ SPAGMMATtest = function(dosageFile = "",
   }
 
 
-  #phentoype file
-  if(!file.exists(phenoFile)){
-    stop("ERROR! phenoFile ", phenoFile, " does not exsit\n")
+#  #phentoype file
+#  if(!file.exists(phenoFile)){
+#    stop("ERROR! phenoFile ", phenoFile, " does not exsit\n")
+#  }else{
+#    ydat = data.table:::fread(phenoFile, header=T, stringsAsFactors=FALSE)
+#    data = data.frame(ydat)
+
+#    print(c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile))
+#    for (i in c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile)){	
+#      if (!(i %in% colnames(data))){
+#        stop("ERROR! column for ", i, " does not exsit in the phenoFile \n")
+#      }
+#    }
+
+#    #update the categorical variables
+#    qCovarColUpdated = NULL   
+#    for(i in qCovarCol){
+#      j = paste0("factor(", i, ")")
+#      qCovarColUpdated = c(qCovarColUpdated, j)	
+#    }
+    
+    
+#    formula = paste0(phenoCol,"~",paste0(c(covarColList,qCovarColUpdated),collapse="+"))
+#    formula.null = as.formula(formula)
+#    mmat = model.frame(formula.null, data, na.action=NULL)
+#    mmat$IID = data[,which(sampleIDColinphenoFile == colnames(data))] 
+#    mmat_nomissing = mmat[complete.cases(mmat),]
+#    mmat_nomissing$IndexPheno = seq(1,nrow(mmat_nomissing), by=1)
+#    cat(nrow(mmat_nomissing), " samples have non-missing phenotypes\n")
+#    cat("dim(mmat_nomissing): " ,dim(mmat_nomissing), "\n")
+#    #print(mmat_nomissing$IID[1:10])
+
+
+#    dataMergev0 = merge(mmat_nomissing, sampleInModel, by.x = "IID", by.y = "IID")
+#    cat("dim(dataMergev0): " ,dim(dataMergev0), "\n")
+#    if(nrow(dataMergev0) < nrow(sampleInModel)){
+#      stop("ERROR!", nrow(sampleInModel) - nrow(dataMergev0), " samples used in glmm model fit but do not have non-missing phenotypes\n")
+#    }
+#  }
+
+      #sample file
+  if(!file.exists(sampleFile)){
+    stop("ERROR! sampleFile ", sampleFile, " does not exsit\n")
   }else{
-    ydat = data.table:::fread(phenoFile, header=T, stringsAsFactors=FALSE)
-    data = data.frame(ydat)
+    sampleListinDosage = data.frame(data.table:::fread(sampleFile, header=F, stringsAsFactors=FALSE))
+    sampleListinDosage$IndexDose = seq(1,nrow(sampleListinDosage), by=1)
+    cat(nrow(sampleListinDosage), " sample IDs are found in sample file\n")
+    colnames(sampleListinDosage)[1] = "IIDDose"
 
-    print(c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile))
-    for (i in c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile)){	
-      if (!(i %in% colnames(data))){
-        stop("ERROR! column for ", i, " does not exsit in the phenoFile \n")
-      }
-    }
-
-    #update the categorical variables
-    qCovarColUpdated = NULL   
-    for(i in qCovarCol){
-      j = paste0("factor(", i, ")")
-      qCovarColUpdated = c(qCovarColUpdated, j)	
-    }
-    
-    
-    formula = paste0(phenoCol,"~",paste0(c(covarColList,qCovarColUpdated),collapse="+"))
-    formula.null = as.formula(formula)
-    mmat = model.frame(formula.null, data, na.action=NULL)
-    mmat$IID = data[,which(sampleIDColinphenoFile == colnames(data))] 
-    mmat_nomissing = mmat[complete.cases(mmat),]
-    mmat_nomissing$IndexPheno = seq(1,nrow(mmat_nomissing), by=1)
-    cat(nrow(mmat_nomissing), " samples have non-missing phenotypes\n")
-    cat("dim(mmat_nomissing): " ,dim(mmat_nomissing), "\n")
-    #print(mmat_nomissing$IID[1:10])
-    dataMergev0 = merge(mmat_nomissing, sampleInModel, by.x = "IID", by.y = "IID")
-    cat("dim(dataMergev0): " ,dim(dataMergev0), "\n")
-    if(nrow(dataMergev0) < nrow(sampleInModel)){
-      stop("ERROR!", nrow(sampleInModel) - nrow(dataMergev0), " samples used in glmm model fit but do not have non-missing phenotypes\n")
+    dataMerge = merge(sampleInModel, sampleListinDosage, by.x="IID", by.y = "IIDDose")
+#    dataMerge = merge(dataMergev0, sampleListinDosage, by.x="IID", by.y = "IIDDose")
+    #dim(dataMerge)
+    #colnames(dataMerge)
+    dataMerge_sort = dataMerge[with(dataMerge, order(IndexInModel)), ]
+    if(nrow(dataMerge_sort) < nrow(sampleInModel)){
+      stop("ERROR!", nrow(sampleInModel) - nrow(dataMerge_sort), " samples used in glmm model fit do not have dosages\n")
+    }else{
+                        #0909 modified by WZ
+      dataMerge_v2 = merge(dataMerge_sort, sampleListinDosage, by.x="IID", by.y = "IIDDose", all.y = TRUE)
+      print(dim(dataMerge_v2))
+      print(colnames(dataMerge_v2))
+      dataMerge_v2_sort = dataMerge_v2[with(dataMerge_v2, order(IndexDose.y)), ]
+      sampleIndex = dataMerge_v2_sort$IndexInModel
+      N = sum(!is.na(sampleIndex))
+      cat(N, " samples were used in fitting the NULL glmm model and are found in sample file\n")
+      sampleIndex[is.na(sampleIndex)] = -10  ##with a negative number
     }
   }
 
@@ -172,51 +193,30 @@ SPAGMMATtest = function(dosageFile = "",
       stop("ERROR! vcfFileIndex ", vcfFileIndex, " does not exsit\n")
     }
     dosageFileType = "vcf"
+  }else if(savFile != ""){
+    if(!file.exists(savFile)){
+      stop("ERROR! savFile ", savFile, " does not exsit\n")
+    }else{
+      vcfFile = savFile	
+    }
+
+    if(!file.exists(savFileIndex)){
+      stop("ERROR! savFileIndex ", savFileIndex, " does not exsit\n")
+    }else{
+      vcfFileIndex = savFileIndex
+    }	
+    dosageFileType = "vcf"
   }
 
-  #sample file
-  if(!file.exists(sampleFile)){
-    stop("ERROR! sampleFile ", sampleFile, " does not exsit\n")
-  }else{
-    sampleListinDosage = data.frame(data.table:::fread(sampleFile, header=F, stringsAsFactors=FALSE))
-    sampleListinDosage$IndexDose = seq(1,nrow(sampleListinDosage), by=1)
-    cat(nrow(sampleListinDosage), " sample IDs are found in sample file\n")
-    colnames(sampleListinDosage)[1] = "IIDDose"
-    dataMerge = merge(dataMergev0, sampleListinDosage, by.x="IID", by.y = "IIDDose")
-    dataMerge_sort = dataMerge[with(dataMerge, order(IndexInModel)), ]
-   
-    if(nrow(dataMerge_sort) < nrow(sampleInModel)){
-      stop("ERROR!", nrow(sampleInModel) - nrow(dataMerge_sort), " samples used in glmm model fit do not have dosages\n")
-    }else{
-      			#0909 modified by WZ
-      dataMerge_v2 = merge(dataMergev0, sampleListinDosage, by.x="IID", by.y = "IIDDose", all.y = TRUE)
-      dataMerge_v2_sort = dataMerge_v2[with(dataMerge_v2, order(IndexDose)), ]	
-      sampleIndex = dataMerge_v2_sort$IndexInModel
-      N = sum(!is.na(sampleIndex))
-      cat(N, " samples were used in fitting the NULL glmm model and are found in sample file\n")	
-      sampleIndex[is.na(sampleIndex)] = -10  ##with a negative number 
-    }
-  }
+
 
   #determine minimum MAF for markers to be tested
-  if(minMAC < 1){minMAC == 1}
+  if(minMAC < 1){minMAC = 1} ##01-19-2018
   cat("minMAC: ",minMAC,"\n")
   cat("minMAF: ",minMAF,"\n")
   minMAFBasedOnMAC = minMAC/(2*N) 
   testMinMAF = max(minMAFBasedOnMAC, minMAF) 
   cat("Minimum MAF of markers to be testd is ", testMinMAF, "\n")
-  #center some covariates
-  if(length(centerVariables)!=0){
-    for(i in centerVariables){
-      if (!(i %in% colnames(dataMerge_sort))){
-        stop("ERROR! column for ", i, " does not exsit in the phenoFile \n")
-      }else{
-        dataMerge_sort[,which(colnames(dataMerge_sort) == i)] = dataMerge_sort[,which(colnames(dataMerge_sort) == i)] - mean(dataMerge_sort[,which(colnames(dataMerge_sort) == i)])
-      }
-    }
-  }
-
-
 
 
 ##############START TEST########################
@@ -277,23 +277,23 @@ SPAGMMATtest = function(dosageFile = "",
     isQuery = getQueryStatus()
     SetSampleIdx(sampleIndex, N)
   }else if(dosageFileType == "vcf"){
-    setgenoTest_vcfDosage(vcfFile,vcfFileIndex, ids_to_exclude_vcf = idstoExcludeFile, ids_to_include_vcf = idstoIncludeFile, chrom, start, end)
-    setTestField(vcfField)
+    setgenoTest_vcfDosage(vcfFile,vcfFileIndex,vcfField,ids_to_exclude_vcf = idstoExcludeFile, ids_to_include_vcf = idstoIncludeFile, chrom, start, end)
+    #setTestField(vcfField)
     isVariant = getGenoOfnthVar_vcfDosage_pre()
     SetSampleIdx_vcfDosage(sampleIndex, N)
   }
 
-
-
+  cat("isVariant: ", isVariant, "\n") 
+ 
   if(traitType == "binary"){
-    cat(phenoCol, " is a binary trait\n")
-    uniqPheno = sort(unique(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)]))
-    if (uniqPheno[1] != 0 | uniqPheno[2] != 1){
-      stop("ERROR! phenotype value needs to be 0 or 1 \n")
-    }
+    cat("It is a binary trait\n")
+    #uniqPheno = sort(unique(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)]))
+    #if (uniqPheno[1] != 0 | uniqPheno[2] != 1){
+    #  stop("ERROR! phenotype value needs to be 0 or 1 \n")
+    #}
 
-    obj.glm.null = glm(formula.null,data=dataMerge_sort, family=binomial)
-    obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.null, data = dataMerge_sort)
+    #obj.glm.null = glm(formula.null,data=dataMerge_sort, family=binomial)
+    #obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.null, data = dataMerge_sort)
 
     resultHeader = c(dosageFilecolnamesSkip, "N", "BETA", "SE", "Tstat", "p.value", "p.value.NA", "Is.SPA.converge","varT","varTstar")
 
@@ -327,14 +327,14 @@ SPAGMMATtest = function(dosageFile = "",
     obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a)) 
 #####
   }else if(traitType == "quantitative"){
-    cat(phenoCol, " is a quantitative trait\n")
-    if(invNormalize){
-      cat("Perform the inverse nomalization for ", phenoCol, "\n")
-      invPheno = qnorm((rank(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)], na.last="keep")-0.5)/sum(!is.na(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)])))
-      dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
-    }
-    obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.null, dataMerge_sort)
-    obj.glm.null = glm(formula.null, data=dataMerge_sort,family=gaussian(link = "identity"))
+    cat("It is a quantitative trait\n")
+    #if(invNormalize){
+    #  cat("Perform the inverse nomalization for ", phenoCol, "\n")
+    #  invPheno = qnorm((rank(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)], na.last="keep")-0.5)/sum(!is.na(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)])))
+    #  dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
+    #}
+    #obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.null, dataMerge_sort)
+    #obj.glm.null = glm(formula.null, data=dataMerge_sort,family=gaussian(link = "identity"))
    
     resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
     write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
@@ -397,6 +397,8 @@ SPAGMMATtest = function(dosageFile = "",
 
    
     MAF = min(AF, 1-AF)
+
+
     if(MAF >= testMinMAF & markerInfo >= minInfo){
       numPassMarker = numPassMarker + 1
       if(traitType == "binary"){
