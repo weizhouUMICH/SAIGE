@@ -534,19 +534,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // setgenoTest_vcfDosage
-bool setgenoTest_vcfDosage(const std::string& vcfFileName, const std::string& vcfFileIndex, const std::string& ids_to_exclude_vcf, const std::string& ids_to_include_vcf, const std::string& chromNam, int32_t start, int32_t end);
-RcppExport SEXP _SAIGE_setgenoTest_vcfDosage(SEXP vcfFileNameSEXP, SEXP vcfFileIndexSEXP, SEXP ids_to_exclude_vcfSEXP, SEXP ids_to_include_vcfSEXP, SEXP chromNamSEXP, SEXP startSEXP, SEXP endSEXP) {
+bool setgenoTest_vcfDosage(const std::string& vcfFileName, const std::string& vcfFileIndex, const std::string& vcfField, const std::string& ids_to_exclude_vcf, const std::string& ids_to_include_vcf, const std::string& chromNam, int32_t start, int32_t end);
+RcppExport SEXP _SAIGE_setgenoTest_vcfDosage(SEXP vcfFileNameSEXP, SEXP vcfFileIndexSEXP, SEXP vcfFieldSEXP, SEXP ids_to_exclude_vcfSEXP, SEXP ids_to_include_vcfSEXP, SEXP chromNamSEXP, SEXP startSEXP, SEXP endSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type vcfFileName(vcfFileNameSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type vcfFileIndex(vcfFileIndexSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type vcfField(vcfFieldSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type ids_to_exclude_vcf(ids_to_exclude_vcfSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type ids_to_include_vcf(ids_to_include_vcfSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type chromNam(chromNamSEXP);
     Rcpp::traits::input_parameter< int32_t >::type start(startSEXP);
     Rcpp::traits::input_parameter< int32_t >::type end(endSEXP);
-    rcpp_result_gen = Rcpp::wrap(setgenoTest_vcfDosage(vcfFileName, vcfFileIndex, ids_to_exclude_vcf, ids_to_include_vcf, chromNam, start, end));
+    rcpp_result_gen = Rcpp::wrap(setgenoTest_vcfDosage(vcfFileName, vcfFileIndex, vcfField, ids_to_exclude_vcf, ids_to_include_vcf, chromNam, start, end));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -635,7 +636,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_SetSampleIdx_plainDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_plainDosage, 2},
     {"_SAIGE_SetSampleIdx_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_vcfDosage, 2},
     {"_SAIGE_setTestField", (DL_FUNC) &_SAIGE_setTestField, 1},
-    {"_SAIGE_setgenoTest_vcfDosage", (DL_FUNC) &_SAIGE_setgenoTest_vcfDosage, 7},
+    {"_SAIGE_setgenoTest_vcfDosage", (DL_FUNC) &_SAIGE_setgenoTest_vcfDosage, 8},
     {"_SAIGE_getNumofSamples", (DL_FUNC) &_SAIGE_getNumofSamples, 0},
     {"_SAIGE_getSampleIDlist", (DL_FUNC) &_SAIGE_getSampleIDlist, 0},
     {"_SAIGE_getGenoOfnthVar_vcfDosage_pre", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage_pre, 0},

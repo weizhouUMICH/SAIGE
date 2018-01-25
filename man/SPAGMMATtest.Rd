@@ -7,14 +7,12 @@
 SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
   dosageFileNcolSkip = 0, dosageFilecolnamesSkip = c("SNPID", "CHR", "POS",
   "Allele0", "Allele1"), bgenFile = "", bgenFileIndex = "", vcfFile = "",
-  vcfFileIndex = "", vcfField = "DS", sampleFile = "",
-  idstoExcludeFile = "", idstoIncludeFile = "", rangestoExcludeFile = "",
-  rangestoIncludeFile = "", chrom = "", start = 0, end = 0,
-  minMAC = 1, minMAF = 0, minInfo = 0, phenoFile = "", phenoCol = "",
-  traitType = "binary", invNormalize = FALSE, covarColList = NULL,
-  qCovarCol = NULL, sampleIDColinphenoFile = "", centerVariables = NULL,
+  vcfFileIndex = "", vcfField = "DS", savFile = "", savFileIndex = "",
+  sampleFile = "", idstoExcludeFile = "", idstoIncludeFile = "",
+  rangestoExcludeFile = "", rangestoIncludeFile = "", chrom = "0",
+  start = 0, end = 0, minMAC = 1, minMAF = 0, minInfo = 0,
   GMMATmodelFile = "", varianceRatioFile = "", Cutoff = 2,
-  SAIGEOutputFile = "", numLinesOutput = 1000, IsSparse = TRUE,
+  SAIGEOutputFile = "", numLinesOutput = 10000, IsSparse = TRUE,
   IsOutputAFinCaseCtrl = FALSE)
 }
 \arguments{
@@ -36,7 +34,11 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{vcfField}{character. genotype field in vcf file to use. "DS" for dosages or "GT" for genotypes. By default, "DS".}
 
-\item{sampleFile}{character. Path to the file that contains one column for IDs of samples in the dosage, vcf  or bgen file with NO header}
+\item{savFile}{character. Path to sav file}
+
+\item{savFileIndex}{character. Path to index for sav file .s1r}
+
+\item{sampleFile}{character. Path to the file that contains one column for IDs of samples in the dosage, vcf, sav, or bgen file with NO header}
 
 \item{idstoExcludeFile}{character. Path to the file containing variant ids to be excluded from the bgen or vcf file}
 
@@ -57,22 +59,6 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 \item{minMAF}{numeric. Minimum minor allele frequency of markers to test. By default 0. The higher threshold between minMAC and minMAF will be used}
 
 \item{minInfo}{numeric. Minimum imputation info of markers to test (in bgen file)}
-
-\item{phenoFile}{character. Path to the phenotype file}
-
-\item{phenoCol}{character. Column name for the trait e.g. "CAD"}
-
-\item{traitType}{character. e.g. "binary" or "quantitative". By default, "binary"}
-
-\item{invNormalize}{logical. Whether to perform the inverse normalization of the trait or not. E.g. TRUE or FALSE. iBy default, FALSE}
-
-\item{covarColList}{vector of characters. Covariates to be used in the glm model e.g c("Sex", "Age")}
-
-\item{qCovarCol}{vector of characters. Categorical covariates to be used in the glm model (NOT work yet)}
-
-\item{sampleIDColinphenoFile}{character.  Column name for the sample IDs in the phenotype file e.g. "IID".}
-
-\item{centerVariables}{vector of characters.  Covariates to be centered (around the mean) e.g. c("birthYear")}
 
 \item{GMMATmodelFile}{character. Path to the input file containing the glmm model, which is output from previous step. Will be used by load()}
 

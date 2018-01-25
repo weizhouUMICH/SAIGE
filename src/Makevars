@@ -8,19 +8,23 @@ PKG_CPPFLAGS = \
 -I ../thirdParty/bgen/3rd_party/zstd-1.1.0/lib/decompress \
 -I ../thirdParty/bgen/3rd_party/sqlite3 \
 -I ../thirdParty/bgen/3rd_party/boost_1_55_0/boost/iostreams \
--I ../thirdParty/libStatGen/include \
 -I ../thirdParty/zlib-1.2.8 \
+-I ../thirdParty/cget/include \
+-I ../thirdParty/cget/lib \
 -D SQLITE_ENABLE_COLUMN_METADATA -O3 -fpic -Wall -Wextra -pedantic
 
 ZLIB_LIB = ../thirdParty/zlib-1.2.8/libz.so.1.2.8
 
 #CXX1XSTD=-std=c++11
-CXX_STD = CXX1X 
+#CXX_STD = CXX1X 
+CXX_STD = CXX11 
 #CXX_STD = C++11
-PKG_LIBS = $(ZLIB_LIB) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) -L../bgen/3rd_party/boost_1_55_0/boost/iostreams -lboost_iostreams 
+
+PKG_LIBS = $(ZLIB_LIB) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) -L../bgen/3rd_party/boost_1_55_0/boost/iostreams -lboost_iostreams -L../thirdParty/cget/lib/ -lsavvy -lhts 
 PKG_LIBS += $(shell ${R_HOME}/bin/Rscript -e "RcppParallel::RcppParallelLibs()")
 
-OBJECTS = RcppExports.o innerProd.o matrixMultiEigen.o SAIGE_fitGLMM_fast.o SAIGE_readDosage_bgen.o SAIGE_readDosage_plain.o SAIGE_readDosage_vcf.o $(wildcard ../thirdParty/bgen/build/src/*.o) ../thirdParty/bgen/build/db/libdb.a ../thirdParty/bgen/build/3rd_party/zstd-1.1.0/libzstd.a ../thirdParty/bgen/build/3rd_party/sqlite3/libsqlite3.a ../thirdParty/bgen/build/3rd_party/boost_1_55_0/libboost.a $(wildcard ../thirdParty/libStatGen/vcf/obj/*o) $(wildcard ../thirdParty/libStatGen/general/obj/*o) $(wildcard ../thirdParty/libStatGen/samtools/obj/*o)
+
+OBJECTS = RcppExports.o innerProd.o matrixMultiEigen.o SAIGE_fitGLMM_fast.o SAIGE_readDosage_bgen.o SAIGE_readDosage_plain.o SAIGE_readDosage_vcf.o $(wildcard ../thirdParty/bgen/build/src/*.o) ../thirdParty/bgen/build/db/libdb.a ../thirdParty/bgen/build/3rd_party/zstd-1.1.0/libzstd.a ../thirdParty/bgen/build/3rd_party/sqlite3/libsqlite3.a ../thirdParty/bgen/build/3rd_party/boost_1_55_0/libboost.a  
 
 
 all: $(SHLIB)
