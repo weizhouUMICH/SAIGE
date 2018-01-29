@@ -45,6 +45,10 @@ to run the 2 steps.
 
 The R package optparse is required to run this script
 
+### Notes for users before running jobs
+1. Since the SPA test always provides close to 0 p-values for variants with MAC < 3, please use at least minMAC = 3 to filter out the results
+2. When the query is used for bgen files, please make sure there is no duplicate SNP ids in the list
+
 ## UK Biobank GWAS Results
 
 The GWAS results for binary phenotypes in UK Biobank using SAIGE are currently available for public download at
