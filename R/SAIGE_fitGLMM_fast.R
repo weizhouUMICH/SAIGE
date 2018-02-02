@@ -258,7 +258,6 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
 #' @param covarColList vector of characters. Covariates to be used in the glm model e.g c("Sex", "Age")
 #' @param qCovarCol vector of characters. Categorical covariates to be used in the glm model (NOT work yet)
 #' @param sampleIDColinphenoFile character.  Column name for the sample IDs in the phenotype file e.g. "IID".  
-#' @param centerVariables vector of characters.  Covariates to be centered (around the mean) e.g. c("birthYear")
 #' @param nThreads integer. Number of threads to be used. By default, 1 
 #' @param numMarkers integer (>0). Number of markers to be used for estimating the variance ratio. By default, 30
 #' @param skipModelFitting logical.  Whether to skip fitting the null model and only calculating the variance ratio, By default, FALSE. If TURE, the model file ".rda" is needed 
@@ -275,7 +274,6 @@ fitNULLGLMM = function(plinkFile = "",
                 covarColList = NULL,
                 qCovarCol = NULL,
                 sampleIDColinphenoFile = "",
-                centerVariables=NULL,
                 tol=0.02,
                 maxiter=20,
                 tolPCG=1e-5,
@@ -363,16 +361,16 @@ fitNULLGLMM = function(plinkFile = "",
     cat(nrow(dataMerge_sort), " samples will be used for analysis\n")
   }
 
-  #center some covariates
-  if(length(centerVariables)!=0){
-    for(i in centerVariables){
-      if (!(i %in% colnames(dataMerge_sort))){
-        stop("ERROR! column for ", i, " does not exsit in the phenoFile \n")
-      }else{
-        dataMerge_sort[,which(colnames(dataMerge_sort) == i)] = dataMerge_sort[,which(colnames(dataMerge_sort) == i)] - mean(dataMerge_sort[,which(colnames(dataMerge_sort) == i)])
-      }
-    }
-  }
+#  #center some covariates
+#  if(length(centerVariables)!=0){
+#    for(i in centerVariables){
+#      if (!(i %in% colnames(dataMerge_sort))){
+#        stop("ERROR! column for ", i, " does not exsit in the phenoFile \n")
+#      }else{
+#        dataMerge_sort[,which(colnames(dataMerge_sort) == i)] = dataMerge_sort[,which(colnames(dataMerge_sort) == i)] - mean(dataMerge_sort[,which(colnames(dataMerge_sort) == i)])
+#      }
+#    }
+#  }
 
   if(invNormalize){
       cat("Perform the inverse nomalization for ", phenoCol, "\n")
