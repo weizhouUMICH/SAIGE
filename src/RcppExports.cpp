@@ -455,6 +455,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// closetestGenoFile_bgenDosage
+void closetestGenoFile_bgenDosage();
+RcppExport SEXP _SAIGE_closetestGenoFile_bgenDosage() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    closetestGenoFile_bgenDosage();
+    return R_NilValue;
+END_RCPP
+}
 // setgenoTest_plainDosage
 int setgenoTest_plainDosage(std::string testGenoFile, int testGenofileNrowSkip, int testGenofileNcolSkip);
 RcppExport SEXP _SAIGE_setgenoTest_plainDosage(SEXP testGenoFileSEXP, SEXP testGenofileNrowSkipSEXP, SEXP testGenofileNcolSkipSEXP) {
@@ -592,6 +601,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// closetestGenoFile_vcfDosage
+void closetestGenoFile_vcfDosage();
+RcppExport SEXP _SAIGE_closetestGenoFile_vcfDosage() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    closetestGenoFile_vcfDosage();
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_innerProduct", (DL_FUNC) &_SAIGE_innerProduct, 2},
@@ -629,6 +647,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getisReadVariantBgen", (DL_FUNC) &_SAIGE_getisReadVariantBgen, 0},
     {"_SAIGE_getMarkerInfo", (DL_FUNC) &_SAIGE_getMarkerInfo, 0},
     {"_SAIGE_SetSampleIdx", (DL_FUNC) &_SAIGE_SetSampleIdx, 2},
+    {"_SAIGE_closetestGenoFile_bgenDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_bgenDosage, 0},
     {"_SAIGE_setgenoTest_plainDosage", (DL_FUNC) &_SAIGE_setgenoTest_plainDosage, 3},
     {"_SAIGE_closetestGenoFile_plainDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_plainDosage, 0},
     {"_SAIGE_getGenoOfnthVar_plainDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_plainDosage, 3},
@@ -641,6 +660,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getSampleIDlist", (DL_FUNC) &_SAIGE_getSampleIDlist, 0},
     {"_SAIGE_getGenoOfnthVar_vcfDosage_pre", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage_pre, 0},
     {"_SAIGE_getGenoOfnthVar_vcfDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage, 1},
+    {"_SAIGE_closetestGenoFile_vcfDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_vcfDosage, 0},
     {NULL, NULL, 0}
 };
 

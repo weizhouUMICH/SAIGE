@@ -442,6 +442,16 @@ SPAGMMATtest = function(dosageFile = "",
   #if(mth == 100){break}
   } ####end of while(isVariant)
 
+
+  #close the dosage file after tests
+  if(dosageFileType == "plain"){
+    closetestGenoFile_plainDosage()  
+  }else if (dosageFileType == "bgen"){
+    closetestGenoFile_bgenDosage()
+  }else if(dosageFileType == "vcf"){
+    closetestGenoFile_vcfDosage()
+  }
+ 
   endTime = as.numeric(Sys.time()) #end time of the SPAGMMAT tests
   cat("Analysis ended at ", endTime, "Seconds\n")
   tookTime = endTime - startTime
