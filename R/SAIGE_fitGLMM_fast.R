@@ -43,11 +43,11 @@ test_stdGeno = function(subSampleInGeno){
 }
 
 #Fit the null glmm for binary traits
-glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform) {
+glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk) {
   subSampleInGeno = subPheno$IndexGeno
   #print(subSampleInGeno[1:100])
   print("Start reading genotype plink file here")
-  re1 = system.time({setgeno(genofile, subSampleInGeno)})
+  re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk)})
   print("Genotype reading is done")
 
   y = fit0$y
@@ -71,8 +71,13 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0
 
   #change, use 0.5 as a default value, and use Get_Coef before getAIScore
   q = 1
-  #tau[fixtau == 0] <- var(Y)/(q+1)
+
+  if(tauInit[fixtau == 0] == 0){
   tau[fixtau == 0] = 0.5
+  }else{
+    tau[fixtau == 0] = tauInit[fixtau == 0]
+  }
+  cat("inital tau is ", tau,"\n")
   tau0=tau
 
   re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
@@ -123,11 +128,11 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0
 
 
 
-glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform) {
+glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk) {
 
   subSampleInGeno = subPheno$IndexGeno
   print("Start reading genotype plink file here")
-  re1 = system.time({setgeno(genofile, subSampleInGeno)})
+  re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk)})
   print("Genotype reading is done")
 
   y = fit0$y
@@ -161,11 +166,14 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau 
 
 
   q = 1
-  cat("tau ",tau,"\n")
-  tau[fixtau == 0] = var(Y)/(q+1)
-  tau0 = tau
+  if(sum(tauInit[fixtau == 0]) == 0){
+    tau[fixtau == 0] = var(Y)/(q+1)
+  }else{
+    tau[fixtau == 0] = tauInit[fixtau == 0]
+  }
 
-  cat("tauv2 ",tau,"\n")
+  tau0 = tau
+  cat("inital tau is ", tau,"\n")
 
   print("ok1")
   re = getAIScore_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG)
@@ -253,7 +261,9 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
 #' @param centerVariables vector of characters.  Covariates to be centered (around the mean) e.g. c("birthYear")
 #' @param nThreads integer. Number of threads to be used. By default, 1 
 #' @param numMarkers integer (>0). Number of markers to be used for estimating the variance ratio. By default, 30
-#' @param skipModelFitting logical.  Whether tp skip fitting the null model and only calculating the variance ratio, By default, FALSE. If TURE, the model file ".rda" is needed 
+#' @param skipModelFitting logical.  Whether to skip fitting the null model and only calculating the variance ratio, By default, FALSE. If TURE, the model file ".rda" is needed 
+#' @param tauInit vector of numbers. e.g. c(1,1), Unitial values for tau. For binary traits, the first element will be always be set to 1. If the tauInit is not specified, the second element will be 0.5 for binary traits.  
+#' @param memoryChunk integer or float. The size (Gb) for each memory chunk. By default, 4
 #' @param outputPrefix character. Path to the output files with prefix. 
 #' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio value, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
 #' @export
@@ -274,6 +284,8 @@ fitNULLGLMM = function(plinkFile = "",
                 Cutoff = 2, 
                 numMarkers = 30, 
                 skipModelFitting = FALSE,
+		memoryChunk = 4,
+		tauInit = c(0,0),
                 outputPrefix = ""){
                 #formula, phenoType = "binary",prefix, centerVariables = "", tol=0.02, maxiter=20, tolPCG=1e-5, maxiterPCG=500, nThreads = 1, Cutoff = 2, numMarkers = 1000, skipModelFitting = FALSE){
   if(nThreads > 1){
@@ -403,10 +415,10 @@ fitNULLGLMM = function(plinkFile = "",
 
 
     if(!skipModelFitting){
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk))
       save(modglmm, file = modelOut)
     }else{
-      setgeno(plinkFile, dataMerge_sort$IndexGeno)
+      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)	
       load(modelOut)
     }
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,
@@ -437,11 +449,11 @@ fitNULLGLMM = function(plinkFile = "",
 
     if(!skipModelFitting){
 
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk))
       save(modglmm, file = modelOut)
       print("step2")
     }else{
-      setgeno(plinkFile, dataMerge_sort$IndexGeno)
+      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)
       load(modelOut)
     }
  
