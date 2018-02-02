@@ -141,6 +141,10 @@ SetSampleIdx <- function(sample_idx, Ntest) {
     .Call('_SAIGE_SetSampleIdx', PACKAGE = 'SAIGE', sample_idx, Ntest)
 }
 
+closetestGenoFile_bgenDosage <- function() {
+    invisible(.Call('_SAIGE_closetestGenoFile_bgenDosage', PACKAGE = 'SAIGE'))
+}
+
 setgenoTest_plainDosage <- function(testGenoFile, testGenofileNrowSkip, testGenofileNcolSkip) {
     .Call('_SAIGE_setgenoTest_plainDosage', PACKAGE = 'SAIGE', testGenoFile, testGenofileNrowSkip, testGenofileNcolSkip)
 }
@@ -187,5 +191,9 @@ getGenoOfnthVar_vcfDosage_pre <- function() {
 
 getGenoOfnthVar_vcfDosage <- function(mth) {
     .Call('_SAIGE_getGenoOfnthVar_vcfDosage', PACKAGE = 'SAIGE', mth)
+}
+
+closetestGenoFile_vcfDosage <- function() {
+    invisible(.Call('_SAIGE_closetestGenoFile_vcfDosage', PACKAGE = 'SAIGE'))
 }
 

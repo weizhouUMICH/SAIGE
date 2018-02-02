@@ -159,3 +159,13 @@ Rcpp::List getGenoOfnthVar_vcfDosage(int mth) {
 
   return( result ) ;
 }
+
+
+// [[Rcpp::export]]
+void closetestGenoFile_vcfDosage() //needs further check
+{
+//  gm_sample_idx_vcfDosage.clear();
+  printf("closed the genofile!\n");
+
+}
+

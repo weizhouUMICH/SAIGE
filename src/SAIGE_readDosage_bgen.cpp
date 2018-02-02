@@ -32,7 +32,7 @@ std::auto_ptr< std::istream > gm_stream;
 uint32_t  gm_offset ;
 genfile::bgen::Context gm_context ;
 bool gm_have_sample_ids ;
-std::vector< std::string > gm_sample_ids ;
+//std::vector< std::string > gm_sample_ids ;
 
 // Added by SLEE for parsing 09/07/2017
 Rcpp::IntegerVector gm_sample_idx;
@@ -701,5 +701,15 @@ double getMarkerInfo()
 int SetSampleIdx(Rcpp::IntegerVector sample_idx, int Ntest){
 	gmtest_samplesize = Ntest;
 	gm_sample_idx = sample_idx;
+}
+
+
+// [[Rcpp::export]]
+void closetestGenoFile_bgenDosage() //needs further check
+{
+  
+//  gm_sample_idx.erase();
+
+  printf("closed the genofile!\n");
 
 }
