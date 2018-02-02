@@ -95,13 +95,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // setgeno
-void setgeno(std::string genofile, std::vector<int>& subSampleInGeno);
-RcppExport SEXP _SAIGE_setgeno(SEXP genofileSEXP, SEXP subSampleInGenoSEXP) {
+void setgeno(std::string genofile, std::vector<int>& subSampleInGeno, float memoryChunk);
+RcppExport SEXP _SAIGE_setgeno(SEXP genofileSEXP, SEXP subSampleInGenoSEXP, SEXP memoryChunkSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type genofile(genofileSEXP);
     Rcpp::traits::input_parameter< std::vector<int>& >::type subSampleInGeno(subSampleInGenoSEXP);
-    setgeno(genofile, subSampleInGeno);
+    Rcpp::traits::input_parameter< float >::type memoryChunk(memoryChunkSEXP);
+    setgeno(genofile, subSampleInGeno, memoryChunk);
     return R_NilValue;
 END_RCPP
 }
@@ -620,7 +621,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getAlleleFreqVec", (DL_FUNC) &_SAIGE_getAlleleFreqVec, 0},
     {"_SAIGE_parallelCrossProd", (DL_FUNC) &_SAIGE_parallelCrossProd, 1},
     {"_SAIGE_getCrossprodMatAndKin", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin, 1},
-    {"_SAIGE_setgeno", (DL_FUNC) &_SAIGE_setgeno, 2},
+    {"_SAIGE_setgeno", (DL_FUNC) &_SAIGE_setgeno, 3},
     {"_SAIGE_Get_OneSNP_Geno", (DL_FUNC) &_SAIGE_Get_OneSNP_Geno, 1},
     {"_SAIGE_Get_OneSNP_Geno_forVarianceRatio", (DL_FUNC) &_SAIGE_Get_OneSNP_Geno_forVarianceRatio, 1},
     {"_SAIGE_Get_OneSNP_StdGeno", (DL_FUNC) &_SAIGE_Get_OneSNP_StdGeno, 1},

@@ -33,8 +33,8 @@ getCrossprodMatAndKin <- function(bVec) {
     .Call('_SAIGE_getCrossprodMatAndKin', PACKAGE = 'SAIGE', bVec)
 }
 
-setgeno <- function(genofile, subSampleInGeno) {
-    invisible(.Call('_SAIGE_setgeno', PACKAGE = 'SAIGE', genofile, subSampleInGeno))
+setgeno <- function(genofile, subSampleInGeno, memoryChunk) {
+    invisible(.Call('_SAIGE_setgeno', PACKAGE = 'SAIGE', genofile, subSampleInGeno, memoryChunk))
 }
 
 Get_OneSNP_Geno <- function(SNPIdx) {
