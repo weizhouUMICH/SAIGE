@@ -9,7 +9,7 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
   "Allele0", "Allele1"), bgenFile = "", bgenFileIndex = "", vcfFile = "",
   vcfFileIndex = "", vcfField = "DS", savFile = "", savFileIndex = "",
   sampleFile = "", idstoExcludeFile = "", idstoIncludeFile = "",
-  rangestoExcludeFile = "", rangestoIncludeFile = "", chrom = "0",
+  rangestoExcludeFile = "", rangestoIncludeFile = "", chrom = "",
   start = 1, end = 2.5e+08, minMAC = 1, minMAF = 0, minInfo = 0,
   GMMATmodelFile = "", varianceRatioFile = "", Cutoff = 2,
   SAIGEOutputFile = "", numLinesOutput = 10000, IsSparse = TRUE,
@@ -48,7 +48,7 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{rangestoIncludeFile}{character. Path to the file containing genome regions to be included from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header}
 
-\item{chrom}{character. string for the chromosome to include from vcf file. If not speficied, the entire vcf will be tested}
+\item{chrom}{character. string for the chromosome to include from vcf file. Required for vcf file.}
 
 \item{start}{numeric. start genome position to include from vcf file.}
 

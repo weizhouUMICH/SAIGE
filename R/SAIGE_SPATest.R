@@ -16,7 +16,7 @@ options(stringsAsFactors=F)
 #' @param idstoIncludeFile character. Path to the file containing variant ids to be included from the bgen or vcf file
 #' @param rangestoExcludeFile character. Path to the file containing genome regions to be excluded from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header 
 #' @param rangestoIncludeFile character. Path to the file containing genome regions to be included from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header 
-#' @param chrom character. string for the chromosome to include from vcf file. If not speficied, the entire vcf will be tested 
+#' @param chrom character. string for the chromosome to include from vcf file. Required for vcf file.
 #' @param start numeric. start genome position to include from vcf file. 
 #' @param end numeric. end genome position to include from vcf file. 
 #' @param minMAC numeric. Minimum minor allele count of markers to test. By default, 1. The higher threshold between minMAC and minMAF will be used
@@ -48,7 +48,7 @@ SPAGMMATtest = function(dosageFile = "",
 		 idstoIncludeFile = "",
 		 rangestoExcludeFile = "",
 		 rangestoIncludeFile = "",
-		 chrom = "0",
+		 chrom = "",
 		 start = 1,
 		 end = 250000000,	
 		 minMAC = 1, 
@@ -193,6 +193,10 @@ SPAGMMATtest = function(dosageFile = "",
       stop("ERROR! vcfFileIndex ", vcfFileIndex, " does not exsit\n")
     }
     dosageFileType = "vcf"
+
+    ###chrom needs to be specified 
+    if(chrom == ""){stop("ERROR! chrom needs to be specified for the vcf file\n")}
+
   }else if(savFile != ""){
     if(!file.exists(savFile)){
       stop("ERROR! savFile ", savFile, " does not exsit\n")
