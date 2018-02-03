@@ -337,13 +337,20 @@ fitNULLGLMM = function(plinkFile = "",
     }
 
     #update the categorical variables
-    qCovarColUpdated = NULL
-    for(i in qCovarCol){
-      j = paste0("factor(", i, ")")
-      qCovarColUpdated = c(qCovarColUpdated, j)
-    }
 
-    formula = paste0(phenoCol,"~",paste0(c(covarColList,qCovarColUpdated),collapse="+"))
+    if(length(covarColList) > 0){
+      #qCovarColUpdated = NULL
+      #for(i in qCovarCol){
+      #  j = paste0("factor(", i, ")")
+      #  qCovarColUpdated = c(qCovarColUpdated, j)
+      #}
+      formula = paste0(phenoCol,"~", paste0(covarColList,collapse="+"))
+      #formula = paste0(phenoCol,"~",paste0(c(covarColList,qCovarColUpdated),collapse="+"))
+      hasCovariate = TRUE
+    }else{
+      formula = paste0(phenoCol,"~ 1")
+      hasCovariate = FALSE
+    }    
     cat("formula is ", formula,"\n")
     formula.null = as.formula(formula)
     mmat = model.frame(formula.null, data, na.action=NULL)
@@ -379,21 +386,25 @@ fitNULLGLMM = function(plinkFile = "",
   }
 
   out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
-  
-
   formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
   if(length(out.transform$Param.transform$X_name) > 1){
-      for(i in c(2:length(out.transform$Param.transform$X_name))){
-        formulaNewList = c(formulaNewList, "+", out.transform$Param.transform$X_name[i])
-      }
+    for(i in c(2:length(out.transform$Param.transform$X_name))){
+      formulaNewList = c(formulaNewList, "+", out.transform$Param.transform$X_name[i])
+    }
   }
-
-
+  formulaNewList = paste0(formulaNewList, collapse="")
+  formulaNewList = paste0(formulaNewList, "-1")
   formula.new = as.formula(paste0(formulaNewList, collapse=""))
   data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
   colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
   cat("colnames(data.new) is ", colnames(data.new), "\n")
   cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
+
+
+#  data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
+#  colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
+#  cat("colnames(data.new) is ", colnames(data.new), "\n")
+#  cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
 
 
   if(traitType == "binary"){
@@ -696,18 +707,16 @@ Covariate_Transform<-function(formula, data){
   X_name = colnames(X1)
 		
   # First run linear regression to identify multi collinearity 
-  out.lm<-lm(Y ~ X1-1, data=data)
+  out.lm<-lm(Y ~ X1 - 1, data=data)
 #  out.lm<-lm(Y ~ X1, data=data)
   idx.na<-which(is.na(out.lm$coef))
-
   if(length(idx.na)> 0){
 	X1<-X1[, -idx.na]
 	X_name = X_name[-idx.na]		
         cat("Warning: multi collinearity is detected in covariates! ", X_name[idx.na], " will be excluded in the model\n")
   }
-
   if(!(1 %in% idx.na)){
-    X_name[1] = "1"
+    X_name[1] = "minus1"
   }
 
 	

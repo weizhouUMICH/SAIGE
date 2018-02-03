@@ -486,8 +486,8 @@ public:
     		}//end for(int i = 0; i < M; i++){
 
         	test_bedfile.close();
-		printAlleleFreqVec();
-		printGenoVec();
+		//printAlleleFreqVec();
+		//printGenoVec();
    		Get_Diagof_StdGeno();
   	}//End Function
  
