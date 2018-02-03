@@ -10,7 +10,7 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
   vcfFileIndex = "", vcfField = "DS", savFile = "", savFileIndex = "",
   sampleFile = "", idstoExcludeFile = "", idstoIncludeFile = "",
   rangestoExcludeFile = "", rangestoIncludeFile = "", chrom = "0",
-  start = 0, end = 0, minMAC = 1, minMAF = 0, minInfo = 0,
+  start = 1, end = 2.5e+08, minMAC = 1, minMAF = 0, minInfo = 0,
   GMMATmodelFile = "", varianceRatioFile = "", Cutoff = 2,
   SAIGEOutputFile = "", numLinesOutput = 10000, IsSparse = TRUE,
   IsOutputAFinCaseCtrl = FALSE)
@@ -24,7 +24,7 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{dosageFilecolnamesSkip}{vector of characters. The column names of the skipped columns. Default: c("SNPID", "CHR", "POS", "Allele0", "Allele1")}
 
-\item{bgenFile}{character. Path to bgen file}
+\item{bgenFile}{character. Path to bgen file. Currently version 1.2 with 8 bit compression is supported}
 
 \item{bgenFileIndex}{character. Path to the .bgi file (index of the bgen file)}
 

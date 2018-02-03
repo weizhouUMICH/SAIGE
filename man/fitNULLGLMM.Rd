@@ -6,10 +6,10 @@
 \usage{
 fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
   traitType = "binary", invNormalize = FALSE, covarColList = NULL,
-  qCovarCol = NULL, sampleIDColinphenoFile = "", centerVariables = NULL,
-  tol = 0.02, maxiter = 20, tolPCG = 1e-05, maxiterPCG = 500,
-  nThreads = 1, Cutoff = 2, numMarkers = 30, skipModelFitting = FALSE,
-  outputPrefix = "")
+  qCovarCol = NULL, sampleIDColinphenoFile = "", tol = 0.02,
+  maxiter = 20, tolPCG = 1e-05, maxiterPCG = 500, nThreads = 1,
+  Cutoff = 2, numMarkers = 30, skipModelFitting = FALSE,
+  memoryChunk = 4, tauInit = c(0, 0), outputPrefix = "")
 }
 \arguments{
 \item{plinkFile}{character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM)}
@@ -28,13 +28,15 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
 
 \item{sampleIDColinphenoFile}{character.  Column name for the sample IDs in the phenotype file e.g. "IID".}
 
-\item{centerVariables}{vector of characters.  Covariates to be centered (around the mean) e.g. c("birthYear")}
-
 \item{nThreads}{integer. Number of threads to be used. By default, 1}
 
 \item{numMarkers}{integer (>0). Number of markers to be used for estimating the variance ratio. By default, 30}
 
-\item{skipModelFitting}{logical.  Whether tp skip fitting the null model and only calculating the variance ratio, By default, FALSE. If TURE, the model file ".rda" is needed}
+\item{skipModelFitting}{logical.  Whether to skip fitting the null model and only calculating the variance ratio, By default, FALSE. If TURE, the model file ".rda" is needed}
+
+\item{memoryChunk}{integer or float. The size (Gb) for each memory chunk. By default, 4}
+
+\item{tauInit}{vector of numbers. e.g. c(1,1), Unitial values for tau. For binary traits, the first element will be always be set to 1. If the tauInit is not specified, the second element will be 0.5 for binary traits.}
 
 \item{outputPrefix}{character. Path to the output files with prefix.}
 }
