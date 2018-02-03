@@ -43,11 +43,11 @@ test_stdGeno = function(subSampleInGeno){
 }
 
 #Fit the null glmm for binary traits
-glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform) {
+glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk) {
   subSampleInGeno = subPheno$IndexGeno
   #print(subSampleInGeno[1:100])
   print("Start reading genotype plink file here")
-  re1 = system.time({setgeno(genofile, subSampleInGeno)})
+  re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk)})
   print("Genotype reading is done")
 
   y = fit0$y
@@ -71,8 +71,13 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0
 
   #change, use 0.5 as a default value, and use Get_Coef before getAIScore
   q = 1
-  #tau[fixtau == 0] <- var(Y)/(q+1)
+
+  if(tauInit[fixtau == 0] == 0){
   tau[fixtau == 0] = 0.5
+  }else{
+    tau[fixtau == 0] = tauInit[fixtau == 0]
+  }
+  cat("inital tau is ", tau,"\n")
   tau0=tau
 
   re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
@@ -123,11 +128,11 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0
 
 
 
-glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform) {
+glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk) {
 
   subSampleInGeno = subPheno$IndexGeno
   print("Start reading genotype plink file here")
-  re1 = system.time({setgeno(genofile, subSampleInGeno)})
+  re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk)})
   print("Genotype reading is done")
 
   y = fit0$y
@@ -161,11 +166,14 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau 
 
 
   q = 1
-  cat("tau ",tau,"\n")
-  tau[fixtau == 0] = var(Y)/(q+1)
-  tau0 = tau
+  if(sum(tauInit[fixtau == 0]) == 0){
+    tau[fixtau == 0] = var(Y)/(q+1)
+  }else{
+    tau[fixtau == 0] = tauInit[fixtau == 0]
+  }
 
-  cat("tauv2 ",tau,"\n")
+  tau0 = tau
+  cat("inital tau is ", tau,"\n")
 
   print("ok1")
   re = getAIScore_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG)
@@ -250,10 +258,11 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
 #' @param covarColList vector of characters. Covariates to be used in the glm model e.g c("Sex", "Age")
 #' @param qCovarCol vector of characters. Categorical covariates to be used in the glm model (NOT work yet)
 #' @param sampleIDColinphenoFile character.  Column name for the sample IDs in the phenotype file e.g. "IID".  
-#' @param centerVariables vector of characters.  Covariates to be centered (around the mean) e.g. c("birthYear")
 #' @param nThreads integer. Number of threads to be used. By default, 1 
 #' @param numMarkers integer (>0). Number of markers to be used for estimating the variance ratio. By default, 30
-#' @param skipModelFitting logical.  Whether tp skip fitting the null model and only calculating the variance ratio, By default, FALSE. If TURE, the model file ".rda" is needed 
+#' @param skipModelFitting logical.  Whether to skip fitting the null model and only calculating the variance ratio, By default, FALSE. If TURE, the model file ".rda" is needed 
+#' @param tauInit vector of numbers. e.g. c(1,1), Unitial values for tau. For binary traits, the first element will be always be set to 1. If the tauInit is not specified, the second element will be 0.5 for binary traits.  
+#' @param memoryChunk integer or float. The size (Gb) for each memory chunk. By default, 4
 #' @param outputPrefix character. Path to the output files with prefix. 
 #' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio value, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
 #' @export
@@ -265,7 +274,6 @@ fitNULLGLMM = function(plinkFile = "",
                 covarColList = NULL,
                 qCovarCol = NULL,
                 sampleIDColinphenoFile = "",
-                centerVariables=NULL,
                 tol=0.02,
                 maxiter=20,
                 tolPCG=1e-5,
@@ -274,6 +282,8 @@ fitNULLGLMM = function(plinkFile = "",
                 Cutoff = 2, 
                 numMarkers = 30, 
                 skipModelFitting = FALSE,
+		memoryChunk = 4,
+		tauInit = c(0,0),
                 outputPrefix = ""){
                 #formula, phenoType = "binary",prefix, centerVariables = "", tol=0.02, maxiter=20, tolPCG=1e-5, maxiterPCG=500, nThreads = 1, Cutoff = 2, numMarkers = 1000, skipModelFitting = FALSE){
   if(nThreads > 1){
@@ -327,13 +337,20 @@ fitNULLGLMM = function(plinkFile = "",
     }
 
     #update the categorical variables
-    qCovarColUpdated = NULL
-    for(i in qCovarCol){
-      j = paste0("factor(", i, ")")
-      qCovarColUpdated = c(qCovarColUpdated, j)
-    }
 
-    formula = paste0(phenoCol,"~",paste0(c(covarColList,qCovarColUpdated),collapse="+"))
+    if(length(covarColList) > 0){
+      #qCovarColUpdated = NULL
+      #for(i in qCovarCol){
+      #  j = paste0("factor(", i, ")")
+      #  qCovarColUpdated = c(qCovarColUpdated, j)
+      #}
+      formula = paste0(phenoCol,"~", paste0(covarColList,collapse="+"))
+      #formula = paste0(phenoCol,"~",paste0(c(covarColList,qCovarColUpdated),collapse="+"))
+      hasCovariate = TRUE
+    }else{
+      formula = paste0(phenoCol,"~ 1")
+      hasCovariate = FALSE
+    }    
     cat("formula is ", formula,"\n")
     formula.null = as.formula(formula)
     mmat = model.frame(formula.null, data, na.action=NULL)
@@ -351,16 +368,16 @@ fitNULLGLMM = function(plinkFile = "",
     cat(nrow(dataMerge_sort), " samples will be used for analysis\n")
   }
 
-  #center some covariates
-  if(length(centerVariables)!=0){
-    for(i in centerVariables){
-      if (!(i %in% colnames(dataMerge_sort))){
-        stop("ERROR! column for ", i, " does not exsit in the phenoFile \n")
-      }else{
-        dataMerge_sort[,which(colnames(dataMerge_sort) == i)] = dataMerge_sort[,which(colnames(dataMerge_sort) == i)] - mean(dataMerge_sort[,which(colnames(dataMerge_sort) == i)])
-      }
-    }
-  }
+#  #center some covariates
+#  if(length(centerVariables)!=0){
+#    for(i in centerVariables){
+#      if (!(i %in% colnames(dataMerge_sort))){
+#        stop("ERROR! column for ", i, " does not exsit in the phenoFile \n")
+#      }else{
+#        dataMerge_sort[,which(colnames(dataMerge_sort) == i)] = dataMerge_sort[,which(colnames(dataMerge_sort) == i)] - mean(dataMerge_sort[,which(colnames(dataMerge_sort) == i)])
+#      }
+#    }
+#  }
 
   if(invNormalize){
       cat("Perform the inverse nomalization for ", phenoCol, "\n")
@@ -369,21 +386,25 @@ fitNULLGLMM = function(plinkFile = "",
   }
 
   out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
-  
-
   formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
   if(length(out.transform$Param.transform$X_name) > 1){
-      for(i in c(2:length(out.transform$Param.transform$X_name))){
-        formulaNewList = c(formulaNewList, "+", out.transform$Param.transform$X_name[i])
-      }
+    for(i in c(2:length(out.transform$Param.transform$X_name))){
+      formulaNewList = c(formulaNewList, "+", out.transform$Param.transform$X_name[i])
+    }
   }
-
-
+  formulaNewList = paste0(formulaNewList, collapse="")
+  formulaNewList = paste0(formulaNewList, "-1")
   formula.new = as.formula(paste0(formulaNewList, collapse=""))
   data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
   colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
   cat("colnames(data.new) is ", colnames(data.new), "\n")
   cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
+
+
+#  data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
+#  colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
+#  cat("colnames(data.new) is ", colnames(data.new), "\n")
+#  cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
 
 
   if(traitType == "binary"){
@@ -403,10 +424,10 @@ fitNULLGLMM = function(plinkFile = "",
 
 
     if(!skipModelFitting){
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk))
       save(modglmm, file = modelOut)
     }else{
-      setgeno(plinkFile, dataMerge_sort$IndexGeno)
+      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)	
       load(modelOut)
     }
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,
@@ -437,11 +458,11 @@ fitNULLGLMM = function(plinkFile = "",
 
     if(!skipModelFitting){
 
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk))
       save(modglmm, file = modelOut)
       print("step2")
     }else{
-      setgeno(plinkFile, dataMerge_sort$IndexGeno)
+      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)
       load(modelOut)
     }
  
@@ -686,18 +707,16 @@ Covariate_Transform<-function(formula, data){
   X_name = colnames(X1)
 		
   # First run linear regression to identify multi collinearity 
-  out.lm<-lm(Y ~ X1-1, data=data)
+  out.lm<-lm(Y ~ X1 - 1, data=data)
 #  out.lm<-lm(Y ~ X1, data=data)
   idx.na<-which(is.na(out.lm$coef))
-
   if(length(idx.na)> 0){
 	X1<-X1[, -idx.na]
 	X_name = X_name[-idx.na]		
         cat("Warning: multi collinearity is detected in covariates! ", X_name[idx.na], " will be excluded in the model\n")
   }
-
   if(!(1 %in% idx.na)){
-    X_name[1] = "1"
+    X_name[1] = "minus1"
   }
 
 	

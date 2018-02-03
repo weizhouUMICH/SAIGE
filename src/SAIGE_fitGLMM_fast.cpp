@@ -14,8 +14,6 @@ using namespace std;
 using namespace RcppParallel;
 
 
-
-
 //This is a class with attritbutes about the genotype informaiton 
 class genoClass{
 private:
@@ -28,13 +26,19 @@ private:
 
 
 public:
-	vector<unsigned char> genoVec; 	 
+        //to chunk the geno vector to avoid large continuous memory usage 
+	int numMarkersofEachArray;
+        int numofGenoArray;
+        int numMarkersofLastArray;
+        std::vector< std::vector<unsigned char>* > genoVecofPointers;
+        ///////////
+
+	//vector<unsigned char> genoVec; 	 
   	size_t M;
   	size_t N;
 	size_t Nnomissing;
   	vector<float>	invstdvVec;
 	vector<int>	ptrsubSampleInGeno;
-
 	
   	arma::fvec 	alleleFreqVec;
   	arma::fvec	m_OneSNP_Geno;
@@ -85,12 +89,18 @@ public:
         arma::fvec * Get_OneSNP_Geno(size_t SNPIdx){
                 m_OneSNP_Geno.zeros(Nnomissing);
 
-                size_t Start_idx = m_size_of_esi * SNPIdx;
+		//avoid large continuous memory usage
+		int indexOfVectorPointer = SNPIdx/numMarkersofEachArray;
+                int SNPIdxinVec = SNPIdx % numMarkersofEachArray;
+		////////////////
+
+                size_t Start_idx = m_size_of_esi * SNPIdxinVec;
                 size_t ind= 0;
                 unsigned char geno1;
                 int bufferGeno;
                 for(size_t i=Start_idx; i< Start_idx+m_size_of_esi; i++){
-                        geno1 = genoVec[i];
+                        //geno1 = genoVec[i];
+			geno1 = genoVecofPointers[indexOfVectorPointer]->at(i); //avoid large continuous memory usage
                         for(int j=0; j<4; j++){
                                 int b = geno1 & 1 ;
                                 geno1 = geno1 >> 1;
@@ -111,6 +121,7 @@ public:
        }
    
 	arma::fvec * Get_OneSNP_Geno_atBeginning(size_t SNPIdx, vector<int> & indexNA, vector<unsigned char> & genoVecOneMarkerOld){
+
 		arma::fvec m_OneSNP_GenoTemp;
 		m_OneSNP_GenoTemp.zeros(N);
 		m_OneSNP_Geno.zeros(Nnomissing);
@@ -168,15 +179,23 @@ public:
 
 
  	int Get_OneSNP_StdGeno(size_t SNPIdx, arma::fvec * out ){
+		//avoid large continuous memory usage
+                int indexOfVectorPointer = SNPIdx/numMarkersofEachArray;
+                int SNPIdxinVec = SNPIdx % numMarkersofEachArray;
+                ////////////////
+
  		out->zeros(Nnomissing);
- 		size_t Start_idx = m_size_of_esi * SNPIdx;
+
+ 		size_t Start_idx = m_size_of_esi * SNPIdxinVec;
 		size_t ind= 0;
 		unsigned char geno1;
 		
 		float freq = alleleFreqVec[SNPIdx];
  		float invStd = invstdvVec[SNPIdx];
 		for(size_t i=Start_idx; i< Start_idx+m_size_of_esi; i++){
-			geno1 = genoVec[i];
+//			geno1 = genoVec[i];
+			geno1 = genoVecofPointers[indexOfVectorPointer]->at(i);
+
 			for(int j=0; j<4; j++){
     			int b = geno1 & 1 ;
     			geno1 = geno1 >> 1;
@@ -218,11 +237,12 @@ public:
   	//This function is used instead of using a constructor because using constructor can not take
   	//genofile as an argument from runModel.R 
         //genofile is the predix for plink bim, bed, fam, files   
-  	void setGenoObj(std::string genofile, std::vector<int> subSampleInGeno){
-   		ptrsubSampleInGeno = subSampleInGeno;
+  	void setGenoObj(std::string genofile, std::vector<int> subSampleInGeno, float memoryChunk){
+		//cout << "OK1\n";   
+		ptrsubSampleInGeno = subSampleInGeno;
 		Nnomissing = subSampleInGeno.size(); 
     		// reset
-    		genoVec.clear();
+    		//genoVec.clear();
     		//alleleFreqVec.clear();
   		invstdvVec.clear();
    		M=0;
@@ -232,7 +252,7 @@ public:
 		std::string bimfile = genofile+".bim"; 
 		std::string famfile = genofile+".fam"; 
 		std::string junk;
-
+		//cout << "OK2\n";
 		//count the number of individuals
 		ifstream test_famfile;
 		test_famfile.open(famfile.c_str());
@@ -247,7 +267,7 @@ public:
         	}
 		N = indexRow;
 		test_famfile.clear();	
-
+		//cout << "OK3\n";
 		//count the number of markers
 		ifstream test_bimfile;
         	test_bimfile.open(bimfile.c_str());
@@ -264,8 +284,10 @@ public:
         	test_bimfile.clear(); 
 
     		junk.clear();
+		//cout << "OK3b\n";
     		// Init OneSNP Geno
     		Init_OneSNP_Geno();
+		//cout << "OK3c\n";
     
     		//std::string junk;
     		indexRow = 0;
@@ -279,13 +301,15 @@ public:
 		size_t nbyteOld = ceil(float(N)/4);
 		size_t nbyteNew = ceil(float(Nnomissing)/4);
 		size_t reserve = ceil(float(Nnomissing)/4) * M + M*2;
-		
+		cout << "nbyte: " << nbyteOld << endl;
+		cout << "nbyte: " << nbyteNew << endl;		
+		cout << "reserve: " << reserve << endl;		
+
     		genoVecOneMarkerOld.reserve(nbyteOld);
     		genoVecOneMarkerOld.resize(nbyteOld);
-    		//genoVecOneMarkerNew.reserve(nbyteNew);
-                //cout << "nbyte: " << nbyteNew << endl;
- 		genoVec.reserve(reserve);
+ 		//genoVec.reserve(reserve);
 		
+		//cout << "OK4\n";
 
 		ifstream test_bedfile;
         	test_bedfile.open(bedfile.c_str(), ios::binary);
@@ -297,6 +321,56 @@ public:
 		printf("\nM: %zu, N: %zu\n", M, N);
 
         	//test_bedfile.seekg(3);
+		//set up the array of vectors for genotype
+		numMarkersofEachArray = floor((memoryChunk*pow (10.0, 9.0))/(ceil(float(N)/4)));
+		//cout << "numMarkersofEachArray: " << numMarkersofEachArray << endl;
+		if(M % numMarkersofEachArray == 0){
+                        numofGenoArray = M / numMarkersofEachArray;
+			genoVecofPointers.resize(numofGenoArray);
+                        //cout << "size of genoVecofPointers: " << genoVecofPointers.size() << endl;
+                        for (int i = 0; i < numofGenoArray ; i++){
+                                genoVecofPointers[i] = new vector<unsigned char>;
+                                genoVecofPointers[i]->reserve(numMarkersofEachArray*ceil(float(N)/4));
+                        }
+
+                }else{
+                        numofGenoArray = M/numMarkersofEachArray + 1;
+                        genoVecofPointers.resize(numofGenoArray);
+			numMarkersofLastArray = M - (numofGenoArray-1)*numMarkersofEachArray;
+                        cout << "size of genoVecofPointers: " << genoVecofPointers.size() << endl;
+			try{	
+                        for (int i = 0; i < numofGenoArray-1; i++){
+				//cout << "i = " << i << endl;
+                                genoVecofPointers[i] = new vector<unsigned char>;
+                                genoVecofPointers[i]->reserve(numMarkersofEachArray*ceil(float(N)/4));
+				//cout <<((*genoVecofPointers[i]).capacity()==numMarkersofEachArray*ceil(float(N)/4))<< endl;
+                        }
+			cout << "here\n";
+			genoVecofPointers[numofGenoArray-1] = new vector<unsigned char>;
+			genoVecofPointers[numofGenoArray-1]->reserve(numMarkersofLastArray*ceil(float(N)/4));
+			}
+			catch(std::bad_alloc& ba)
+                        {
+                                std::cerr << "bad_alloc caught1: " << ba.what() << '\n';
+                                exit(EXIT_FAILURE);
+                        }
+			/*
+			numMarkersofLastArray = M - (numofGenoArray-1)*numMarkersofEachArray;
+			cout << "numMarkersofLastArray " << numMarkersofLastArray << endl;
+    			cout << "numMarkersofLastArray*ceil(float(N)/4) " << numMarkersofLastArray*ceil(float(N)/4) << endl;
+			genoVecofPointers[numofGenoArray - 1] = new vector<unsigned char>;
+			cout << "setgeno mark0" << endl;
+			try{
+			genoVecofPointers[numofGenoArray - 1]->reserve(numMarkersofLastArray*ceil(float(N)/4));
+			}
+			 catch(std::bad_alloc& ba)
+  			{
+    				std::cerr << "bad_alloc caught1: " << ba.what() << '\n';
+    				exit(EXIT_FAILURE);
+  			}
+			*/
+			//cout << "setgeno mark0b" << endl;
+		}
 
 
 		alleleFreqVec.zeros(M);
@@ -309,13 +383,14 @@ public:
         	int b2;
         	int a2;
 
-
 		size_t ind= 0;
                 unsigned char geno1 = 0;
                 int bufferGeno;
                 int u;
 		//std::vector<int> genoVec4Markers(4);
 		//test_bedfile.read((char*)(&genoVecTemp[0]),nbyteTemp*M);
+
+
 		for(int i = 0; i < M; i++){
 			genoVecOneMarkerOld.clear();
 			genoVecOneMarkerOld.reserve(nbyteOld);
@@ -324,7 +399,9 @@ public:
 			test_bedfile.seekg(3+nbyteOld*i);
 			test_bedfile.read((char*)(&genoVecOneMarkerOld[0]),nbyteOld);
  			//printf("\nFile read is done: M: %zu, N: %zu, TotalByte %zu\n", M, N, genoVecTemp.size());
-			//cout << "Imputing missing genotypes and extracting the subset of samples with nonmissing genotypes and phenotypes\n";   
+			//cout << "Imputing missing genotypes and extracting the subset of samples with nonmissing genotypes and phenotypes\n";  
+	//		cout << "i is " << i << endl;  
+
       			indexNA.clear();
 		//}	
         		Get_OneSNP_Geno_atBeginning(i, indexNA, genoVecOneMarkerOld);
@@ -347,14 +424,16 @@ public:
 				}
 
 				if(u == 3){
-					genoVec.push_back(geno1);
+					//genoVec.push_back(geno1);
+					genoVecofPointers[i/numMarkersofEachArray]->push_back(geno1); //avoid large continuous memory usage
 					geno1 = 0;
 				}
 			}
 		//cout << "size of genoVec: " << genoVec.size() << endl;
 				
 			if(Nnomissing%4 != 0){
-				genoVec.push_back(geno1);
+				//genoVec.push_back(geno1);
+				genoVecofPointers[i/numMarkersofEachArray]->push_back(geno1); //avoid large continuous memory usage
 				geno1 = 0;
 			}
 
@@ -363,6 +442,7 @@ public:
       			freq = sum(m_OneSNP_Geno)/(2*(Nnomissing-lengthIndexNA));
 
 
+			//cout << "setgeno mark3" << endl;
 		
 			if (lengthIndexNA > 0){
 
@@ -383,7 +463,9 @@ public:
 				for (int k=0; k<lengthIndexNA; k++){
 					indexGeno = indexNA[k];
 					m_OneSNP_Geno[indexGeno] = fillinMissingGeno;
-					setBit(genoVec[i*nbyteNew+(indexGeno/4)], indexGeno%4, a2, b2);
+					//genoVecofPointers[i/numMarkersofEachArray]
+					setBit(genoVecofPointers[i/numMarkersofEachArray]->at((i%numMarkersofEachArray)*nbyteNew+(indexGeno/4)),indexGeno%4, a2, b2);
+					//setBit(genoVec[i*nbyteNew+(indexGeno/4)], indexGeno%4, a2, b2);
 				}
 
 
@@ -404,8 +486,8 @@ public:
     		}//end for(int i = 0; i < M; i++){
 
         	test_bedfile.close();
-		printAlleleFreqVec();
-		printGenoVec();
+		//printAlleleFreqVec();
+		//printGenoVec();
    		Get_Diagof_StdGeno();
   	}//End Function
  
@@ -491,8 +573,14 @@ genoClass geno;
 void closeGenoFile_plink()
 {
   //genoToTest_plainDosage.test_genoGZfile.close();
+	for (int i = 0; i < geno.numofGenoArray; i++){
+		(*geno.genoVecofPointers[i]).clear();	
+    		delete geno.genoVecofPointers[i];
+  	}
 
-  	geno.genoVec.clear();
+  	geno.genoVecofPointers.clear();
+
+  	//geno.genoVec.clear();
   	geno.invstdvVec.clear();
   	geno.ptrsubSampleInGeno.clear();
   	geno.alleleFreqVec.clear();
@@ -589,11 +677,11 @@ arma::fvec getCrossprodMatAndKin(arma::fcolvec& bVec){
 
 
 // [[Rcpp::export]]
-void setgeno(std::string genofile, std::vector<int> & subSampleInGeno)
+void setgeno(std::string genofile, std::vector<int> & subSampleInGeno, float memoryChunk)
 {
 	
 	int start_s=clock();
-        geno.setGenoObj(genofile, subSampleInGeno);
+        geno.setGenoObj(genofile, subSampleInGeno, memoryChunk);
 	//geno.printAlleleFreqVec();
 	//geno.printGenoVec();
 	int stop_s=clock();
