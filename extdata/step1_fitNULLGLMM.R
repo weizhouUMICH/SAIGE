@@ -1,7 +1,9 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
-library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/01232018/SAIGE_install")
+#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/01232018/SAIGE_install")
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE.install")
+
 require(optparse) #install.packages("optparse")
 
 ## set list of cmd line arguments
@@ -16,8 +18,6 @@ option_list <- list(
     help="list of covariates (comma separated)"),
   make_option("--sampleIDColinphenoFile", type="character", default="IID",
     help="Column name of the IDs in the phenotype file"),
-  make_option("--centerVariables", type="character", default="",
-    help="Covariates that should be centered (comma separated)"),
   make_option("--skipModelFitting", type="logical", default=FALSE,
     help="skip model fitting, [default='FALSE']"),
   make_option("--traitType", type="character", default="binary",
@@ -38,7 +38,6 @@ opt <- args$options
 print(opt)
 
 covars <- strsplit(opt$covarColList,",")[[1]]
-centervars <- strsplit(opt$centerVariables,",")[[1]]
 
 
 fitNULLGLMM(plinkFile=opt$plinkFile,
@@ -49,7 +48,6 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
             covarColList = covars,
             qCovarCol = NULL,
             sampleIDColinphenoFile = opt$sampleIDColinphenoFile,
-            centerVariables=centervars,
             tol=0.02,
             maxiter=20,
             tolPCG=1e-5,
