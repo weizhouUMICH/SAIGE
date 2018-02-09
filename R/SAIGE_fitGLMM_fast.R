@@ -430,6 +430,7 @@ fitNULLGLMM = function(plinkFile = "",
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)	
       load(modelOut)
     }
+
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,
                                                     obj.glm.null = fit0,
                                                     obj.noK = obj.noK,
