@@ -608,7 +608,8 @@ Score_Test<-function(obj.null, G, mu, mu2, varRatio){
   ##add on 10-25-2017
   BETA = S/var1
   SE = abs(BETA/qnorm(pval.noadj/2))
-  Tstat = S^2
+  #Tstat = S^2
+  Tstat = S
 
   #return(c(BETA, SE, Tstat, pval.noadj, pval.noadj, NA, var1, var2))
   #return(c(pval.noadj, pval.noadj, TRUE, var1, var2))
