@@ -1,8 +1,8 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
-library(SAIGE)
-
+#library(SAIGE)
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.27")
 require(optparse) #install.packages("optparse")
 
 ## set list of cmd line arguments
@@ -55,6 +55,8 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
             Cutoff = 2,
             numMarkers = opt$numMarkers,
             skipModelFitting = opt$skipModelFitting,
-            outputPrefix = opt$outputPrefix)
+            outputPrefix = opt$outputPrefix,
+	    LOCO = TRUE,
+	    memoryChunk = 0.000001)
 
 

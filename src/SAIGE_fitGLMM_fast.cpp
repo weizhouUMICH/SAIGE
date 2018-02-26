@@ -45,6 +45,16 @@ public:
   	arma::fvec	m_OneSNP_StdGeno;
   	arma::fvec	m_DiagStd;
 
+	//for LOCO
+	//bool LOCO = false;
+	//vector<int> chromosomeStartIndex;
+	//vector<int> chromosomeEndIndex;
+	//vector<int> chromosomeVec;
+        size_t Msub;
+        int startIndex;
+        int endIndex;
+	//end for LOCO
+
 	unsigned char m_genotype_buffer[4];
 	int geno_idx;
 	int m_size_of_esi;
@@ -191,7 +201,9 @@ public:
 		unsigned char geno1;
 		
 		float freq = alleleFreqVec[SNPIdx];
- 		float invStd = invstdvVec[SNPIdx];
+//		cout << "Get_OneSNP_StdGeno here" << endl; 
+		float invStd = invstdvVec[SNPIdx];
+//		cout << "Get_OneSNP_StdGeno here2"  << endl;
 		for(size_t i=Start_idx; i< Start_idx+m_size_of_esi; i++){
 //			geno1 = genoVec[i];
 			geno1 = genoVecofPointers[indexOfVectorPointer]->at(i);
@@ -205,13 +217,15 @@ public:
     			geno1 = geno1 >> 1;
     			
     			if(ind >= Nnomissing){
+//				cout << "Get_OneSNP_StdGeno " << SNPIdx << endl; 
+//				cout << "Nnomissing " << Nnomissing << endl; 
     				return 1;
     			}
     		}
 		}
 		
 		return 1;
-
+		
 		
  	}
 
@@ -220,18 +234,47 @@ public:
 	
 		arma::fvec * temp = &m_OneSNP_StdGeno;
 		// Not yet calculated
+		//cout << "size(m_DiagStd)[0] " << size(m_DiagStd)[0] << endl;
 		if(size(m_DiagStd)[0] != Nnomissing){
 			m_DiagStd.zeros(Nnomissing);
 			for(size_t i=0; i< M; i++){
 				Get_OneSNP_StdGeno(i, temp);
+				//cout << "setgeno mark7 " << i <<  endl;
 				m_DiagStd = m_DiagStd + (*temp) % (*temp);
 			}
 		
 		}
+
+
+		//for(int i=0; i<10; ++i)
+        	//{
+        	//  cout << m_DiagStd[i] << ' ';
+        	//}
+		//cout << endl;
 	
 		return & m_DiagStd;
 	}
  	
+
+	arma::fvec * Get_Diagof_StdGeno_LOCO(){
+
+                arma::fvec * temp = &m_OneSNP_StdGeno;
+                // Not yet calculated
+                if(size(m_DiagStd)[0] != Nnomissing){
+                        m_DiagStd.zeros(Nnomissing);
+                        for(size_t i=0; i< M; i++){
+				if(i < startIndex || i > endIndex){
+                                  Get_OneSNP_StdGeno(i, temp);
+                                  m_DiagStd = m_DiagStd + (*temp) % (*temp);
+				}
+                        }
+
+                }
+
+                return & m_DiagStd;
+        }
+
+
  
   	//Function to assign values to all attributes
   	//This function is used instead of using a constructor because using constructor can not take
@@ -243,8 +286,9 @@ public:
 		Nnomissing = subSampleInGeno.size(); 
     		// reset
     		//genoVec.clear();
-    		//alleleFreqVec.clear();
+    		alleleFreqVec.clear();
   		invstdvVec.clear();
+
    		M=0;
   		N=0;
    	
@@ -372,7 +416,7 @@ public:
 			//cout << "setgeno mark0b" << endl;
 		}
 
-
+		cout << "setgeno mark1" << endl;
 		alleleFreqVec.zeros(M);
         	float freq, Std, invStd;
         	std::vector<int> indexNA;
@@ -390,7 +434,7 @@ public:
 		//std::vector<int> genoVec4Markers(4);
 		//test_bedfile.read((char*)(&genoVecTemp[0]),nbyteTemp*M);
 
-
+		cout << "setgeno mark2" << endl;
 		for(int i = 0; i < M; i++){
 			genoVecOneMarkerOld.clear();
 			genoVecOneMarkerOld.reserve(nbyteOld);
@@ -429,7 +473,6 @@ public:
 					geno1 = 0;
 				}
 			}
-		//cout << "size of genoVec: " << genoVec.size() << endl;
 				
 			if(Nnomissing%4 != 0){
 				//genoVec.push_back(geno1);
@@ -442,7 +485,7 @@ public:
       			freq = sum(m_OneSNP_Geno)/(2*(Nnomissing-lengthIndexNA));
 
 
-			//cout << "setgeno mark3" << endl;
+//			cout << "setgeno mark3" << endl;
 		
 			if (lengthIndexNA > 0){
 
@@ -470,7 +513,8 @@ public:
 
 
 			}
-
+			
+//			cout << "setgeno mark4" << endl;
 
 			freq = sum(m_OneSNP_Geno)/(2*Nnomissing);
       			Std = std::sqrt(2*freq*(1-freq));
@@ -486,9 +530,11 @@ public:
     		}//end for(int i = 0; i < M; i++){
 
         	test_bedfile.close();
+		cout << "setgeno mark5" << endl;
 		//printAlleleFreqVec();
 		//printGenoVec();
-   		Get_Diagof_StdGeno();
+   		//Get_Diagof_StdGeno();
+		cout << "setgeno mark6" << endl;
   	}//End Function
  
 
@@ -509,6 +555,18 @@ public:
     		return(M);
   	}
   
+	int getMsub() const{
+                return(Msub);
+        }
+
+	int getStartIndex() const{
+		return(startIndex);
+	}
+
+	int getEndIndex() const{
+                return(endIndex);
+        }
+
   	int getN() const{
     		return(N);
   	}
@@ -651,6 +709,76 @@ struct CorssProd : public Worker
   	}
 };
 
+
+
+//http://gallery.rcpp.org/articles/parallel-inner-product/
+struct CorssProd_LOCO : public Worker
+{
+        // source vectors
+        arma::fcolvec & m_bVec;
+        unsigned int m_N;
+        unsigned int m_Msub;
+        unsigned int m_M;
+	int startIndex;
+	int endIndex;
+        // product that I have accumulated
+        arma::fvec m_bout;
+
+
+        // constructors
+        CorssProd_LOCO(arma::fcolvec & y)
+                : m_bVec(y) {
+
+                m_Msub = geno.getMsub(); //LOCO
+		startIndex = geno.getStartIndex();
+		endIndex = geno.getEndIndex();
+                m_M = geno.getM(); //LOCO
+                m_N = geno.getNnomissing();
+                m_bout.zeros(m_N);
+        }
+        CorssProd_LOCO(const CorssProd_LOCO& CorssProd_LOCO, Split)
+                : m_bVec(CorssProd_LOCO.m_bVec)
+        {
+
+                m_N = CorssProd_LOCO.m_N;
+                m_M = CorssProd_LOCO.m_M;
+		m_Msub = CorssProd_LOCO.m_Msub;
+		startIndex = geno.getStartIndex();
+                endIndex = geno.getEndIndex();
+                m_bout.zeros(m_N);
+
+        }
+	
+	   // process just the elements of the range I've been asked to
+        void operator()(std::size_t begin, std::size_t end) {
+                arma::fvec vec;
+		float val1;
+                for(unsigned int i = begin; i < end; i++){
+                        geno.Get_OneSNP_StdGeno(i, &vec);
+			
+			if(i >= startIndex && i <= endIndex){
+				val1 = 0;
+				//if(endIndex == 4){
+				//	cout << "i: " << i << endl;
+				//}
+			}else{
+                        	val1 = dot(vec,  m_bVec);
+			}
+                        m_bout += val1 * (vec);
+                }
+        }
+
+        // join my value with that of another InnerProduct
+        void join(const CorssProd_LOCO & rhs) {
+        m_bout += rhs.m_bout;
+        }
+};
+
+
+
+
+
+
 // [[Rcpp::export]]
 arma::fvec parallelCrossProd(arma::fcolvec & bVec) {
   
@@ -661,10 +789,39 @@ arma::fvec parallelCrossProd(arma::fcolvec & bVec) {
   
   // call paralleReduce to start the work
   	parallelReduce(0, M, CorssProd);
-  
+ 	
+	//cout << "M: " << M << endl;
+        //for(int i=0; i<100; ++i)
+        //{
+        //        cout << (CorssProd.m_bout/M)[i] << ' ';
+        //}
+        //cout << endl; 
   // return the computed product
   	return CorssProd.m_bout/M;
 }
+
+
+// [[Rcpp::export]]
+arma::fvec parallelCrossProd_LOCO(arma::fcolvec & bVec) {
+
+  // declare the InnerProduct instance that takes a pointer to the vector data
+        int Msub = geno.getMsub();
+
+        CorssProd_LOCO CorssProd_LOCO(bVec);
+
+  // call paralleReduce to start the work
+        parallelReduce(0, Msub, CorssProd_LOCO);
+
+  // return the computed product
+	//cout << "Msub: " << Msub << endl;
+        //for(int i=0; i<100; ++i)
+        //{
+        //	cout << (CorssProd_LOCO.m_bout/Msub)[i] << ' ';
+        //}
+	//cout << endl;
+        return CorssProd_LOCO.m_bout/Msub;
+}
+
 
 
 // [[Rcpp::export]]
@@ -674,6 +831,16 @@ arma::fvec getCrossprodMatAndKin(arma::fcolvec& bVec){
   
   	return(crossProdVec);
 }
+
+
+// [[Rcpp::export]]
+arma::fvec getCrossprodMatAndKin_LOCO(arma::fcolvec& bVec){
+
+        arma::fvec crossProdVec = parallelCrossProd_LOCO(bVec) ;
+
+        return(crossProdVec);
+}
+
 
 
 // [[Rcpp::export]]
@@ -753,6 +920,33 @@ arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
 }
 
 // [[Rcpp::export]]
+arma::fvec getDiagOfSigma_LOCO(arma::fvec& wVec, arma::fvec& tauVec){
+
+        int Nnomissing = geno.getNnomissing();
+        int Msub = geno.getMsub();
+
+        //cout << "N=" << N << endl;
+        arma::fvec diagVec(Nnomissing);
+        float diagElement;
+        float floatBuffer;
+        //float minvElement;
+
+        
+        diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno_LOCO()) /(Msub) + tauVec(0)/wVec;
+        for(unsigned int i=0; i< Nnomissing; i++){
+                if(diagVec(i) < 1e-4){
+                        diagVec(i) = 1e-4 ;
+                }
+        }
+
+    //cout << *geno.Get_Diagof_StdGeno() << endl ;
+    //cout << diagVec << endl ;
+        return(diagVec);
+
+}
+
+
+// [[Rcpp::export]]
 arma::fcolvec getCrossprod(arma::fcolvec& bVec, arma::fvec& wVec, arma::fvec& tauVec){
 
         arma::fcolvec crossProdVec;
@@ -770,6 +964,25 @@ arma::fcolvec getCrossprod(arma::fcolvec& bVec, arma::fvec& wVec, arma::fvec& ta
 
 
 
+// [[Rcpp::export]]
+arma::fcolvec getCrossprod_LOCO(arma::fcolvec& bVec, arma::fvec& wVec, arma::fvec& tauVec){
+
+        arma::fcolvec crossProdVec;
+        // Added by SLEE, 04/16/2017
+        if(tauVec(1) == 0){
+                crossProdVec = tauVec(0)*(bVec % (1/wVec));
+                return(crossProdVec);
+        }
+        //
+        arma::fvec crossProd1  = getCrossprodMatAndKin_LOCO(bVec);
+        crossProdVec = tauVec(0)*(bVec % (1/wVec)) + tauVec(1)*crossProd1;
+
+        return(crossProdVec);
+}
+
+
+
+
 
 //Sigma = tau[1] * diag(1/W) + tau[2] * kins 
 //This function needs the function getDiagOfSigma and function getCrossprod
@@ -781,6 +994,9 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
 
   	arma::fvec crossProdVec(Nnomissing);
   	arma::fvec minvVec = 1/getDiagOfSigma(wVec, tauVec);
+	//for(int i = 0; i < 10; i++){
+        //        cout << "full set minvVec[i]: " << minvVec[i] << endl;
+        //}
   	float sumr2 = sum(rVec % rVec);
 
   	arma::fvec zVec = minvVec % rVec;
@@ -821,6 +1037,62 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
 }
 
 
+
+//Sigma = tau[1] * diag(1/W) + tau[2] * kins 
+//This function needs the function getDiagOfSigma and function getCrossprod
+// [[Rcpp::export]]
+arma::fvec getPCG1ofSigmaAndVector_LOCO(arma::fvec& wVec,  arma::fvec& tauVec, arma::fvec& bVec, int maxiterPCG, float tolPCG){
+  	arma::fvec rVec = bVec;
+  	arma::fvec r1Vec;
+  	int Nnomissing = geno.getNnomissing();
+
+  	arma::fvec crossProdVec(Nnomissing);
+  	arma::fvec minvVec = 1/getDiagOfSigma_LOCO(wVec, tauVec);
+        //for(int i = 0; i < 10; i++){
+	//	cout << "minvVec[i]: " << minvVec[i] << endl;
+        //} 
+ 
+  	float sumr2 = sum(rVec % rVec);
+
+  	arma::fvec zVec = minvVec % rVec;
+  	arma::fvec z1Vec;
+ 	arma::fvec pVec = zVec;
+  
+  	arma::fvec xVec(Nnomissing);
+  	xVec.zeros();
+  
+  	int iter = 0;
+  	while (sumr2 > tolPCG && iter < maxiterPCG) {
+    		iter = iter + 1;
+    		arma::fcolvec ApVec = getCrossprod_LOCO(pVec, wVec, tauVec);
+    		arma::fvec preA = (rVec.t() * zVec)/(pVec.t() * ApVec);
+
+    		float a = preA(0);
+    
+    		xVec = xVec + a * pVec;
+    
+    		r1Vec = rVec - a * ApVec;
+
+    		z1Vec = minvVec % r1Vec;
+    		arma::fvec Prebet = (z1Vec.t() * r1Vec)/(zVec.t() * rVec);
+    		float bet = Prebet(0);
+    		pVec = z1Vec+ bet*pVec;
+    		zVec = z1Vec;
+    		rVec = r1Vec;
+    
+    		sumr2 = sum(rVec % rVec);
+  	}
+  
+  	if (iter >= maxiterPCG){
+    		cout << "pcg did not converge. You may increase maxiter number." << endl;
+     
+  	}
+  	cout << "iter from getPCG1ofSigmaAndVector " << iter << endl;
+  	return(xVec);
+}
+
+
+
 //http://thecoatlessprofessor.com/programming/set_rs_seed_in_rcpp_sequential_case/
 // [[Rcpp::export]]
 void set_seed(unsigned int seed) {
@@ -834,6 +1106,22 @@ Rcpp::NumericVector nb(int n) {
   	return(rbinom(n,1,0.5));
 }
 
+/*
+// [[Rcpp::export]] 
+void setChromosomeIndicesforLOCO(vector<int> chromosomeStartIndexVec, vector<int> chromosomeEndIndexVec, vector<int> chromosomeVecVec){
+  LOCO = true;
+  chromosomeStartIndex = chromosomeStartIndexVec;
+  chromosomeEndIndexV = chromosomeEndIndexVec;
+  chromosomeVec = chromosomeVecVec;
+}
+*/
+
+// [[Rcpp::export]]
+void setStartEndIndex(int startIndex, int endIndex){
+  geno.startIndex = startIndex;
+  geno.endIndex = endIndex;
+  geno.Msub = geno.M - (endIndex - startIndex + 1);
+}
 
 //This function needs the function getPCG1ofSigmaAndVector and function getCrossprodMatAndKin
 // [[Rcpp::export]]
@@ -894,6 +1182,36 @@ Rcpp::List getCoefficients(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,
   	arma::fvec eta = Yvec - tauVec(0) * (Sigma_iY - Sigma_iX * alpha) / wVec;
   	return Rcpp::List::create(Named("Sigma_iY") = Sigma_iY, Named("Sigma_iX") = Sigma_iX, Named("cov") = cov, Named("alpha") = alpha, Named("eta") = eta);
 }
+
+
+// [[Rcpp::export]]
+Rcpp::List getCoefficients_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec, int maxiterPCG, float tolPCG){
+
+        int Nnomissing = geno.getNnomissing();
+        arma::fvec Sigma_iY;
+
+        Sigma_iY = getPCG1ofSigmaAndVector_LOCO(wVec, tauVec, Yvec, maxiterPCG, tolPCG);
+        int colNumX = Xmat.n_cols;
+        arma::fmat Sigma_iX(Nnomissing,colNumX);
+        arma::fvec XmatVecTemp;
+        for(int i = 0; i < colNumX; i++){
+                XmatVecTemp = Xmat.col(i);
+
+                Sigma_iX.col(i) = getPCG1ofSigmaAndVector_LOCO(wVec, tauVec, XmatVecTemp, maxiterPCG, tolPCG);
+
+        }
+
+        arma::fmat Xmatt = Xmat.t();
+        arma::fmat cov = inv_sympd(Xmatt * Sigma_iX);
+        arma::fmat Sigma_iXt = Sigma_iX.t();
+        arma::fvec SigmaiXtY = Sigma_iXt * Yvec;
+        arma::fvec alpha = cov * SigmaiXtY;
+
+        arma::fvec eta = Yvec - tauVec(0) * (Sigma_iY - Sigma_iX * alpha) / wVec;
+        return Rcpp::List::create(Named("Sigma_iY") = Sigma_iY, Named("Sigma_iX") = Sigma_iX, Named("cov") = cov, Named("alpha") = alpha, Named("eta") = eta);
+}
+
+
 
 
 // Modified by SLEE, 04/16/2017
@@ -985,13 +1303,42 @@ arma::fmat getSigma_X(arma::fvec& wVec, arma::fvec& tauVec,arma::fmat& Xmat, int
 
 
 // [[Rcpp::export]]
+arma::fmat getSigma_X_LOCO(arma::fvec& wVec, arma::fvec& tauVec,arma::fmat& Xmat, int maxiterPCG, float tolPCG){
+
+
+        int Nnomissing = Xmat.n_rows;
+        int colNumX = Xmat.n_cols;
+
+        cout << colNumX << endl;
+        cout << size(wVec) << endl;
+        cout << size(tauVec) << endl;
+
+
+        arma::fmat Sigma_iX1(Nnomissing,colNumX);
+        arma::fvec XmatVecTemp;
+
+        for(int i = 0; i < colNumX; i++){
+                XmatVecTemp = Xmat.col(i);
+                Sigma_iX1.col(i) = getPCG1ofSigmaAndVector_LOCO(wVec, tauVec, XmatVecTemp, maxiterPCG, tolPCG);
+        }
+        return(Sigma_iX1);
+}
+
+
+
+// [[Rcpp::export]]
 arma::fvec  getSigma_G(arma::fvec& wVec, arma::fvec& tauVec,arma::fvec& Gvec, int maxiterPCG, float tolPCG){
   	arma::fvec Sigma_iG;
   	Sigma_iG = getPCG1ofSigmaAndVector(wVec, tauVec, Gvec, maxiterPCG, tolPCG);
   	return(Sigma_iG);
 }
 
-
+// [[Rcpp::export]]
+arma::fvec  getSigma_G_LOCO(arma::fvec& wVec, arma::fvec& tauVec,arma::fvec& Gvec, int maxiterPCG, float tolPCG){
+        arma::fvec Sigma_iG;
+        Sigma_iG = getPCG1ofSigmaAndVector_LOCO(wVec, tauVec, Gvec, maxiterPCG, tolPCG);
+        return(Sigma_iG);
+}
 
 //This function needs the function getPCG1ofSigmaAndVector and function getCrossprodMatAndKin
 // [[Rcpp::export]]

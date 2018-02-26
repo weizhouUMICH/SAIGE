@@ -29,8 +29,16 @@ parallelCrossProd <- function(bVec) {
     .Call('_SAIGE_parallelCrossProd', PACKAGE = 'SAIGE', bVec)
 }
 
+parallelCrossProd_LOCO <- function(bVec) {
+    .Call('_SAIGE_parallelCrossProd_LOCO', PACKAGE = 'SAIGE', bVec)
+}
+
 getCrossprodMatAndKin <- function(bVec) {
     .Call('_SAIGE_getCrossprodMatAndKin', PACKAGE = 'SAIGE', bVec)
+}
+
+getCrossprodMatAndKin_LOCO <- function(bVec) {
+    .Call('_SAIGE_getCrossprodMatAndKin_LOCO', PACKAGE = 'SAIGE', bVec)
 }
 
 setgeno <- function(genofile, subSampleInGeno, memoryChunk) {
@@ -53,12 +61,24 @@ getDiagOfSigma <- function(wVec, tauVec) {
     .Call('_SAIGE_getDiagOfSigma', PACKAGE = 'SAIGE', wVec, tauVec)
 }
 
+getDiagOfSigma_LOCO <- function(wVec, tauVec) {
+    .Call('_SAIGE_getDiagOfSigma_LOCO', PACKAGE = 'SAIGE', wVec, tauVec)
+}
+
 getCrossprod <- function(bVec, wVec, tauVec) {
     .Call('_SAIGE_getCrossprod', PACKAGE = 'SAIGE', bVec, wVec, tauVec)
 }
 
+getCrossprod_LOCO <- function(bVec, wVec, tauVec) {
+    .Call('_SAIGE_getCrossprod_LOCO', PACKAGE = 'SAIGE', bVec, wVec, tauVec)
+}
+
 getPCG1ofSigmaAndVector <- function(wVec, tauVec, bVec, maxiterPCG, tolPCG) {
     .Call('_SAIGE_getPCG1ofSigmaAndVector', PACKAGE = 'SAIGE', wVec, tauVec, bVec, maxiterPCG, tolPCG)
+}
+
+getPCG1ofSigmaAndVector_LOCO <- function(wVec, tauVec, bVec, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getPCG1ofSigmaAndVector_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, bVec, maxiterPCG, tolPCG)
 }
 
 set_seed <- function(seed) {
@@ -69,12 +89,20 @@ nb <- function(n) {
     .Call('_SAIGE_nb', PACKAGE = 'SAIGE', n)
 }
 
+setStartEndIndex <- function(startIndex, endIndex) {
+    invisible(.Call('_SAIGE_setStartEndIndex', PACKAGE = 'SAIGE', startIndex, endIndex))
+}
+
 GetTrace <- function(Sigma_iX, Xmat, wVec, tauVec, cov1, nrun, maxiterPCG, tolPCG) {
     .Call('_SAIGE_GetTrace', PACKAGE = 'SAIGE', Sigma_iX, Xmat, wVec, tauVec, cov1, nrun, maxiterPCG, tolPCG)
 }
 
 getCoefficients <- function(Yvec, Xmat, wVec, tauVec, maxiterPCG, tolPCG) {
     .Call('_SAIGE_getCoefficients', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, maxiterPCG, tolPCG)
+}
+
+getCoefficients_LOCO <- function(Yvec, Xmat, wVec, tauVec, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getCoefficients_LOCO', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, maxiterPCG, tolPCG)
 }
 
 getAIScore <- function(Yvec, Xmat, wVec, tauVec, Sigma_iY, Sigma_iX, cov, nrun, maxiterPCG, tolPCG) {
@@ -89,8 +117,16 @@ getSigma_X <- function(wVec, tauVec, Xmat, maxiterPCG, tolPCG) {
     .Call('_SAIGE_getSigma_X', PACKAGE = 'SAIGE', wVec, tauVec, Xmat, maxiterPCG, tolPCG)
 }
 
+getSigma_X_LOCO <- function(wVec, tauVec, Xmat, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getSigma_X_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, Xmat, maxiterPCG, tolPCG)
+}
+
 getSigma_G <- function(wVec, tauVec, Gvec, maxiterPCG, tolPCG) {
     .Call('_SAIGE_getSigma_G', PACKAGE = 'SAIGE', wVec, tauVec, Gvec, maxiterPCG, tolPCG)
+}
+
+getSigma_G_LOCO <- function(wVec, tauVec, Gvec, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getSigma_G_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, Gvec, maxiterPCG, tolPCG)
 }
 
 GetTrace_q <- function(Sigma_iX, Xmat, wVec, tauVec, cov1, nrun, maxiterPCG, tolPCG) {

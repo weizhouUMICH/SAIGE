@@ -36,6 +36,7 @@ SPAGMMATtest = function(dosageFile = "",
                  dosageFileNrowSkip = 0, 
                  dosageFileNcolSkip = 0,
                  dosageFilecolnamesSkip = c("SNPID", "CHR", "POS", "Allele0", "Allele1"),
+		 dosageFileChrCol = "CHR",   ##for LOCO
 		 bgenFile = "",
 		 bgenFileIndex = "", 
 		 vcfFile = "",
@@ -309,8 +310,7 @@ SPAGMMATtest = function(dosageFile = "",
     if(Cutoff < 10^-2){
         Cutoff=10^-2
     }
-
-    mu = obj.glmm.null$fitted.values
+ 
     y = obj.glm.null$y
     OUT = NULL
     numPassMarker = 0
@@ -324,11 +324,44 @@ SPAGMMATtest = function(dosageFile = "",
     cat("Analyzing ", NCase, " cases and ",NCtrl, " controls \n")
    
     N = length(y)
-    mu.a<-as.vector(mu)
-    mu2.a<-mu.a *(1-mu.a)
-    obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
-    obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
-    obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a)) 
+
+    indChromCheck = FALSE
+    if(!obj.glmm.null$LOCO){
+      mu = obj.glmm.null$fitted.values
+      mu.a<-as.vector(mu)
+      mu2.a<-mu.a *(1-mu.a)
+      obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
+      obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
+      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+    }else if(chrom != ""){
+      chrom_v2 = as.character(chrom)
+      chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
+      if(obj.glmm.null$LOCOResult[[chrom_v3]]$isLOCO){
+        mu = obj.glmm.null$LOCOResult[[chrom_v3]]$fitted.values
+        mu.a<-as.vector(mu)
+        mu2.a<-mu.a *(1-mu.a)
+      }else{
+        mu = obj.glmm.null$fitted.values
+        mu.a<-as.vector(mu)
+        mu2.a<-mu.a *(1-mu.a)
+      }
+      obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
+      obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
+      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+
+    }else{
+      cat("LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
+      indChromCheck = TRUE
+    }
+
+
+
+
+    #mu.a<-as.vector(mu)
+    #mu2.a<-mu.a *(1-mu.a)
+    #obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
+    #obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
+    #obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a)) 
 #####
   }else if(traitType == "quantitative"){
     cat("It is a quantitative trait\n")
@@ -350,7 +383,6 @@ SPAGMMATtest = function(dosageFile = "",
     mth = 0
     sampleIndex = sampleIndex - 1
     N = length(y)
-
     mu.a<-as.vector(mu)
     obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1)
     obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
@@ -370,6 +402,15 @@ SPAGMMATtest = function(dosageFile = "",
       AF = AC/(2*N)
       rowHeader=getrowHeaderVec_plainDosage()
       rowHeader = c(rowHeader, AC, AF)
+      #cat("rowHeader is ", rowHeader, "\n")
+      #cat("dosageFilecolnamesSkip is ", dosageFilecolnamesSkip, "\n")
+      #cat("dosageFileChrCol is ", dosageFileChrCol, "\n")
+      #cat("which(dosageFilecolnamesSkip == dosageFileChrCol) is ", which(dosageFilecolnamesSkip == dosageFileChrCol), "\n")
+      if(indChromCheck){      
+        CHR = rowHeader[which(dosageFilecolnamesSkip == dosageFileChrCol)]
+        #cat("CHR is here ", CHR , "\n")
+      }
+
       if(Mtest == mth){isVariant = FALSE}
 
     }else if (dosageFileType == "bgen"){
@@ -384,6 +425,10 @@ SPAGMMATtest = function(dosageFile = "",
       AF = Gx$variants$AF
 
       rowHeader=as.vector(unlist(Gx$variants))
+      if(indChromCheck){
+	CHR = Gx$variants$chromosome
+      }	
+
       if(Mtest == mth){isVariant = FALSE}
     }else if(dosageFileType == "vcf"){
       markerInfo = 1 ##markerInfo is nor provided
@@ -393,16 +438,36 @@ SPAGMMATtest = function(dosageFile = "",
       AC = Gx$variants$AC
       AF = Gx$variants$AF
       rowHeader=as.vector(unlist(Gx$variants))
+      if(indChromCheck){
+        CHR = Gx$variants$chromosome
+      }
       isVariant = getGenoOfnthVar_vcfDosage_pre()
       #endTimeGx = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
       #timeGx = endTimeGx - startTimeGx
       #cat("timeGx ", timeGx, "Seconds\n")
     }
 
-   
+
+    if(indChromCheck){
+      CHR = as.character(CHR)
+      CHRv2 = as.numeric(gsub("[^0-9.]", "", CHR))
+      #cat("CHRv2 is ", CHRv2, "\n") 
+      #cat("CHR is ", CHR, "\n") 
+    
+      if(obj.glmm.null$LOCOResult[[CHRv2]]$isLOCO){
+        mu = obj.glmm.null$LOCOResult[[CHRv2]]$fitted.values
+        mu.a<-as.vector(mu)
+        mu2.a<-mu.a *(1-mu.a)
+      }else{
+        mu = obj.glmm.null$fitted.values
+        mu.a<-as.vector(mu)
+        mu2.a<-mu.a *(1-mu.a)
+      }
+      obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
+      obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
+      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+    }
     MAF = min(AF, 1-AF)
-
-
     if(MAF >= testMinMAF & markerInfo >= minInfo){
       numPassMarker = numPassMarker + 1
       if(traitType == "binary"){

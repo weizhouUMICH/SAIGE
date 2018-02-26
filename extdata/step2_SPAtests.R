@@ -1,7 +1,8 @@
 options(stringsAsFactors=F, digits=3)
 
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/01232018/SAIGE_install")
-library(SAIGE)
+#library(SAIGE)
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.27")
 library(optparse)
 
 option_list <- list(
@@ -59,11 +60,12 @@ print(opt)
 
 try(if(length(which(opt == "")) > 0) stop("Missing arguments"))
 
+dosageFilecolnames <- strsplit(opt$dosageFilecolnamesSkip,",")[[1]]
 
 SPAGMMATtest(dosageFile=opt$dosageFile,
              dosageFileNrowSkip=opt$dosageFileNrowSkip,
              dosageFileNcolSkip=opt$dosageFileNcolSkip,
-             dosageFilecolnamesSkip=opt$dosageFilecolnames,
+             dosageFilecolnamesSkip=dosageFilecolnames,
 	     vcfFile=opt$vcfFile,
              vcfFileIndex=opt$vcfFileIndex,
 	     vcfField=opt$vcfField,
