@@ -84,7 +84,7 @@ test_stdGeno = function(subSampleInGeno){
 }
 
 #Fit the null glmm for binary traits
-glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec) {
+glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff) {
   subSampleInGeno = subPheno$IndexGeno
   #print(subSampleInGeno[1:100])
   print("Start reading genotype plink file here")
@@ -122,7 +122,9 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0
   tau0=tau
 
   re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
-  re = getAIScore(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG, tolPCG)
+  re = getAIScore(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG,tolPCG = tolPCG, traceCVcutoff = traceCVcutoff)
+
+
   tau[2] = max(0, tau0[2] + tau0[2]^2 * (re$YPAPY - re$Trace)/n)
 
   if(verbose) {
@@ -138,7 +140,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0
 
     # use Get_Coef before getAIScore        
     re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
-    fit = fitglmmaiRPCG(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG, tolPCG, tol = tol)
+    fit = fitglmmaiRPCG(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG, tolPCG, tol = tol, traceCVcutoff = traceCVcutoff)
 
     tau = as.numeric(fit$tau)
     cov = re.coef$cov
@@ -192,7 +194,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0
 
 
 
-glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk) {
+glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, traceCVcutoff) {
 
   subSampleInGeno = subPheno$IndexGeno
   print("Start reading genotype plink file here")
@@ -240,7 +242,7 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau 
   cat("inital tau is ", tau,"\n")
 
   print("ok1")
-  re = getAIScore_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG)
+  re = getAIScore_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG, traceCVcutoff)
   tau[2] = max(0, tau0[2] + tau0[2]^2 * (re$YPAPY - re$Trace[2])/n)
   tau[1] = max(0, tau0[1] + tau0[1]^2 * (re$YPA0PY - re$Trace[1])/n)
   cat("tauv3 ",tau,"\n")
@@ -251,7 +253,7 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau 
     alpha0 = alpha
 
     tau0 = tau
-    fit = fitglmmaiRPCG_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG, tol)
+    fit = fitglmmaiRPCG_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
     tau = as.numeric(fit$tau)
     cov = as.matrix(fit$cov)
     alpha = as.numeric(fit$alpha)
@@ -327,6 +329,8 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
 #' @param skipModelFitting logical.  Whether to skip fitting the null model and only calculating the variance ratio, By default, FALSE. If TURE, the model file ".rda" is needed 
 #' @param tauInit vector of numbers. e.g. c(1,1), Unitial values for tau. For binary traits, the first element will be always be set to 1. If the tauInit is not specified, the second element will be 0.5 for binary traits.  
 #' @param memoryChunk integer or float. The size (Gb) for each memory chunk. By default, 4
+#' @param LOCO logical. Whether to apply the leave-one-chromosome-out (LOCO) option. 
+#' @param traceCVcutoff float. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun
 #' @param outputPrefix character. Path to the output files with prefix. 
 #' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio value, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
 #' @export
@@ -349,6 +353,7 @@ fitNULLGLMM = function(plinkFile = "",
 		memoryChunk = 4,
 		tauInit = c(0,0),
 		LOCO = FALSE,
+		traceCVcutoff = 0.0025,
                 outputPrefix = ""){
                 #formula, phenoType = "binary",prefix, centerVariables = "", tol=0.02, maxiter=20, tolPCG=1e-5, maxiterPCG=500, nThreads = 1, Cutoff = 2, numMarkers = 1000, skipModelFitting = FALSE){
   if(nThreads > 1){
@@ -513,7 +518,7 @@ fitNULLGLMM = function(plinkFile = "",
 
 
     if(!skipModelFitting){
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff))
       save(modglmm, file = modelOut)
     }else{
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)	
@@ -551,7 +556,7 @@ fitNULLGLMM = function(plinkFile = "",
 
     if(!skipModelFitting){
 
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, traceCVcutoff=traceCVcutoff))
       save(modglmm, file = modelOut)
       print("step2")
     }else{
@@ -610,7 +615,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
   W = sqrtW^2
   tauVecNew = obj.glmm.null$theta
   X1 = obj.noK$X1
-  Sigma_iX = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
+  Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
   y = obj.glm.null$y
   ##randomize the marker orders to be tested
   mMarkers = gettotalMarker()
@@ -645,8 +650,18 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
       g = G/sqrt(AC)
       q = innerProduct(g,y)
 
-      if(!obj.glmm.null$LOCO | !(obj.glmm.null$LOCOResult[[CHR]]$isLOCO)){
+      if(!obj.glmm.null$LOCO){
         Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
+	Sigma_iX = Sigma_iX_noLOCO
+      }else if(!(obj.glmm.null$LOCOResult[[CHR]]$isLOCO)){
+	eta = obj.glmm.null$linear.predictors
+  	mu = obj.glmm.null$fitted.values
+  	mu.eta = family$mu.eta(eta)
+  	sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
+  	W = sqrtW^2
+	Sigma_iX = Sigma_iX_noLOCO
+#  	Sigma_iX = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
+	Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
       }else{
         eta = obj.glmm.null$LOCOResult[[CHR]]$linear.predictors
         mu = obj.glmm.null$LOCOResult[[CHR]]$fitted.values

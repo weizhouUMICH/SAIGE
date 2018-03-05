@@ -1123,35 +1123,65 @@ void setStartEndIndex(int startIndex, int endIndex){
   geno.Msub = geno.M - (endIndex - startIndex + 1);
 }
 
-//This function needs the function getPCG1ofSigmaAndVector and function getCrossprodMatAndKin
+//This function calculates the coefficients of variation for mean of a vector
 // [[Rcpp::export]]
-float GetTrace(arma::fmat Sigma_iX, arma::fmat& Xmat, arma::fvec& wVec, arma::fvec& tauVec, arma::fmat& cov1, int nrun, int maxiterPCG, float tolPCG){
-  
-  	set_seed(200);
-  	int Nnomissing = geno.getNnomissing();
-  	arma::fmat Sigma_iXt = Sigma_iX.t();  
+float calCV(arma::fvec& xVec){
+  int veclen = xVec.n_elem;
+  float vecMean = arma::mean(xVec);
+  float vecSd = arma::stddev(xVec);
+  float vecCV = (vecSd/vecMean)/veclen;
+  return(vecCV);
+}
 
-  	arma::fvec tempVec(nrun);
-  	tempVec.zeros();
-  	for(int i = 0; i < nrun; i++){
-    		Rcpp::NumericVector uVec0;
-    		uVec0 = nb(Nnomissing);
-    		arma::fvec uVec = as<arma::fvec>(uVec0);
-    		uVec = uVec*2 - 1;
-    		arma::fvec Sigma_iu;
-    		Sigma_iu = getPCG1ofSigmaAndVector(wVec, tauVec, uVec, maxiterPCG, tolPCG);
-    
-    
-    		arma::fcolvec Pu;
-    		Pu = Sigma_iu - Sigma_iX * (cov1 *  (Sigma_iXt * uVec));
-    		arma::fvec Au;
+// [[Rcpp::export]]
+float GetTrace(arma::fmat Sigma_iX, arma::fmat& Xmat, arma::fvec& wVec, arma::fvec& tauVec, arma::fmat& cov1, int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff){
+  set_seed(200);
+  int Nnomissing = geno.getNnomissing();
+  arma::fmat Sigma_iXt = Sigma_iX.t();
+  arma::fvec Sigma_iu;  
+  arma::fcolvec Pu;
+  arma::fvec Au;
+  arma::fvec uVec;
 
-    		Au = getCrossprodMatAndKin(uVec);
-    		tempVec(i) = dot(Au, Pu);
-  	}
-  	float tra = sum(tempVec)/nrun;
-  	return(tra);
-}	
+  int nrunStart = 0;
+  int nrunEnd = nrun;
+  float traceCV = traceCVcutoff + 0.1;
+  arma::fvec tempVec(nrun);
+  tempVec.zeros();
+
+
+  while(traceCV > traceCVcutoff){     
+    //arma::fvec tempVec(nrun);
+    //tempVec.zeros();
+    for(int i = nrunStart; i < nrunEnd; i++){
+      Rcpp::NumericVector uVec0;
+      uVec0 = nb(Nnomissing);
+      uVec = as<arma::fvec>(uVec0);
+      uVec = uVec*2 - 1;
+      Sigma_iu = getPCG1ofSigmaAndVector(wVec, tauVec, uVec, maxiterPCG, tolPCG);
+      Pu = Sigma_iu - Sigma_iX * (cov1 *  (Sigma_iXt * uVec));
+      Au = getCrossprodMatAndKin(uVec);
+      tempVec(i) = dot(Au, Pu);
+      Au.clear();
+      Pu.clear();
+      Sigma_iu.clear();
+      uVec.clear();
+    }
+    traceCV = calCV(tempVec);
+    if(traceCV > traceCVcutoff){
+      nrunStart = nrunEnd;
+      nrunEnd = nrunEnd + 10;
+      tempVec.resize(nrunEnd); 
+      cout << "CV for trace random estimator using "<< nrun << " runs is " << traceCV <<  " > " << traceCVcutoff << endl;
+      cout << "try " << nrunEnd << " runs" << endl;      
+    }
+  }
+
+  float tra = arma::mean(tempVec);
+  tempVec.clear();
+  return(tra);
+}
+
 
 
 // Added by SLEE, 04/16/2017
@@ -1220,7 +1250,7 @@ Rcpp::List getCoefficients_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& 
 // [[Rcpp::export]]
 Rcpp::List getAIScore(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec,
 arma::fvec& Sigma_iY, arma::fmat & Sigma_iX, arma::fmat & cov,
-int nrun, int maxiterPCG, float tolPCG){
+int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff){
 
 	arma::fmat Sigma_iXt = Sigma_iX.t();
 
@@ -1228,7 +1258,7 @@ int nrun, int maxiterPCG, float tolPCG){
   	arma::fvec APY = getCrossprodMatAndKin(PY1);
   	float YPAPY = dot(PY1, APY);
 
-  	float Trace = GetTrace(Sigma_iX, Xmat, wVec, tauVec, cov, nrun, maxiterPCG, tolPCG);
+  	float Trace = GetTrace(Sigma_iX, Xmat, wVec, tauVec, cov, nrun, maxiterPCG, tolPCG, traceCVcutoff);
   	arma::fvec PAPY_1 = getPCG1ofSigmaAndVector(wVec, tauVec, APY, maxiterPCG, tolPCG);
   	arma::fvec PAPY = PAPY_1 - Sigma_iX * (cov * (Sigma_iXt * PAPY_1));
   	float AI = dot(APY, PAPY);
@@ -1242,9 +1272,9 @@ int nrun, int maxiterPCG, float tolPCG){
 // [[Rcpp::export]]
 Rcpp::List fitglmmaiRPCG(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec,
 arma::fvec& Sigma_iY, arma::fmat & Sigma_iX, arma::fmat & cov,
-int nrun, int maxiterPCG, float tolPCG, float tol){
+int nrun, int maxiterPCG, float tolPCG, float tol, float traceCVcutoff){
 
-  	Rcpp::List re = getAIScore(Yvec, Xmat,wVec,  tauVec, Sigma_iY, Sigma_iX, cov, nrun, maxiterPCG, tolPCG);
+  	Rcpp::List re = getAIScore(Yvec, Xmat,wVec,  tauVec, Sigma_iY, Sigma_iX, cov, nrun, maxiterPCG, tolPCG, traceCVcutoff);
   	float YPAPY = re["YPAPY"];
   	float Trace = re["Trace"];
   	float score1 = YPAPY - Trace;
@@ -1342,44 +1372,72 @@ arma::fvec  getSigma_G_LOCO(arma::fvec& wVec, arma::fvec& tauVec,arma::fvec& Gve
 
 //This function needs the function getPCG1ofSigmaAndVector and function getCrossprodMatAndKin
 // [[Rcpp::export]]
-arma::fvec GetTrace_q(arma::fmat Sigma_iX, arma::fmat& Xmat, arma::fvec& wVec, arma::fvec& tauVec, arma::fmat& cov1,  int nrun, int maxiterPCG, float tolPCG){
-
+arma::fvec GetTrace_q(arma::fmat Sigma_iX, arma::fmat& Xmat, arma::fvec& wVec, arma::fvec& tauVec, arma::fmat& cov1,  int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff){
   	set_seed(200);
-
   	arma::fmat Sigma_iXt = Sigma_iX.t();
   	int Nnomissing = geno.getNnomissing();
   	arma::fvec tempVec(nrun);
   	tempVec.zeros();
   	arma::fvec tempVec0(nrun);
   	tempVec0.zeros();
-  	for(int i = 0; i < nrun; i++){
+
+        arma::fvec Sigma_iu;
+        arma::fcolvec Pu;
+        arma::fvec Au;
+        arma::fvec uVec;
+
+        int nrunStart = 0;
+        int nrunEnd = nrun;
+        float traceCV = traceCVcutoff + 0.1;
+        float traceCV0 = traceCVcutoff + 0.1;
+
+        while((traceCV > traceCVcutoff) | (traceCV0 > traceCVcutoff)){
+
+
+  	for(int i = nrunStart; i < nrunEnd; i++){
 
     		Rcpp::NumericVector uVec0;
     		uVec0 = nb(Nnomissing);
-    		arma::fvec uVec = as<arma::fvec>(uVec0);
+    		uVec = as<arma::fvec>(uVec0);
     		uVec = uVec*2 - 1;
-    		arma::fvec Sigma_iu;
+  //  		arma::fvec Sigma_iu;
     		Sigma_iu = getPCG1ofSigmaAndVector(wVec, tauVec, uVec, maxiterPCG, tolPCG);
-
-
-    		arma::fcolvec Pu;
-
+  //  		arma::fcolvec Pu;
     		Pu = Sigma_iu - Sigma_iX * (cov1 *  (Sigma_iXt * uVec));
-    		arma::fvec Au;
+  //  		arma::fvec Au;
     		Au = getCrossprodMatAndKin(uVec);
     		tempVec(i) = dot(Au, Pu);
     		tempVec0(i) = dot(uVec, Pu);
-
+                Au.clear();
+      		Pu.clear();
+      		Sigma_iu.clear();
+      		uVec.clear();
   	}
+	traceCV = calCV(tempVec);
+	traceCV0 = calCV(tempVec0);
+	
+	if((traceCV > traceCVcutoff) | (traceCV0 > traceCVcutoff)){
+          nrunStart = nrunEnd;
+          nrunEnd = nrunEnd + 10;
+          tempVec.resize(nrunEnd);
+          tempVec0.resize(nrunEnd);
+          cout << "CV for trace random estimator using "<< nrun << " runs is " << traceCV <<  "(> " << traceCVcutoff << endl;
+          cout << "try " << nrunEnd << "runs" << endl;
+        }
+
+    }   
+
   	arma::fvec traVec(2);
-  	traVec(1) = sum(tempVec)/nrun;
-  	traVec(0) = sum(tempVec0)/nrun;
+  	traVec(1) = arma::mean(tempVec);
+  	traVec(0) = arma::mean(tempVec0);
+	tempVec.clear();
+	tempVec0.clear();
   	return(traVec);
 }
 
 //This function needs the function getPCG1ofSigmaAndVector and function getCrossprod and GetTrace
 // [[Rcpp::export]]
-Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec, int nrun, int maxiterPCG, float tolPCG){
+Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec, int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff){
 
   	int Nnomissing = geno.getNnomissing();
   	arma::fvec Sigma_iY1;
@@ -1411,7 +1469,8 @@ Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  a
 
   	float YPA0PY = dot(PY1, A0PY); ////Quantitative
 
-  	arma::fvec Trace = GetTrace_q(Sigma_iX1, Xmat, wVec, tauVec, cov1, nrun, maxiterPCG, tolPCG);
+
+  	arma::fvec Trace = GetTrace_q(Sigma_iX1, Xmat, wVec, tauVec, cov1, nrun, maxiterPCG, tolPCG, traceCVcutoff);
 
   	arma::fmat AI(2,2);
   	arma::fvec PA0PY_1 = getPCG1ofSigmaAndVector(wVec, tauVec, A0PY, maxiterPCG, tolPCG);
@@ -1441,10 +1500,10 @@ Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  a
 
 //This function needs the function getPCG1ofSigmaAndVector and function getCrossprod, getAIScore_q
 // [[Rcpp::export]]
-Rcpp::List fitglmmaiRPCG_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec, int nrun, int maxiterPCG, float tolPCG, float tol){
+Rcpp::List fitglmmaiRPCG_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec, int nrun, int maxiterPCG, float tolPCG, float tol, float traceCVcutoff){
 
   	arma::uvec zeroVec = (tauVec < tol); //for Quantitative, GMMAT
-  	Rcpp::List re = getAIScore_q(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG);
+  	Rcpp::List re = getAIScore_q(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, traceCVcutoff);
 
   	arma::fmat cov = re["cov"];
   	arma::fmat Sigma_iX = re["Sigma_iX"];
