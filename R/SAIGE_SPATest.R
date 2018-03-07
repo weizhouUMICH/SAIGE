@@ -4,7 +4,8 @@ options(stringsAsFactors=F)
 #' @param dosageFile character. Path to dosage file. Each line contains dosages for a marker to be tested
 #' @param dosageFileNrowSkip integer(>=0). Number of lines to be skiped in the dosage file.
 #' @param dosageFileNcolSkip integer(>=0). Number of columns to be skiped in the dosage file
-#' @param dosageFilecolnamesSkip vector of characters. The column names of the skipped columns. Default: c("SNPID", "CHR", "POS", "Allele0", "Allele1") 
+#' @param dosageFilecolnamesSkip vector of characters. The column names of the skipped columns. Default: c("SNPID", "CHR", "POS", "Allele0", "Allele1")
+#' @param dosageFileChrCol string. The column name for the chromosome column. Must be in the dosageFilecolnamesSkip. Required If LOCO = TRUE and chrom ="".  
 #' @param bgenFile character. Path to bgen file. Currently version 1.2 with 8 bit compression is supported
 #' @param bgenFileIndex character. Path to the .bgi file (index of the bgen file)
 #' @param vcfFile character. Path to vcf file
@@ -16,7 +17,7 @@ options(stringsAsFactors=F)
 #' @param idstoIncludeFile character. Path to the file containing variant ids to be included from the bgen or vcf file
 #' @param rangestoExcludeFile character. Path to the file containing genome regions to be excluded from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header 
 #' @param rangestoIncludeFile character. Path to the file containing genome regions to be included from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header 
-#' @param chrom character. string for the chromosome to include from vcf file. Required for vcf file.
+#' @param chrom character. string for the chromosome to include from vcf file. Required for vcf file. If LOCO is specified, providing chrom will save computation cost
 #' @param start numeric. start genome position to include from vcf file. 
 #' @param end numeric. end genome position to include from vcf file. 
 #' @param minMAC numeric. Minimum minor allele count of markers to test. By default, 1. The higher threshold between minMAC and minMAF will be used
@@ -95,47 +96,7 @@ SPAGMMATtest = function(dosageFile = "",
   }
 
 
-#  #phentoype file
-#  if(!file.exists(phenoFile)){
-#    stop("ERROR! phenoFile ", phenoFile, " does not exsit\n")
-#  }else{
-#    ydat = data.table:::fread(phenoFile, header=T, stringsAsFactors=FALSE)
-#    data = data.frame(ydat)
-
-#    print(c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile))
-#    for (i in c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile)){	
-#      if (!(i %in% colnames(data))){
-#        stop("ERROR! column for ", i, " does not exsit in the phenoFile \n")
-#      }
-#    }
-
-#    #update the categorical variables
-#    qCovarColUpdated = NULL   
-#    for(i in qCovarCol){
-#      j = paste0("factor(", i, ")")
-#      qCovarColUpdated = c(qCovarColUpdated, j)	
-#    }
-    
-    
-#    formula = paste0(phenoCol,"~",paste0(c(covarColList,qCovarColUpdated),collapse="+"))
-#    formula.null = as.formula(formula)
-#    mmat = model.frame(formula.null, data, na.action=NULL)
-#    mmat$IID = data[,which(sampleIDColinphenoFile == colnames(data))] 
-#    mmat_nomissing = mmat[complete.cases(mmat),]
-#    mmat_nomissing$IndexPheno = seq(1,nrow(mmat_nomissing), by=1)
-#    cat(nrow(mmat_nomissing), " samples have non-missing phenotypes\n")
-#    cat("dim(mmat_nomissing): " ,dim(mmat_nomissing), "\n")
-#    #print(mmat_nomissing$IID[1:10])
-
-
-#    dataMergev0 = merge(mmat_nomissing, sampleInModel, by.x = "IID", by.y = "IID")
-#    cat("dim(dataMergev0): " ,dim(dataMergev0), "\n")
-#    if(nrow(dataMergev0) < nrow(sampleInModel)){
-#      stop("ERROR!", nrow(sampleInModel) - nrow(dataMergev0), " samples used in glmm model fit but do not have non-missing phenotypes\n")
-#    }
-#  }
-
-      #sample file
+  #sample file
   if(!file.exists(sampleFile)){
     stop("ERROR! sampleFile ", sampleFile, " does not exsit\n")
   }else{
@@ -145,14 +106,11 @@ SPAGMMATtest = function(dosageFile = "",
     colnames(sampleListinDosage)[1] = "IIDDose"
 
     dataMerge = merge(sampleInModel, sampleListinDosage, by.x="IID", by.y = "IIDDose")
-#    dataMerge = merge(dataMergev0, sampleListinDosage, by.x="IID", by.y = "IIDDose")
-    #dim(dataMerge)
-    #colnames(dataMerge)
     dataMerge_sort = dataMerge[with(dataMerge, order(IndexInModel)), ]
     if(nrow(dataMerge_sort) < nrow(sampleInModel)){
       stop("ERROR!", nrow(sampleInModel) - nrow(dataMerge_sort), " samples used in glmm model fit do not have dosages\n")
     }else{
-                        #0909 modified by WZ
+      #0909 modified by WZ
       dataMerge_v2 = merge(dataMerge_sort, sampleListinDosage, by.x="IID", by.y = "IIDDose", all.y = TRUE)
       print(dim(dataMerge_v2))
       print(colnames(dataMerge_v2))
@@ -224,8 +182,7 @@ SPAGMMATtest = function(dosageFile = "",
   cat("Minimum MAF of markers to be testd is ", testMinMAF, "\n")
 
 
-##############START TEST########################
-
+  ##############START TEST########################
   startTime = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
   cat("Analysis started at ", startTime, "Seconds\n")
 
@@ -292,14 +249,6 @@ SPAGMMATtest = function(dosageFile = "",
  
   if(traitType == "binary"){
     cat("It is a binary trait\n")
-    #uniqPheno = sort(unique(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)]))
-    #if (uniqPheno[1] != 0 | uniqPheno[2] != 1){
-    #  stop("ERROR! phenotype value needs to be 0 or 1 \n")
-    #}
-
-    #obj.glm.null = glm(formula.null,data=dataMerge_sort, family=binomial)
-    #obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.null, data = dataMerge_sort)
-
     resultHeader = c(dosageFilecolnamesSkip, "N", "BETA", "SE", "Tstat", "p.value", "p.value.NA", "Is.SPA.converge","varT","varTstar")
 
     if(IsOutputAFinCaseCtrl){
@@ -324,14 +273,13 @@ SPAGMMATtest = function(dosageFile = "",
     cat("Analyzing ", NCase, " cases and ",NCtrl, " controls \n")
    
     N = length(y)
-
+    obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
     indChromCheck = FALSE
     if(!obj.glmm.null$LOCO){
       mu = obj.glmm.null$fitted.values
       mu.a<-as.vector(mu)
       mu2.a<-mu.a *(1-mu.a)
       obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
-      obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
       obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
     }else if(chrom != ""){
       chrom_v2 = as.character(chrom)
@@ -346,9 +294,7 @@ SPAGMMATtest = function(dosageFile = "",
         mu2.a<-mu.a *(1-mu.a)
       }
       obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
-      obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
       obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
-
     }else{
       cat("LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
       indChromCheck = TRUE
@@ -357,36 +303,41 @@ SPAGMMATtest = function(dosageFile = "",
 
 
 
-    #mu.a<-as.vector(mu)
-    #mu2.a<-mu.a *(1-mu.a)
-    #obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
-    #obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
-    #obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a)) 
 #####
   }else if(traitType == "quantitative"){
     cat("It is a quantitative trait\n")
-    #if(invNormalize){
-    #  cat("Perform the inverse nomalization for ", phenoCol, "\n")
-    #  invPheno = qnorm((rank(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)], na.last="keep")-0.5)/sum(!is.na(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)])))
-    #  dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
-    #}
-    #obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.null, dataMerge_sort)
-    #obj.glm.null = glm(formula.null, data=dataMerge_sort,family=gaussian(link = "identity"))
-   
     resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
     write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
-    tauVec = obj.glmm.null$theta
-    mu = obj.glmm.null$fitted.values
-    y = obj.glm.null$y
     OUT = NULL
     numPassMarker = 0
     mth = 0
     sampleIndex = sampleIndex - 1
+    y = obj.glm.null$y
     N = length(y)
-    mu.a<-as.vector(mu)
+    tauVec = obj.glmm.null$theta
     obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1)
     obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
-    obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+
+    indChromCheck = FALSE
+    if(!obj.glmm.null$LOCO){
+      mu = obj.glmm.null$fitted.values
+      mu.a<-as.vector(mu)
+      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+    }else if(chrom != ""){
+      chrom_v2 = as.character(chrom)
+      chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
+      if(obj.glmm.null$LOCOResult[[chrom_v3]]$isLOCO){
+        mu = obj.glmm.null$LOCOResult[[chrom_v3]]$fitted.values
+        mu.a<-as.vector(mu)
+      }else{
+        mu = obj.glmm.null$fitted.values
+        mu.a<-as.vector(mu)
+      }
+      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))      
+    }else{
+      cat("LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
+      indChromCheck = TRUE
+    }
 
   }else{
     stop("ERROR! The type of the trait has to be either binary or quantitative\n")
@@ -402,10 +353,6 @@ SPAGMMATtest = function(dosageFile = "",
       AF = AC/(2*N)
       rowHeader=getrowHeaderVec_plainDosage()
       rowHeader = c(rowHeader, AC, AF)
-      #cat("rowHeader is ", rowHeader, "\n")
-      #cat("dosageFilecolnamesSkip is ", dosageFilecolnamesSkip, "\n")
-      #cat("dosageFileChrCol is ", dosageFileChrCol, "\n")
-      #cat("which(dosageFilecolnamesSkip == dosageFileChrCol) is ", which(dosageFilecolnamesSkip == dosageFileChrCol), "\n")
       if(indChromCheck){      
         CHR = rowHeader[which(dosageFilecolnamesSkip == dosageFileChrCol)]
         #cat("CHR is here ", CHR , "\n")
@@ -432,7 +379,6 @@ SPAGMMATtest = function(dosageFile = "",
       if(Mtest == mth){isVariant = FALSE}
     }else if(dosageFileType == "vcf"){
       markerInfo = 1 ##markerInfo is nor provided
-      #startTimeGx = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
       Gx = getGenoOfnthVar_vcfDosage(mth)
       G0 = Gx$dosages
       AC = Gx$variants$AC
@@ -442,9 +388,6 @@ SPAGMMATtest = function(dosageFile = "",
         CHR = Gx$variants$chromosome
       }
       isVariant = getGenoOfnthVar_vcfDosage_pre()
-      #endTimeGx = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
-      #timeGx = endTimeGx - startTimeGx
-      #cat("timeGx ", timeGx, "Seconds\n")
     }
 
 
@@ -479,22 +422,20 @@ SPAGMMATtest = function(dosageFile = "",
 	  OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader),AFCase, AFCtrl))
         }
       }else if(traitType == "quantitative"){
-        #startTimeTest = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
-        #out1 = scoreTest_SAIGE_quantitativeTrait_old(G0, obj.noK, AC, y, mu, varRatio, tauVec)
+        if(indChromCheck){
+	  CHR = as.character(CHR)
+          CHRv2 = as.numeric(gsub("[^0-9.]", "", CHR))
+	  if(obj.glmm.null$LOCOResult[[CHRv2]]$isLOCO){
+            mu = obj.glmm.null$LOCOResult[[CHRv2]]$fitted.values
+            mu.a<-as.vector(mu)
+          }else{
+            mu = obj.glmm.null$fitted.values
+            mu.a<-as.vector(mu)
+          }
+          obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
 
-        #out1 = scoreTest_SAIGE_quantitativeTrait(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec)
-	#endTimeTest = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
-        #timeTest = endTimeTest - startTimeTest
-        #cat("timeTest ", timeTest, "Seconds\n")
-
-        #startTimeTest = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
-        #out1 = scoreTest_SAIGE_quantitativeTrait_old(G0, obj.noK, AC, y, mu, varRatio, tauVec)
+        }
         out1 = scoreTest_SAIGE_quantitativeTrait(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec)
-        #endTimeTest = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
-        #timeTest = endTimeTest - startTimeTest
-        #cat("timeTest sparse", timeTest, "Seconds\n")
-
-
         OUT = rbind(OUT, c(rowHeader, N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
       }
     } #end of the if(MAF >= bgenMinMaf & markerInfo >= bgenMinInfo)

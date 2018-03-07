@@ -109,6 +109,10 @@ getCoefficients_LOCO <- function(Yvec, Xmat, wVec, tauVec, maxiterPCG, tolPCG) {
     .Call('_SAIGE_getCoefficients_LOCO', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, maxiterPCG, tolPCG)
 }
 
+getCoefficients_q_LOCO <- function(Yvec, Xmat, wVec, tauVec, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getCoefficients_q_LOCO', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, maxiterPCG, tolPCG)
+}
+
 getAIScore <- function(Yvec, Xmat, wVec, tauVec, Sigma_iY, Sigma_iX, cov, nrun, maxiterPCG, tolPCG, traceCVcutoff) {
     .Call('_SAIGE_getAIScore', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, Sigma_iY, Sigma_iX, cov, nrun, maxiterPCG, tolPCG, traceCVcutoff)
 }
@@ -139,6 +143,14 @@ GetTrace_q <- function(Sigma_iX, Xmat, wVec, tauVec, cov1, nrun, maxiterPCG, tol
 
 getAIScore_q <- function(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, traceCVcutoff) {
     .Call('_SAIGE_getAIScore_q', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, traceCVcutoff)
+}
+
+getAIScore_q_LOCO <- function(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, traceCVcutoff) {
+    .Call('_SAIGE_getAIScore_q_LOCO', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, traceCVcutoff)
+}
+
+fitglmmaiRPCG_q_LOCO <- function(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff) {
+    .Call('_SAIGE_fitglmmaiRPCG_q_LOCO', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
 }
 
 fitglmmaiRPCG_q <- function(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff) {

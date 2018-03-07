@@ -36,9 +36,10 @@ Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG
 
 
 
-# Functon to get working vector and fixed & random coefficients
+# Functon to get working vector and fixed & random coefficients when LOCO is TRUE
+# getCoefficients_LOCO is used
 # Run iterations to get converged alpha and eta
-Get_Coef_LOCO = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG,maxiter, verbose=FALSE){
+Get_Coef_LOCO = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG, maxiter, verbose=FALSE){
   tol.coef = 0.1
   mu = family$linkinv(eta0)
   mu.eta = family$mu.eta(eta0)
@@ -83,25 +84,58 @@ test_stdGeno = function(subSampleInGeno){
   }
 }
 
-#Fit the null glmm for binary traits
-glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff) {
+
+#Fits the null glmm for binary traits
+glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff) {
+  #Fits the null generalized linear mixed model for a binary trait
+  #Args:
+  #  genofile: string. Plink file for the M1 markers to be used to construct the genetic relationship matrix 
+  #  fit0: glm model. Logistic model output (with no sample relatedness accounted for) 
+  #  tau: vector for iniial values for the variance component parameter estimates
+  #  fixtau: vector for fixed tau values
+  #  maxiter: maximum iterations to fit the glmm model
+  #  tol: tolerance for tau estimating to converge
+  #  verbose: whether outputting messages in the process of model fitting
+  #  nrun: integer. Number of random vectors used for trace estimation
+  #  tolPCG: tolerance for PCG to converge
+  #  maxiterPCG: maximum iterations for PCG to converge
+  #  subPheno: data set with samples having non-missing phenotypes and non-missing genotypes (for M1 markers)
+  #  obj.noK: model output from the SPAtest::ScoreTest_wSaddleApprox_NULL_Model  
+  #  out.transform: output from the function Covariate_Transform
+  #  tauInit: vector for iniial values for the variance component parameter estimates  
+  #  memoryChunk: integer or float. The size (Gb) for each memory chunk
+  #  LOCO:logical. Whether to apply the leave-one-chromosome-out (LOCO) option.
+  #  chromosomeStartIndexVec: integer vector of length 22. Contains start indices for each chromosome, starting from 0
+  #  chromosomeEndIndexVec: integer vector of length. Contains end indices for each chromosome  
+  #  traceCVcutoff: threshold for the coefficient of variation for trace estimation
+  #Returns:
+  #  model output for the null glmm
+
   subSampleInGeno = subPheno$IndexGeno
-  #print(subSampleInGeno[1:100])
-  print("Start reading genotype plink file here")
+  if(verbose){
+    print("Start reading genotype plink file here")
+  }
+
   re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk)})
-  print("Genotype reading is done")
+
+  if(verbose){
+    print("Genotype reading is done")
+  }
 
   y = fit0$y
   n = length(y)
   X = model.matrix(fit0)
+
   offset = fit0$offset
-  if(is.null(offset)) offset = rep(0, n)
+  if(is.null(offset)){
+    offset = rep(0, n)
+  }
+
   family = fit0$family
   eta = fit0$linear.predictors
   mu = fit0$fitted.values
   mu.eta = family$mu.eta(eta)
   Y = eta - offset + (y - mu)/mu.eta
-
   alpha0 = fit0$coef
   eta0 = eta
 
@@ -160,46 +194,80 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau = c(0,0), fixtau = c(0
   }
 
   if(verbose) cat("\nFinal " ,tau, ":\n")
-    converged = ifelse(i < maxiter, TRUE, FALSE)
-    res = y - mu
-    coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
-    glmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID, obj.noK=obj.noK, obj.glm.null=fit0, traitType="binary")
-    glmmResult$LOCO = LOCO
-   if(LOCO){
-     glmmResult$LOCOResult = list()
+
+  converged = ifelse(i < maxiter, TRUE, FALSE)
+  res = y - mu
+  coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+  glmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID, obj.noK=obj.noK, obj.glm.null=fit0, traitType="binary")
+
+  #LOCO: estimate fixed effect coefficients, random effects, and residuals for each chromoosme  
+
+  glmmResult$LOCO = LOCO
+  if(LOCO){
+    glmmResult$LOCOResult = list()
      
     for (j in 1:22){
-     startIndex = chromosomeStartIndexVec[j]
-     endIndex = chromosomeEndIndexVec[j]
-     if(!is.na(startIndex) && !is.na(endIndex)){
-       setStartEndIndex(startIndex, endIndex)
-       re.coef_LOCO = Get_Coef_LOCO(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
-       cov = re.coef_LOCO$cov
-       alpha = re.coef_LOCO$alpha
-       eta = re.coef_LOCO$eta
-       Y = re.coef_LOCO$Y
-       mu = re.coef_LOCO$mu
-       res = y - mu
-       coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
-       glmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov)
-     }else{
-       glmmResult$LOCOResult[[j]] = list(isLOCO = FALSE)
-     }
+      startIndex = chromosomeStartIndexVec[j]
+      endIndex = chromosomeEndIndexVec[j]
+      if(!is.na(startIndex) && !is.na(endIndex)){
+        setStartEndIndex(startIndex, endIndex)
+        re.coef_LOCO = Get_Coef_LOCO(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
+        cov = re.coef_LOCO$cov
+        alpha = re.coef_LOCO$alpha
+        eta = re.coef_LOCO$eta
+        Y = re.coef_LOCO$Y
+        mu = re.coef_LOCO$mu
+        res = y - mu
+        coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+        glmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov)
+      }else{
+        glmmResult$LOCOResult[[j]] = list(isLOCO = FALSE)
+      }
     }
   }
+
   return(glmmResult)
-  #return(list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID, obj.noK=obj.noK, obj.glm.null=fit0, traitType="binary"))
 }
 
 
 
+#Fits the null glmm for a quantitative trait
+glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff){
+  #Fits the null linear mixed model for a quantitative trait
+  #Args:
+  #  genofile: string. Plink file for the M1 markers to be used to construct the genetic relationship matrix
+  #  fit0: glm model. linear model output (with no sample relatedness accounted for), family=gaussian(link = "identity")
+  #  tau: vector for iniial values for the variance component parameter estimates
+  #  fixtau: vector for fixed tau values
+  #  maxiter: maximum iterations to fit the lmm model
+  #  tol: tolerance for tau estimating to converge
+  #  verbose: whether outputting messages in the process of model fitting
+  #  nrun: integer. Number of random vectors used for trace estimation
+  #  tolPCG: tolerance for PCG to converge
+  #  maxiterPCG: maximum iterations for PCG to converge
+  #  subPheno: data set with samples having non-missing phenotypes and non-missing genotypes (for M1 markers)
+  #  obj.noK: model output from the SPAtest::ScoreTest_wSaddleApprox_NULL_Model
+  #  out.transform: output from the function Covariate_Transform
+  #  tauInit: vector for iniial values for the variance component parameter estimates
+  #  memoryChunk: integer or float. The size (Gb) for each memory chunk
+  #  LOCO:logical. Whether to apply the leave-one-chromosome-out (LOCO) option.
+  #  chromosomeStartIndexVec: integer vector of length 22. Contains start indices for each chromosome, starting from 0
+  #  chromosomeEndIndexVec: integer vector of length. Contains end indices for each chromosome
+  #  traceCVcutoff: threshold for the coefficient of variation for trace estimation
+  #Returns:
+  #  model output for the null lmm
 
-glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, traceCVcutoff) {
 
   subSampleInGeno = subPheno$IndexGeno
-  print("Start reading genotype plink file here")
+  if(verbose){
+    print("Start reading genotype plink file here")
+  }
+
   re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk)})
-  print("Genotype reading is done")
+
+  if(verbose){
+    print("Genotype reading is done")
+  }
 
   y = fit0$y
   n = length(y)
@@ -230,7 +298,6 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau 
     fixtau[1] = 1
   }
 
-
   q = 1
   if(sum(tauInit[fixtau == 0]) == 0){
     tau[fixtau == 0] = var(Y)/(q+1)
@@ -241,11 +308,18 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau 
   tau0 = tau
   cat("inital tau is ", tau,"\n")
 
-  print("ok1")
   re = getAIScore_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG, traceCVcutoff)
   tau[2] = max(0, tau0[2] + tau0[2]^2 * (re$YPAPY - re$Trace[2])/n)
   tau[1] = max(0, tau0[1] + tau0[1]^2 * (re$YPA0PY - re$Trace[1])/n)
   cat("tauv3 ",tau,"\n")
+
+
+  if(verbose) {
+    cat("Variance component estimates:\n")
+    print(tau)
+  }
+
+
   for (i in seq_len(maxiter)) {
     W = sqrtW^2
 
@@ -281,10 +355,42 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile,fit0, tau = c(0,0), fixtau 
   res = y - mu
   Sigma_iy = getSigma_G(W, tau, res, maxiterPCG, tolPCG)
   Sigma_iX = getSigma_X(W, tau, X1, maxiterPCG, tolPCG)
-
   coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
 
-  return(list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged, sampleID = subPheno$IID, Sigma_iy = Sigma_iy, Sigma_iX = Sigma_iX, obj.noK=obj.noK, obj.glm.null=fit0, traitType="quantitative"))
+
+  lmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged, sampleID = subPheno$IID, Sigma_iy = Sigma_iy, Sigma_iX = Sigma_iX, obj.noK=obj.noK, obj.glm.null=fit0, traitType="quantitative")
+
+  #LOCO: estimate fixed effect coefficients, random effects, and residuals for each chromoosme
+  lmmResult$LOCO = LOCO  
+  if(LOCO){
+    lmmResult$LOCOResult = list()
+
+    for (j in 1:22){
+      startIndex = chromosomeStartIndexVec[j]
+      endIndex = chromosomeEndIndexVec[j]
+      if(!is.na(startIndex) && !is.na(endIndex)){
+        setStartEndIndex(startIndex, endIndex)
+
+        re.coef_LOCO=fitglmmaiRPCG_q_LOCO(Y, X, W, tau, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
+
+	cov = as.matrix(re.coef_LOCO$cov)
+    	alpha = as.numeric(re.coef_LOCO$alpha)
+    	eta = as.numeric(re.coef_LOCO$eta) + offset
+    	mu = family$linkinv(eta)
+    	mu.eta = family$mu.eta(eta)
+    	Y = eta - offset + (y - mu)/mu.eta
+        res = y - mu
+        coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+        lmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov)
+      }else{
+        lmmResult$LOCOResult[[j]] = list(isLOCO = FALSE)
+      }
+    }
+  }
+
+  return(lmmResult)
+
+  #return(list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged, sampleID = subPheno$IID, Sigma_iy = Sigma_iy, Sigma_iX = Sigma_iX, obj.noK=obj.noK, obj.glm.null=fit0, traitType="quantitative"))
 }
 
 
@@ -354,6 +460,7 @@ fitNULLGLMM = function(plinkFile = "",
 		tauInit = c(0,0),
 		LOCO = FALSE,
 		traceCVcutoff = 0.0025,
+		ratioCVcutoff = 0.001, 
                 outputPrefix = ""){
                 #formula, phenoType = "binary",prefix, centerVariables = "", tol=0.02, maxiter=20, tolPCG=1e-5, maxiterPCG=500, nThreads = 1, Cutoff = 2, numMarkers = 1000, skipModelFitting = FALSE){
   if(nThreads > 1){
@@ -518,7 +625,7 @@ fitNULLGLMM = function(plinkFile = "",
 
 
     if(!skipModelFitting){
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff))
       save(modglmm, file = modelOut)
     }else{
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)	
@@ -533,6 +640,7 @@ fitNULLGLMM = function(plinkFile = "",
                                                     tolPCG = tolPCG,
                                                     numMarkers = numMarkers,
                                                     varRatioOutFile = varRatioFile,
+						    ratioCVcutoff = ratioCVcutoff,
                                                     testOut = SPAGMMATOut,
 						    plinkFile = plinkFile,
 						    chromosomeStartIndexVec = chromosomeStartIndexVec, 
@@ -556,7 +664,7 @@ fitNULLGLMM = function(plinkFile = "",
 
     if(!skipModelFitting){
 
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, Is.Trace.New=TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, traceCVcutoff=traceCVcutoff))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, traceCVcutoff=traceCVcutoff))
       save(modglmm, file = modelOut)
       print("step2")
     }else{
@@ -572,7 +680,11 @@ fitNULLGLMM = function(plinkFile = "",
                                                     tolPCG = tolPCG,
                                                     numMarkers = numMarkers,
                                                     varRatioOutFile = varRatioFile,
-                                                    testOut = SPAGMMATOut)
+						    ratioCVcutoff = ratioCVcutoff,
+                                                    testOut = SPAGMMATOut,
+						    plinkFile = plinkFile,
+                                                    chromosomeStartIndexVec = chromosomeStartIndexVec,
+                                                    chromosomeEndIndexVec = chromosomeEndIndexVec)
     closeGenoFile_plink()
   }
 }
@@ -587,6 +699,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
                                                     tolPCG = 0.01,
                                                     numMarkers,
                                                     varRatioOutFile,
+						    ratioCVcutoff,
                                                     testOut,
                                                     plinkFile,
 						    chromosomeStartIndexVec, 
@@ -625,9 +738,13 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 
   OUTtotal = NULL
   OUT = NULL
-
   indexInMarkerList = 1
   numTestedMarker = 0
+  ratioCV = ratioCVcutoff + 0.1
+
+
+while(ratioCV > ratioCVcutoff){
+
   while(numTestedMarker < numMarkers){
     i = listOfMarkersForVarRatio[indexInMarkerList]
     cat("i is ", i, "\n")
@@ -687,9 +804,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
         out1 = SPAtest:::Saddle_Prob_fast(q=qtilde,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8)
       }
 
-      
-
-
       OUT = rbind(OUT, c(bimPlink[i,1], bimPlink[i,2], bimPlink[i,4], bimPlink[i,5], bimPlink[i,6], out1$p.value, out1$p.value.NA, out1$Is.converge, var1, var2, Nnomissing, AC, AF))
       indexInMarkerList = indexInMarkerList + 1
       numTestedMarker = numTestedMarker + 1
@@ -700,26 +814,27 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
         OUT = NULL
       }
     }
+  } # end of while(numTestedMarker < numMarkers) 
+
+  ratioVec = as.numeric(OUT1$var1)/as.numeric(OUT1$var2)
+  ratioCV = calCV(ratioVec)
+
+  if(ratioCV > ratioCVcutoff){
+    cat("CV for variance ratio estimate using ", numMarkers, " markers is ", ratioCV, " > ", ratioCVcutoff, "\n")
+    numMarkers = numMarkers + 10
+    cat("try ", numMarkers, " markers\n")
+  }else{
+    cat("CV for variance ratio estimate using ", numMarkers, " markers is ", ratioCV, " < ", ratioCVcutoff, "\n")
   }
+} # end of while(ratioCV > ratioCVcutoff){
 
   OUT1 = data.frame(OUTtotal)
   colnames(OUT1) = resultHeader
 
-#  if(LOCO){
-#    varRatioTable = NULL
-#    for(j in 1:22){
-#      OUT2 = OUT1[which(OUT1[,1] != j),]
-#      varRatio = mean(OUT2$var1/OUT2$var2)
-#      varRatioTable = rbind(varRatioTable, c(j,varRatio))
-#    }
-#    colnames(varRatioTable) = c("CHR","VarianceRatio")
-#    write.table(varRatioTable, varRatioOutFile, col.names=F, row.names=F, quote=F)
-#  }else{
-    varRatio = mean(as.numeric(OUT1$var1)/as.numeric(OUT1$var2))
-    cat("varRatio", varRatio, "\n")
-    write(varRatio, varRatioOutFile)
-    print(varRatio)
-#  }
+  varRatio = mean(as.numeric(OUT1$var1)/as.numeric(OUT1$var2))
+  cat("varRatio", varRatio, "\n")
+  write(varRatio, varRatioOutFile)
+  print(varRatio)
 
 }
 
@@ -734,14 +849,19 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                                                     tolPCG = 0.01,
                                                     numMarkers,
                                                     varRatioOutFile,
-                                                    testOut){
+						    ratioCVcutoff,
+                                                    testOut,
+						    plinkFile,
+                                                    chromosomeStartIndexVec,
+                                                    chromosomeEndIndexVec){
 
   if(file.exists(testOut)){file.remove(testOut)}
 
   #resultHeader = c("markerIndex","p.value", "p.value.NA","var1","var2","Tv1", "Tv2", "p.value.Tv2","N", "AC", "AF")
   resultHeader = c("markerIndex","p.value", "p.value.NA","var1","var2","Tv1","N", "AC", "AF")
-
   write(resultHeader,file = testOut, ncolumns = length(resultHeader))
+
+  bimPlink = data.frame(data.table:::fread(paste0(plinkFile,".bim"), header=F))
 
   if(Cutoff < 10^-2){
     Cutoff = 10^-2
@@ -758,7 +878,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   tauVecNew = obj.glmm.null$theta
 
   X1 = obj.noK$X1
-  Sigma_iX = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
+  Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
   y = obj.glm.null$y
 
   ##randomize the marker orders to be tested
@@ -773,13 +893,21 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 
   indexInMarkerList = 1
   numTestedMarker = 0
+
+
+  ratioCV = ratioCVcutoff + 0.1
+
+
+while(ratioCV > ratioCVcutoff){  
+
   while(numTestedMarker < numMarkers){
     i = listOfMarkersForVarRatio[indexInMarkerList]
     cat("i is ", i, "\n")
     G0 = Get_OneSNP_Geno(i-1)
     cat("G0", G0[1:10], "\n")
     AC = sum(G0)
-    if (AC <= 20 | AC >= (2*Nnomissing - 20)){
+    #if (AC <= 20 | AC >= (2*Nnomissing - 20)){
+    if (AC <= 20 | AC >= (2*Nnomissing - 20) | CHR < 1 | CHR > 22){
       indexInMarkerList = indexInMarkerList + 1
     }else{
       AF = AC/(2*Nnomissing)
@@ -789,28 +917,38 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
  #     print(g[1:20])
  #     print(y[1:20])
  #     print(q)
-      Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
+      if(!obj.glmm.null$LOCO){          
+        Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
+        Sigma_iX = Sigma_iX_noLOCO
+      }else if(!(obj.glmm.null$LOCOResult[[CHR]]$isLOCO)){
+         eta = obj.glmm.null$linear.predictors
+         mu = obj.glmm.null$fitted.values
+         mu.eta = family$mu.eta(eta)
+         sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
+         W = sqrtW^2
+         Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
+         Sigma_iX = Sigma_iX_noLOCO
+      }else{
+         eta = obj.glmm.null$LOCOResult[[CHR]]$linear.predictors
+         mu = obj.glmm.null$LOCOResult[[CHR]]$fitted.values
+         mu.eta = family$mu.eta(eta)
+         sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
+         W = sqrtW^2
+         startIndex = chromosomeStartIndexVec[CHR]
+         endIndex = chromosomeEndIndexVec[CHR]
+         setStartEndIndex(startIndex, endIndex)
+         Sigma_iG = getSigma_G_LOCO(W, tauVecNew, G, maxiterPCG, tolPCG)
+         Sigma_iX = getSigma_X_LOCO(W, tauVecNew, X1, maxiterPCG, tolPCG)
+      }
+
       var1a = t(G)%*%Sigma_iG - t(G)%*%Sigma_iX%*%(solve(t(X1)%*%Sigma_iX))%*%t(X1)%*%Sigma_iG
       ###var1 = g'Pg, var2 = g'g
       var1 = var1a/AC
       m1 = innerProduct(mu,g)
-#      m1 = sum(mu * g)
-      #mu2 = 1-mu
-      #innermumu2= innerProduct(mu, mu2)
-      #innerg = innerProduct(g, g)
-      #var2 = innerProduct(innermumu2, innerg)
       var2 = innerProduct(g, g)
-      #qtilde = (q-m1)/sqrt(var1) * sqrt(var2) + m1
-      #out1 = SPAtest:::Saddle_Prob(q=qtilde, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
       Tv1 = (q-m1)/tauVecNew[1]
-#      cat("q ",q, " m1 ", m1, " tauVecNew[1] ", tauVecNew[1], " Tv1 ", Tv1, "\n")
       p.value = pchisq(Tv1^2/var1, lower.tail = FALSE, df=1)
       p.value.NA = pchisq(Tv1^2/var2, lower.tail = FALSE, df=1)
-      #####Tversion2 = g'Pytilde
-      #Tv2 = t(g)%*%Pytilde
-      #p.value.Tv2 = pchisq(Tv2^2/var1, lower.tail = FALSE, df=1)
-
-      #OUT = rbind(OUT, c(mth,p.value, p.value.NA, var1, var2, Tv1, Tv2, p.value.Tv2, Nnomissing, AC, AF))
       OUT = rbind(OUT, c(i, p.value, p.value.NA, var1, var2, Tv1, Nnomissing, AC, AF))
 
       indexInMarkerList = indexInMarkerList + 1
@@ -822,12 +960,25 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
         OUT = NULL
       }
     }
+  } #end of while(numTestedMarker < numMarkers)
+
+  ratioVec = as.numeric(OUT1$var1)/as.numeric(OUT1$var2)
+  ratioCV = calCV(ratioVec)
+
+  if(ratioCV > ratioCVcutoff){
+    cat("CV for variance ratio estimate using ", numMarkers, " markers is ", ratioCV, " > ", ratioCVcutoff, "\n")
+    numMarkers = numMarkers + 10
+    cat("try ", numMarkers, " markers\n")
+  }else{
+    cat("CV for variance ratio estimate using ", numMarkers, " markers is ", ratioCV, " < ", ratioCVcutoff, "\n")
   }
+
+} #end of while(ratioCV > ratioCVcutoff)
 
   OUTtotal = as.data.frame(OUTtotal)
   colnames(OUTtotal) = resultHeader
   OUT1 = OUTtotal
-  varRatio = mean(OUT1$var1/OUT1$var2)
+  varRatio = mean(as.numeric(OUT1$var1)/as.numeric(OUT1$var2))
   cat("varRatio", varRatio, "\n")
   write(varRatio, varRatioOutFile)
   print(varRatio)

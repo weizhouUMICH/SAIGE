@@ -650,7 +650,7 @@ void closeGenoFile_plink()
 
 
 // [[Rcpp::export]]
-int gettotalMarker (){
+int gettotalMarker(){
   	int numMarker = geno.getM();
   	return(numMarker); 
 }
@@ -1149,7 +1149,6 @@ float GetTrace(arma::fmat Sigma_iX, arma::fmat& Xmat, arma::fvec& wVec, arma::fv
   arma::fvec tempVec(nrun);
   tempVec.zeros();
 
-
   while(traceCV > traceCVcutoff){     
     //arma::fvec tempVec(nrun);
     //tempVec.zeros();
@@ -1240,6 +1239,36 @@ Rcpp::List getCoefficients_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& 
         arma::fvec eta = Yvec - tauVec(0) * (Sigma_iY - Sigma_iX * alpha) / wVec;
         return Rcpp::List::create(Named("Sigma_iY") = Sigma_iY, Named("Sigma_iX") = Sigma_iX, Named("cov") = cov, Named("alpha") = alpha, Named("eta") = eta);
 }
+
+
+// [[Rcpp::export]]
+Rcpp::List getCoefficients_q_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec, int maxiterPCG, float tolPCG){
+
+        int Nnomissing = geno.getNnomissing();
+        arma::fvec Sigma_iY;
+
+        Sigma_iY = getPCG1ofSigmaAndVector_LOCO(wVec, tauVec, Yvec, maxiterPCG, tolPCG);
+        int colNumX = Xmat.n_cols;
+        arma::fmat Sigma_iX(Nnomissing,colNumX);
+        arma::fvec XmatVecTemp;
+        for(int i = 0; i < colNumX; i++){
+                XmatVecTemp = Xmat.col(i);
+
+                Sigma_iX.col(i) = getPCG1ofSigmaAndVector_LOCO(wVec, tauVec, XmatVecTemp, maxiterPCG, tolPCG);
+
+        }
+
+        arma::fmat Xmatt = Xmat.t();
+        arma::fmat cov = inv_sympd(Xmatt * Sigma_iX);
+        arma::fmat Sigma_iXt = Sigma_iX.t();
+        arma::fvec SigmaiXtY = Sigma_iXt * Yvec;
+        arma::fvec alpha = cov * SigmaiXtY;
+
+        arma::fvec eta = Yvec - tauVec(0) * (Sigma_iY - Sigma_iX * alpha) / wVec;
+        return Rcpp::List::create(Named("Sigma_iY") = Sigma_iY, Named("Sigma_iX") = Sigma_iX, Named("cov") = cov, Named("alpha") = alpha, Named("eta") = eta);
+}
+
+
 
 
 
@@ -1494,6 +1523,64 @@ Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  a
 
   	return Rcpp::List::create(Named("YPAPY") = YPAPY, Named("Trace") = Trace,Named("Sigma_iY") = Sigma_iY1, Named("Sigma_iX") = Sigma_iX1, Named("PY") = PY1, Named("AI") = AI, Named("cov") = cov1,  Named("YPA0PY") = YPA0PY);
 }
+
+
+
+
+
+
+//This function needs the function getPCG1ofSigmaAndVector and function getCrossprod and GetTrace
+// [[Rcpp::export]]
+Rcpp::List getAIScore_q_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec, int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff){
+
+        int Nnomissing = geno.getNnomissing();
+        arma::fvec Sigma_iY1;
+        Sigma_iY1 = getPCG1ofSigmaAndVector_LOCO(wVec, tauVec, Yvec, maxiterPCG, tolPCG);
+
+        int colNumX = Xmat.n_cols;
+        arma::fmat Sigma_iX1(Nnomissing,colNumX);
+        arma::fvec XmatVecTemp;
+
+        for(int i = 0; i < colNumX; i++){
+                XmatVecTemp = Xmat.col(i);
+
+                Sigma_iX1.col(i) = getPCG1ofSigmaAndVector_LOCO(wVec, tauVec, XmatVecTemp, maxiterPCG, tolPCG);
+
+        }
+
+
+        arma::fmat Sigma_iX1t = Sigma_iX1.t();
+        arma::fmat Xmatt = Xmat.t();
+
+        arma::fmat cov1 = inv_sympd(Xmatt * Sigma_iX1);
+
+        cout << "cov " << cov1 << endl;
+
+
+	return Rcpp::List::create(Named("cov") = cov1, Named("Sigma_iX") = Sigma_iX1, Named("Sigma_iY") = Sigma_iY1);
+        //return Rcpp::List::create(Named("YPAPY") = YPAPY, Named("Trace") = Trace,Named("Sigma_iY") = Sigma_iY1, Named("Sigma_iX") = Sigma_iX1, Named("PY") = PY1, Named("AI") = AI, Named("cov") = cov1);
+}
+
+
+
+//This function needs the function getPCG1ofSigmaAndVector and function getCrossprod, getAIScore_q
+// [[Rcpp::export]]
+Rcpp::List fitglmmaiRPCG_q_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec, int nrun, int maxiterPCG, float tolPCG, float tol, float traceCVcutoff){
+
+        arma::uvec zeroVec = (tauVec < tol); //for Quantitative, GMMAT
+        Rcpp::List re = getAIScore_q_LOCO(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, traceCVcutoff);
+//return Rcpp::List::create(Named("cov") = cov1, Named("Sigma_iX") = Sigma_iX1, Named("Sigma_iY") = Sigma_iY1);
+        arma::fmat cov = re["cov"];
+        arma::fmat Sigma_iX = re["Sigma_iX"];
+        arma::fmat Sigma_iXt = Sigma_iX.t();
+
+        arma::fvec alpha1 = cov * (Sigma_iXt * Yvec);
+        arma::fvec Sigma_iY = re["Sigma_iY"];
+        arma::fvec eta1 = Yvec - tauVec(0) * (Sigma_iY - Sigma_iX * alpha1) / wVec;
+	return List::create(Named("tau") = tauVec, Named("cov") = cov, Named("alpha") = alpha1, Named("eta") = eta1);
+}
+
+
 
 
 
