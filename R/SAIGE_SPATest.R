@@ -540,6 +540,9 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio,
     var1 = var2 * varRatio
     Tstat = (q-m1)/tauVec[1]
   }
+  if(AF > 0.5){
+    Tstat = (-1)*Tstat
+  }
   p.value = pchisq(Tstat^2/var1, lower.tail = FALSE, df=1)
   BETA = (Tstat/var1)/sqrt(AC2)
   SE = abs(BETA/qnorm(p.value/2))
