@@ -9,7 +9,8 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
   qCovarCol = NULL, sampleIDColinphenoFile = "", tol = 0.02,
   maxiter = 20, tolPCG = 1e-05, maxiterPCG = 500, nThreads = 1,
   Cutoff = 2, numMarkers = 30, skipModelFitting = FALSE,
-  memoryChunk = 4, tauInit = c(0, 0), outputPrefix = "")
+  memoryChunk = 2, tauInit = c(0, 0), LOCO = FALSE,
+  traceCVcutoff = 0.0025, ratioCVcutoff = 0.001, outputPrefix = "")
 }
 \arguments{
 \item{plinkFile}{character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM)}
@@ -37,6 +38,10 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
 \item{memoryChunk}{integer or float. The size (Gb) for each memory chunk. By default, 4}
 
 \item{tauInit}{vector of numbers. e.g. c(1,1), Unitial values for tau. For binary traits, the first element will be always be set to 1. If the tauInit is not specified, the second element will be 0.5 for binary traits.}
+
+\item{LOCO}{logical. Whether to apply the leave-one-chromosome-out (LOCO) option.}
+
+\item{traceCVcutoff}{float. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun}
 
 \item{outputPrefix}{character. Path to the output files with prefix.}
 }

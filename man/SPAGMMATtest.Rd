@@ -6,14 +6,14 @@
 \usage{
 SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
   dosageFileNcolSkip = 0, dosageFilecolnamesSkip = c("SNPID", "CHR", "POS",
-  "Allele0", "Allele1"), bgenFile = "", bgenFileIndex = "", vcfFile = "",
-  vcfFileIndex = "", vcfField = "DS", savFile = "", savFileIndex = "",
-  sampleFile = "", idstoExcludeFile = "", idstoIncludeFile = "",
-  rangestoExcludeFile = "", rangestoIncludeFile = "", chrom = "",
-  start = 1, end = 2.5e+08, minMAC = 1, minMAF = 0, minInfo = 0,
-  GMMATmodelFile = "", varianceRatioFile = "", Cutoff = 2,
-  SAIGEOutputFile = "", numLinesOutput = 10000, IsSparse = TRUE,
-  IsOutputAFinCaseCtrl = FALSE)
+  "Allele0", "Allele1"), dosageFileChrCol = "CHR", bgenFile = "",
+  bgenFileIndex = "", vcfFile = "", vcfFileIndex = "", vcfField = "DS",
+  savFile = "", savFileIndex = "", sampleFile = "",
+  idstoExcludeFile = "", idstoIncludeFile = "", rangestoExcludeFile = "",
+  rangestoIncludeFile = "", chrom = "", start = 1, end = 2.5e+08,
+  minMAC = 1, minMAF = 0, minInfo = 0, GMMATmodelFile = "",
+  varianceRatioFile = "", Cutoff = 2, SAIGEOutputFile = "",
+  numLinesOutput = 10000, IsSparse = TRUE, IsOutputAFinCaseCtrl = FALSE)
 }
 \arguments{
 \item{dosageFile}{character. Path to dosage file. Each line contains dosages for a marker to be tested}
@@ -23,6 +23,8 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 \item{dosageFileNcolSkip}{integer(>=0). Number of columns to be skiped in the dosage file}
 
 \item{dosageFilecolnamesSkip}{vector of characters. The column names of the skipped columns. Default: c("SNPID", "CHR", "POS", "Allele0", "Allele1")}
+
+\item{dosageFileChrCol}{string. The column name for the chromosome column. Must be in the dosageFilecolnamesSkip. Required If LOCO = TRUE and chrom ="".}
 
 \item{bgenFile}{character. Path to bgen file. Currently version 1.2 with 8 bit compression is supported}
 
@@ -48,7 +50,7 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{rangestoIncludeFile}{character. Path to the file containing genome regions to be included from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header}
 
-\item{chrom}{character. string for the chromosome to include from vcf file. Required for vcf file.}
+\item{chrom}{character. string for the chromosome to include from vcf file. Required for vcf file. If LOCO is specified, providing chrom will save computation cost}
 
 \item{start}{numeric. start genome position to include from vcf file.}
 
