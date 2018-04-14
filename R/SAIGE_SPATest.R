@@ -506,7 +506,11 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio,
     X1<-obj.noK$X1[idx_no0,]
     mu1<-mu[idx_no0]
     y1<-obj.noK$y[idx_no0]
-
+ 
+    noCov = FALSE
+    if(dim(obj.null$X1)[2] == 1){
+     noCov = TRUE
+    }
 
 ## V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv
     if(length(idx_no0) > 1){
@@ -516,7 +520,12 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio,
       var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2) + sum(g_tilde1^2)
       var1 = var2 * varRatio
       S1 = crossprod(y1-mu1, g_tilde1)
-      S_a2 = obj.noK$S_a - colSums(X1 * (y1 - mu1))
+      if(!noCov){
+        S_a2 = obj.null$S_a - colSums(X1 * (y1 - mu1))
+      }else{
+        S_a2 = obj.null$S_a - crossprod(X1, y1 - mu1)
+      }
+      #S_a2 = obj.noK$S_a - colSums(X1 * (y1 - mu1))
       S2 = -S_a2 %*% Z
     }else{
       Z = A1 * g1    
