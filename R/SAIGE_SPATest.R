@@ -279,7 +279,7 @@ SPAGMMATtest = function(dosageFile = "",
       mu = obj.glmm.null$fitted.values
       mu.a<-as.vector(mu)
       mu2.a<-mu.a *(1-mu.a)
-      obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
+      obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)      
       obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
     }else if(chrom != ""){
       chrom_v2 = as.character(chrom)
@@ -558,6 +558,12 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
   #print(idx_no0)
   g1<-G[idx_no0]
   A1<-obj.null$XVX_inv_XV[idx_no0,]
+
+  noCov = FALSE
+  if(dim(obj.null$X1)[2] == 1){
+   noCov = TRUE 
+  }
+
   X1<-obj.null$X1[idx_no0,]
   mu21<-mu2[idx_no0]
   mu1<-mu[idx_no0]
@@ -573,7 +579,13 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
     var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
     var1 = var2 * varRatio
     S1 = crossprod(y1-mu1, g_tilde1)
-    S_a2 = obj.null$S_a - colSums(X1 * (y1 - mu1))
+
+    if(!noCov){
+      S_a2 = obj.null$S_a - colSums(X1 * (y1 - mu1))
+    }else{
+      S_a2 = obj.null$S_a - crossprod(X1, y1 - mu1)
+    }
+
     S2 = -S_a2 %*% Z
   }else{
     #cat("idx_no0 ", idx_no0, "\n")
