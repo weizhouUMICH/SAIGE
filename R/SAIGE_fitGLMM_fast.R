@@ -816,8 +816,9 @@ while(ratioCV > ratioCVcutoff){
     }
   } # end of while(numTestedMarker < numMarkers) 
 
-  ratioVec = as.numeric(OUT1$var1)/as.numeric(OUT1$var2)
+ ratioVec = as.numeric(OUTtotal$var1)/as.numeric(OUTtotal$var2)
   ratioCV = calCV(ratioVec)
+
 
   if(ratioCV > ratioCVcutoff){
     cat("CV for variance ratio estimate using ", numMarkers, " markers is ", ratioCV, " > ", ratioCVcutoff, "\n")
@@ -963,7 +964,7 @@ while(ratioCV > ratioCVcutoff){
     }
   } #end of while(numTestedMarker < numMarkers)
 
-  ratioVec = as.numeric(OUT1$var1)/as.numeric(OUT1$var2)
+  ratioVec = as.numeric(OUTtotal$var1)/as.numeric(OUTtotal$var2)
   ratioCV = calCV(ratioVec)
 
   if(ratioCV > ratioCVcutoff){
@@ -976,9 +977,8 @@ while(ratioCV > ratioCVcutoff){
 
 } #end of while(ratioCV > ratioCVcutoff)
 
-  OUTtotal = as.data.frame(OUTtotal)
-  colnames(OUTtotal) = resultHeader
-  OUT1 = OUTtotal
+  OUT1 = data.frame(OUTtotal)
+  colnames(OUT1) = resultHeader
   varRatio = mean(as.numeric(OUT1$var1)/as.numeric(OUT1$var2))
   cat("varRatio", varRatio, "\n")
   write(varRatio, varRatioOutFile)
