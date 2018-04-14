@@ -195,6 +195,14 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
 
   if(verbose) cat("\nFinal " ,tau, ":\n")
 
+  #added these steps after tau is estimated 04-14-2018
+  re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
+  cov = re.coef$cov
+  alpha = re.coef$alpha
+  eta = re.coef$eta
+  Y = re.coef$Y
+  mu = re.coef$mu
+
   converged = ifelse(i < maxiter, TRUE, FALSE)
   res = y - mu
   coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
