@@ -906,6 +906,7 @@ while(ratioCV > ratioCVcutoff){
     G0 = Get_OneSNP_Geno(i-1)
     cat("G0", G0[1:10], "\n")
     AC = sum(G0)
+    CHR = bimPlink[i,1]
     #if (AC <= 20 | AC >= (2*Nnomissing - 20)){
     if (AC <= 20 | AC >= (2*Nnomissing - 20) | CHR < 1 | CHR > 22){
       indexInMarkerList = indexInMarkerList + 1
