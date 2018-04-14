@@ -85,7 +85,12 @@ SPAGMMATtest = function(dosageFile = "",
     #print(sampleInModel$IID[1:10])
     obj.glm.null = obj.glmm.null$obj.glm.null
     obj.noK = obj.glmm.null$obj.noK   
-    traitType = obj.glmm.null$traitType 
+    traitType = obj.glmm.null$traitType
+
+    if(is.null(obj.glmm.null$LOCO)){
+      obj.glmm.null$LOCO = FALSE
+    }
+ 
   }
 
   if(!file.exists(varianceRatioFile)){

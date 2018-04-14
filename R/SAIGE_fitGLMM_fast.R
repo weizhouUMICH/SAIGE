@@ -631,6 +631,9 @@ fitNULLGLMM = function(plinkFile = "",
     }else{
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)	
       load(modelOut)
+      if(is.null(modglmm$LOCO)){
+        modglmm$LOCO = FALSE
+      }
     }
 
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,
@@ -671,6 +674,10 @@ fitNULLGLMM = function(plinkFile = "",
     }else{
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)
       load(modelOut)
+      if(is.null(modglmm$LOCO)){
+        modglmm$LOCO = FALSE
+      }
+
     }
  
     scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait(obj.glmm.null = modglmm,
