@@ -436,7 +436,8 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
 #' @param tauInit vector of numbers. e.g. c(1,1), Unitial values for tau. For binary traits, the first element will be always be set to 1. If the tauInit is not specified, the second element will be 0.5 for binary traits.  
 #' @param memoryChunk integer or float. The size (Gb) for each memory chunk. By default, 4
 #' @param LOCO logical. Whether to apply the leave-one-chromosome-out (LOCO) option. 
-#' @param traceCVcutoff float. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun
+#' @param traceCVcutoff float. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun. By default 0. suggested: 0.0025. This option has not been extensively test.
+#' @param ratioCVcutoff float. The threshold for coefficient of variantion (CV) for estimating the variance ratio. By default 0. suggested 0.001. This option has not been extensively test. 
 #' @param outputPrefix character. Path to the output files with prefix. 
 #' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio value, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
 #' @export
