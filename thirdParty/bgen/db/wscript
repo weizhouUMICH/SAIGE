@@ -1,9 +1,0 @@
-def build( bld ):
-	bld.stlib(
-		target = 'db',
-		source = bld.path.ant_glob( 'src/*.cpp' ),
-		includes='./include',
-		cxxflags = [],
-		use = 'boost sqlite3',
-		export_includes = './include'
-	)
