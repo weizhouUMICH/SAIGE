@@ -832,8 +832,10 @@ while(ratioCV > ratioCVcutoff){
     }
   } # end of while(numTestedMarker < numMarkers) 
 
+ OUTtotal = data.frame(OUTtotal, stringsAsFactors=F)
+ colnames(OUTtotal) = resultHeader
  ratioVec = as.numeric(OUTtotal$var1)/as.numeric(OUTtotal$var2)
-  ratioCV = calCV(ratioVec)
+ ratioCV = calCV(ratioVec)
 
 
   if(ratioCV > ratioCVcutoff){
@@ -980,6 +982,8 @@ while(ratioCV > ratioCVcutoff){
     }
   } #end of while(numTestedMarker < numMarkers)
 
+  OUTtotal = data.frame(OUTtotal, stringsAsFactors=F)
+  colnames(OUTtotal) = resultHeader
   ratioVec = as.numeric(OUTtotal$var1)/as.numeric(OUTtotal$var2)
   ratioCV = calCV(ratioVec)
 
