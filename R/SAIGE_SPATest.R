@@ -31,6 +31,7 @@ options(stringsAsFactors=F)
 #' @param numLinesOutput numeric. Output results for how many marker each time.    
 #' @param SAIGEOutputFile character. Path to the output file containing the SPAGMMAT test results
 #' @param IsOutputAFinCaseCtrl logical. Whether to output allele frequency in cases and controls. By default, FALSE
+#' @param LOCO logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE
 #' @return SAIGEOutputFile
 #' @export
 SPAGMMATtest = function(dosageFile = "",
@@ -62,7 +63,8 @@ SPAGMMATtest = function(dosageFile = "",
                  SAIGEOutputFile = "",
 		 numLinesOutput = 10000, 
 		 IsSparse=TRUE,
-		 IsOutputAFinCaseCtrl=FALSE){
+		 IsOutputAFinCaseCtrl=FALSE,
+		 LOCO=FALSE){
 
 
   #check and read files
@@ -87,8 +89,10 @@ SPAGMMATtest = function(dosageFile = "",
     obj.noK = obj.glmm.null$obj.noK   
     traitType = obj.glmm.null$traitType
 
-    if(is.null(obj.glmm.null$LOCO)){
+    if(!LOCO | is.null(obj.glmm.null$LOCO)){
       obj.glmm.null$LOCO = FALSE
+      cat("obj.glmm.null$LOCO: ", obj.glmm.null$LOCO, "\n")
+      cat("Leave-one-chromosome-out option is not applied\n")
     }
  
   }
@@ -324,7 +328,8 @@ SPAGMMATtest = function(dosageFile = "",
     obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
 
     indChromCheck = FALSE
-    if(!obj.glmm.null$LOCO){
+    cat("obj.glmm.null$LOCO ", obj.glmm.null$LOCO, "\n")
+   if(!obj.glmm.null$LOCO){
       mu = obj.glmm.null$fitted.values
       mu.a<-as.vector(mu)
       obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
