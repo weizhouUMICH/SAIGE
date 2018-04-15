@@ -1,4 +1,4 @@
-#This branch is for development
+# This branch is for development. Current version is 0.29
 
 # SAIGE
 
