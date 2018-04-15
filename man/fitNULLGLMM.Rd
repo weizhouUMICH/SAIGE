@@ -9,8 +9,8 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
   qCovarCol = NULL, sampleIDColinphenoFile = "", tol = 0.02,
   maxiter = 20, tolPCG = 1e-05, maxiterPCG = 500, nThreads = 1,
   Cutoff = 2, numMarkers = 30, skipModelFitting = FALSE,
-  memoryChunk = 2, tauInit = c(0, 0), LOCO = FALSE,
-  traceCVcutoff = 0.0025, ratioCVcutoff = 0.001, outputPrefix = "")
+  memoryChunk = 2, tauInit = c(0, 0), LOCO = FALSE, traceCVcutoff = 1,
+  ratioCVcutoff = 1, outputPrefix = "")
 }
 \arguments{
 \item{plinkFile}{character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM)}
@@ -39,9 +39,11 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
 
 \item{tauInit}{vector of numbers. e.g. c(1,1), Unitial values for tau. For binary traits, the first element will be always be set to 1. If the tauInit is not specified, the second element will be 0.5 for binary traits.}
 
-\item{LOCO}{logical. Whether to apply the leave-one-chromosome-out (LOCO) option.}
+\item{LOCO}{logical. Whether to apply the leave-one-chromosome-out (LOCO) approach. By default, FALSE. This option has not been extensively tested.}
 
-\item{traceCVcutoff}{float. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun}
+\item{traceCVcutoff}{float. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun. By default 1. suggested: 0.0025. This option has not been extensively tested.}
+
+\item{ratioCVcutoff}{float. The threshold for coefficient of variantion (CV) for estimating the variance ratio. By default 1. suggested 0.001. This option has not been extensively tested.}
 
 \item{outputPrefix}{character. Path to the output files with prefix.}
 }
