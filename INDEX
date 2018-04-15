@@ -1,0 +1,11 @@
+SAIGE-package           Efficiently controlling for unbalanced
+                        case-control ratios and sample relatedness for
+                        binary traits in PheWAS by large cohorts
+SPAGMMATtest            Run single variant score tests with SPA based
+                        on the logistic mixed model.
+fitNULLGLMM             Fit the null logistic mixed model and estimate
+                        the variance ratio by a set of randomly
+                        selected variants
+hello                   A simple function doing little
+rcpparma_hello_world    Set of functions in example RcppArmadillo
+                        package

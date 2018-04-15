@@ -1,0 +1,6 @@
+bgzip -c dosage_10markers.vcf > dosage_10markers.vcf.gz
+tabix -p vcf dosage_10markers.vcf.gz
+
+bgzip -c genotype_10markers.vcf > genotype_10markers.vcf.gz
+tabix -p vcf genotype_10markers.vcf.gz
+
