@@ -13,7 +13,8 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
   rangestoIncludeFile = "", chrom = "", start = 1, end = 2.5e+08,
   minMAC = 1, minMAF = 0, minInfo = 0, GMMATmodelFile = "",
   varianceRatioFile = "", Cutoff = 2, SAIGEOutputFile = "",
-  numLinesOutput = 10000, IsSparse = TRUE, IsOutputAFinCaseCtrl = FALSE)
+  numLinesOutput = 10000, IsSparse = TRUE, IsOutputAFinCaseCtrl = FALSE,
+  LOCO = FALSE)
 }
 \arguments{
 \item{dosageFile}{character. Path to dosage file. Each line contains dosages for a marker to be tested}
@@ -75,6 +76,8 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 \item{IsSparse}{logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE}
 
 \item{IsOutputAFinCaseCtrl}{logical. Whether to output allele frequency in cases and controls. By default, FALSE}
+
+\item{LOCO}{logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE}
 }
 \value{
 SAIGEOutputFile

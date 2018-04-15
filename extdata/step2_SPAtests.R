@@ -25,7 +25,7 @@ option_list <- list(
     help="Path to the sav file."),
   make_option("--savFileIndex", type="character",default="",
     help="Path to the .s1r file (index of the sav file)."),
-  make_option("--chrom", type="character",default="0",
+  make_option("--chrom", type="character",default="",
     help="chromosome in vcf to be tested. If not specified, all markers in the vcf will be tested"),
   make_option("--start", type="numeric",default=1,
     help="start genome position in the vcf to be tested"),
@@ -55,7 +55,7 @@ args <- parse_args(parser, positional_arguments = 0)
 opt <- args$options
 print(opt)
 
-try(if(length(which(opt == "")) > 0) stop("Missing arguments"))
+#try(if(length(which(opt == "")) > 0) stop("Missing arguments"))
 
 dosageFilecolnames <- strsplit(opt$dosageFilecolnamesSkip,",")[[1]]
 
@@ -80,7 +80,7 @@ SPAGMMATtest(dosageFile=opt$dosageFile,
              minMAF = opt$minMAF,
 	     minMAC = opt$minMAC,
              numLinesOutput = opt$numLinesOutput,
-	     IsOutputAFinCaseCtrl = opt$IsOutputAFinCaseCtrl	
+	     IsOutputAFinCaseCtrl = opt$IsOutputAFinCaseCtrl
 )
 
 
