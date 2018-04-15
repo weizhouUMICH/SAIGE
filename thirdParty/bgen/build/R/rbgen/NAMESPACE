@@ -1,0 +1,3 @@
+useDynLib("rbgen")
+exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)
