@@ -1,3 +1,5 @@
+#This branch is for development
+
 # SAIGE
 
 SAIGE is an R package that implements the Scalable and Accurate Implementation of Generalized mixed model that uses the 
@@ -9,13 +11,11 @@ SAIGE can take dosage files in bgen, plain text (gzipped file is supported), or 
 
 *This R package is still under development
 
-The SAIGE manuscript can be found in the bioRxiv https://www.biorxiv.org/content/early/2017/11/01/212357.article-metrics
 
 ## Installation
-
 Installation from the binary file in linux
 
-    R CMD INSTALL SAIGE_0.XX_R_x86_64-pc-linux-gnu.tar.gz
+    R CMD INSTALL SAIGE_0.29_R_x86_64-pc-linux-gnu.tar.gz
 
 The following R pakages need to be installed for running SAIGE:
 
@@ -45,17 +45,6 @@ to run the 2 steps.
 
 The R package optparse is required to run this script
 
-### Notes for users before running jobs
-1. Since the SPA test always provides close to 0 p-values for variants with MAC < 3, please use at least minMAC = 3 to filter out the results
-2. When the query is used for bgen files, please make sure there is no duplicate SNP ids in the list
-
-## UK Biobank GWAS Results
-
-The GWAS results for binary phenotypes in UK Biobank using SAIGE are currently available for public download at
-https://www.dropbox.com/sh/wuj4y8wsqjz78om/AAACfAJK54KtvnzSTAoaZTLma?dl=0
-
-We will continue to populate the public download repository with results for all UK Biobank phenotypes (> 1,600) with the PheCodes3 constructed based on ICD codes. 
-*This research has been conducted using the UK Biobank Resource under application number 24460. 
 
 
 
