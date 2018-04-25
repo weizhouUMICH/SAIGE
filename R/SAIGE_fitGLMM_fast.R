@@ -470,7 +470,8 @@ fitNULLGLMM = function(plinkFile = "",
 		LOCO = FALSE,
 		traceCVcutoff = 1,
 		ratioCVcutoff = 1, 
-                outputPrefix = ""){
+                outputPrefix = "",
+		runNullSPATest=FALSE){
                 #formula, phenoType = "binary",prefix, centerVariables = "", tol=0.02, maxiter=20, tolPCG=1e-5, maxiterPCG=500, nThreads = 1, Cutoff = 2, numMarkers = 1000, skipModelFitting = FALSE){
   if(nThreads > 1){
     RcppParallel:::setThreadOptions(numThreads = nThreads)
@@ -486,6 +487,13 @@ fitNULLGLMM = function(plinkFile = "",
   if(!file.exists(modelOut)){
     file.create(modelOut, showWarnings = TRUE)
   }
+
+
+  if(runNullSPATest == TRUE & traitType != "binary"){
+    stop("traitType needs to be binary if runNullSPATest is TRUE\n")
+  }
+
+if(!runNullSPATest){
 
   if(!file.exists(paste0(plinkFile, ".bed"))){
     stop("ERROR! ", plinkFile, ".bed does not exsit\n")
@@ -519,6 +527,9 @@ fitNULLGLMM = function(plinkFile = "",
       chromosomeEndIndexVec = rep(NA, 22)
     }	
   }
+
+
+} #end of if(!runNullSPATest)
 
   if(!file.exists(paste0(plinkFile, ".fam"))){
     stop("ERROR! ", plinkFile, ".fam does not exsit\n")
@@ -579,22 +590,17 @@ fitNULLGLMM = function(plinkFile = "",
     cat(nrow(dataMerge_sort), " samples will be used for analysis\n")
   }
 
-#  #center some covariates
-#  if(length(centerVariables)!=0){
-#    for(i in centerVariables){
-#      if (!(i %in% colnames(dataMerge_sort))){
-#        stop("ERROR! column for ", i, " does not exsit in the phenoFile \n")
-#      }else{
-#        dataMerge_sort[,which(colnames(dataMerge_sort) == i)] = dataMerge_sort[,which(colnames(dataMerge_sort) == i)] - mean(dataMerge_sort[,which(colnames(dataMerge_sort) == i)])
-#      }
-#    }
-#  }
-
   if(invNormalize){
       cat("Perform the inverse nomalization for ", phenoCol, "\n")
       invPheno = qnorm((rank(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)], na.last="keep")-0.5)/sum(!is.na(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)])))
       dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
   }
+
+
+  print("OKK  HERE")
+
+
+if(!runNullSPATest){
 
   out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
   formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
@@ -704,6 +710,18 @@ fitNULLGLMM = function(plinkFile = "",
                                                     chromosomeEndIndexVec = chromosomeEndIndexVec)
     closeGenoFile_plink()
   }
+
+}else{ #end of if(!runNullSPATest){
+
+  print("OKKKKK0")
+  obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.null, data = dataMerge_sort)
+  X <- model.matrix(formula.null, data = dataMerge_sort)
+  fit0 = glm(formula.null, data = dataMerge_sort, family = "binomial")
+  print("OKKKKK")
+  modglmm = list(sampleID = dataMerge_sort$IID, obj.noK=obj.noK, y=fit0$y, X = X, traitType="binary")
+  save(modglmm, file = modelOut)
+}
+
 }
 
 

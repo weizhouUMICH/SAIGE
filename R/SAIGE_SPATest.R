@@ -64,7 +64,8 @@ SPAGMMATtest = function(dosageFile = "",
 		 numLinesOutput = 10000, 
 		 IsSparse=TRUE,
 		 IsOutputAFinCaseCtrl=FALSE,
-		 LOCO=FALSE){
+		 LOCO=FALSE,
+		 runNullSPATest=FALSE){
 
 
   #check and read files
@@ -77,6 +78,9 @@ SPAGMMATtest = function(dosageFile = "",
   if(!file.exists(GMMATmodelFile)){
     stop("ERROR! GMMATmodelFile ", GMMATmodelFile, " does not exsit\n")
   }else{
+   
+    if(!runNullSPATest){
+
     load(GMMATmodelFile)
     obj.glmm.null = modglmm
     sampleInModel = NULL
@@ -95,15 +99,29 @@ SPAGMMATtest = function(dosageFile = "",
       cat("Leave-one-chromosome-out option is not applied\n")
     }
  
+    }else{ #end of if(!runNullSPATest){
+      load(GMMATmodelFile)
+    obj.glmm.null = modglmm
+    sampleInModel = NULL
+    sampleInModel$IID = obj.glmm.null$sampleID
+    sampleInModel = data.frame(sampleInModel)
+    sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
+    cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
+    traitType = obj.glmm.null$traitType
+
+    }
+
+
   }
 
+if(!runNullSPATest){
   if(!file.exists(varianceRatioFile)){
     stop("ERROR! varianceRatioFile ", varianceRatioFile, " does not exsit\n")
   }else{
     varRatio = data.frame(data.table:::fread(varianceRatioFile, header=F, stringsAsFactors=FALSE))[1,1]
     cat("variance Ratio is ", varRatio, "\n")
   }
-
+}
 
   #sample file
   if(!file.exists(sampleFile)){
@@ -255,6 +273,9 @@ SPAGMMATtest = function(dosageFile = "",
   }
 
   cat("isVariant: ", isVariant, "\n") 
+
+if(!runNullSPATest){
+
  
   if(traitType == "binary"){
     cat("It is a binary trait\n")
@@ -353,6 +374,34 @@ SPAGMMATtest = function(dosageFile = "",
     stop("ERROR! The type of the trait has to be either binary or quantitative\n")
   }
 
+
+
+}else{ #end of if(!runNullSPATest)
+   OUT = NULL
+    numPassMarker = 0
+    mth = 0
+    sampleIndex = sampleIndex - 1
+    y = obj.glmm.null$y
+    X = obj.glmm.null$X
+    obj.noK = obj.glmm.null$obj.noK
+
+    N = length(y)
+
+
+
+  cat("It is a binary trait\n")
+    resultHeader = c(dosageFilecolnamesSkip, "N", "p.value", "p.value.NA", "Is.SPA.converge")
+
+    if(IsOutputAFinCaseCtrl){
+      resultHeader = c(resultHeader, "AF.Cases", "AF.Controls")
+    }
+
+    write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
+
+}
+
+
+if(!runNullSPATest){
 
   while(isVariant){
     mth = mth + 1
@@ -463,6 +512,76 @@ SPAGMMATtest = function(dosageFile = "",
   } ####end of while(isVariant)
 
 
+}else{ #end of if(!runNullSPATest)
+
+
+  while(isVariant){
+    mth = mth + 1
+    if(dosageFileType == "plain"){
+      G0 = getGenoOfnthVar_plainDosage(mth, dosageFileNrowSkip, dosageFileNcolSkip)
+      markerInfo = 1 ##markerInfo is nor provided
+      AC = sum(G0)
+      AF = AC/(2*N)
+      rowHeader=getrowHeaderVec_plainDosage()
+      rowHeader = c(rowHeader, AC, AF)
+
+      if(Mtest == mth){isVariant = FALSE}
+
+    }else if (dosageFileType == "bgen"){
+      if(isQuery){
+        Gx = getDosage_bgen_withquery()
+      }else{
+        Gx = getDosage_bgen_noquery()
+      }
+      markerInfo = getMarkerInfo()
+      G0 = Gx$dosages
+      AC = Gx$variants$AC
+      AF = Gx$variants$AF
+
+      rowHeader=as.vector(unlist(Gx$variants))
+
+      if(Mtest == mth){isVariant = FALSE}
+    }else if(dosageFileType == "vcf"){
+      markerInfo = 1 ##markerInfo is nor provided
+      Gx = getGenoOfnthVar_vcfDosage(mth)
+      G0 = Gx$dosages
+      AC = Gx$variants$AC
+      AF = Gx$variants$AF
+      rowHeader=as.vector(unlist(Gx$variants))
+      isVariant = getGenoOfnthVar_vcfDosage_pre()
+    }
+
+
+    MAF = min(AF, 1-AF)
+    if(MAF >= testMinMAF & markerInfo >= minInfo){
+      numPassMarker = numPassMarker + 1
+      if(traitType == "binary"){
+	SPAtestResult = SPAtest:::ScoreTest_SPA(genos = G0, pheno=y, cov=X, obj.null=obj.noK)
+        if(!IsOutputAFinCaseCtrl){
+          OUT = rbind(OUT, c(rowHeader, N, SPAtestResult$p.value, SPAtestResult$p.value.NA, SPAtestResult$Is.converge))  
+
+
+        }else{
+          AFCase = sum(G0[y1Index])/(2*NCase)
+          AFCtrl = sum(G0[y0Index])/(2*NCtrl)
+	  OUT = rbind(OUT, c(rowHeader, N, SPAtestResult$p.value, SPAtestResult$p.value.NA, SPAtestResult$Is.converge, AFCase, AFCtrl))
+        }
+      }
+    } #end of the if(MAF >= bgenMinMaf & markerInfo >= bgenMinInfo)
+      #if(mth %% 100000 == 0 | mth == Mtest){
+    if(mth %% numLinesOutput == 0 | !isVariant){
+      ptm <- proc.time()
+      print(ptm)
+      print(mth)
+      cat("numPassMarker: ", numPassMarker, "\n")
+      OUT = as.data.frame(OUT)
+      write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
+      OUT = NULL
+    }
+  #if(mth == 100){break}
+  } ####end of while(isVariant)
+
+}
   #close the dosage file after tests
   if(dosageFileType == "plain"){
     closetestGenoFile_plainDosage()  
