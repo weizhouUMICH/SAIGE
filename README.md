@@ -104,13 +104,13 @@ SAIGE takes dosage files in plain text (gzipped file is supported), BGEN, VCF, B
 
 ## Output files
 
-###Step 1
+### Step 1
 Three files are output by Step 1
 1. prefix.rda. This file contains the information for the fitted null glm. 
 2. prefix.varianceRatio.txt. This file contains the value of variance ratio that will be used in step 2
 3. prefix_XXmarkers.SAIGE.results.txt. This file contains the association results for the XX randomly selected genetic markers, which are used to estimate the variance ratio.
 
-###Step 2
+### Step 2
 
 # UK Biobank GWAS Results
 The GWAS results for binary phenotypes in UK Biobank using SAIGE are currently available for public download at
