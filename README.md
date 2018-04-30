@@ -17,6 +17,8 @@ Table of Contents
 
 # Introduction
 
+## Current version is 0.29
+
 SAIGE is an R package that implements the Scalable and Accurate Implementation of Generalized mixed model that uses the saddlepoint approximation (SPA)(mhof, J. P. , 1961; Kuonen, D. 1999; Dey, R. et.al 2017) 
 and large scale optimization techniques to calibrate case-control ratios in logistic mixed model score tests
 (Chen, H. et al. 2016) in large-scale GWAS 
