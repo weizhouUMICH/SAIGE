@@ -1,4 +1,3 @@
-
 #step 1: fit the NULL GLMM
 Rscript step1_fitNULLGLMM.R \
 	--plinkFile=./input/plinkforGRM_1000samples_10kMarkers \
@@ -11,8 +10,6 @@ Rscript step1_fitNULLGLMM.R \
 	--nThreads=4
 
 ##step 2: perfrom score test with SPA applied for each marker
-
-
 ######plain text dosage file
  Rscript step2_SPAtests.R \
 	--dosageFile=./input/dosage_10markers.txt \
@@ -56,6 +53,22 @@ Rscript step2_SPAtests.R \
         --GMMATmodelFile=./output/example.rda \
         --varianceRatioFile=./output/example.varianceRatio.txt \
         --SAIGEOutputFile=./output/example.SAIGE.vcf.dosage.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE
+
+
+########sav file
+Rscript step2_SPAtests.R	\
+	--savFile=./input/dosage_10markers.sav	\
+	--savFileIndex=./input/dosage_10markers.sav.s1r	\
+	--vcfField=GT \
+	--minMAF=0.0001 \
+        --minMAC=1 \
+	--chrom=1 \
+        --sampleFile=./input/samplefileforbgen_10000samples.txt \
+        --GMMATmodelFile=./output/example.rda \
+        --varianceRatioFile=./output/example.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example.SAIGE.sav.txt \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE
 

@@ -7,28 +7,29 @@ require(optparse) #install.packages("optparse")
 ## set list of cmd line arguments
 option_list <- list(
   make_option("--plinkFile", type="character",default="",
-    help="path to plink file to be used for the kinship matrix"),
+    help="path to plink file for creating the genetic relationship matrix (GRM)"),
   make_option("--phenoFile", type="character", default="",
-    help="path to the phenotype file, a column 'IID' is required"),
+    help="path to the phenotype file. The file can be either tab or space delimited"),
   make_option("--phenoCol", type="character", default="",
-    help="coloumn name for phenotype in phenotype file, a column 'IID' is required"),
+    help="coloumn name for phenotype in the phenotype file, e.g CAD"),
+    make_option("--traitType", type="character", default="binary",
+    help="binary/quantitative [default=binary]"),
+  make_option("--invNormalize", type="logical",default=FALSE,
+    help="if quantitative, whether asking SAIGE to perform the inverse normalization for the phenotype [default='FALSE']"),
   make_option("--covarColList", type="character", default="",
     help="list of covariates (comma separated)"),
   make_option("--sampleIDColinphenoFile", type="character", default="IID",
     help="Column name of the IDs in the phenotype file"),
-  make_option("--skipModelFitting", type="logical", default=FALSE,
-    help="skip model fitting, [default='FALSE']"),
-  make_option("--traitType", type="character", default="binary",
-    help="binary/quantitative [default=binary]"),
-  make_option("--outputPrefix", type="character", default="~/",
-    help="path to the output files [default='~/']"),
   make_option("--numMarkers", type="integer", default=30,
-    help="An integer greater than 0 Number of markers to be used for estimating the variance ratio [default=30]"),
+    help="An integer greater than 0. Number of markers to be used for estimating the variance ratio [default=30]"),
   make_option("--nThreads", type="integer", default=16,
-    help="Number of threads"),
-  make_option("--invNormalize", type="logical",default=FALSE,
-    help="inverse normalize [default='FALSE']")
+    help="Number of threads (CPUs) to use"),
+  make_option("--skipModelFitting", type="logical", default=FALSE,
+    help="whether to skip model fitting and only estimate the variance ratio. If TRUE, the file outputPrefix.rda is required [default='FALSE']"),
+  make_option("--outputPrefix", type="character", default="~/",
+    help="path and prefix to the output files [default='~/']")
 )
+
 ## list of options
 parser <- OptionParser(usage="%prog [options]", option_list=option_list)
 args <- parse_args(parser, positional_arguments = 0)
@@ -36,6 +37,9 @@ opt <- args$options
 print(opt)
 
 covars <- strsplit(opt$covarColList,",")[[1]]
+
+#set seed
+set.seed(1)
 
 
 fitNULLGLMM(plinkFile=opt$plinkFile,
@@ -46,16 +50,9 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
             covarColList = covars,
             qCovarCol = NULL,
             sampleIDColinphenoFile = opt$sampleIDColinphenoFile,
-            tol=0.02,
-            maxiter=20,
-            tolPCG=1e-5,
-            maxiterPCG=500,
             nThreads = opt$nThreads,
-            Cutoff = 2,
             numMarkers = opt$numMarkers,
             skipModelFitting = opt$skipModelFitting,
-            outputPrefix = opt$outputPrefix,
-	    LOCO = TRUE,
-	    memoryChunk = 0.000001)
+            outputPrefix = opt$outputPrefix)
 
 
