@@ -7,8 +7,6 @@
 #ifndef LIBSAVVY_ARMADILLO_VECTOR_HPP
 #define LIBSAVVY_ARMADILLO_VECTOR_HPP
 
-#include "site_info.hpp"
-
 #include <armadillo>
 #include <cstddef>
 
@@ -47,26 +45,6 @@ namespace savvy
         }
       }
     };
-
-//    template <typename T>
-//    using sparse_allele_vector = allele_vector<sparse_vector<T>>;
-//    template <typename T>
-//    using dense_allele_vector = allele_vector<dense_vector<T>>;
-//
-//    template <typename T>
-//    using sparse_genotype_vector = genotype_vector<sparse_vector<T>>;
-//    template <typename T>
-//    using dense_genotype_vector = genotype_vector<dense_vector<T>>;
-//
-//    template <typename T>
-//    using sparse_dosage_vector = dosage_vector<sparse_vector<T>>;
-//    template <typename T>
-//    using dense_dosage_vector = dosage_vector<dense_vector<T>>;
-//
-////    template <typename T>
-////    using sparse_genotype_probabilities_vector = genotype_probabilities_vector<sparse_vector<T>>;
-//    template <typename T>
-//    using dense_genotype_probabilities_vector = genotype_probabilities_vector<dense_vector<T>>;
   }
 }
 

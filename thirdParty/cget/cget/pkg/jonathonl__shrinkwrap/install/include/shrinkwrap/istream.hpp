@@ -34,7 +34,7 @@ namespace shrinkwrap
       switch (char(first_byte))
       {
         case '\x1F':
-          sbuf_ = detail::make_unique<::shrinkwrap::bgz::ibuf>(fp);
+          sbuf_ = detail::make_unique<::shrinkwrap::bgzf::ibuf>(fp);
           break;
         case char('\xFD'):
           sbuf_ = detail::make_unique<::shrinkwrap::xz::ibuf>(fp);

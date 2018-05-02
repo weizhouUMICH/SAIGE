@@ -31,10 +31,10 @@ namespace savvy
       typedef std::input_iterator_tag iterator_category;
 
       iterator() : vec_(nullptr), beg_(nullptr), cur_(beg_) {}
-      iterator(compressed_vector& file_reader, std::size_t off) :
-        vec_(&file_reader),
-        beg_(file_reader.values_.data()),
-        cur_(file_reader.values_.data() + off)
+      iterator(compressed_vector& parent, std::size_t off) :
+        vec_(&parent),
+        beg_(parent.values_.data()),
+        cur_(parent.values_.data() + off)
       {
 
       }
@@ -73,9 +73,9 @@ namespace savvy
       typedef std::input_iterator_tag iterator_category;
 
       const_iterator() : vec_(nullptr), beg_(nullptr), cur_(beg_) {}
-      const_iterator(const compressed_vector& file_reader, std::size_t off) :
-        vec_(&file_reader),
-        beg_(file_reader.values_.data()),
+      const_iterator(const compressed_vector& parent, std::size_t off) :
+        vec_(&parent),
+        beg_(parent.values_.data()),
         cur_(beg_ + off)
       {
 
@@ -104,9 +104,9 @@ namespace savvy
       const value_type* cur_;
     };
 
-    compressed_vector() :
-      size_(0)
+    compressed_vector(std::size_t sz = 0)
     {
+      resize(sz);
     }
 
     value_type& operator[](std::size_t pos)
@@ -163,6 +163,11 @@ namespace savvy
       }
 
       size_ = sz;
+    }
+
+    void clear()
+    {
+      resize(0);
     }
 
     const std::size_t* const index_data() const { return offsets_.data(); }

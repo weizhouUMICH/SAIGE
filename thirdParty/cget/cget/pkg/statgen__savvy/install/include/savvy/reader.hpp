@@ -192,7 +192,7 @@ namespace savvy
     template <typename T>
     indexed_reader(const std::string& file_path, const region& reg, T data_format);
     template <typename T>
-    indexed_reader(const std::string& file_path, const region& reg, coord_bound bounding_type, T data_format);
+    indexed_reader(const std::string& file_path, const region& reg, bounding_point bounding_type, T data_format);
     void reset_region(const region& reg);
 
     std::vector<std::string> chromosomes() const;
@@ -253,7 +253,7 @@ namespace savvy
   }
 
   template <typename T>
-  indexed_reader::indexed_reader(const std::string& file_path, const region& reg, coord_bound bounding_type, T data_format)
+  indexed_reader::indexed_reader(const std::string& file_path, const region& reg, bounding_point bounding_type, T data_format)
   {
     if (::savvy::detail::has_extension(file_path, ".sav"))
       sav_reader_ = ::savvy::detail::make_unique<sav::indexed_reader>(file_path, reg, bounding_type, data_format);

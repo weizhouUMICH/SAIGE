@@ -22,6 +22,7 @@
 #include <cassert>
 #include <array>
 #include <cstring>
+#include <tuple>
 
 namespace savvy
 {
@@ -384,6 +385,40 @@ namespace savvy
 
       bool good() const { return ifs_.good(); }
 
+      std::tuple<std::uint32_t, std::uint32_t> range()
+      {
+        std::tuple<std::uint32_t, std::uint32_t> ret{std::numeric_limits<std::uint32_t>::max(), 0};
+
+        auto fn = [&ret](const internal_entry& e)
+        {
+          std::get<0>(ret) = std::min(std::get<0>(ret), e.region_start());
+          std::get<1>(ret) = std::max(std::get<1>(ret), e.region_end());
+        };
+
+        node_position position{0, 0};
+
+        const std::uint64_t leaf_level = this->tree_height() - 1;
+        ifs_.seekg(this->calculate_file_position(position));
+
+        if (position.level == leaf_level)
+        {
+          std::vector<entry> leaf_node(this->entries_per_leaf_node());
+          ifs_.read((char*) leaf_node.data(), this->bucket_size());
+
+          const auto entry_end_it = leaf_node.begin() + this->calculate_node_size(position);
+          std::for_each(leaf_node.begin(), entry_end_it, fn);
+        }
+        else
+        {
+          std::vector<internal_entry> internal_node(this->entries_per_internal_node());
+          ifs_.read((char*) internal_node.data(), this->bucket_size());
+          const auto entry_end_it = internal_node.begin() + this->calculate_node_size(position);
+          std::for_each(internal_node.begin(), entry_end_it, fn);
+        }
+
+        return ret;
+      }
+
       const tree_position end_tree_position()
       {
         return tree_position(0, 0, calculate_node_size(tree_position(0, 0, 0)));
@@ -401,11 +436,11 @@ namespace savvy
       std::string name_;
     };
 
-    enum class sort_type : std::uint8_t
+    enum class sort_point : std::uint8_t
     {
-      midpoint = 0,
-      left_point = 0x10,
-      right_point = 0x01
+      mid = 0,
+      beg = 0x10,
+      end = 0x01
     };
 
     class reader
@@ -420,71 +455,84 @@ namespace savvy
       {
         std::array<char, 26> footer;
 
-        input_file_.seekg(-(footer.size()), std::ios::end);
-        input_file_.read(footer.data(), footer.size());
-        assert(input_file_.good());
-
-        std::size_t bytes_parsed = 0;
-        std::string version(footer.begin() + (footer.size() - 7), footer.begin() + footer.size());
-        bytes_parsed += version.size();
-
-        std::string uuid(footer.begin() + (footer.size() - bytes_parsed - 16), footer.begin() + (footer.size() - bytes_parsed));
-        bytes_parsed += uuid.size();
-
-        std::uint16_t tree_details_size_be;
-        std::memcpy((char*)(&tree_details_size_be), footer.data() + (footer.size() - bytes_parsed - sizeof(tree_details_size_be)), sizeof(tree_details_size_be));
-        bytes_parsed += sizeof(tree_details_size_be);
-
-        std::uint16_t tree_details_size = be16toh(tree_details_size_be);
-
-        std::uint8_t block_size_byte;
-        std::memcpy((char*)(&block_size_byte), footer.data() + (footer.size() - bytes_parsed - sizeof(block_size_byte)), sizeof(block_size_byte));
-        bytes_parsed += sizeof(block_size_byte);
-
-        const std::uint32_t block_size = 1024u * (std::uint32_t(block_size_byte) + 1);
-
-        struct tree_details
-        {
-          std::string name;
-          std::uint64_t entry_count = 0;
-        };
-
-        input_file_.seekg(-(std::int64_t(footer.size()) + tree_details_size), std::ios::end);
-        std::vector<tree_details> tree_details_array;
-
-        int tree_details_bytes_left = tree_details_size;
-        while (tree_details_bytes_left > 0 && input_file_.good())
-        {
-          tree_details details;
-          std::getline(input_file_, details.name, '\0');
-
-          std::uint64_t entry_count_be = 0;
-          input_file_.read((char*)(&entry_count_be), 8);
-          details.entry_count = be64toh(entry_count_be);
-
-          tree_details_bytes_left -= (details.name.size() + 1 + 8);
-
-
-          tree_details_array.emplace_back(std::move(details));
-        }
-
-        assert(tree_details_bytes_left == 0);
-
+        std::uint8_t block_size_byte = 0;
         std::uint64_t block_count = 0;
 
-        trees_.reserve(tree_details_array.size());
-        for (auto it = tree_details_array.begin(); it != tree_details_array.end(); ++it)
+        input_file_.seekg(-(footer.size()), std::ios::end);
+        input_file_.read(footer.data(), footer.size());
+        if (!input_file_.good())
         {
-          trees_.emplace_back(input_file_, block_size_byte, block_count, it->name, it->entry_count);
+          input_file_.setstate(std::ios::badbit);
+        }
+        else
+        {
+          std::size_t bytes_parsed = 0;
+          std::string version(footer.begin() + (footer.size() - 7), footer.begin() + footer.size());
+          bytes_parsed += version.size();
 
-          for (std::uint64_t nodes_at_current_level = detail::ceil_divide(it->entry_count, (std::uint64_t) detail::entries_per_leaf_node(block_size));
-            nodes_at_current_level > 1;
-            nodes_at_current_level = detail::ceil_divide(nodes_at_current_level, (std::uint64_t) detail::entries_per_internal_node(block_size)))
+          if (version.substr(0, 3) != "s1r")
           {
-            block_count += nodes_at_current_level;
+            input_file_.setstate(std::ios::badbit);
           }
+          else
+          {
+            std::string uuid(footer.begin() + (footer.size() - bytes_parsed - 16), footer.begin() + (footer.size() - bytes_parsed));
+            bytes_parsed += uuid.size();
 
-          block_count += 1;
+            std::uint16_t tree_details_size_be;
+            std::memcpy((char*)(&tree_details_size_be), footer.data() + (footer.size() - bytes_parsed - sizeof(tree_details_size_be)), sizeof(tree_details_size_be));
+            bytes_parsed += sizeof(tree_details_size_be);
+
+            std::uint16_t tree_details_size = be16toh(tree_details_size_be);
+
+
+            std::memcpy((char*)(&block_size_byte), footer.data() + (footer.size() - bytes_parsed - sizeof(block_size_byte)), sizeof(block_size_byte));
+            bytes_parsed += sizeof(block_size_byte);
+
+            const std::uint32_t block_size = 1024u * (std::uint32_t(block_size_byte) + 1);
+
+            struct tree_details
+            {
+              std::string name;
+              std::uint64_t entry_count = 0;
+            };
+
+            input_file_.seekg(-(std::int64_t(footer.size()) + tree_details_size), std::ios::end);
+            std::vector<tree_details> tree_details_array;
+
+            int tree_details_bytes_left = tree_details_size;
+            while (tree_details_bytes_left > 0 && input_file_.good())
+            {
+              tree_details details;
+              std::getline(input_file_, details.name, '\0');
+
+              std::uint64_t entry_count_be = 0;
+              input_file_.read((char*)(&entry_count_be), 8);
+              details.entry_count = be64toh(entry_count_be);
+
+              tree_details_bytes_left -= (details.name.size() + 1 + 8);
+
+
+              tree_details_array.emplace_back(std::move(details));
+            }
+
+            assert(tree_details_bytes_left == 0);
+
+            trees_.reserve(tree_details_array.size());
+            for (auto it = tree_details_array.begin(); it != tree_details_array.end(); ++it)
+            {
+              trees_.emplace_back(input_file_, block_size_byte, block_count, it->name, it->entry_count);
+
+              for (std::uint64_t nodes_at_current_level = detail::ceil_divide(it->entry_count, (std::uint64_t) detail::entries_per_leaf_node(block_size));
+                nodes_at_current_level > 1;
+                nodes_at_current_level = detail::ceil_divide(nodes_at_current_level, (std::uint64_t) detail::entries_per_internal_node(block_size)))
+              {
+                block_count += nodes_at_current_level;
+              }
+
+              block_count += 1;
+            }
+          }
         }
 
         trees_.emplace_back(input_file_, block_size_byte, block_count, "", 0); // empty tree (end marker).
@@ -514,6 +562,18 @@ namespace savvy
         }
 
         return ret;
+      }
+
+      std::vector<tree_reader>::iterator trees_begin()
+      {
+        return trees_.begin();
+      }
+
+      std::vector<tree_reader>::iterator trees_end()
+      {
+        if (trees_.size())
+          return trees_.begin() + trees_.size() - 1;
+        return trees_.begin();
       }
 
       class query;
@@ -614,9 +674,10 @@ namespace savvy
     class writer
     {
     public:
-      writer(const std::string& file_path, std::uint8_t block_size_in_kib = 4 - 1) :
+      writer(const std::string& file_path, const std::array<std::uint8_t, 16>& uuid, std::uint8_t block_size_in_kib = 4 - 1) :
         file_path_(file_path),
-        ofs_(file_path, std::ios::binary)
+        ofs_(file_path, std::ios::binary),
+        uuid_(uuid)
       {
         this->block_size_ = 1024u * (std::uint32_t(block_size_in_kib) + 1);
 
@@ -913,6 +974,7 @@ namespace savvy
     private:
       std::string file_path_;
       std::ofstream ofs_;
+      const std::array<std::uint8_t, 16> uuid_;
       std::uint32_t block_size_;
       std::vector<entry> current_leaf_node_;
       std::vector<std::pair<std::string, std::uint64_t>> chromosomes_;
