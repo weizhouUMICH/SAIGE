@@ -7,8 +7,6 @@
 #ifndef LIBSAVVY_EIGEN3_VECTOR_HPP
 #define LIBSAVVY_EIGEN3_VECTOR_HPP
 
-#include "site_info.hpp"
-
 #include <Eigen/Sparse>
 #include <Eigen/Dense>
 #include <cstddef>
@@ -21,8 +19,8 @@ namespace savvy
     class sparse_vector : public ::Eigen::SparseVector<T>
     {
     public:
-      typedef T value_type;
       using ::Eigen::SparseVector<T>::SparseVector;
+
       T& operator[](std::size_t idx)
       {
         return ::Eigen::SparseVector<T>::coeffRef(idx);
@@ -39,15 +37,7 @@ namespace savvy
     class dense_vector : public ::Eigen::Matrix<T, 1, ::Eigen::Dynamic>
     {
     public:
-      typedef T value_type;
-      dense_vector()
-      {
-      }
-
-      dense_vector(std::size_t size)
-      {
-        dense_vector::resize(size);
-      }
+      using ::Eigen::Matrix<T, 1, ::Eigen::Dynamic>::Matrix;
 
       T& operator[](std::size_t idx)
       {
@@ -61,6 +51,7 @@ namespace savvy
 
       void resize(std::size_t sz)
       {
+        using value_type = typename ::Eigen::Matrix<T, 1, ::Eigen::Dynamic>::value_type;
         std::size_t before_size = ::Eigen::Matrix<T, 1, ::Eigen::Dynamic>::size();
         ::Eigen::Matrix<T, 1, ::Eigen::Dynamic>::resize(sz);
         if (::Eigen::Matrix<T, 1, ::Eigen::Dynamic>::size() > before_size)
@@ -70,26 +61,6 @@ namespace savvy
         }
       }
     };
-
-//    template <typename T>
-//    using sparse_allele_vector = allele_vector<sparse_vector<T>>;
-//    template <typename T>
-//    using dense_allele_vector = allele_vector<dense_vector<T>>;
-//
-//    template <typename T>
-//    using sparse_genotype_vector = genotype_vector<sparse_vector<T>>;
-//    template <typename T>
-//    using dense_genotype_vector = genotype_vector<dense_vector<T>>;
-//
-//    template <typename T>
-//    using sparse_dosage_vector = dosage_vector<sparse_vector<T>>;
-//    template <typename T>
-//    using dense_dosage_vector = dosage_vector<dense_vector<T>>;
-//
-////    template <typename T>
-////    using sparse_genotype_probabilities_vector = genotype_probabilities_vector<sparse_vector<T>>;
-//    template <typename T>
-//    using dense_genotype_probabilities_vector = genotype_probabilities_vector<dense_vector<T>>;
   }
 }
 #endif //LIBSAVVY_EIGEN3_VECTOR_HPP

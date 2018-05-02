@@ -7,7 +7,8 @@ Rscript step1_fitNULLGLMM.R \
 	--sampleIDColinphenoFile=IID \
 	--traitType=binary \
 	--outputPrefix=./output/example \
-	--nThreads=4
+	--nThreads=4 \
+	--LOCO=TRUE
 
 ##step 2: perfrom score test with SPA applied for each marker
 ######plain text dosage file
@@ -20,7 +21,7 @@ Rscript step1_fitNULLGLMM.R \
 	--sampleFile=./input/sampleIDindosage.txt \
 	--GMMATmodelFile=./output/example.rda \
 	--varianceRatioFile=./output/example.varianceRatio.txt \
-	--SAIGEOutputFile=./output/example.SAIGE.txt \
+	--SAIGEOutputFile=./output/example.plainDosage.SAIGE.txt \
 	--numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE
 
@@ -61,9 +62,9 @@ Rscript step2_SPAtests.R \
 Rscript step2_SPAtests.R	\
 	--savFile=./input/dosage_10markers.sav	\
 	--savFileIndex=./input/dosage_10markers.sav.s1r	\
-	--vcfField=GT \
 	--minMAF=0.0001 \
         --minMAC=1 \
+	--vcfField=GT \
 	--chrom=1 \
         --sampleFile=./input/samplefileforbgen_10000samples.txt \
         --GMMATmodelFile=./output/example.rda \

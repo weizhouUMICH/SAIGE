@@ -13,14 +13,14 @@ namespace savvy
 {
   enum class fmt : std::uint8_t
   {
-    allele = 1,
-    genotype,
-    genotype_probability,
-    genotype_likelihood,
-    phred_scaled_genotype_likelihood,
-    dosage,
-    haplotype_dosage,
-    //phase,
+    gt = 1,
+    ac,
+    gp,
+    gl,
+    pl,
+    ds,
+    hds,
+
 //    gt = genotype,
 //    gp = genotype_probability,
 //    gl = genotype_likelihood,
@@ -33,13 +33,13 @@ namespace savvy
   {
     switch (format)
     {
-      case fmt::allele: return ploidy;
-      case fmt::genotype: return 1;
-      case fmt::genotype_probability: return ploidy + 1;
-      case fmt::genotype_likelihood: return ploidy + 1;
-      case fmt::phred_scaled_genotype_likelihood: return ploidy + 1;
-      case fmt::dosage: return 1;
-      case fmt::haplotype_dosage: return ploidy;
+      case fmt::gt: return ploidy;
+      case fmt::ac: return 1;
+      case fmt::gp: return ploidy + 1;
+      case fmt::gl: return ploidy + 1;
+      case fmt::pl: return ploidy + 1;
+      case fmt::ds: return 1;
+      case fmt::hds: return ploidy;
     }
   }
 }

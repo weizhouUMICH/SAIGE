@@ -13,6 +13,7 @@
 #include "variant_iterator.hpp"
 #include "utility.hpp"
 #include "data_format.hpp"
+#include "savvy.hpp"
 
 //namespace savvy
 //{
@@ -34,6 +35,8 @@
 #include <cmath>
 #include <algorithm>
 #include <set>
+#include <ctime>
+#include <htslib/hts.h>
 
 namespace savvy
 {
@@ -46,6 +49,8 @@ namespace savvy
       bgzip
     };
     //################################################################//
+
+    std::vector<std::string> query_chromosomes(const std::string& file_path);
 
     //################################################################//
     template <std::size_t VecCnt>
@@ -225,7 +230,7 @@ namespace savvy
       template <typename... T>
       indexed_reader(const std::string& file_path, const region& reg, T... data_formats);
       template <typename... T>
-      indexed_reader(const std::string& file_path, const region& reg, coord_bound bounding_type, T... data_formats);
+      indexed_reader(const std::string& file_path, const region& reg, bounding_point bounding_type, T... data_formats);
       //template <typename PathItr, typename RegionItr>
       //region_reader(PathItr file_paths_beg, PathItr file_paths_end, RegionItr regions_beg, RegionItr regions_end);
       ~indexed_reader();
@@ -252,7 +257,7 @@ namespace savvy
       std::string file_path_;
       bcf_srs_t* synced_readers_;
       bcf1_t* hts_rec_;
-      coord_bound bounding_type_;
+      bounding_point bounding_type_;
     };
     //################################################################//
 
@@ -296,9 +301,6 @@ namespace savvy
 
       template <typename... T>
       void write_multi_sample_level_data(const std::size_t ploidy, const T&... data);
-
-      template <typename T>
-      void write_single_sample_level_data(const std::size_t ploidy, const T& data);
     private:
       std::vector<std::string> info_fields_;
       std::vector<fmt> format_fields_;
@@ -320,7 +322,7 @@ namespace savvy
       if (hdr)
       {
         this->headers_.reserve(std::size_t(hdr->nhrec - 1));
-        for (int i = 1; i < hdr->nhrec; ++i)
+        for (int i = 0; i < hdr->nhrec; ++i)
         {
           std::string key, val;
           if (hdr->hrec[i]->key && hdr->hrec[i]->value)
@@ -328,7 +330,7 @@ namespace savvy
             key = hdr->hrec[i]->key;
             val = hdr->hrec[i]->value;
           }
-          else if (hdr->hrec[i]->key && (hdr->hrec[i]->type == BCF_HL_INFO || hdr->hrec[i]->type == BCF_HL_FLT || hdr->hrec[i]->type == BCF_HL_STR))
+          else if (hdr->hrec[i]->key && hdr->hrec[i]->nkeys) // (hdr->hrec[i]->type == BCF_HL_INFO || hdr->hrec[i]->type == BCF_HL_FLT || hdr->hrec[i]->type == BCF_HL_STR))
           {
             bcf_hrec_t* r = hdr->hrec[i];
             key = r->key;
@@ -479,39 +481,39 @@ namespace savvy
         int fmt_id = hts_rec()->d.fmt[i].id;
         std::string fmt_key = hts_hdr()->id[BCF_DT_ID][fmt_id].key;
 
-        std::int64_t gt_idx     = std::distance(requested_data_formats_.begin(), std::find(requested_data_formats_.begin(), requested_data_formats_.end(), fmt::genotype));
-        std::int64_t allele_idx = std::distance(requested_data_formats_.begin(), std::find(requested_data_formats_.begin(), requested_data_formats_.end(), fmt::allele));
+        std::int64_t gt_idx     = std::distance(requested_data_formats_.begin(), std::find(requested_data_formats_.begin(), requested_data_formats_.end(), fmt::ac));
+        std::int64_t allele_idx = std::distance(requested_data_formats_.begin(), std::find(requested_data_formats_.begin(), requested_data_formats_.end(), fmt::gt));
 
         if (fmt_key == "GT" && (gt_idx < VecCnt || allele_idx < VecCnt))
         {
           if (gt_idx < VecCnt)
           {
-            cnt += read_genos_to<0>(fmt::genotype, destinations...);
+            cnt += read_genos_to<0>(fmt::ac, destinations...);
           }
           else // allele_idx < VecCnt
           {
-            cnt += read_genos_to<0>(fmt::allele, destinations...);
+            cnt += read_genos_to<0>(fmt::gt, destinations...);
           }
         }
         else if (fmt_key == "DS")
         {
-          cnt += read_genos_to<0>(fmt::dosage, destinations...);
+          cnt += read_genos_to<0>(fmt::ds, destinations...);
         }
         else if (fmt_key == "HDS")
         {
-          cnt += read_genos_to<0>(fmt::haplotype_dosage, destinations...);
+          cnt += read_genos_to<0>(fmt::hds, destinations...);
         }
         else if (fmt_key == "GP")
         {
-          cnt += read_genos_to<0>(fmt::genotype_probability, destinations...);
+          cnt += read_genos_to<0>(fmt::gp, destinations...);
         }
         else if (fmt_key == "GL")
         {
-          cnt += read_genos_to<0>(fmt::genotype_likelihood, destinations...);
+          cnt += read_genos_to<0>(fmt::gl, destinations...);
         }
         else if (fmt_key == "PL")
         {
-          cnt += read_genos_to<0>(fmt::phred_scaled_genotype_likelihood, destinations...);
+          cnt += read_genos_to<0>(fmt::pl, destinations...);
         }
         else
         {
@@ -530,25 +532,25 @@ namespace savvy
       {
         switch (data_format)
         {
-          case fmt::allele:
+          case fmt::gt:
             read_genotypes_al(destination);
             break;
-          case fmt::genotype:
+          case fmt::ac:
             read_genotypes_gt(destination);
             break;
-          case fmt::genotype_probability:
+          case fmt::gp:
             read_genotypes_gp(destination);
             break;
-          case fmt::dosage:
+          case fmt::ds:
             read_genotypes_ds(destination);
             break;
-          case fmt::haplotype_dosage:
+          case fmt::hds:
             read_genotypes_hds(destination);
             break;
-          case fmt::genotype_likelihood:
+          case fmt::gl:
             read_genotypes_gl(destination);
             break;
-          case fmt::phred_scaled_genotype_likelihood:
+          case fmt::pl:
             read_genotypes_pl(destination);
             break;
         }
@@ -1137,7 +1139,7 @@ namespace savvy
     {
       static_assert(VecCnt == sizeof...(T), "The number of destination vectors must match class template size");
       std::size_t vecs_read = 0;
-      while (vecs_read == 0)
+      while (vecs_read == 0 && this->good())
       {
         this->read_variant_details(annotations);
         vecs_read = this->read_requested_genos(destinations...);
@@ -1199,13 +1201,13 @@ namespace savvy
     template <std::size_t VecCnt>
     template <typename... T>
     indexed_reader<VecCnt>::indexed_reader(const std::string& file_path, const region& reg, T... data_formats) :
-      indexed_reader<VecCnt>(file_path, reg, coord_bound::any, data_formats...)
+      indexed_reader<VecCnt>(file_path, reg, bounding_point::beg, data_formats...)
     {
     }
 
     template <std::size_t VecCnt>
     template <typename... T>
-    indexed_reader<VecCnt>::indexed_reader(const std::string& file_path, const region& reg, coord_bound bounding_type, T... data_formats) :
+    indexed_reader<VecCnt>::indexed_reader(const std::string& file_path, const region& reg, bounding_point bounding_type, T... data_formats) :
       region_(reg),
       file_path_(file_path),
       synced_readers_(bcf_sr_init()),
@@ -1245,17 +1247,7 @@ namespace savvy
 
       if (this->good())
       {
-        hts_idx_t* idx = bcf_index_load(file_path_.c_str());
-        if (idx)
-        {
-          int n{};
-          const char** arr = bcf_index_seqnames(idx, hts_hdr(), &n);
-          ret.resize(n);
-          for (int i = 0; i < n; ++i)
-          {
-            ret[i] = arr[i];
-          }
-        }
+        return query_chromosomes(file_path_);
       }
 
       return ret;
@@ -1264,8 +1256,10 @@ namespace savvy
     template <std::size_t VecCnt>
     void indexed_reader<VecCnt>::reset_region(const region& reg)
     {
-      if (this->good())
-      {
+//      if (this->good())
+//      {
+        region_ = reg;
+
         if (synced_readers_)
           bcf_sr_destroy(synced_readers_);
         synced_readers_ = bcf_sr_init();
@@ -1279,7 +1273,7 @@ namespace savvy
 
         if (bcf_sr_set_regions(synced_readers_, contigs.str().c_str(), 0) != 0 || bcf_sr_add_reader(synced_readers_, file_path_.c_str()) != 1)
           this->state_ = std::ios::failbit;
-      }
+//      }
     }
 
     template <std::size_t VecCnt>
@@ -1306,7 +1300,7 @@ namespace savvy
     template <std::size_t VecCnt>
     template <typename RandAccessStringIterator, typename RandAccessKVPIterator, typename... Fmt>
     writer<VecCnt>::writer(const std::string& file_path, const options& opts, RandAccessStringIterator samples_beg, RandAccessStringIterator samples_end, RandAccessKVPIterator headers_beg, RandAccessKVPIterator headers_end, Fmt... data_formats) :
-      output_stream_(opts.compression == compression_type::none ? std::unique_ptr<std::ostream>(new std::ofstream(file_path)) : std::unique_ptr<std::ostream>(new shrinkwrap::bgz::ostream(file_path))),
+      output_stream_(opts.compression == compression_type::none ? std::unique_ptr<std::ostream>(new std::ofstream(file_path)) : std::unique_ptr<std::ostream>(new shrinkwrap::bgzf::ostream(file_path))),
       sample_size_(0)
     {
       static_assert(VecCnt == sizeof...(Fmt), "Number of requested format fields do not match VecCnt template parameter");
@@ -1314,27 +1308,52 @@ namespace savvy
       this->format_fields_.reserve(sizeof...(Fmt));
       this->init_format_fields(data_formats...);
 
-      (*output_stream_) << "##fileformat=VCFv4.2" << std::endl;
+      (*output_stream_) << "##fileformat=VCFv4.2\n";
 
 
       for (auto it = headers_beg; it != headers_end; ++it)
       {
-        if (it->first != "FORMAT")
+        if (it->first != "FORMAT" && it->first != "fileformat")
         {
-          (*output_stream_) << (std::string("##") + it->first + "=" + it->second) << std::endl;
-
-          if (it->first == "INFO")
+          if (it->first == "fileDate")
           {
-            if (it->second.size() && it->second.front() == '<' && it->second.back() == '>')
+            std::time_t t = std::time(nullptr);
+            char datestr[11];
+            if (std::strftime(datestr, sizeof(datestr), "%Y%m%d", std::localtime(&t)))
             {
-              std::string header_value = it->second;
-              header_value.resize(header_value.size() - 1);
+              (*output_stream_) << (std::string("##") + it->first + "=" + std::string(datestr)) << "\n";
+            }
+          }
+          else
+          {
+            (*output_stream_) << (std::string("##") + it->first + "=" + it->second) << "\n";
 
-              auto curr_pos = header_value.begin() + 1;
-              auto comma_pos = std::find(curr_pos, header_value.end(), ',');
-
-              while (comma_pos != header_value.end())
+            if (it->first == "INFO")
+            {
+              if (it->second.size() && it->second.front() == '<' && it->second.back() == '>')
               {
+                std::string header_value = it->second;
+                header_value.resize(header_value.size() - 1);
+
+                auto curr_pos = header_value.begin() + 1;
+                auto comma_pos = std::find(curr_pos, header_value.end(), ',');
+
+                while (comma_pos != header_value.end())
+                {
+                  auto equals_pos = std::find(curr_pos, comma_pos, '=');
+                  if (equals_pos != comma_pos)
+                  {
+                    std::string key(curr_pos, equals_pos);
+                    std::string val(equals_pos + 1, comma_pos);
+
+                    if (key == "ID")
+                      info_fields_.emplace_back(std::move(val));
+                  }
+
+                  curr_pos = comma_pos + 1;
+                  comma_pos = std::find(curr_pos, header_value.end(), ',');
+                }
+
                 auto equals_pos = std::find(curr_pos, comma_pos, '=');
                 if (equals_pos != comma_pos)
                 {
@@ -1343,22 +1362,9 @@ namespace savvy
 
                   if (key == "ID")
                     info_fields_.emplace_back(std::move(val));
+
+                  curr_pos = comma_pos + 1;
                 }
-
-                curr_pos = comma_pos + 1;
-                comma_pos = std::find(curr_pos, header_value.end(), ',');
-              }
-
-              auto equals_pos = std::find(curr_pos, comma_pos, '=');
-              if (equals_pos != comma_pos)
-              {
-                std::string key(curr_pos, equals_pos);
-                std::string val(equals_pos + 1, comma_pos);
-
-                if (key == "ID")
-                  info_fields_.emplace_back(std::move(val));
-
-                curr_pos = comma_pos + 1;
               }
             }
           }
@@ -1367,14 +1373,14 @@ namespace savvy
 
       for (auto f : this->format_fields_)
       {
-        if (f == savvy::fmt::allele)
-          (*output_stream_) << "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">" << std::endl;
-        else if (f == savvy::fmt::haplotype_dosage)
-          (*output_stream_) << "##FORMAT=<ID=HDS,Number=2,Type=Float,Description=\"Estimated Haploid Alternate Allele Dosage\">" << std::endl;
-        else if (f == savvy::fmt::dosage)
-          (*output_stream_) << "##FORMAT=<ID=DS,Number=1,Type=Float,Description=\"Estimated Alternate Allele Dosage\">" << std::endl;
-        //else if (f == savvy::fmt::genotype_probability)
-        //  (*output_stream_) << "##FORMAT"="<ID=GP,Number=3,Type=Float,Description=\"Estimated Posterior Probabilities for Genotypes 0/0, 0/1 and 1/1\">" << std::endl; // TODO: Handle other ploidy levels.
+        if (f == savvy::fmt::gt)
+          (*output_stream_) << "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n";
+        else if (f == savvy::fmt::hds)
+          (*output_stream_) << "##FORMAT=<ID=HDS,Number=.,Type=Float,Description=\"Estimated Haploid Alternate Allele Dosage\">\n";
+        else if (f == savvy::fmt::ds)
+          (*output_stream_) << "##FORMAT=<ID=DS,Number=1,Type=Float,Description=\"Estimated Alternate Allele Dosage\">\n";
+        else if (f == savvy::fmt::gp)
+          (*output_stream_) << "##FORMAT=<ID=GP,Number=G,Type=Float,Description=\"Estimated Posterior Probabilities for Genotypes\">\n";
       }
 
       (*output_stream_) << "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT";
@@ -1384,7 +1390,7 @@ namespace savvy
         ++sample_size_;
       }
 
-      (*output_stream_) << std::endl;
+      (*output_stream_) << "\n";
     }
 
     template <std::size_t VecCnt>
@@ -1421,19 +1427,35 @@ namespace savvy
         for (std::size_t i = 0; i < format_fields_.size(); ++i)
         {
           fmt f = format_fields_[i];
-          if (f == fmt::allele || f == fmt::haplotype_dosage)
+          if (f == fmt::gt || f == fmt::hds)
           {
             if (ploidy)
             {
-              if ((get_vec(i, data...).size() / sample_size_) != ploidy)
+              if ((get_vec(i, data...).size() / sample_size_) != ploidy || (get_vec(i, data...).size() % sample_size_) != 0)
                 this->output_stream_->setstate(std::ios::failbit);
             }
             else
             {
               ploidy = (get_vec(i, data...).size() / sample_size_);
+              if ((get_vec(i, data...).size() % sample_size_) != 0 || ploidy == 0)
+                this->output_stream_->setstate(std::ios::failbit);
             }
           }
-          else if (f == fmt::dosage)
+          else if (f == fmt::gp)
+          {
+            if (ploidy)
+            {
+              if ((get_vec(i, data...).size() / sample_size_) - 1 != ploidy || (get_vec(i, data...).size() % sample_size_) != 0)
+                this->output_stream_->setstate(std::ios::failbit);
+            }
+            else
+            {
+              ploidy = (get_vec(i, data...).size() / sample_size_) - 1;
+              if ((get_vec(i, data...).size() % sample_size_) != 0 || ploidy == 0)
+                this->output_stream_->setstate(std::ios::failbit);
+            }
+          }
+          else if (f == fmt::ds)
           {
             if (sample_size_ != get_vec(i, data...).size())
               this->output_stream_->setstate(std::ios::failbit);
@@ -1473,14 +1495,21 @@ namespace savvy
           {
             if (std::distance(format_fields_.begin(), it) > 0)
               output_stream_->put(':');
-            (*output_stream_) << (*it == fmt::dosage ? "\tDS" : (*it == fmt::haplotype_dosage ? "\tHDS" : "\tGT"));
+            if (*it == fmt::ds)
+              (*output_stream_) << "\tDS";
+            else if (*it == fmt::hds)
+              (*output_stream_) << "\tHDS";
+            else if (*it == fmt::gp)
+              (*output_stream_) << "\tGP";
+            else
+              (*output_stream_) << "\tGT";
           }
 
-          if (VecCnt == 1)
-          {
-            this->write_single_sample_level_data(ploidy, data...);
-          }
-          else
+//          if (VecCnt == 1)
+//          {
+//            this->write_single_sample_level_data(ploidy, data...);
+//          }
+//          else
           {
             this->write_multi_sample_level_data(ploidy, data...);
           }
@@ -1496,21 +1525,22 @@ namespace savvy
     {
       if (this->good())
       {
+        const std::size_t ploidy_plus_one = ploidy + 1;
         std::ostreambuf_iterator<char> out_it(*output_stream_);
         for (std::size_t sample_index = 0; sample_index < sample_size_; ++sample_index)
         {
           for (std::size_t format_index = 0; format_index < format_fields_.size(); ++format_index)
           {
-            auto v = get_vec(format_index, data...);
+            const auto& v = get_vec(format_index, data...);
             fmt f = format_fields_[format_index];
-            if (f == fmt::allele)
+            if (f == fmt::gt)
             {
               out_it = '\t';
 
               std::size_t i = sample_index * ploidy;
               if (std::isnan(v[i]))
                 out_it = '.';
-              else if (v[i] == 0.0)
+              else if (v[i] == 0)
                 out_it = '0';
               else
                 out_it = '1';
@@ -1523,22 +1553,60 @@ namespace savvy
 
                 if (std::isnan(v[i]))
                   out_it = '.';
-                else if (v[i] == 0.0)
+                else if (v[i] == 0)
                   out_it = '0';
                 else
                   out_it = '1';
               }
             }
-            else if (f == fmt::haplotype_dosage)
+            else if (f == fmt::gp)
+            {
+              out_it = '\t';
+
+              std::size_t i = sample_index * ploidy_plus_one;
+              if (v[i] == 0)
+                out_it = '0';
+              else if (v[i] == 1)
+                out_it = '1';
+              else if (std::isnan(v[i]))
+                out_it = '.';
+              else
+              {
+                for (const char c : std::to_string(v[i]))
+                  out_it = c;
+              }
+
+              std::size_t end = ploidy_plus_one + i;
+              ++i;
+              for ( ; i < end; ++i)
+              {
+                out_it = ',';
+
+                if (v[i] == 0)
+                  out_it = '0';
+                else if (v[i] == 1)
+                  out_it = '1';
+                else if (std::isnan(v[i]))
+                  out_it = '.';
+                else
+                {
+                  for (const char c : std::to_string(v[i]))
+                    out_it = c;
+                }
+              }
+            }
+            else if (f == fmt::hds)
             {
               out_it = '\t';
 
               std::size_t i = sample_index * ploidy;
-              if (std::isnan(v[i]))
+              if (v[i] == 0)
+                out_it = '0';
+              else if (std::isnan(v[i]))
                 out_it = '.';
               else
               {
-                for (const auto c : std::to_string(v[i]))
+                for (const char c : std::to_string(v[i]))
                   out_it = c;
               }
 
@@ -1548,11 +1616,13 @@ namespace savvy
               {
                 out_it = ',';
 
-                if (std::isnan(v[i]))
+                if (v[i] == 0)
+                  out_it = '0';
+                else if (std::isnan(v[i]))
                   out_it = '.';
                 else
                 {
-                  for (const auto c : std::to_string(v[i]))
+                  for (const char c : std::to_string(v[i]))
                     out_it = c;
                 }
               }
@@ -1561,105 +1631,20 @@ namespace savvy
             {
               out_it = '\t';
 
-              if (std::isnan(v[sample_index]))
-                out_it = '.';
-              else
-              {
-                for (const auto c : std::to_string(v[sample_index]))
-                  out_it = c;
-              }
-            }
-          }
-        }
-
-        (*output_stream_) << std::endl;
-      }
-    }
-
-    template <std::size_t VecCnt>
-    template <typename T>
-    void writer<VecCnt>::write_single_sample_level_data(const std::size_t ploidy, const T& data)
-    {
-      if (good())
-      {
-        std::ostreambuf_iterator<char> out_it(*output_stream_);
-        if (format_fields_[0] == fmt::allele)
-        {
-          for (std::size_t sample_index = 0; sample_index < sample_size_; ++sample_index)
-          {
-            out_it = '\t';
-
-            std::size_t i = sample_index * ploidy;
-            if (std::isnan(data[i]))
-              out_it = '.';
-            else if (data[i] == 0.0)
-              out_it = '0';
-            else
-              out_it = '1';
-
-            std::size_t end = ploidy + i;
-            ++i;
-            for (; i < end; ++i)
-            {
-              out_it = '|';
-
-              if (std::isnan(data[i]))
-                out_it = '.';
-              else if (data[i] == 0.0)
+              if (v[sample_index] == 0)
                 out_it = '0';
-              else
-                out_it = '1';
-            }
-          }
-        }
-        else if (format_fields_[0] == fmt::haplotype_dosage)
-        {
-          for (std::size_t sample_index = 0; sample_index < sample_size_; ++sample_index)
-          {
-            out_it = '\t';
-
-            std::size_t i = sample_index * ploidy;
-            if (std::isnan(data[i]))
-              out_it = '.';
-            else
-            {
-              for (const auto c : std::to_string(data[i]))
-                out_it = c;
-            }
-
-            std::size_t end = ploidy + i;
-            ++i;
-            for (; i < end; ++i)
-            {
-              out_it = ',';
-
-              if (std::isnan(data[i]))
+              else if (std::isnan(v[sample_index]))
                 out_it = '.';
               else
               {
-                for (const auto c : std::to_string(data[i]))
+                for (const char c : std::to_string(v[sample_index]))
                   out_it = c;
               }
             }
           }
         }
-        else //if (f == fmt::dosage)
-        {
-          for (std::size_t sample_index = 0; sample_index < sample_size_; ++sample_index)
-          {
-            out_it = '\t';
 
-            if (std::isnan(data[sample_index]))
-              out_it = '.';
-            else
-            {
-              for (const auto c : std::to_string(data[sample_index]))
-                out_it = c;
-            }
-          }
-        }
-
-        (*output_stream_) << std::endl;
+        (*output_stream_) << "\n";
       }
     }
 

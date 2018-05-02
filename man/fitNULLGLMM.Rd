@@ -41,14 +41,14 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
 
 \item{LOCO}{logical. Whether to apply the leave-one-chromosome-out (LOCO) approach. By default, FALSE. This option has not been extensively tested.}
 
-\item{traceCVcutoff}{float. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun. By default 1. suggested: 0.0025. This option has not been extensively tested.}
+\item{traceCVcutoff}{float. The threshold for coefficient of variation (CV) for the trace estimator. Number of runs for trace estimation will be increased until the CV is below the threshold. By default 1. suggested: 0.0025. This option has not been extensively tested.}
 
-\item{ratioCVcutoff}{float. The threshold for coefficient of variantion (CV) for estimating the variance ratio. By default 1. suggested 0.001. This option has not been extensively tested.}
+\item{ratioCVcutoff}{float. The threshold for coefficient of variation (CV) for estimating the variance ratio. The number of randomly selected markers will be increased until the CV is below the threshold. By default 1. suggested 0.001. This option has not been extensively tested.}
 
 \item{outputPrefix}{character. Path to the output files with prefix.}
 }
 \value{
-a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio value, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
+a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio value, and a file ended with #markers.SAIGE.results.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
 }
 \description{
 Fit the null logistic mixed model and estimate the variance ratio by a set of randomly selected variants

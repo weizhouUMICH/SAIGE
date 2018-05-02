@@ -12,20 +12,25 @@
 #include <cstdint>
 #include <string>
 #include <limits>
+#include <vector>
+#include <unordered_map>
 
 namespace savvy
 {
-  enum class coord_bound : std::uint8_t
+  enum class bounding_point : std::uint8_t
   {
     any = 0,
     all,
-    left,
-    right
+    beg,
+    end
   };
 
   class region
   {
   public:
+    template <typename Iter>
+    static std::vector<region> merge(Iter beg, Iter end);
+
     region(const std::string& chromosome, std::uint64_t from = 1, std::uint64_t to = std::numeric_limits<std::uint64_t>::max()) :
       chromosome_(chromosome),
       from_(from),
@@ -40,6 +45,30 @@ namespace savvy
     std::uint64_t from_;
     std::uint64_t to_;
   };
+
+  template <typename Iter>
+  std::vector<region> region::merge(Iter beg, Iter end)
+  {
+    std::unordered_map<std::string, std::size_t> ret_index;
+    std::vector<region> ret;
+
+    for (auto it = beg; it != end; ++it)
+    {
+      auto insert_res = ret_index.insert(std::make_pair(it->chromosome(), ret.size()));
+      if (insert_res.second)
+      {
+        ret.emplace_back(*it);
+      }
+      else
+      {
+        std::uint64_t from = std::min(ret[insert_res.first->second].from(), it->from());
+        std::uint64_t to = std::max(ret[insert_res.first->second].to(), it->to());
+        ret[insert_res.first->second] = region(ret[insert_res.first->second].chromosome(), from, to);
+      }
+    }
+
+    return ret;
+  }
 
   namespace detail
   {
@@ -77,7 +106,7 @@ namespace savvy
     };
   }
 
-  bool region_compare(coord_bound bounding_type, const site_info& var, const region& reg);
+  bool region_compare(bounding_point bounding_type, const site_info& var, const region& reg);
 }
 
 #endif //LIBSAVVY_REGION_HPP

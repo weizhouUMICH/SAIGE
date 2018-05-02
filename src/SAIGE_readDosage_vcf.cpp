@@ -13,6 +13,7 @@
 
 // Open the vcf file for reading.
 savvy::indexed_reader reader;
+
 //VcfHeader header;
 savvy::variant<std::vector<float>> record;
 std::string testField;
@@ -40,9 +41,11 @@ void setTestField(std::string testFieldInput){
 bool setgenoTest_vcfDosage(const std::string& vcfFileName,  const std::string& vcfFileIndex, const std::string& vcfField, const std::string& ids_to_exclude_vcf, const std::string& ids_to_include_vcf, const std::string& chromNam, int32_t start = 0, int32_t end = 0){
 
   if(vcfField == "DS"){
-    reader = savvy::indexed_reader(vcfFileName, {chromNam, std::uint32_t(start), std::uint32_t(end)}, savvy::fmt::dosage);
+    //reader = savvy::indexed_reader(vcfFileName, {chromNam, std::uint32_t(start), std::uint32_t(end)}, savvy::fmt::dosage);
+      reader = savvy::indexed_reader(vcfFileName, {chromNam, std::uint32_t(start), std::uint32_t(end)}, savvy::fmt::ds);
   }else if(vcfField == "GT"){
-    reader = savvy::indexed_reader(vcfFileName, {chromNam, std::uint32_t(start), std::uint32_t(end)}, savvy::fmt::genotype);
+    //reader = savvy::indexed_reader(vcfFileName, {chromNam, std::uint32_t(start), std::uint32_t(end)}, savvy::fmt::genotype);
+      reader = savvy::indexed_reader(vcfFileName, {chromNam, std::uint32_t(start), std::uint32_t(end)}, savvy::fmt::ac);
   }
 
   bool isVcfOpen = reader.good();

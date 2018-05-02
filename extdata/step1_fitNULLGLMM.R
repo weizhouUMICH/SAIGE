@@ -25,7 +25,13 @@ option_list <- list(
   make_option("--nThreads", type="integer", default=16,
     help="Number of threads (CPUs) to use"),
   make_option("--skipModelFitting", type="logical", default=FALSE,
-    help="whether to skip model fitting and only estimate the variance ratio. If TRUE, the file outputPrefix.rda is required [default='FALSE']"),
+    help="whether to skip model fitting and only to estimate the variance ratio. If TRUE, the file outputPrefix.rda is required [default='FALSE']"),
+  make_option("--traceCVcutoff", type="numeric", default=1,
+    help="The threshold for coefficient of variation (CV) for the trace estimator. Number of runs for trace estimation will be increased until the CV is below the threshold. By default 1. suggested: 0.0025. This option has not been extensively tested."),
+  make_option("--ratioCVcutoff", type="numeric", default=1,
+    help="The threshold for coefficient of variation (CV) for estimating the variance ratio. The number of randomly selected markers will be increased until the CV is below the threshold. By default 1. suggested 0.001. This option has not been extensively tested."),
+  make_option("--LOCO", type="logical", default=FALSE,
+    help="Whether to apply the leave-one-chromosome-out (LOCO) approach. By default, FALSE. This option has not been extensively tested."), 
   make_option("--outputPrefix", type="character", default="~/",
     help="path and prefix to the output files [default='~/']")
 )
@@ -53,6 +59,9 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
             nThreads = opt$nThreads,
             numMarkers = opt$numMarkers,
             skipModelFitting = opt$skipModelFitting,
+	    traceCVcutoff = opt$traceCVcutoff,
+	    ratioCVcutoff = opt$ratioCVcutoff,
+            LOCO = opt$LOCO,
             outputPrefix = opt$outputPrefix)
 
 
