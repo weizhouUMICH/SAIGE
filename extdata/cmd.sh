@@ -64,7 +64,7 @@ Rscript step2_SPAtests.R	\
 	--savFileIndex=./input/dosage_10markers.sav.s1r	\
 	--minMAF=0.0001 \
         --minMAC=1 \
-	--vcfField=GT \
+	--vcfField=DS \
 	--chrom=1 \
         --sampleFile=./input/samplefileforbgen_10000samples.txt \
         --GMMATmodelFile=./output/example.rda \
