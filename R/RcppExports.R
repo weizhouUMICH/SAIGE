@@ -249,3 +249,31 @@ closetestGenoFile_vcfDosage <- function() {
     invisible(.Call('_SAIGE_closetestGenoFile_vcfDosage', PACKAGE = 'SAIGE'))
 }
 
+SetSampleIdx_forGenetest_vcfDosage <- function(sample_idx, Ntest) {
+    invisible(.Call('_SAIGE_SetSampleIdx_forGenetest_vcfDosage', PACKAGE = 'SAIGE', sample_idx, Ntest))
+}
+
+setMAFcutoffs <- function(minVal, maxVal) {
+    invisible(.Call('_SAIGE_setMAFcutoffs', PACKAGE = 'SAIGE', minVal, maxVal))
+}
+
+setvcfDosageMatrix <- function(vcfFileName, vcfFileIndex, vcfField) {
+    .Call('_SAIGE_setvcfDosageMatrix', PACKAGE = 'SAIGE', vcfFileName, vcfFileIndex, vcfField)
+}
+
+getGenoOfGene_vcf <- function(marker_group_line) {
+    .Call('_SAIGE_getGenoOfGene_vcf', PACKAGE = 'SAIGE', marker_group_line)
+}
+
+closevcfDosageFile <- function() {
+    invisible(.Call('_SAIGE_closevcfDosageFile', PACKAGE = 'SAIGE'))
+}
+
+sparse_row_idx_mult_v2 <- function(spA) {
+    .Call('_SAIGE_sparse_row_idx_mult_v2', PACKAGE = 'SAIGE', spA)
+}
+
+sparse_row_idx_mult <- function(spA, spB) {
+    .Call('_SAIGE_sparse_row_idx_mult', PACKAGE = 'SAIGE', spA, spB)
+}
+
