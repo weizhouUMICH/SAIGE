@@ -64,7 +64,8 @@ SPAGMMATtest = function(dosageFile = "",
 		 numLinesOutput = 10000, 
 		 IsSparse=TRUE,
 		 IsOutputAFinCaseCtrl=FALSE,
-		 LOCO=FALSE){
+		 LOCO=FALSE,
+		 condition=c("chr:pos")){
 
 
   #check and read files
