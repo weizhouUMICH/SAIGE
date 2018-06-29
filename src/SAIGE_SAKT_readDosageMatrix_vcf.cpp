@@ -74,6 +74,8 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line) {
   savvy::variant_group_iterator<savvy::compressed_vector<float>> it(marker_file, marker_group_line);
   savvy::variant_group_iterator<savvy::compressed_vector<float>> end{};
   std::cout << "it.sites().size(): " << it.sites().size() << std::endl; 
+//  std::string marker_id = it->chromosome() + ":" + std::to_string(it->position()) + "_" + it->ref() + "/" + it->alt();
+//  std::cout << marker_id << std::endl;
   group_matrix.resize(0);
   std::cout << "std::size_t sample_size = marker_file.samples().size();" << marker_file.samples().size() << std::endl;
 
@@ -151,7 +153,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line) {
         }
       }
         group_matrix.insert(std::end(group_matrix), std::begin(dosagesforOneMarker), std::end(dosagesforOneMarker));
-//  std::cout << "here5!" << std::endl; 
+  std::cout << "here5!" << std::endl; 
         //group_matrix[cnt * sample_size + dose_it.offset()] = *dose_it;
         cnt = cnt + 1;
         markerIDs.push_back(marker_id);

@@ -48,7 +48,10 @@ option_list <- list(
   make_option("--IsOutputAFinCaseCtrl", type="logical",default=FALSE,
     help="whether to output allele frequency in cases and controls for dichotomous traits [default=FALSE]"),
   make_option("--LOCO", type="logical", default=FALSE,
-    help="Whether to apply the leave-one-chromosome-out option. This option has not been extensively tested.")
+    help="Whether to apply the leave-one-chromosome-out option. This option has not been extensively tested."),
+  make_option("--condition", type="character",default="",
+    help="conditioning marker ids")
+
 )
 
 parser <- OptionParser(usage="%prog [options]", option_list=option_list)
@@ -83,7 +86,8 @@ SPAGMMATtest(dosageFile=opt$dosageFile,
 	     minMAC = opt$minMAC,
              numLinesOutput = opt$numLinesOutput,
 	     IsOutputAFinCaseCtrl = opt$IsOutputAFinCaseCtrl,
-	     LOCO = opt$LOCO
+	     LOCO = opt$LOCO,
+	     condition = opt$condition
 )
 
 
