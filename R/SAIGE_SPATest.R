@@ -623,6 +623,8 @@ if(isCondition & conditionOption == "summaryStat"){
       print(dim(dosage_cond_tilde))	
       covM[1,2:ncol(covM)] = (t(mu.a*(1-mu.a)*G0_tilde)) %*% dosage_cond_tilde			
       covM[1,1] = t(mu.a*(1-mu.a)*G0_tilde) %*% G0_tilde	
+      covariateVec = t(G0_tilde)  %*% dosage_cond_tilde	
+
     } #end of if(isCondition)
 ##
 if(!isCondition){
@@ -656,11 +658,11 @@ if(!isCondition){
 
     if(traitType == "binary"){
         if(!IsOutputAFinCaseCtrl){
-          OUT = rbind(OUT, scoreTest_SAIGE_binaryTrait_cond(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, covM, OUT_cond))
+          OUT = rbind(OUT, scoreTest_SAIGE_binaryTrait_cond(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, covM, OUT_cond, covariateVec))
         }else{
           AFCase = sum(G0[y1Index])/(2*NCase)
           AFCtrl = sum(G0[y0Index])/(2*NCtrl)
-          OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait_cond(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, covM, OUT_cond),AFCase, AFCtrl))
+          OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait_cond(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, covM, OUT_cond, covariateVec),AFCase, AFCtrl))
         }
       }else if(traitType == "quantitative"){
         if(indChromCheck){
@@ -676,7 +678,7 @@ if(!isCondition){
           obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
 
         }
-        out1 = scoreTest_SAIGE_quantitativeTrait_cond(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, covM, OUT_cond)
+        out1 = scoreTest_SAIGE_quantitativeTrait_cond(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, covM, OUT_cond, covariateVec)
         OUT = rbind(OUT, c(rowHeader, N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
       }
 
@@ -977,7 +979,7 @@ scoreTest_SAIGE_binaryTrait=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, m
 }
 
 
-scoreTest_SAIGE_binaryTrait_cond=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, covM, OUT_cond){
+scoreTest_SAIGE_binaryTrait_cond=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, covM, OUT_cond,covariateVec){
   N = length(G0)
   if(AF > 0.5){
     G0 = 2-G0
@@ -996,7 +998,7 @@ scoreTest_SAIGE_binaryTrait_cond=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu
     G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G is X adjusted
     g = G/sqrt(AC2)
     NAset = which(G0==0)
-    out1 = scoreTest_SPAGMMAT_binaryTrait_cond(g, AC2, NAset, y, mu.a, varRatio, Cutoff = Cutoff, covM, OUT_cond)
+    out1 = scoreTest_SPAGMMAT_binaryTrait_cond(g, AC2, NAset, y, mu.a, varRatio, Cutoff = Cutoff, covM, OUT_cond, covariateVec)
     if(AF > 0.5){
       out1$BETA = (-1)*out1$BETA
       out1$Tstat = (-1)*out1$Tstat
@@ -1011,7 +1013,7 @@ scoreTest_SAIGE_binaryTrait_cond=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu
 }
 
 
-scoreTest_SPAGMMAT_binaryTrait_cond=function(g, AC, NAset, y, mu, varRatio, Cutoff, covM, OUT_cond){
+scoreTest_SPAGMMAT_binaryTrait_cond=function(g, AC, NAset, y, mu, varRatio, Cutoff, covM, OUT_cond, covariateVec){
         #g = G/sqrt(AC)
   q = innerProduct(g, y)
   m1 = innerProduct(g, mu)
@@ -1040,7 +1042,7 @@ scoreTest_SPAGMMAT_binaryTrait_cond=function(g, AC, NAset, y, mu, varRatio, Cuto
   ##condition
   print(OUT_cond[,1])
   print(covM[1,2:ncol(covM)]) 
-  Tstat1c = Tstat - innerProduct(as.vector(OUT_cond[,1]),as.vector(covM[1,2:ncol(covM)]))
+  Tstat1c = Tstat*sqrt(AC) - innerProduct(as.vector(OUT_cond[,1]), covariateVec)
 
   if(ncol(covM) > 2){
   G2_tildeG2_tilde1_v1  = t(covM[2:ncol(covM),2:ncol(covM)])
@@ -1053,7 +1055,8 @@ scoreTest_SPAGMMAT_binaryTrait_cond=function(g, AC, NAset, y, mu, varRatio, Cuto
 #  print(dim(t(covM[1,2:ncol(covM)])))
 
   covMsub = matrix(as.vector(covM[1,2:ncol(covM)]), nrow=1)
-  var1c = var1*AC - varRatio*covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub)
+#  var1c = var1*AC - varRatio*covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub)
+  var1c = varRatio*covM[1,1] - varRatio*covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub)
   }else{
     G2_tildeG2_tilde = covM[2:ncol(covM),2:ncol(covM)]
     covMsub = matrix(as.vector(covM[1,2:ncol(covM)]), nrow=1)
@@ -1066,12 +1069,13 @@ scoreTest_SPAGMMAT_binaryTrait_cond=function(g, AC, NAset, y, mu, varRatio, Cuto
     cat("t(covMsub): ", t(covMsub), "\n")
     cat("var1*AC: ", var1*AC, "\n")
     cat("covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub): ", covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub), "\n")
-    var1c = var1*AC - varRatio*(covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub))
+#    var1c = var1*AC - varRatio*(covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub))
+    var1c = varRatio*covM[1,1] - varRatio*(covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub))
   }
   #var1c = var1 - varRatio*(covM[1,2:ncol(covM)])%*% solve(G2_tildeG2_tilde) %*% t(covM[1,2:ncol(covM)])
   cat("var1c: ", var1c, "\n")
 
-if(var1c > 0){
+if(var1c > 10^-5){
   qtilde1c = ((Tstat1c)/sqrt(AC))/sqrt(var1c/AC) * sqrt(var2/AC) + m1
   
   if(length(NAset)/length(g) < 0.5){
@@ -1089,7 +1093,7 @@ if(var1c > 0){
   out1c = c(out1c, BETA1c = logOR1c, SE1c = SE1c, Tstat1c = Tstat1c)
   out1 = c(out1, p.value1c = out1c$p.value, p.value.NA1c = out1c$p.value.NA, BETA1c = out1c$BETA1c, SE1c=out1c$SE1c, Tstat1c = out1c$Tstat1c)
 }else{ #end of if(var1c > 0){
-  out1 = c(out1, p.value1c = 1, p.value.NA1c = 1, BETA1c = NA, SE1c=NA, Tstat1c = NA)
+  out1 = c(out1, p.value1c = 1, p.value.NA1c = 1, BETA1c = 0, SE1c=0, Tstat1c = NA)
 }
 
   #out1 = c(out1, p.value1c = out1c$p.value, p.value.NA1c = out1c$p.value.NA, BETA1c = out1c$BETA1c, SE1c=out1c$SE1c, Tstat1c = out1c$Tstat1c)
@@ -1099,7 +1103,7 @@ if(var1c > 0){
 
 
 #Use Sparsity trick for rare variants
-scoreTest_SAIGE_quantitativeTrait_cond=function(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, covM, OUT_cond){
+scoreTest_SAIGE_quantitativeTrait_cond=function(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, covM, OUT_cond,covariateVec){
   N = length(G0)
   if(AF > 0.5){
     G0 = 2-G0
@@ -1168,18 +1172,49 @@ scoreTest_SAIGE_quantitativeTrait_cond=function(G0, obj.noK, AC, AF, y, mu, varR
   SE = abs(BETA/qnorm(p.value/2))
 
 
+Tstat1c = Tstat*sqrt(AC2) - innerProduct(as.vector(OUT_cond[,1]), covariateVec)
 
-
-  Tstat1c = Tstat - innerProduct(OUT_cond[,1],covM[1,2:ncol(covM)])
+if(ncol(covM) > 2){
   G2_tildeG2_tilde1_v1  = t(covM[2:ncol(covM),2:ncol(covM)])
   diag(G2_tildeG2_tilde1_v1) = 0
   G2_tildeG2_tilde = G2_tildeG2_tilde1_v1 + covM[2:ncol(covM),2:ncol(covM)]
-  var1c = var1 - varRatio*(covM[1,2:ncol(covM)])%*% solve(G2_tildeG2_tilde) %*% t(covM[1,2:ncol(covM)])
 
-  p.value1c = pchisq(Tstat1c^2/var1c, lower.tail = FALSE, df=1)
-  BETA1c = (Tstat1c/var1c)/sqrt(AC2)
-  SE1c = abs(BETA1c/qnorm(p.value1c/2))
+  print(covM)
+#  print(dim(covM[1,2:ncol(covM)]))
+#  print(dim(solve(G2_tildeG2_tilde)))
+#  print(dim(t(covM[1,2:ncol(covM)])))
+  covMsub = matrix(as.vector(covM[1,2:ncol(covM)]), nrow=1)
+#  var1c = var1*AC - varRatio*covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub)
+  var1c = varRatio*covM[1,1] - varRatio*covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub)
 
+}else{
+  G2_tildeG2_tilde = covM[2:ncol(covM),2:ncol(covM)]
+    covMsub = matrix(as.vector(covM[1,2:ncol(covM)]), nrow=1)
+    print(covM)
+    cat("covMsub ", covMsub, "\n")
+    cat("G2_tildeG2_tilde ", G2_tildeG2_tilde, "\n")
+    cat("var1 ", var1, "\n")
+    cat("var1*AC ", var1*sqrt(AC), "\n")
+    cat("varRatio: ", varRatio, "\n")
+    cat("t(covMsub): ", t(covMsub), "\n")
+    cat("var1*AC: ", var1*AC, "\n")
+    cat("covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub): ", covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub), "\n")
+#    var1c = var1*AC - varRatio*(covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub))
+    var1c = varRatio*covM[1,1] - varRatio*(covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub))
+}
+
+  if(var1c < 10^-5){
+    p.value1c = 1
+    BETA1c = 0
+    SE1c = 0
+  }else{
+    p.value1c = pchisq(Tstat1c^2/var1c, lower.tail = FALSE, df=1)
+    if(AF > 0.5){
+      Tstat1c = (-1)*Tstat1c
+    }
+    BETA1c = (Tstat1c/var1c)/sqrt(AC)
+    SE1c = abs(BETA1c/qnorm(p.value1c/2))
+  }
 
   out1 = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2, BETA1c = BETA1c, SE1c = SE1c, Tstat1c = Tstat1c,p.value1c = p.value1c, var1c = var1c)
 
