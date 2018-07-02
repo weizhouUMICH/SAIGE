@@ -32,7 +32,7 @@ options(stringsAsFactors=F)
 #' @param SAIGEOutputFile character. Path to the output file containing the SPAGMMAT test results
 #' @param IsOutputAFinCaseCtrl logical. Whether to output allele frequency in cases and controls. By default, FALSE
 #' @param LOCO logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE
-#' @param condition. For conditional analysis. Genetic marker ids (chr:pos_ref/alt) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A
+#' @param condition. For conditional analysis. Genetic marker ids (chr:pos_ref/alt) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for vcf/sav input.
 #' @return SAIGEOutputFile
 #' @export
 SPAGMMATtest = function(dosageFile = "",
@@ -253,6 +253,8 @@ SPAGMMATtest = function(dosageFile = "",
     SetSampleIdx(sampleIndex, N)
   }else if(dosageFileType == "vcf"){
     isCondition = FALSE
+
+
   if(condition != ""){
     isCondition = TRUE
     conditionlist = paste(c("condMarkers",unlist(strsplit(condition,","))),collapse="\t")
@@ -275,6 +277,9 @@ SPAGMMATtest = function(dosageFile = "",
 
     print(dim(dosage_cond))
   }   
+
+
+
 
     setgenoTest_vcfDosage(vcfFile,vcfFileIndex,vcfField,ids_to_exclude_vcf = idstoExcludeFile, ids_to_include_vcf = idstoIncludeFile, chrom, start, end)
     #setTestField(vcfField)
