@@ -195,7 +195,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
 
   if(verbose) cat("\nFinal " ,tau, ":\n")
 
-  #added these steps after tau is estimated 04-14-2018
+    #added these steps after tau is estimated 04-14-2018
   re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
   cov = re.coef$cov
   alpha = re.coef$alpha
@@ -443,11 +443,14 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
 #' @param skipModelFitting logical.  Whether to skip fitting the null model and only calculating the variance ratio, By default, FALSE. If TURE, the model file ".rda" is needed 
 #' @param tauInit vector of numbers. e.g. c(1,1), Unitial values for tau. For binary traits, the first element will be always be set to 1. If the tauInit is not specified, the second element will be 0.5 for binary traits.  
 #' @param memoryChunk integer or float. The size (Gb) for each memory chunk. By default, 4
-#' @param LOCO logical. Whether to apply the leave-one-chromosome-out (LOCO) approach. By default, FALSE. This option has not been extensively tested. 
-#' @param traceCVcutoff float. The threshold for coefficient of variation (CV) for the trace estimator. Number of runs for trace estimation will be increased until the CV is below the threshold. By default 1. suggested: 0.0025. This option has not been extensively tested.
-#' @param ratioCVcutoff float. The threshold for coefficient of variation (CV) for estimating the variance ratio. The number of randomly selected markers will be increased until the CV is below the threshold. By default 1. suggested 0.001. This option has not been extensively tested. 
-#' @param outputPrefix character. Path to the output files with prefix. 
-#' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio value, and a file ended with #markers.SAIGE.results.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
+#' @param LOCO logical. Whether to apply the leave-one-chromosome-out (LOCO) option. 
+#' @param traceCVcutoff float. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun
+#' @param outputPrefix character. Path to the output files with prefix.
+#' @param isCateVarianceRatio logical. Whether to estimate variance ratio based on different MAC categories. If yes, six categories will be used MAC = 1, 2, 3, 4, 5, >5. Currently, if isCateVarianceRatio=TRUE, then LOCO=FALSE 
+#' @param IsSparseKin logical. Whether to exploit the sparsity of GRM to estimate the variance ratio. By default, TRUE
+#' @param numRandomMarkerforSparseKin integer (>0). Number of markers to be used for first estimating the relatedness between each sample pair  if IsSparseKin is TRUE
+#' @param relatednessCutoff float. The threshold to treat two samples as unrelated if IsSparseKin is TRUE 
+#' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio value, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
 #' @export
 fitNULLGLMM = function(plinkFile = "", 
                 phenoFile = "",
@@ -468,9 +471,17 @@ fitNULLGLMM = function(plinkFile = "",
 		memoryChunk = 2,
 		tauInit = c(0,0),
 		LOCO = FALSE,
-		traceCVcutoff = 1,
-		ratioCVcutoff = 1, 
-                outputPrefix = ""){
+		traceCVcutoff = 0.0025,
+		ratioCVcutoff = 0.001, 
+                outputPrefix = "",
+		IsSparseKin = FALSE,
+		numRandomMarkerforSparseKin = 500,
+		relatednessCutoff = 0.125, 
+		isCateVarianceRatio = FALSE,
+		cateVarRatioVec = c(1,1,1,1,1,1),
+		qr_sparse = FALSE,
+		Cholesky_sparse = FALSE,
+		pcg_sparse = FALSE){
                 #formula, phenoType = "binary",prefix, centerVariables = "", tol=0.02, maxiter=20, tolPCG=1e-5, maxiterPCG=500, nThreads = 1, Cutoff = 2, numMarkers = 1000, skipModelFitting = FALSE){
   if(nThreads > 1){
     RcppParallel:::setThreadOptions(numThreads = nThreads)
@@ -478,6 +489,7 @@ fitNULLGLMM = function(plinkFile = "",
   }
 
   #check and read files
+
   #output file
   modelOut=paste0(outputPrefix, ".rda")
   SPAGMMATOut=paste0(outputPrefix, "_", numMarkers,"markers.SAIGE.results.txt")
@@ -498,7 +510,6 @@ fitNULLGLMM = function(plinkFile = "",
       chromosomeEndIndexVec = NULL
     ###if LOCO, record the indices of markers on each chromosome
     if(LOCO){
-      cat("Leave-one-chromosome-out is activated\n")
       bimData = data.table:::fread(paste0(plinkFile,".bim"),  header=F)
       #chromosomeVec = NULL
       for(i in 1:22){
@@ -577,6 +588,7 @@ fitNULLGLMM = function(plinkFile = "",
       cat(nrow(sampleListwithGeno) - nrow(dataMerge_sort), " samples in geno file do not have phenotypes\n")
     }
     cat(nrow(dataMerge_sort), " samples will be used for analysis\n")
+#    cat("dataMerge_sort$IID ", dataMerge_sort$IID, "\n")
   }
 
 #  #center some covariates
@@ -640,9 +652,7 @@ fitNULLGLMM = function(plinkFile = "",
     }else{
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)	
       load(modelOut)
-      if(is.null(modglmm$LOCO)){
-        modglmm$LOCO = FALSE
-      }
+      if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
     }
 
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,
@@ -657,7 +667,8 @@ fitNULLGLMM = function(plinkFile = "",
                                                     testOut = SPAGMMATOut,
 						    plinkFile = plinkFile,
 						    chromosomeStartIndexVec = chromosomeStartIndexVec, 
-						    chromosomeEndIndexVec = chromosomeEndIndexVec)
+						    chromosomeEndIndexVec = chromosomeEndIndexVec,
+						    isCateVarianceRatio = isCateVarianceRatio)
     closeGenoFile_plink()
 
   }else if(traitType == "quantitative"){
@@ -683,12 +694,16 @@ fitNULLGLMM = function(plinkFile = "",
     }else{
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)
       load(modelOut)
-      if(is.null(modglmm$LOCO)){
-        modglmm$LOCO = FALSE
-      }
 
+
+      #test time
+	btest = rnorm(nrow(data.new))
+	for(i in 1:10){
+		tTimeVec = testTime(i, btest)	
+	}
+      if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
     }
- 
+#    cat("dataMerge_sort$IndexGeno: ", dataMerge_sort$IndexGeno, "\n") 
     scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait(obj.glmm.null = modglmm,
                                                     obj.glm.null = fit0,
                                                     obj.noK = obj.noK,
@@ -701,7 +716,17 @@ fitNULLGLMM = function(plinkFile = "",
                                                     testOut = SPAGMMATOut,
 						    plinkFile = plinkFile,
                                                     chromosomeStartIndexVec = chromosomeStartIndexVec,
-                                                    chromosomeEndIndexVec = chromosomeEndIndexVec)
+                                                    chromosomeEndIndexVec = chromosomeEndIndexVec,
+						    isCateVarianceRatio = isCateVarianceRatio,
+						    cateVarRatioVec = cateVarRatioVec,
+						    IsSparseKin = IsSparseKin,
+						    numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
+						    relatednessCutoff = relatednessCutoff,
+						    nThreads = nThreads,
+						    qr_sparse = qr_sparse,
+                				    Cholesky_sparse = Cholesky_sparse,
+                				    pcg_sparse = pcg_sparse
+)
     closeGenoFile_plink()
   }
 }
@@ -720,7 +745,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
                                                     testOut,
                                                     plinkFile,
 						    chromosomeStartIndexVec, 
-						    chromosomeEndIndexVec
+						    chromosomeEndIndexVec,
+						    isCateVarianceRatio
                                                     ){
 
   if(file.exists(testOut)){file.remove(testOut)}
@@ -833,11 +859,8 @@ while(ratioCV > ratioCVcutoff){
     }
   } # end of while(numTestedMarker < numMarkers) 
 
- OUTtotal = data.frame(OUTtotal, stringsAsFactors=F)
- colnames(OUTtotal) = resultHeader
- ratioVec = as.numeric(OUTtotal$var1)/as.numeric(OUTtotal$var2)
- ratioCV = calCV(ratioVec)
-
+  ratioVec = as.numeric(OUTtotal$var1)/as.numeric(OUTtotal$var2)
+  ratioCV = calCV(ratioVec)
 
   if(ratioCV > ratioCVcutoff){
     cat("CV for variance ratio estimate using ", numMarkers, " markers is ", ratioCV, " > ", ratioCVcutoff, "\n")
@@ -873,10 +896,24 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                                                     testOut,
 						    plinkFile,
                                                     chromosomeStartIndexVec,
-                                                    chromosomeEndIndexVec){
+                                                    chromosomeEndIndexVec,
+						    isCateVarianceRatio,
+						    cateVarRatioVec,
+						    IsSparseKin,
+						    numRandomMarkerforSparseKin,
+                                                    relatednessCutoff,
+						    nThreads, 	
+						    qr_sparse,
+                                                    Cholesky_sparse,
+                                                    pcg_sparse){
 
   if(file.exists(testOut)){file.remove(testOut)}
 
+  if(nThreads > 1){
+    RcppParallel:::setThreadOptions(numThreads = nThreads)
+    cat(nThreads, " threads are set to be used ", "\n")
+  }
+    
   #resultHeader = c("markerIndex","p.value", "p.value.NA","var1","var2","Tv1", "Tv2", "p.value.Tv2","N", "AC", "AF")
   resultHeader = c("markerIndex","p.value", "p.value.NA","var1","var2","Tv1","N", "AC", "AF")
   write(resultHeader,file = testOut, ncolumns = length(resultHeader))
@@ -898,37 +935,133 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   tauVecNew = obj.glmm.null$theta
 
   X1 = obj.noK$X1
-  Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
+  #Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
   y = obj.glm.null$y
 
   ##randomize the marker orders to be tested
   mMarkers = gettotalMarker()
-  listOfMarkersForVarRatio = sample(c(1:mMarkers), size = mMarkers, replace = FALSE)
+
+
+  listOfMarkersForVarRatio = list()	
+  if(!isCateVarianceRatio){
+    listOfMarkersForVarRatio[[1]] = sample(c(1:mMarkers), size = mMarkers, replace = FALSE)
+  }else{
+    MACvector = getMACVec()
+    #MAC == 1
+    MACindex = which(MACvector == 1) 
+    listOfMarkersForVarRatio[[1]] = sample(MACindex, size = length(MACindex), replace = FALSE)
+    MACindex = which(MACvector == 2)
+    listOfMarkersForVarRatio[[2]] = sample(MACindex, size = length(MACindex), replace = FALSE)
+    MACindex = which(MACvector == 3)
+    listOfMarkersForVarRatio[[3]] = sample(MACindex, size = length(MACindex), replace = FALSE)
+    MACindex = which(MACvector == 4)
+    listOfMarkersForVarRatio[[4]] = sample(MACindex, size = length(MACindex), replace = FALSE)
+    MACindex = which(MACvector == 5)
+    listOfMarkersForVarRatio[[5]] = sample(MACindex, size = length(MACindex), replace = FALSE)
+    MACindex = which(MACvector > 5)
+    listOfMarkersForVarRatio[[6]] = sample(MACindex, size = length(MACindex), replace = FALSE)
+  }
+#getMACVec
  # listOfMarkersForVarRatio = c(1:mMarkers)
   freqVec = getAlleleFreqVec()
-  Nnomissing = length(mu)
 
+  sparseSigmaOutFileFlag = FALSE
+  qrsparseSigmaOutFileFlag = FALSE
+  #####sparse Kin
+  if(IsSparseKin){
+    qrsparseSigmaOutFile = paste0(varRatioOutFile, ".qr.sparseSigma.rda")
+    sparseSigmaOutFile = paste0(varRatioOutFile, ".sparseSigma.mtx")
+    if(pcg_sparse & (!file.exists(sparseSigmaOutFile))){
+      sparseSigmaOutFileFlag = TRUE
+    }
+
+    if(!(pcg_sparse)){
+      if(!file.exists(qrsparseSigmaOutFile)){
+        qrsparseSigmaOutFileFlag = TRUE
+        if(!file.exists(sparseSigmaOutFile)){
+          sparseSigmaOutFileFlag = TRUE
+        }
+      }
+    }
+
+  if(sparseSigmaOutFileFlag){
+      MAFindex = which(freqVec >= 0.01 & freqVec <= 0.99)
+      markerIndexforSparseM = sample(MAFindex, size = numRandomMarkerforSparseKin, replace=FALSE)
+      setSubMarkerIndex(markerIndexforSparseM -1)
+      ta = proc.time()
+    #sparseMList = createSparseKin(markerIndexforSparseM -1, relatednessCutoff, W, tauVecNew)
+      sparseMList = createSparseKinParallel(nblocks = nThreads, ncore = nThreads, relatednessCutoff, W, tauVecNew)
+#    sparseSigma = createSparseKin(markerIndexforSparseM -1, relatednessCutoff, W, tauVecNew)
+#    a = sparse_row_idx_mult_v2(sparseSigma)
+#    cat("a: ", a, "\n")	
+      tb = proc.time()
+      cat("tb-ta\n")
+      print(tb-ta)
+      cat("length(sparseMList$iIndex): ", length(sparseMList$iIndex), "\n")
+      print(sparseMList$iIndex[1:102])	 
+      cat("length(sparseMList$jIndex): ", length(sparseMList$jIndex), "\n")
+      print(sparseMList$jIndex[1:102])	 
+      cat("length(sparseMList$kinValue): ", length(sparseMList$kinValue), "\n")
+      print(sparseMList$kinValue[1:102])	 
+      sparseSigma = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE)  
+#    sparseSigma = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE) 
+      cat("nrow(sparseSigma): ", nrow(sparseSigma), "\n")	
+      cat("ncol(sparseSigma): ", ncol(sparseSigma), "\n")	
+      cat("ncol(sparseSigma): ", sum(sparseSigma != 0), "\n")	
+      tc = proc.time()
+      cat("tc-tb\n")
+      print(tc-tb)
+      cat("OK1", "\n")
+      sparseSigmaOutFile = paste0(varRatioOutFile, ".sparseSigma.mtx")
+      cat("OK2", "\n")
+      Matrix:::writeMM(sparseSigma, sparseSigmaOutFile)
+      cat("OK3", "\n")
+    }else{
+      sparseSigma = Matrix:::readMM(sparseSigmaOutFile)
+    }
+	
+  if(qrsparseSigmaOutFileFlag){
+    if(qr_sparse){  
+      qrsparseSigma = Matrix:::qr(sparseSigma)
+    }else if(Cholesky_sparse){   
+      qrsparseSigma = Matrix::Cholesky(sparseSigma)
+    }
+    save(qrsparseSigma, file = qrsparseSigmaOutFile)
+  }else{
+    if(!(pcg_sparse)){
+      load(qrsparseSigmaOutFile)
+    }
+  }
+
+} #end of if(IsSparseKin)
+
+
+  Nnomissing = length(mu)
+  varRatioTable = NULL
+
+Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
+
+
+for(k in 1:length(listOfMarkersForVarRatio)){
+  if(cateVarRatioVec[k] == 1){
+
+  numMarkers0 = numMarkers
   OUTtotal = NULL
   OUT = NULL
-
   indexInMarkerList = 1
   numTestedMarker = 0
-
-
   ratioCV = ratioCVcutoff + 0.1
-
-
 while(ratioCV > ratioCVcutoff){  
-
-  while(numTestedMarker < numMarkers){
-    i = listOfMarkersForVarRatio[indexInMarkerList]
+  while(numTestedMarker < numMarkers0){
+    i = listOfMarkersForVarRatio[[k]][indexInMarkerList]
     cat("i is ", i, "\n")
     G0 = Get_OneSNP_Geno(i-1)
     cat("G0", G0[1:10], "\n")
     AC = sum(G0)
+#    if (AC <= 20 | AC >= (2*Nnomissing - 20)){
+#    if (AC <= 20 | AC >= (2*Nnomissing - 20) | CHR < 1 | CHR > 22){
     CHR = bimPlink[i,1]
-    #if (AC <= 20 | AC >= (2*Nnomissing - 20)){
-    if (AC <= 20 | AC >= (2*Nnomissing - 20) | CHR < 1 | CHR > 22){
+    if (CHR < 1 | CHR > 22){
       indexInMarkerList = indexInMarkerList + 1
     }else{
       AF = AC/(2*Nnomissing)
@@ -964,9 +1097,44 @@ while(ratioCV > ratioCVcutoff){
 
       var1a = t(G)%*%Sigma_iG - t(G)%*%Sigma_iX%*%(solve(t(X1)%*%Sigma_iX))%*%t(X1)%*%Sigma_iG
       ###var1 = g'Pg, var2 = g'g
+
+      #cat("Sigma_iG: \n")
+      #print(Sigma_iG/AC)	
+
       var1 = var1a/AC
       m1 = innerProduct(mu,g)
-      var2 = innerProduct(g, g)
+      if(IsSparseKin){
+	t1 = proc.time()
+	cat("t1\n")
+	if(!pcg_sparse){
+        qrinvSigma = Matrix:::solve(qrsparseSigma, g)
+	t2 = proc.time()
+	cat("t2-t1\n")
+    	print(t2-t1)
+        var2_a = t(g) %*% qrinvSigma
+	}else{
+	cat("t1again\n")
+#	pcginvSigma = getPCG1ofSparseSigmaAndVector(sparseSigma, g)
+#	pcginvSigma = pcgSparse(sparseSigma, g)
+	pcginvSigma = pcg(sparseSigma, g)
+	#print(class(sparseSigma))
+	#print(dim(pcginvSigma))
+	#print(class(pcginvSigma))
+	#require(Matrix)	
+	#a1<-methods:::as(sparseSigma, "dsTMatrix")
+#	pcginvSigma = pcg(sparseSigma, g)
+	#pcginvSigma = pcg(a1, g)
+	t2 = proc.time()
+        cat("t2-t1\n")
+	print(t2-t1)
+	var2_a = t(g) %*% pcginvSigma
+	}
+	var2 = var2_a[1,1]
+	#cat("qrinvSigma: \n")
+	#print(qrinvSigma)
+      }else{
+        var2 = innerProduct(g, g)
+      }
       Tv1 = (q-m1)/tauVecNew[1]
       p.value = pchisq(Tv1^2/var1, lower.tail = FALSE, df=1)
       p.value.NA = pchisq(Tv1^2/var2, lower.tail = FALSE, df=1)
@@ -976,34 +1144,52 @@ while(ratioCV > ratioCVcutoff){
       numTestedMarker = numTestedMarker + 1
       if(numTestedMarker %% 10 == 0 | numTestedMarker == numMarkers){
         OUT = as.data.frame(OUT)
+	print("OK")
         OUTtotal = rbind(OUTtotal, OUT)
+	print("OK1")
         write.table(OUT, testOut, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
         OUT = NULL
       }
     }
   } #end of while(numTestedMarker < numMarkers)
-
-  OUTtotal = data.frame(OUTtotal, stringsAsFactors=F)
-  colnames(OUTtotal) = resultHeader
-  ratioVec = as.numeric(OUTtotal$var1)/as.numeric(OUTtotal$var2)
+	print("OK2")
+  #OUTtotal = as.data.frame(OUTtotal)
+  #colnames(OUTtotal) = resultHeader
+  OUT1 = OUTtotal
+  OUT1 = as.data.frame(OUT1)
+  colnames(OUT1) = resultHeader
+  ratioVec = as.numeric(OUT1$var1)/as.numeric(OUT1$var2)
   ratioCV = calCV(ratioVec)
 
   if(ratioCV > ratioCVcutoff){
-    cat("CV for variance ratio estimate using ", numMarkers, " markers is ", ratioCV, " > ", ratioCVcutoff, "\n")
-    numMarkers = numMarkers + 10
-    cat("try ", numMarkers, " markers\n")
+    cat("CV for variance ratio estimate using ", numMarkers0, " markers is ", ratioCV, " > ", ratioCVcutoff, "\n")
+    numMarkers0 = numMarkers0 + 10
+    cat("try ", numMarkers0, " markers\n")
   }else{
-    cat("CV for variance ratio estimate using ", numMarkers, " markers is ", ratioCV, " < ", ratioCVcutoff, "\n")
+    cat("CV for variance ratio estimate using ", numMarkers0, " markers is ", ratioCV, " < ", ratioCVcutoff, "\n")
   }
 
 } #end of while(ratioCV > ratioCVcutoff)
 
-  OUT1 = data.frame(OUTtotal)
+  #OUTtotal = as.data.frame(OUTtotal)
+  #colnames(OUTtotal) = resultHeader
+  OUT1 = OUTtotal
+  OUT1 = as.data.frame(OUT1)
   colnames(OUT1) = resultHeader
   varRatio = mean(as.numeric(OUT1$var1)/as.numeric(OUT1$var2))
   cat("varRatio", varRatio, "\n")
-  write(varRatio, varRatioOutFile)
+  varRatioTable = rbind(varRatioTable, c(varRatio))
+#  write(varRatio, varRatioOutFile)
   print(varRatio)
+
+}else{# if(cateVarRatioVec[k] == 1)
+  varRatioTable = rbind(varRatioTable, c(1))
+}
+
+} #for(k in 1:length(listOfMarkersForVarRatio)){
+
+write.table(varRatioTable, varRatioOutFile, quote=F, col.names=F, row.names=F)
+
 }
 
 
@@ -1053,3 +1239,309 @@ Covariate_Transform_Back<-function(coef, Param.transform){
 	names(coef.org)<-Param.transform$X_name
 	return(coef.org)
 }
+
+
+pcg<-function (A, b, M=NULL, maxiter = 1e+05, tol = 1e-06){
+  
+  # A<-a; b<-c1[,1]; M<-NULL;maxiter = 1e+05; tol = 1e-06
+  if (is.null(M)) {
+    dA <- diag(A)
+    dA[which(dA == 0)] = 1e-04
+    #print("dA")
+    #print(dA)
+    Minv = 1/dA
+  } else Minv = solve(M)
+  x = rep(0, length(b))
+  r = b 
+  if(is.null(M)){
+    z = Minv *r
+  } else {
+    z= Minv %*% r
+  }
+  p = z
+  iter = 0
+  sumr2 = sum(r^2)
+  while (sumr2 > tol & iter < maxiter) {
+    iter = iter + 1
+    Ap = crossprod(p, A)[1,]
+    a = as.numeric((t(r) %*% z)/(t(p) %*% Ap))
+    x = x + a * p
+    r1 = r - a * Ap
+    
+    if(is.null(M)){
+      z1 = Minv * r1
+    } else {
+      z1 = Minv %*% r1
+    }
+    
+    
+    bet = as.numeric((t(z1) %*% r1)/(t(z) %*% r))
+
+    p = z1 + bet * p
+
+    z = z1
+    r = r1
+    sumr2 = sum(r^2)
+  }
+  if (iter >= maxiter) 
+    x = "pcg did not converge. You may increase maxiter number."
+  return(x)
+}
+
+
+pcgSparse<-function (A, b, M=NULL, maxiter = 1e+05, tol = 1e-06){
+  # A<-a; b<-c1[,1]; M<-NULL;maxiter = 1e+05; tol = 1e-06
+  if (is.null(M)) {
+    dA <- diag(A)
+    dA[which(dA == 0)] = 1e-04
+    #print("dA")
+    #print(dA)
+    Minv = 1/dA
+  } else Minv = solve(M)
+  x = rep(0, length(b))
+  r = b
+  if(is.null(M)){
+    z = Minv *r
+  } else {
+    z= Minv %*% r
+  }
+  p = z
+  iter = 0
+  sumr2 = sum(r^2)
+  print("psparse0")
+  psparse =  Matrix:::sparseMatrix(i = rep(1, length(p)), j = c(1:length(p)), x = as.vector(p))
+  cat("nrow(psparse) ", nrow(psparse), "\n")
+  cat("ncol(psparse) ", ncol(psparse), "\n")
+  print(class(psparse))
+
+  while (sumr2 > tol & iter < maxiter) {
+    iter = iter + 1
+    #Ap = crossprod(p, A)[1,]
+    print(class(psparse)[1])	
+    print(class(A)[1])	
+    print(nrow(psparse))	
+    print(ncol(psparse))	
+    print(nrow(A))	
+    print(ncol(A))	
+
+    Ap = sparse_row_idx_mult(psparse, A)
+    #Ap = psparse%*%A
+    print("psparse1")
+    a = as.numeric((t(r) %*% z)/(t(p) %*% Ap))
+    x = x + a * p
+    r1 = r - a * Ap
+
+    if(is.null(M)){
+      z1 = Minv * r1
+    } else {
+      z1 = Minv %*% r1
+    }
+
+
+    bet = as.numeric((t(z1) %*% r1)/(t(z) %*% r))
+
+    p = z1 + bet * p
+
+    z = z1
+    r = r1
+    sumr2 = sum(r^2)
+  }
+  if (iter >= maxiter)
+    x = "pcg did not converge. You may increase maxiter number."
+  return(x)
+}
+
+
+#https://gist.github.com/bobthecat/5024079
+bigGRMPar = function(x, nblocks = 10, verbose = TRUE, ncore= 1, relatednessCutoff = 0){
+#  library(foreach)
+#  library(doParallel)
+  #register cores
+  doParallel:::registerDoParallel(ncore)
+
+  NCOL <- ncol(x)
+  NROW <- nrow(x)
+
+  ## test if ncol(x) %% nblocks gives remainder 0
+#  if (NCOL %% nblocks != 0){stop("Choose different 'nblocks' so that ncol(x) %% nblocks = 0!")}
+
+#  if(NCOL %% nblocks == 0){
+  ## split column numbers into 'nblocks' groups
+#  SPLIT <- split(1:NCOL, rep(1:nblocks, each = NCOL/nblocks))
+  
+  SPLIT <- split(1:NCOL, ceiling(seq_along(1:NCOL)/(NCOL%/%nblocks)))
+  ## create all unique combinations of blocks
+  COMBS <- expand.grid(1:length(SPLIT), 1:length(SPLIT))
+  COMBS <- t(apply(COMBS, 1, sort))
+  COMBS <- unique(COMBS)
+#  }else{
+#    NCOLNEW = NCOL - (NCOL%%nblocks + NCOL%/%nblocks)
+#    SPLIT <- split(1:NCOLNEW, rep(1:(nblocks-1), each = NCOLNEW/(nblocks-1)))
+#  }
+  ## iterate through each block combination, calculate correlation matrix
+  ## between blocks and store them in the preallocated matrix on both
+  ## symmetric sides of the diagonal
+  `%dopar%` <- foreach::`%dopar%`
+  results <- foreach:::foreach(i = 1:nrow(COMBS), .combine='rbind')%dopar%{
+        COMB <- COMBS[i, ]
+        G1 <- SPLIT[[COMB[1]]]
+        G2 <- SPLIT[[COMB[2]]]
+        if (verbose) cat("Block", COMB[1], "with Block", COMB[2], "\n")
+        flush.console()
+        GRM <- t(x[, G1])%*%(x[, G2])
+
+        if(sum(G1 != G2) == 0){
+                GRM[lower.tri(GRM, diag = FALSE)] = 0
+        }
+        GRM <- GRM/NROW
+        indice <- which(GRM >= relatednessCutoff, arr.ind=T)
+        cbind(G1[indice[,1]], G2[indice[,2]])
+#       resultsIVec =c(resultsIVec, G1[indice[,1]])
+#        resultsJVec =c(resultsJVec, G2[indice[,2]])
+        #corMAT[G1, G2] <- COR
+        #corMAT[G2, G1] <- t(COR)
+#       GRM <- NULL
+#       indice = NULL
+}
+  gc()
+  return(results)
+}
+
+
+
+bigGRMPar_new = function(nblocks = 10, verbose = TRUE, ncore= 1, relatednessCutoff = 0){
+  doParallel:::registerDoParallel(ncore)
+
+  NCOL <- getNColStdGenoMultiMarkersMat()
+  NROW <- getNRowStdGenoMultiMarkersMat()
+  cat("NCOL: ", NCOL, "\n")
+  cat("NROW: ", NROW, "\n")
+
+  nblocks <- NCOL%/%10
+
+  ## test if ncol(x) %% nblocks gives remainder 0
+#  if (NCOL %% nblocks != 0){stop("Choose different 'nblocks' so that ncol(x) %% nblocks = 0!")}
+
+#  if(NCOL %% nblocks == 0){
+  ## split column numbers into 'nblocks' groups
+#  SPLIT <- split(1:NCOL, rep(1:nblocks, each = NCOL/nblocks))
+
+  SPLIT <- split(1:NCOL, ceiling(seq_along(1:NCOL)/(NCOL%/%nblocks)))
+  ## create all unique combinations of blocks
+  COMBS <- expand.grid(1:length(SPLIT), 1:length(SPLIT))
+  COMBS <- t(apply(COMBS, 1, sort))
+  COMBS <- unique(COMBS)
+#  }else{
+#    NCOLNEW = NCOL - (NCOL%%nblocks + NCOL%/%nblocks)
+#    SPLIT <- split(1:NCOLNEW, rep(1:(nblocks-1), each = NCOLNEW/(nblocks-1)))
+#  }
+  ## iterate through each block combination, calculate correlation matrix
+  ## between blocks and store them in the preallocated matrix on both
+  ## symmetric sides of the diagonal
+  `%dopar%` <- foreach::`%dopar%`
+  results <- foreach:::foreach(i = 1:nrow(COMBS), .combine='rbind')%dopar%{
+        COMB <- COMBS[i, ]
+        G1 <- SPLIT[[COMB[1]]] - 1
+        G2 <- SPLIT[[COMB[2]]] - 1
+        #if (verbose) cat("Block", COMB[1], "with Block", COMB[2], "\n")
+        flush.console()
+        G1M = getColfromStdGenoMultiMarkersMat(G1)
+        G2M = getColfromStdGenoMultiMarkersMat(G2)
+#	cat("G1M ", dim(G1M), "\n")
+#	cat("G2M ", dim(G2M), "\n")
+        GRM <- t(G1M)%*%(G2M)
+#	cat("G1M: ", G1M, "\n")
+#	cat("G2M: ", G2M, "\n")
+#	cat("GRM: ", GRM, "\n")
+        if(sum(G1 != G2) == 0){
+                GRM[lower.tri(GRM, diag = FALSE)] = 0
+        }
+        GRM <- GRM/NROW
+        indice <- which(GRM >= relatednessCutoff, arr.ind=T)
+#	cat("GRM[1:10,1:10]: ", GRM[1:10,1:10], "\n")
+#	cat("relatednessCutoff: ", relatednessCutoff, "\n")
+#	cat("indice: ", indice, "\n")
+        cbind(G1[indice[,1]], G2[indice[,2]])
+#       resultsIVec =c(resultsIVec, G1[indice[,1]])
+#        resultsJVec =c(resultsJVec, G2[indice[,2]])
+        #corMAT[G1, G2] <- COR
+        #corMAT[G2, G1] <- t(COR)
+#       GRM <- NULL
+#       indice = NULL
+}
+  gc()
+  return(results)
+}
+
+
+#refineKinPar = function(iMat, relatednessCutoff, W, tauVecNew, nblocks = 10, verbose = TRUE, ncore= 1){
+refineKinPar = function(relatednessCutoff, W, tauVecNew, nblocks = 10, verbose = TRUE, ncore= 1){
+
+	#chunk iMat
+  doParallel:::registerDoParallel(ncore)
+  NROW <- nrow(iMat)
+  SPLIT <- split(1:NROW, ceiling(seq_along(1:NROW)/(NROW%/%nblocks)))
+  GRMvec = rep(0, NROW)
+  print(length(GRMvec))
+  `%dopar%` <- foreach::`%dopar%`
+  mMarkers = gettotalMarker()
+  for(j in 1:mMarkers){
+    cat("j is ", j, "\n")
+    stdGeno = Get_OneSNP_StdGeno(j-1)
+    results <- foreach:::foreach(i = 1:length(SPLIT))%dopar%{
+        G1 <- SPLIT[[i]]
+	#print(G1)
+        if (verbose) cat("Block", i , "\n")
+        flush.console()
+	for(m in G1){
+		print(m)
+ 		print("OK2")
+		print(iMat[m,1])	
+		print(iMat[m,2])	
+		print(stdGeno[iMat[m,1]])	
+		print(stdGeno[iMat[m,2]])	
+		print(GRMvec[m])	
+		GRMvec[m] = GRMvec[m] + stdGeno[iMat[m,1]]*stdGeno[iMat[m,2]]/mMarkers
+		print(GRMvec[m])	
+		print("OK3")	
+	}
+  } 
+  print("OK4")
+ }
+ print("OK1")
+ return(GRMvec)		
+
+}
+
+
+#createSparseKinParallel = function(markerIndexVec, nblocks, ncore, relatednessCutoff, W, tauVecNew){
+createSparseKinParallel = function(nblocks, ncore, relatednessCutoff, W, tauVecNew){
+  #get MAT
+  #MAT = Get_MultiMarkersBySample_StdGeno_Mat(markerIndexVec)  
+  #MAT = Get_MultiMarkersBySample_StdGeno_Mat()  
+  setRelatednessCutoff(relatednessCutoff)
+  Get_MultiMarkersBySample_StdGeno_Mat()  
+#  cat("dim(MAT) is ", dim(MAT), "\n")
+  tp0 = proc.time()
+#  indexVec = bigGRMPar(MAT, nblocks = nblocks, verbose = FALSE, ncore = nblocks, relatednessCutoff = relatednessCutoff)
+#  indexVec = bigGRMPar_new(nblocks = nblocks, verbose = TRUE, ncore = nblocks, relatednessCutoff = relatednessCutoff)
+
+  printComb(3)
+  #indexVec = findIndiceRelatedSample()
+  findIndiceRelatedSample()
+
+  #print(indexVec)
+  tp1 = proc.time()
+  cat("tp1 - tp0: ", tp1-tp0, "\n")
+#  cat(indexVec)
+  #sparseKinList = refineKin(indexVec-1, relatednessCutoff, W, tauVecNew)
+  sparseKinList = refineKin(relatednessCutoff, W, tauVecNew)
+  #sparseKinList = refineKin(indexVec, relatednessCutoff, W, tauVecNew)
+  #GRMvec = refineKinPar(indexVec, relatednessCutoff = relatednessCutoff, W = W, tauVecNew = tauVecNew, nblocks = nblocks, verbose = TRUE, ncore= nblocks) 
+  #sparseKinList = shortenList(indexVec-1, GRMvec, relatednessCutoff, W, tauVecNew)
+ tp2 = proc.time()
+  cat("tp2 - tp1: ", tp2-tp1, "\n")
+
+  return(sparseKinList)
+}
+
