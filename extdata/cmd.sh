@@ -31,6 +31,20 @@ Rscript step2_SPAtests.R \
         --minMAF=0.0001 \
         --minMAC=1 \
         --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output/example.rda \
+        --varianceRatioFile=./output/example.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example.SAIGE.vcf.dosage.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE     \
+
+Rscript step2_SPAtests.R \
+        --vcfFile=./input/dosage_10markers.vcf.gz \
+        --vcfFileIndex=./input/dosage_10markers.vcf.gz.tbi \
+        --vcfField=DS \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output/example_cond.rda \
         --varianceRatioFile=./output/example_cond.varianceRatio.txt \
         --SAIGEOutputFile=./output/example_cond1.SAIGE.vcf.dosage.txt \
@@ -48,7 +62,7 @@ Rscript step2_SPAtests.R \
         --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output/example.rda \
         --varianceRatioFile=./output/example.varianceRatio.txt \
-        --SAIGEOutputFile=./output/example.SAIGE.vcf.dosage.txt \
+        --SAIGEOutputFile=./output/example_cond2.SAIGE.vcf.dosage.txt \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE     \
         --condition=1:4_A/C

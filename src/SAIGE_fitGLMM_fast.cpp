@@ -2,6 +2,7 @@
 #include <RcppArmadillo.h>
 //[[Rcpp::depends(RcppParallel)]]
 #include <RcppParallel.h> 
+#include <omp.h>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -45,6 +46,18 @@ public:
   	arma::fvec	m_OneSNP_StdGeno;
   	arma::fvec	m_DiagStd;
 
+	arma::ivec	MACVec; //for variance ratio based on different MAC categories
+	arma::ivec	subMarkerIndex; //for sparse GRM
+	arma::fmat      stdGenoMultiMarkersMat;	
+	std::vector<float> stdGenoforSamples; //for sparse GRM
+	std::vector<float>     kinValueVecFinal;
+        float relatednessCutoff;
+
+	tbb::concurrent_vector< std::pair<int, int> > indiceVec;
+	arma::ivec xout;
+        arma::ivec yout;
+
+        //std::vector<float> stdGenoVec;
 	//for LOCO
 	//bool LOCO = false;
 	//vector<int> chromosomeStartIndex;
@@ -139,7 +152,7 @@ public:
 		size_t ind= 0;
 		unsigned char geno1;
 		int bufferGeno;
-		for(size_t i=0; i< m_size_of_esi_temp; i++){
+		for(int i=0; i< m_size_of_esi_temp; i++){
 			geno1 = genoVecOneMarkerOld[i];
 			for(int j=0; j<4; j++){
 				int b = geno1 & 1 ;
@@ -254,6 +267,10 @@ public:
 	
 		return & m_DiagStd;
 	}
+
+	
+	
+
  	
 
 	arma::fvec * Get_Diagof_StdGeno_LOCO(){
@@ -287,6 +304,7 @@ public:
     		// reset
     		//genoVec.clear();
     		alleleFreqVec.clear();
+		MACVec.clear();
   		invstdvVec.clear();
 
    		M=0;
@@ -418,6 +436,7 @@ public:
 
 		cout << "setgeno mark1" << endl;
 		alleleFreqVec.zeros(M);
+		MACVec.zeros(M);
         	float freq, Std, invStd;
         	std::vector<int> indexNA;
         	int lengthIndexNA;
@@ -524,6 +543,14 @@ public:
       				invStd= 1/Std;
       			}
 			alleleFreqVec[i] = freq;
+
+			if(freq > 0.5){
+			  MACVec[i] = (2*Nnomissing) - sum(m_OneSNP_Geno);
+			}else{
+			  MACVec[i] = sum(m_OneSNP_Geno);
+			}
+
+
       			invstdvVec.push_back(invStd);
 			m_OneSNP_Geno.clear();
 
@@ -618,6 +645,63 @@ public:
     		cout << endl;
   	}
 
+
+	void Get_Samples_StdGeno(arma::ivec SampleIdsVec){
+        	int indexOfVectorPointer;
+        	int SNPIdxinVec;
+
+        	int numSamples = SampleIdsVec.n_elem;
+        	//stdGenoVec.zeros(Nnomissing*numSamples);
+        	stdGenoforSamples.clear();
+        	stdGenoforSamples.resize(M*numSamples);
+
+        	arma::ivec sampleGenoIdxVec;
+        	sampleGenoIdxVec.zeros(numSamples);
+        	arma::ivec sampleGenoIdxSubVec;
+        	sampleGenoIdxSubVec.zeros(numSamples);
+
+        	for(int j=0; j < numSamples; j++){
+                	sampleGenoIdxVec[j] = SampleIdsVec[j] / 4;
+                	sampleGenoIdxSubVec[j] = SampleIdsVec[j] % 4;
+        	}
+
+
+        	int startidx;
+        	unsigned char geno1;
+
+        	for(int i=0; i < M; i++){
+                	indexOfVectorPointer = i/numMarkersofEachArray;
+                	SNPIdxinVec = i % numMarkersofEachArray;
+                	startidx = m_size_of_esi * SNPIdxinVec;
+
+                	float freq = alleleFreqVec[i];
+                	float invStd = invstdvVec[i];
+
+                	for(int j=0; j < numSamples; j++){
+                        	int k = startidx + sampleGenoIdxVec[j];
+                        	geno1 = genoVecofPointers[indexOfVectorPointer]->at(k);
+                        	for(int q=0; q<4; q++){
+                                	if(q == sampleGenoIdxSubVec[j]){
+                                        	int b = geno1 & 1 ;
+                                        	geno1 = geno1 >> 1;
+                                        	int a = geno1 & 1 ;
+                                        	stdGenoforSamples[i*(numSamples)+j] = ((2-(a+b)) - 2*freq)* invStd;
+                                //(*out)[ind] = ((2-(a+b)) - 2*freq)* invStd;;
+                                //ind++;
+                                        	geno1 = geno1 >> 1;
+                                	}else{
+                                        	geno1 = geno1 >> 1;
+                                        	geno1 = geno1 >> 1;
+                                	}
+                        	}
+                	}
+        	}
+
+        //return(stdGenoVec);
+	}
+
+
+
   
 };
 
@@ -660,6 +744,189 @@ arma::fvec getAlleleFreqVec(){
   	return(geno.alleleFreqVec);
 }
 
+// [[Rcpp::export]]
+arma::ivec getMACVec(){
+        return(geno.MACVec);
+}
+
+// [[Rcpp::export]]
+arma::ivec getSubMarkerIndex(){
+	return(geno.subMarkerIndex);
+}
+
+// [[Rcpp::export]]
+int getSubMarkerNum(){
+        return(geno.subMarkerIndex.n_elem);
+}
+
+
+void initKinValueVecFinal(int ni){
+	geno.kinValueVecFinal.resize(ni);
+        std::fill(geno.kinValueVecFinal.begin(), geno.kinValueVecFinal.end(), 0);
+};
+
+
+
+
+
+
+//arma::fmat Get_MultiMarkersBySample_StdGeno_Mat(arma::fvec& markerIndexVec){
+//arma::fmat Get_MultiMarkersBySample_StdGeno_Mat(){
+
+// [[Rcpp::export]]
+void Get_MultiMarkersBySample_StdGeno_Mat(){
+	//geno.subMarkerIndex
+	//int m_M_Submarker = markerIndexVec.n_elem;
+	int m_M_Submarker = getSubMarkerNum();
+        //arma::fvec stdGenoMultiMarkers;
+        int Nnomissing = geno.getNnomissing();
+	  //int nSubMarker = markerIndexVec.n_elem;
+          //int Ntotal = geno.getNnomissing();
+        //std::vector<float> stdGenoMultiMarkers;
+        //stdGenoMultiMarkers.resize(Nnomissing*m_M_Submarker);
+
+        int indexOfVectorPointer;
+        int SNPIdxinVec;
+        size_t Start_idx;
+        size_t ind= 0;
+        size_t indtotal = 0;
+        unsigned char geno1;
+        float freq;
+        float invStd;
+        int flag;
+        int SNPIdx;
+
+//      std::cout << "createSparseKin1d" << std::endl;
+        for(size_t k=0; k< m_M_Submarker; k++){
+                ind = 0;
+                flag = 0;
+                //SNPIdx = markerIndexVec[k];
+		SNPIdx = (geno.subMarkerIndex)[k];
+                indexOfVectorPointer = SNPIdx/(geno.numMarkersofEachArray);
+                SNPIdxinVec = SNPIdx % (geno.numMarkersofEachArray);
+                Start_idx = (geno.m_size_of_esi) * SNPIdxinVec;
+                freq = (geno.alleleFreqVec)[SNPIdx];
+                invStd = (geno.invstdvVec)[SNPIdx];
+                if(k == 0){
+                        std::cout << "freq: " << freq << " invStd: " << invStd << "  SNPIdx: " << SNPIdx << std::endl;
+                }
+
+                while(flag == 0){
+//              std::cout << "createSparseKin1e" << std::endl;
+                for(size_t i=Start_idx; i< Start_idx+(geno.m_size_of_esi); i++){
+                        geno1 = (geno.genoVecofPointers)[indexOfVectorPointer]->at(i);
+                        //std::cout << "createSparseKin1f" << std::endl;
+
+                        for(int j=0; j<4; j++){
+                        int b = geno1 & 1 ;
+                        geno1 = geno1 >> 1;
+                        int a = geno1 & 1 ;
+			(geno.stdGenoMultiMarkersMat)(k, ind) = ((2-(a+b)) - 2*freq)* invStd;
+//			std::cout << "k,ind " << k << " " << ind << std::endl;
+//			std::cout << "(geno.stdGenoMultiMarkersMat)(k, ind) " << (geno.stdGenoMultiMarkersMat)(k, ind) << std::endl;
+
+//                        stdGenoMultiMarkers[ind*m_M_Submarker+k] = ((2-(a+b)) - 2*freq)* invStd;;
+//                      if(k == 0){
+    //                    std::cout << "ind*m_M_Submarker+k: " << ind*m_M_Submarker+k << " stdGenoMultiMarkers[ind*m_M_Submarker+k]: " << stdGenoMultiMarkers[ind*m_M_Submarker+k] <<  std::endl;
+  //              }
+
+
+                        indtotal++;
+                        ind++;
+                        geno1 = geno1 >> 1;
+
+                                if(ind == Nnomissing){
+                                        flag = 1;
+                                        break;
+                                }
+                        }// end of for(int j=0; j<4; j++){
+                    }// end of for(size_t i=Start_idx
+                } //end of while(flag == 0){
+
+        }
+
+        std::cout << "stdGenoMultiMarkersMat.n_rows: " << geno.stdGenoMultiMarkersMat.n_rows << std::endl;
+        std::cout << "stdGenoMultiMarkersMat.n_cols: " << geno.stdGenoMultiMarkersMat.n_cols << std::endl;
+//	arma::fmat stdGenoMultiMarkersMat(&stdGenoMultiMarkers.front(), m_M_Submarker, Nnomissing);
+
+//	return(stdGenoMultiMarkersMat);
+        //std::cout << "stdGenoMultiMarkers[Nnomissing*m_M_Submarker-1] " << stdGenoMultiMarkers[Nnomissing*m_M_Submarker-1] << std::endl;
+
+}
+
+
+
+
+
+// [[Rcpp::export]]
+void Get_MultiMarkersBySample_StdGeno(arma::fvec& markerIndexVec, std::vector<float> &stdGenoMultiMarkers){
+
+	std::cout << "createSparseKin1c" << std::endl;
+        int indexOfVectorPointer;
+        int SNPIdxinVec;
+        size_t Start_idx;
+        size_t ind= 0;
+        size_t indtotal = 0;
+        unsigned char geno1;
+        float freq;
+        float invStd;
+	int flag;
+	int SNPIdx;
+
+        int m_M_Submarker = markerIndexVec.n_elem;
+        //arma::fvec stdGenoMultiMarkers;
+	int Nnomissing = geno.getNnomissing();
+	
+
+//	std::cout << "createSparseKin1d" << std::endl;
+        for(size_t k=0; k< m_M_Submarker; k++){
+                ind = 0;
+                flag = 0;
+                SNPIdx = markerIndexVec[k];
+                indexOfVectorPointer = SNPIdx/(geno.numMarkersofEachArray);
+                SNPIdxinVec = SNPIdx % (geno.numMarkersofEachArray);
+                Start_idx = (geno.m_size_of_esi) * SNPIdxinVec;
+		freq = (geno.alleleFreqVec)[SNPIdx];
+                invStd = (geno.invstdvVec)[SNPIdx];
+		if(k == 0){
+			std::cout << "freq: " << freq << " invStd: " << invStd << "  SNPIdx: " << SNPIdx << std::endl;
+		}
+
+                while(flag == 0){
+//		std::cout << "createSparseKin1e" << std::endl;
+                for(size_t i=Start_idx; i< Start_idx+(geno.m_size_of_esi); i++){
+                        geno1 = (geno.genoVecofPointers)[indexOfVectorPointer]->at(i);
+			//std::cout << "createSparseKin1f" << std::endl;
+
+                        for(int j=0; j<4; j++){
+                        int b = geno1 & 1 ;
+                        geno1 = geno1 >> 1;
+                        int a = geno1 & 1 ;
+                        stdGenoMultiMarkers[ind*m_M_Submarker+k] = ((2-(a+b)) - 2*freq)* invStd;;
+//			stdGenoMultiMarkers[ind*m_M_Submarker+k] = 2-(a+b);
+//			if(k == 0){
+    //                    std::cout << "ind*m_M_Submarker+k: " << ind*m_M_Submarker+k << " stdGenoMultiMarkers[ind*m_M_Submarker+k]: " << stdGenoMultiMarkers[ind*m_M_Submarker+k] <<  std::endl;
+  //              }
+
+
+                        indtotal++;
+                        ind++;
+                        geno1 = geno1 >> 1;
+
+                                if(ind == Nnomissing){
+                                        flag = 1;
+					break;	
+                                }
+                        }// end of for(int j=0; j<4; j++){
+                    }// end of for(size_t i=Start_idx
+                } //end of while(flag == 0){
+
+        }
+
+	std::cout << "stdGenoMultiMarkers[Nnomissing*m_M_Submarker-1] " << stdGenoMultiMarkers[Nnomissing*m_M_Submarker-1] << std::endl;
+
+}
+
 
 
 
@@ -696,7 +963,6 @@ struct CorssProd : public Worker
   	void operator()(std::size_t begin, std::size_t end) {
   	  	arma::fvec vec;
   	  	for(unsigned int i = begin; i < end; i++){
-			
 			geno.Get_OneSNP_StdGeno(i, &vec);
 			float val1 = dot(vec,  m_bVec);
 			m_bout += val1 * (vec);
@@ -705,7 +971,7 @@ struct CorssProd : public Worker
   
   	// join my value with that of another InnerProduct
   	void join(const CorssProd & rhs) { 
-    	m_bout += rhs.m_bout; 
+    		m_bout += rhs.m_bout; 
   	}
 };
 
@@ -801,6 +1067,14 @@ arma::fvec parallelCrossProd(arma::fcolvec & bVec) {
 }
 
 
+
+// [[Rcpp::export]]
+float innerProductFun(std::vector<float> &x, std::vector<float> & y) {
+   return std::inner_product(x.begin(), x.end(), y.begin(), 0.0);
+}
+
+
+
 // [[Rcpp::export]]
 arma::fvec parallelCrossProd_LOCO(arma::fcolvec & bVec) {
 
@@ -839,6 +1113,198 @@ arma::fvec getCrossprodMatAndKin_LOCO(arma::fcolvec& bVec){
         arma::fvec crossProdVec = parallelCrossProd_LOCO(bVec) ;
 
         return(crossProdVec);
+}
+
+
+// [[Rcpp::depends(RcppParallel)]]
+// [[Rcpp::plugins(cpp11)]]
+struct indicesRelatedSamples : public RcppParallel::Worker {
+
+  int  Ntotal;
+  tbb::concurrent_vector< std::pair<int, int> > &output;
+
+  indicesRelatedSamples(int Ntotal, tbb::concurrent_vector< std::pair<int, int> > &output) : 
+    Ntotal(Ntotal), output(output) {} 
+
+
+  void operator()(std::size_t begin, size_t end) {
+    int m_M_Submarker = getSubMarkerNum();
+    for(std::size_t k=begin; k < end; k++) {
+      int i = (int)(k / Ntotal);
+      int j = (int)(k % Ntotal);
+      if((j <= i)){
+                        i = Ntotal - i - 2;
+                        j = Ntotal - j - 1;
+      }
+      //std::cout << "i,j,k debug: " << i << " " << j << " " << k << std::endl;  
+      float kinValueTemp = arma::dot((geno.stdGenoMultiMarkersMat).col(i), (geno.stdGenoMultiMarkersMat.col)(j));
+      kinValueTemp = kinValueTemp/m_M_Submarker;
+      if(kinValueTemp >=  geno.relatednessCutoff) {
+        output.push_back( std::pair<int, int>(i, j) );
+      }
+    }
+  }
+
+};
+
+
+// [[Rcpp::export]]
+void printComb(int N){
+  int x = N*(N-1)/2 - 1;
+  for(std::size_t k=0; k < x; k++) {
+      int i = k / N;
+      int j = k % N;
+      if((j < i)){
+                        i = N - i - 2;
+                        j = N - j - 1;
+      }
+     std::cout << "i,j " << i << "," << j << std::endl;
+  }
+
+}
+
+
+//arma::fmat findIndiceRelatedSample(){
+//arma::fmat findIndiceRelatedSample(){
+
+// [[Rcpp::export]]
+void findIndiceRelatedSample(){
+
+  int Ntotal = geno.getNnomissing(); 
+//  tbb::concurrent_vector< std::pair<float, float> > output;
+
+//  indicesRelatedSamples indicesRelatedSamples(Ntotal,output);
+  indicesRelatedSamples indicesRelatedSamples(Ntotal,geno.indiceVec);
+
+  long int Ntotal2 = (long int)Ntotal;
+
+  long int totalCombination = Ntotal2*(Ntotal2-1)/2 - 1;
+  std::cout << "Ntotal: " << Ntotal << std::endl;
+  std::cout << std::numeric_limits<int>::max() << std::endl;
+  std::cout << std::numeric_limits<long int>::max() << std::endl;
+  std::cout << std::numeric_limits<long long int>::max() << std::endl;
+  std::cout << "totalCombination: " << totalCombination << std::endl;
+  long int x = 1000001;
+  int b = (int)(x / Ntotal);
+  int a = (int)(x % Ntotal);
+  std::cout << "a " << a << std::endl;
+  std::cout << "b " << b << std::endl;
+  
+  parallelFor(0, totalCombination, indicesRelatedSamples);
+
+//  arma::fmat xout(output.size()+Ntotal,2);
+
+//  for(int i=0; i<output.size(); i++) {
+//    xout(i,0) = output[i].first;
+//    xout(i,1) = output[i].second;
+//  }
+//  for(int i=output.size(); i < output.size()+Ntotal; i++) {
+//    xout(i,0) = i - output.size();
+//    xout(i,1) = xout(i,0);
+//  }
+
+  for(int i=0; i < Ntotal; i++){
+    (geno.indiceVec).push_back( std::pair<int, int>(i, i) );
+  }
+//  return(xout);
+}
+
+
+
+struct sparseGRMUsingOneMarker : public Worker {
+   // input matrix to read from
+  // arma::imat & iMat;
+   // output matrix to write to
+   arma::fvec & GRMvec;
+
+   int M = geno.getM();
+   // initialize from Rcpp input and output matrixes (the RMatrix class
+   // can be automatically converted to from the Rcpp matrix type)
+//   sparseGRMUsingOneMarker(arma::imat & iMat, arma::fvec &GRMvec)
+//      : iMat(iMat), GRMvec(GRMvec) {}
+
+
+  sparseGRMUsingOneMarker(arma::fvec &GRMvec)
+      : GRMvec(GRMvec) {}
+
+
+   // function call operator that work for the specified range (begin/end)
+   void operator()(std::size_t begin, std::size_t end) {
+      for (std::size_t i = begin; i < end; i++) {
+            // rows we will operate on
+//            int iint = iMat(i,0);
+//            int jint = iMat(i,1);
+	   int iint = (geno.indiceVec)[i].first;	
+	   int jint = (geno.indiceVec)[i].second;	
+
+            float ival = geno.m_OneSNP_StdGeno(iint);
+            float jval = geno.m_OneSNP_StdGeno(jint);
+            // write to output matrix
+            //rmat(i,j) = sqrt(.5 * (d1 + d2));
+            GRMvec(i) = ival*jval/M;
+      }
+   }
+};
+
+//void parallelcalsparseGRM(arma::imat & iMat, arma::fvec &GRMvec) {
+
+// [[Rcpp::export]]
+void parallelcalsparseGRM(arma::fvec &GRMvec) {
+
+//  int n1 = geno.indiceVec.size();
+  // allocate the output matrix
+  //GRMvec.set_size(n1);
+//  std::cout << "OKKK3: "  << std::endl;
+//  sparseGRMUsingOneMarker sparseGRMUsingOneMarker(iMat, GRMvec);
+  sparseGRMUsingOneMarker sparseGRMUsingOneMarker(GRMvec);
+//  std::cout << "OKKK4: "  << std::endl;
+
+//  std::cout << "n1 " << n1 << std::endl;
+//  std::cout << "iMat.n_cols " << iMat.n_cols << std::endl;
+  // call parallelFor to do the work
+//  parallelFor(0, iMat.n_rows, sparseGRMUsingOneMarker);
+  parallelFor(0, (geno.indiceVec).size(), sparseGRMUsingOneMarker);
+
+  // return the output matrix
+  // return GRMvec;
+}
+
+
+struct sumTwoVec : public Worker
+{   
+   // source vectors
+   arma::fvec &x;
+   
+   arma::fvec &sumVec;
+   
+   // constructors
+   sumTwoVec(arma::fvec &x,arma::fvec &sumVec) 
+      : x(x), sumVec(sumVec) {}
+   
+     // function call operator that work for the specified range (begin/end)
+   void operator()(std::size_t begin, std::size_t end) {
+      for (std::size_t i = begin; i < end; i++) {
+            // rows we will operate on
+            sumVec(i) = x(i)+(geno.kinValueVecFinal)[i];
+	    (geno.kinValueVecFinal)[i] = sumVec(i);	
+      }
+   }
+   
+};
+
+// [[Rcpp::export]]
+void  parallelsumTwoVec(arma::fvec &x) {
+
+  int n1 = x.n_elem;
+  // allocate the output matrix
+  arma::fvec sumVec;
+  sumVec.set_size(n1);
+
+  sumTwoVec sumTwoVec(x, sumVec);
+
+  // call parallelFor to do the work
+  parallelFor(0, x.n_elem, sumTwoVec);
+
 }
 
 
@@ -907,6 +1373,8 @@ arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
   
    
 	diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno()) /M + tauVec(0)/wVec;
+	//make diag of kin to be 1 to compare results of emmax and gmmat
+	//diagVec = tauVec(1) + tauVec(0)/wVec;
 	for(unsigned int i=0; i< Nnomissing; i++){
   		if(diagVec(i) < 1e-4){
   			diagVec(i) = 1e-4 ;
@@ -988,12 +1456,20 @@ arma::fcolvec getCrossprod_LOCO(arma::fcolvec& bVec, arma::fvec& wVec, arma::fve
 //This function needs the function getDiagOfSigma and function getCrossprod
 // [[Rcpp::export]]
 arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::fvec& bVec, int maxiterPCG, float tolPCG){
+	//cout << "HELLO: "  << endl;
+	//cout << "HELL2: "  << endl;
   	arma::fvec rVec = bVec;
+	//cout << "HELLOa: "  << endl;
   	arma::fvec r1Vec;
+	//cout << "HELLOb: "  << endl;
   	int Nnomissing = geno.getNnomissing();
+	//cout << "HELL1: "  << endl;
 
   	arma::fvec crossProdVec(Nnomissing);
+	//cout << "HELL2: "  << endl;
+
   	arma::fvec minvVec = 1/getDiagOfSigma(wVec, tauVec);
+	//cout << "HELL3: "  << endl;
 	//for(int i = 0; i < 10; i++){
         //        cout << "full set minvVec[i]: " << minvVec[i] << endl;
         //}
@@ -1644,3 +2120,616 @@ Rcpp::List fitglmmaiRPCG_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,
   	return List::create(Named("tau") = tauVec, Named("cov") = cov, Named("alpha") = alpha1, Named("eta") = eta1);
 }
 
+
+
+//http://gallery.rcpp.org/articles/parallel-inner-product/
+struct CorssProd_usingSubMarker : public Worker
+{
+        // source vectors
+        arma::fcolvec & m_bVec;
+        unsigned int m_N;
+        unsigned int m_M_Submarker;
+        unsigned int m_M;
+        arma::ivec subMarkerIndex ;
+
+        // product that I have accumulated
+        arma::fvec m_bout;
+
+
+        // constructors
+        CorssProd_usingSubMarker(arma::fcolvec & y)
+                : m_bVec(y) {
+
+                //m_Msub = geno.getMsub();
+                subMarkerIndex = getSubMarkerIndex();
+                m_M_Submarker = subMarkerIndex.n_elem;
+                m_N = geno.getNnomissing();
+                m_bout.zeros(m_N);
+        }
+        CorssProd_usingSubMarker(const CorssProd_usingSubMarker& CorssProd_usingSubMarker, Split)
+                : m_bVec(CorssProd_usingSubMarker.m_bVec)
+        {
+
+                m_N = CorssProd_usingSubMarker.m_N;
+                //m_M = CorssProd_usingSubMarker.m_M;
+                m_M_Submarker = CorssProd_usingSubMarker.m_M_Submarker;
+                subMarkerIndex = CorssProd_usingSubMarker.subMarkerIndex;
+                m_bout.zeros(m_N);
+
+        }
+
+           // process just the elements of the range I've been asked to
+        void operator()(std::size_t begin, std::size_t end) {
+                arma::fvec vec;
+                float val1;
+                int j;
+                for(unsigned int i = begin; i < end; i++){
+                        j = subMarkerIndex[i];
+//			std::cout << "j: " << j << std::endl;	
+                        geno.Get_OneSNP_StdGeno(j, &vec);
+                        val1 = dot(vec,  m_bVec);
+                        m_bout += val1 * (vec);
+                }
+        }
+
+        // join my value with that of another InnerProduct
+        void join(const  CorssProd_usingSubMarker & rhs) {
+        m_bout += rhs.m_bout;
+        }
+};
+
+
+// [[Rcpp::export]]
+arma::fvec parallelCrossProd_usingSubMarker(arma::fcolvec & bVec) {
+
+  // declare the InnerProduct instance that takes a pointer to the vector data
+        int m_M_Submarker = getSubMarkerNum();
+
+//	std::cout << "m_M_Submarker: " << m_M_Submarker << std::endl;
+        CorssProd_usingSubMarker CorssProd_usingSubMarker(bVec);
+//	std::cout << "m_M_Submarker: 2 " << m_M_Submarker << std::endl;
+  // call paralleReduce to start the work
+        parallelReduce(0, m_M_Submarker, CorssProd_usingSubMarker);
+//	std::cout << "m_M_Submarker: 3 " << m_M_Submarker << std::endl;
+//	std::cout << "CorssProd_usingSubMarker.m_bout " << CorssProd_usingSubMarker.m_bout << std::endl;
+  // return the computed product
+        //cout << "Msub: " << Msub << endl;
+        //for(int i=0; i<100; ++i)
+        //{
+        //      cout << (CorssProd_usingSubMarker.m_bout/m_M_Submarker)[i] << ' ';
+        //}
+//        cout << endl;
+
+//	cout << (CorssProd_usingSubMarker.m_bout).n_elem << endl;
+        return CorssProd_usingSubMarker.m_bout/m_M_Submarker;
+}
+
+
+
+// [[Rcpp::export]]
+arma::fvec getCrossprodMatAndKin_usingSubMarker(arma::fcolvec& bVec){
+
+        arma::fvec crossProdVec = parallelCrossProd_usingSubMarker(bVec) ;
+
+        return(crossProdVec);
+}
+
+
+
+
+
+
+
+
+
+//std::vector<int> calGRMvalueUsingSubMarker_forOneInv(int sampleIndex, float relatednessCutoff){
+//        //sampleIndex starts with 0
+//        std::vector<int> relatedIndex;
+//        int Ntotal = geno.getNnomissing();
+//        arma::fcolvec bindexvec(Ntotal);
+//        bindexvec.zeros();
+//        bindexvec(sampleIndex) = 1;
+//        arma::fvec crossProdVec = getCrossprodMatAndKin_usingSubMarker(bindexvec);
+//        for(int i=sampleIndex; i< Ntotal; i++){
+//                if(crossProdVec(i) >= relatednessCutoff){
+//                        relatedIndex.push_back(i);
+//                }
+//        }
+//        return(relatedIndex);
+//}
+
+
+
+
+//The code below is from http://gallery.rcpp.org/articles/parallel-inner-product/
+struct InnerProduct : public Worker
+{
+   // source vectors
+   std::vector<float> x;
+   std::vector<float> y;
+
+   // product that I have accumulated
+   float product;
+
+   // constructors
+   InnerProduct(const std::vector<float> x, const std::vector<float> y)
+      : x(x), y(y), product(0) {}
+   InnerProduct(const InnerProduct& innerProduct, Split)
+      : x(innerProduct.x), y(innerProduct.y), product(0) {}
+
+   // process just the elements of the range I've been asked to
+   void operator()(std::size_t begin, std::size_t end) {
+      product += std::inner_product(x.begin() + begin,
+                                    x.begin() + end,
+                                    y.begin() + begin,
+                                    0.0);
+   }
+
+   // join my value with that of another InnerProduct
+   void join(const InnerProduct& rhs) {
+     product += rhs.product;
+   }
+};
+
+
+// [[Rcpp::export]]
+float parallelInnerProduct(std::vector<float> &x, std::vector<float> &y) {
+
+   int xsize = x.size();
+   // declare the InnerProduct instance that takes a pointer to the vector data
+   InnerProduct innerProduct(x, y);
+
+   // call paralleReduce to start the work
+   parallelReduce(0, x.size(), innerProduct);
+
+   // return the computed product
+   return innerProduct.product/xsize;
+}
+
+
+// [[Rcpp::export]]
+float calGRMValueforSamplePair(arma::ivec &sampleidsVec){
+        //std::vector<float> stdGenoforSamples = geno.Get_Samples_StdGeno(sampleidsVec);
+        geno.Get_Samples_StdGeno(sampleidsVec);
+	//std::cout << "here5" << std::endl;
+	//for(int i = 0; i < 10; i++){
+	//	std::cout << geno.stdGenoforSamples[i] << " ";
+	//}
+	//std::cout << std::endl;
+	//std::cout << geno.stdGenoforSamples.size() << std::endl;
+        int Ntotal = geno.getNnomissing();
+        float grmValue;
+	std::vector<float> stdGenoforSamples2;
+	//std::cout << "here5b" << std::endl;
+	//std::cout << sampleidsVec.n_elem << std::endl;
+	//std::cout << "here5c" << std::endl;
+        if(sampleidsVec.n_elem == 2){
+                std::vector<float> s1Vec;
+                //s1Vec.zeros(Ntotal);
+
+                std::vector<float> s2Vec;
+                //arma::fvec s2Vec;
+                //s2Vec.zeros(Ntotal);
+
+                for(int i = 0; i < Ntotal; i++){
+                        //s1Vec[i] = stdGenoforSamples[i*2+0];
+                        s1Vec.push_back(geno.stdGenoforSamples[i*2]);
+                        s2Vec.push_back(geno.stdGenoforSamples[i*2+1]);
+                }
+                grmValue = parallelInnerProduct(s1Vec, s2Vec);
+                //grmValue = innerProductFun(s1Vec, s2Vec);
+        }else{
+	//	std::cout << "here5d" << std::endl;
+	//	std::cout << "geno.stdGenoforSamples.size() " << geno.stdGenoforSamples.size() << std::endl;
+		stdGenoforSamples2.clear();
+		for (int i=0; i< geno.stdGenoforSamples.size(); i++){
+			//std::cout << i << " " << geno.stdGenoforSamples[i] << " ";
+        		stdGenoforSamples2.push_back(geno.stdGenoforSamples[i]);
+		}
+	//	std::cout << std::endl;
+	//	std::cout << "here6" << std::endl;
+                grmValue = parallelInnerProduct(stdGenoforSamples2, geno.stdGenoforSamples);
+                //grmValue = innerProductFun(stdGenoforSamples2, geno.stdGenoforSamples);
+	//	std::cout << "here7" << std::endl;
+        }
+        return(grmValue);
+}
+
+
+//Rcpp::List createSparseKin(arma::fvec& markerIndexVec, float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){
+//arma::sp_fmat createSparseKin(arma::fvec& markerIndexVec, float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){
+
+
+
+// [[Rcpp::export]]
+Rcpp::List createSparseKin(arma::fvec& markerIndexVec, float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){
+
+        int nSubMarker = markerIndexVec.n_elem;
+        int Ntotal = geno.getNnomissing();
+        std::vector<unsigned int>     iIndexVec;
+        std::vector<unsigned int>     iIndexVec2;
+        std::vector<unsigned int>     jIndexVec;
+        std::vector<unsigned int>     jIndexVec2;
+        std::vector<unsigned int>     allIndexVec;
+        std::vector<float>     kinValueVec;
+        std::vector<float>     kinValueVec2;
+	std::vector<float> stdGenoMultiMarkers;	
+	stdGenoMultiMarkers.resize(Ntotal*nSubMarker);
+
+	std::cout << "createSparseKin1" << std::endl;
+	size_t sizeTemp;
+	float kinValue;
+	float kinValueTemp;
+	std::cout << "createSparseKin1b" << std::endl;
+
+	Get_MultiMarkersBySample_StdGeno(markerIndexVec, stdGenoMultiMarkers);
+	std::cout << "createSparseKin2" << std::endl;
+	//arma::fmat stdGenoMultiMarkersMat(&stdGenoMultiMarkers.front(), Ntotal, nSubMarker);
+	arma::fmat stdGenoMultiMarkersMat(&stdGenoMultiMarkers.front(), nSubMarker, Ntotal);
+	std::cout << "createSparseKin3" << std::endl;
+	std::cout << "stdGenoMultiMarkersMat.n_rows: " << stdGenoMultiMarkersMat.n_rows << std::endl;
+	std::cout << "stdGenoMultiMarkersMat.n_cols: " << stdGenoMultiMarkersMat.n_cols << std::endl;
+
+
+
+        for(unsigned int i=0; i< Ntotal; i++){
+              for(unsigned int j = i; j < Ntotal; j++){
+                        //kinValueTemp = arma::dot(stdGenoMultiMarkersMat.row(i), stdGenoMultiMarkersMat.row(j));
+			if(j > i){
+                		kinValueTemp = arma::dot(stdGenoMultiMarkersMat.col(i), stdGenoMultiMarkersMat.col(j));
+                		kinValueTemp = kinValueTemp/nSubMarker;
+                		if(kinValueTemp >= relatednessCutoff){
+//                              if(i == 0){
+                                //std::cout << "kinValueTemp: " << kinValueTemp << std::endl;
+                                //std::cout << "relatednessCutoff: " << relatednessCutoff << std::endl;
+                                //std::cout << "i: " << i << std::endl;
+//                              std::cout << "j: " << j;
+//                              }
+                        		iIndexVec.push_back(i);
+					jIndexVec.push_back(j);
+
+                		}
+			}else{
+				iIndexVec.push_back(i);
+				jIndexVec.push_back(j);
+			}
+        	}
+	}
+	
+	arma::fvec * temp = &(geno.m_OneSNP_StdGeno);
+        size_t ni = iIndexVec.size();
+        kinValueVec.resize(ni);
+        std::fill(kinValueVec.begin(), kinValueVec.end(), 0);
+
+        int Mmarker = geno.getM();
+        for(size_t i=0; i< Mmarker; i++){
+                geno.Get_OneSNP_StdGeno(i, temp);
+                for(size_t j=0; j < ni; j++){
+                        kinValueVec[j] = kinValueVec[j] + (((*temp)[iIndexVec[j]])*((*temp)[jIndexVec[j]]))/Mmarker;
+                }
+
+        }
+
+
+
+
+
+
+/*
+//	(stdGenoMultiMarkersMat.row(0)).print("stdGenoMultiMarkersMat.row(0):");
+	//std::cout << stdGenoMultiMarkersMat << std::endl;
+	//std::cout << stdGenoMultiMarkersMat.row(487) << std::endl;	
+	omp_set_dynamic(0);     // Explicitly disable dynamic teams
+        omp_set_num_threads(16); // Use 16 threads for all consecutive parallel regions
+	int totalCombination = Ntotal*(Ntotal-1)/2 - 1;
+
+	#pragma omp parallel
+	{
+	std::vector<unsigned int> vec_privatei;	
+	std::vector<unsigned int> vec_privatej;	
+	#pragma omp for nowait //fill vec_private in parallel
+	for(int k = 0; k < totalCombination; k++){
+        	int i = k / Ntotal;
+        	int j = k % Ntotal;
+        	if((j <= i)){
+            		i = Ntotal - i - 2;
+            		j = Ntotal - j - 1;
+        	}
+
+//        for(i=0; i< Ntotal; i++){
+//		for(j = i; j < Ntotal; j++){
+			//kinValueTemp = arma::dot(stdGenoMultiMarkersMat.row(i), stdGenoMultiMarkersMat.row(j));
+		kinValueTemp = arma::dot(stdGenoMultiMarkersMat.col(i), stdGenoMultiMarkersMat.col(j));
+		kinValueTemp = kinValueTemp/nSubMarker;
+		if(kinValueTemp >= relatednessCutoff){
+//				if(i == 0){
+				//std::cout << "kinValueTemp: " << kinValueTemp << std::endl;
+				//std::cout << "relatednessCutoff: " << relatednessCutoff << std::endl;
+				//std::cout << "i: " << i << std::endl;
+//				std::cout << "j: " << j;
+//				}
+			vec_privatei.push_back((unsigned int)i);
+			//allIndexVec.push_back(i);
+			//iIndexVec.push_back(i);
+			//iIndexVec.push_back(i);
+			//allIndexVec.push_back(j);
+			vec_privatej.push_back((unsigned int)j);
+				
+								
+		}
+	}
+//	#pragma omp critical
+	#pragma omp for schedule(static) ordered
+    	for(int i=0; i<omp_get_num_threads(); i++) {
+        	#pragma omp ordered
+        	iIndexVec.insert(iIndexVec.end(), vec_privatei.begin(), vec_privatei.end());  
+        	jIndexVec.insert(jIndexVec.end(), vec_privatej.begin(), vec_privatej.end());  
+    	}
+//		}
+	}
+//	int nall = allIndexVec.size();
+//	 std::cout << "nall: " << nall << std::endl;
+//	int k = 0;
+//	while(k < nall){
+	//	std::cout << "allIndexVec[k]: " << k << " " << allIndexVec[k] << std::endl;
+	//	std::cout << "allIndexVec[k+1]: " << k+1 << " " << allIndexVec[k+1] << std::endl;
+//        	iIndexVec.push_back(allIndexVec[k]);
+//                jIndexVec.push_back(allIndexVec[k+1]);
+//		k = k + 2;
+//        }
+//	allIndexVec.clear();
+
+	for(int k = 0; k < Ntotal; k++){
+		iIndexVec.push_back((unsigned int)k);
+		jIndexVec.push_back((unsigned int)k);
+	}
+
+        arma::fvec * temp = &(geno.m_OneSNP_StdGeno);
+        size_t ni = iIndexVec.size();
+        //size_t ni = nall/2 + Ntotal;
+        kinValueVec.resize(ni);
+        std::fill(kinValueVec.begin(), kinValueVec.end(), 0);
+
+        int Mmarker = geno.getM();
+        for(size_t i=0; i< Mmarker; i++){
+                geno.Get_OneSNP_StdGeno(i, temp);
+                for(size_t j=0; j < ni; j++){
+//                for(size_t k=0; k < nall/2; k++){
+                        kinValueVec[j] = kinValueVec[j] + (((*temp)[iIndexVec[j]])*((*temp)[jIndexVec[j]]))/Mmarker;
+//                        kinValueVec[j] = kinValueVec[j] + (((*temp)[allIndexVec[k*2]])*((*temp)[allIndexVec[k*2+1]]))/Mmarker;
+                }
+//		for(size_t k=nall/2; k < ni; k++){
+			
+//			kinValueVec[j] = kinValueVec[j] + (((*temp)[allIndexVec[k*2]])*((*temp)[allIndexVec[k*2+1]]))/Mmarker;
+
+//		}
+        }	
+
+
+*/   // end of the openMP version 
+
+	std::cout << "ni: " << ni << std::endl;
+	for(size_t j=0; j < 100; j++){
+		std::cout << "iIndexVec[j]: " << iIndexVec[j] << std::endl;
+		std::cout << "jIndexVec[j]: " << jIndexVec[j] << std::endl;
+		std::cout << "kinValueVec[j]: " << kinValueVec[j] << std::endl;
+	}
+
+	for(size_t j=0; j < ni; j++){
+		if(kinValueVec[j] >= relatednessCutoff){
+	//	std::cout << "kinValueVec[j]: " << kinValueVec[j] << std::endl;
+			kinValueVec[j] = tauVec(1)*kinValueVec[j];
+			iIndexVec2.push_back(iIndexVec[j]+1);
+			jIndexVec2.push_back(jIndexVec[j]+1);
+			if(iIndexVec[j] == jIndexVec[j]){
+				kinValueVec[j] = kinValueVec[j] + tauVec(0)/(wVec(iIndexVec[j]));	
+			}
+			kinValueVec2.push_back(kinValueVec[j]);
+		}
+
+	}
+
+	std::cout << "kinValueVec2.size(): " << kinValueVec2.size() << std::endl;
+
+	//arma::fvec x(kinValueVec2);
+	//arma::umat locations(iIndexVec2);
+	//arma::uvec jIndexVec2_b(jIndexVec2);
+	//locations.insert_cols(locations.n_cols, jIndexVec2_b); 
+	//arma::umat locationst = locations.t();
+	//locations.clear();
+	
+	//create a sparse Sigma
+//	arma::sp_fmat sparseSigma(locationst, x);
+//	arma::sp_fmat sparseSigmab  = arma::symmatu(sparseSigma);
+	return Rcpp::List::create(Named("iIndex") = iIndexVec2, Named("jIndex") = jIndexVec2, Named("kinValue") = kinValueVec2);
+//	return sparseSigmab;
+}
+
+
+
+// [[Rcpp::export]]
+arma::fmat getColfromStdGenoMultiMarkersMat(arma::uvec & a){
+	return((geno.stdGenoMultiMarkersMat).cols(a));
+}
+
+// [[Rcpp::export]]
+int getNColStdGenoMultiMarkersMat(){
+	return((geno.stdGenoMultiMarkersMat).n_cols);
+}
+
+// [[Rcpp::export]]
+int getNRowStdGenoMultiMarkersMat(){
+        return((geno.stdGenoMultiMarkersMat).n_rows);
+}
+
+
+// [[Rcpp::export]]
+void setSubMarkerIndex(arma::ivec &subMarkerIndexRandom){
+	geno.subMarkerIndex = subMarkerIndexRandom;
+	std::cout << "(geno.subMarkerIndex).n_elem: " << (geno.subMarkerIndex).n_elem << std::endl;
+	int Nnomissing = geno.getNnomissing();
+	(geno.stdGenoMultiMarkersMat).set_size(subMarkerIndexRandom.n_elem, Nnomissing);
+}
+
+// [[Rcpp::export]]
+void setRelatednessCutoff(float a){
+	geno.relatednessCutoff = a;
+}
+
+// [[Rcpp::export]]
+double innerProduct(NumericVector x, NumericVector y) {
+   return std::inner_product(x.begin(), x.end(), y.begin(), 0.0);
+}
+
+
+//Rcpp::List refineKin(std::vector<unsigned int> &iIndexVec, std::vector<unsigned int> & jIndexVec, float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){
+//Rcpp::List refineKin(arma::imat &iMat, float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){
+
+// [[Rcpp::export]]
+Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){
+        std::vector<unsigned int>     iIndexVec2;
+        std::vector<unsigned int>     jIndexVec2;
+//	std::vector<float>     kinValueVec;
+        std::vector<float>     kinValueVec2;
+
+	arma::fvec * temp = &(geno.m_OneSNP_StdGeno);
+	(*temp).clear();
+        //size_t ni = iIndexVec.size();
+        //size_t ni = iMat.n_rows;
+        size_t ni = geno.indiceVec.size();
+ 
+	initKinValueVecFinal(ni);
+
+//	std::cout << "OKK: "  << std::endl;
+//        kinValueVec.resize(ni);
+//        std::fill(kinValueVec.begin(), kinValueVec.end(), 0);
+
+        int Mmarker = geno.getM();
+        
+        //for(size_t i=0; i< Mmarker; i++){
+        //        geno.Get_OneSNP_StdGeno(i, temp);
+        //        for(size_t j=0; j < ni; j++){
+        //                kinValueVec[j] = kinValueVec[j] + (((*temp)[iIndexVec[j]])*((*temp)[jIndexVec[j]]))/Mmarker;
+        //        }
+        //}
+	//arma::fvec kinValueVecTemp;
+	arma::fvec kinValueVecTemp2;
+	arma::fvec GRMvec;
+	GRMvec.set_size(ni);
+
+  	for(size_t i=0; i< Mmarker; i++){
+//		std::cout << "OKKK: "  << std::endl;
+                geno.Get_OneSNP_StdGeno(i, temp);
+		//std::cout << "geno.m_OneSNP_StdGeno(i) " << geno.m_OneSNP_StdGeno(i) <<  std::endl;	
+		//kinValueVecTemp = parallelcalsparseGRM(iMat);
+//		parallelcalsparseGRM(iMat, GRMvec);
+
+		parallelcalsparseGRM(GRMvec);
+		//std::cout << "kinValueVecTemp.n_elem: " << kinValueVecTemp.n_elem << std::endl;
+//		std::cout << "OKKK2: "  << std::endl;
+		parallelsumTwoVec(GRMvec);
+//		for(size_t j=0; j< ni; j++){
+//			(geno.kinValueVecFinal)[j] = (geno.kinValueVecFinal)[j] + GRMvec(j);
+//		}
+		(*temp).clear();
+		//kinValueVecTemp.clear();
+        }
+
+
+
+	std::cout << "ni: " << ni << std::endl;
+       // for(size_t j=0; j < 100; j++){
+       //         std::cout << "iIndexVec[j]: " << iIndexVec[j] << std::endl;
+       //         std::cout << "jIndexVec[j]: " << jIndexVec[j] << std::endl;
+       //         std::cout << "kinValueVec[j]: " << kinValueVec[j] << std::endl;
+       // }
+
+	int a1;
+	int a2;
+        for(size_t j=0; j < ni; j++){
+//		std::cout << "j: " << j << " geno.kinValueVecFinal[j]: " << geno.kinValueVecFinal[j] << std::endl;
+                if(geno.kinValueVecFinal[j] >= relatednessCutoff){
+        //      std::cout << "kinValueVec[j]: " << kinValueVec[j] << std::endl;
+                        (geno.kinValueVecFinal)[j] = tauVec(1)*(geno.kinValueVecFinal)[j];
+ 				 a1 = (geno.indiceVec)[j].first + 1;
+				 a2 = (geno.indiceVec)[j].second + 1;
+				 iIndexVec2.push_back(a1);
+				 jIndexVec2.push_back(a2);
+                       //iIndexVec2.push_back(iMat(j,0)+1);
+                        //iIndexVec2.push_back(iIndexVec[j]+1);
+                       // jIndexVec2.push_back(iMat(j,1)+1);
+                        //jIndexVec2.push_back(jIndexVec[j]+1);
+        //                if(iIndexVec[j] == jIndexVec[j]){
+        //                        kinValueVec[j] = kinValueVec[j] + tauVec(0)/(wVec(iIndexVec[j]));
+        //                }
+
+	//		if(iMat(j,0) == iMat(j,1)){
+			if(a1 == a2){
+				//(geno.kinValueVecFinal)[j] = (geno.kinValueVecFinal)[j] + tauVec(0)/(wVec(iMat(j,0)));
+				(geno.kinValueVecFinal)[j] = (geno.kinValueVecFinal)[j] + tauVec(0)/(wVec(a1-1));
+			}
+
+                        kinValueVec2.push_back((geno.kinValueVecFinal)[j]);
+                }
+
+        }
+
+	std::cout << "kinValueVec2.size(): " << kinValueVec2.size() << std::endl;
+	return Rcpp::List::create(Named("iIndex") = iIndexVec2, Named("jIndex") = jIndexVec2, Named("kinValue") = kinValueVec2);	
+}
+
+
+// [[Rcpp::export]]
+Rcpp::List shortenList(arma::imat &iMat, arma::fvec &kinValueVecTemp, float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){
+	        std::vector<unsigned int>     iIndexVec2;
+        std::vector<unsigned int>     jIndexVec2;
+	std::vector<float>     kinValueVec2;
+	size_t ni = iMat.n_rows;
+
+	for(size_t j=0; j < ni; j++){
+                if(kinValueVecTemp(j) >= relatednessCutoff){
+        //      std::cout << "kinValueVec[j]: " << kinValueVec[j] << std::endl;
+                        kinValueVecTemp(j) = tauVec(1)*(kinValueVecTemp(j));
+                        iIndexVec2.push_back(iMat(j,1)+1);
+                        //iIndexVec2.push_back(iIndexVec[j]+1);
+                        jIndexVec2.push_back(iMat(j,2)+1);
+                        //jIndexVec2.push_back(jIndexVec[j]+1);
+        //                if(iIndexVec[j] == jIndexVec[j]){
+        //                        kinValueVec[j] = kinValueVec[j] + tauVec(0)/(wVec(iIndexVec[j]));
+        //                }
+
+                        if(iMat(j,1) == iMat(j,2)){
+                                kinValueVecTemp(j) = kinValueVecTemp(j) + tauVec(0)/(wVec(iMat(j,1)));
+                        }
+
+                        kinValueVec2.push_back(kinValueVecTemp(j));
+                }
+
+        }
+
+        std::cout << "kinValueVec2.size(): " << kinValueVec2.size() << std::endl;
+	return Rcpp::List::create(Named("iIndex") = iIndexVec2, Named("jIndex") = jIndexVec2, Named("kinValue") = kinValueVec2);
+
+}
+
+// [[Rcpp::export]]
+arma::fvec testTime(int i, arma::fcolvec & m_bVec){
+	arma::fvec vec;
+	arma::fvec mvec;
+	std::cout << "i is " << i << std::endl;
+	clock_t t_0;
+	t_0 = clock();
+        geno.Get_OneSNP_StdGeno(i, &vec);
+	clock_t t_1;
+	t_1 = clock();
+	std::cout << "t_1-t_0 is " << t_1-t_0 << std::endl;
+        float val1 = dot(vec,  m_bVec);
+	clock_t t_2;
+	t_2 = clock();
+	std::cout << "t_2-t_1 is " << t_2-t_1 << std::endl;
+        mvec = val1 * (vec);
+	clock_t t_3;
+	t_3 = clock();
+	std::cout << "t_3-t_2 is " << t_3-t_2 << std::endl;
+	return(mvec);
+}
