@@ -208,6 +208,7 @@ SPAGMMATtest = function(dosageFile = "",
   }
 
   sampleIndex = sampleIndex - 1
+
   isVariant = TRUE
   if(dosageFileType == "plain"){
     Mtest = setgenoTest_plainDosage(dosageFile, dosageFileNrowSkip, dosageFileNcolSkip)
@@ -290,25 +291,6 @@ SPAGMMATtest = function(dosageFile = "",
   cat("isVariant: ", isVariant, "\n") 
 
 ##for condition analysis
-##extract dosages for conditioning genetic markers
-if(FALSE){
-  isCondition = FALSE
-  if(condition != ""){
-    isCondition = TRUE
-    conditionlist = paste(c("condMarkers",unlist(strsplit(condition,","))),collapse=" ")
-    cat("conditionlist is ", conditionlist, "\n")
-    if(dosageFileType == "vcf"){
-      isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)	
-      SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)	
-      Gx_cond = getGenoOfGene_vcf(conditionlist)
-    }else if(dosageFileType == "bgen"){
-      Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist, testMinMAF, maxMAF)
-    }
-    cat("conditioning on ", Gx_cond$markerIDs, "\n")
-    dosage_cond = t(as.matrix(Gx_cond$dosages))
-  }
-}
-
 if(FALSE){
   if(condition != "" & conditionOption != "summaryStat"){
     dataMerge_v2_sort_cond = cbind(dataMerge_v2_sort, dosage_cond)	
@@ -401,7 +383,7 @@ if(FALSE){
 
   }
 
-}
+} #if(FALSE)
 
   if(traitType == "binary"){
     cat("It is a binary trait\n")
@@ -541,7 +523,11 @@ if(isCondition & conditionOption == "summaryStat"){
       #dosage_cond_tilde = cbind(G0_tilde, dosage_cond_tilde)
       covM = matrix(0,nrow=Mcond+1, ncol = Mcond+1)
       for(i in 1:Mcond){
+	if(traitType == "binary"){
         covM[(i+1),(i+1):(Mcond+1)] = (mu.a*(1-mu.a)*dosage_cond_tilde[,i]) %*% dosage_cond_tilde[,i:Mcond]
+	}else if(traitType == "quantitative"){
+	covM[(i+1),(i+1):(Mcond+1)] = dosage_cond_tilde[,i] %*% dosage_cond_tilde[,i:Mcond]	
+	}
       }
 
 }# end of if(isCondition &conditionOption == "summaryStat")	
@@ -626,8 +612,13 @@ if(isCondition & conditionOption == "summaryStat"){
       #covM = matrix(0,nrow=ncol(dosage_cond_tilde), ncol = ncol(dosage_cond_tilde))	
       print(dim(G0_tilde))
       print(dim(dosage_cond_tilde))	
+	if(traitType == "binary"){
       covM[1,2:ncol(covM)] = (t(mu.a*(1-mu.a)*G0_tilde)) %*% dosage_cond_tilde			
       covM[1,1] = t(mu.a*(1-mu.a)*G0_tilde) %*% G0_tilde	
+	}else if(traitType == "quantitative"){
+	covM[1,2:ncol(covM)] = (t(G0_tilde)) %*% dosage_cond_tilde
+	covM[1,1] = t(G0_tilde) %*% G0_tilde
+	}
       covariateVec = t(G0_tilde)  %*% dosage_cond_tilde	
 
     } #end of if(isCondition)
@@ -740,6 +731,9 @@ scoreTest_SAIGE_quantitativeTrait_old=function(G0, obj.noK, AC, y, mu, varRatio,
 
 #Use Sparsity trick for rare variants
 scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec){
+  cat("HERE\n")
+  cat("AC: ",AC,"\n")
+  cat("AF: ",AF,"\n")
   N = length(G0)
   if(AF > 0.5){
     G0 = 2-G0
@@ -748,7 +742,9 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio,
     AC2 = AC
   }
   maf = min(AF, 1-AF)
+  cat("HERE2\n")
   if(maf < 0.05){
+  cat("HERE2a\n")
     idx_no0<-which(G0>0)
     #cat("length(idx_no0): ", length(idx_no0), "\n")
     #cat("maf: ", maf, "\n")
@@ -791,6 +787,7 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio,
     S<- S1+S2
     Tstat = S/tauVec[1]
   }else{
+  cat("HERE2b\n")
     XVG0 = eigenMapMatMult(obj.noK$XV, G0)
     G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
     g = G/sqrt(AC2)
@@ -1228,3 +1225,97 @@ if(ncol(covM) > 2){
 
 
 
+scoreTest_SAIGE_quantitativeTrait_sparseSigma=function(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=NULL){
+  cat("HERE\n")
+  cat("AC: ",AC,"\n")
+  cat("AF: ",AF,"\n")
+  N = length(G0)
+  if(AF > 0.5){
+    G0 = 2-G0
+    AC2 = 2*N - AC
+  }else{
+    AC2 = AC
+  }
+  maf = min(AF, 1-AF)
+  cat("HERE2\n")
+
+if(FALSE){
+  if(maf < 0.05){
+  cat("HERE2a\n")
+    idx_no0<-which(G0>0)
+    #cat("length(idx_no0): ", length(idx_no0), "\n")
+    #cat("maf: ", maf, "\n")
+    g1<-G0[idx_no0]/sqrt(AC2)
+    A1<-obj.noK$XVX_inv_XV[idx_no0,]
+    X1<-obj.noK$X1[idx_no0,]
+    mu1<-mu[idx_no0]
+    y1<-obj.noK$y[idx_no0]
+ 
+    noCov = FALSE
+    if(dim(obj.noK$X1)[2] == 1){
+     noCov = TRUE
+    }
+
+## V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv
+    if(length(idx_no0) > 1){
+      Z = t(A1) %*% g1
+      B<-X1 %*% Z
+      g_tilde1 = g1 - B
+      var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2) + sum(g_tilde1^2)
+      var1 = var2 * varRatio
+      S1 = crossprod(y1-mu1, g_tilde1)
+      if(!noCov){
+        S_a2 = obj.noK$S_a - colSums(X1 * (y1 - mu1))
+      }else{
+        S_a2 = obj.noK$S_a - crossprod(X1, y1 - mu1)
+      }
+      #S_a2 = obj.noK$S_a - colSums(X1 * (y1 - mu1))
+      S2 = -S_a2 %*% Z
+    }else{
+      Z = A1 * g1    
+      B<-X1 %*% Z
+      g_tilde1 = g1 - B
+      var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2) + sum(g_tilde1^2)
+      var1 = var2 * varRatio
+      S1 = crossprod(y1-mu1, g_tilde1)
+      S_a2 = obj.noK$S_a - X1 * (y1 - mu1)
+      S2 = -S_a2 %*% Z
+    }
+    S<- S1+S2
+    Tstat = S/tauVec[1]
+  }else{
+  cat("HERE2b\n")
+    XVG0 = eigenMapMatMult(obj.noK$XV, G0)
+    G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
+    g = G/sqrt(AC2)
+    q = innerProduct(g, y)
+    m1 = innerProduct(mu, g)
+    var2 = innerProduct(g, g)
+    var1 = var2 * varRatio
+    Tstat = (q-m1)/tauVec[1]
+  }
+} #if(FALSE)
+
+  cat("HERE2b\n")
+    XVG0 = eigenMapMatMult(obj.noK$XV, G0)
+    G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
+    g = G/sqrt(AC2)
+    q = innerProduct(g, y)
+    m1 = innerProduct(mu, g)
+    if(is.null(sparseSigma)){
+    var2 = innerProduct(g, g)
+    }else{
+    gm = matrix(g, ncol=1)
+    var2 = getcovM(gm, gm, sparseSigma)
+    }
+    var1 = var2 * varRatio
+    Tstat = (q-m1)/tauVec[1]
+  if(AF > 0.5){
+    Tstat = (-1)*Tstat
+  }
+  p.value = pchisq(Tstat^2/var1, lower.tail = FALSE, df=1)
+  BETA = (Tstat/var1)/sqrt(AC2)
+  SE = abs(BETA/qnorm(p.value/2))
+  out1 = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2)
+  return(out1)
+}

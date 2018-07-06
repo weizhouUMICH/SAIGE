@@ -205,7 +205,11 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
 
   converged = ifelse(i < maxiter, TRUE, FALSE)
   res = y - mu
+  if(isCovariateTransform){
   coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+  }else{
+    coef.alpha = alpha
+  }
   glmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID, obj.noK=obj.noK, obj.glm.null=fit0, traitType="binary")
 
   #LOCO: estimate fixed effect coefficients, random effects, and residuals for each chromoosme  
@@ -226,7 +230,11 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
         Y = re.coef_LOCO$Y
         mu = re.coef_LOCO$mu
         res = y - mu
+        if(isCovariateTransform){
         coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+	}else{
+	coef.alpha = alpha
+	}
         glmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov)
       }else{
         glmmResult$LOCOResult[[j]] = list(isLOCO = FALSE)
@@ -481,7 +489,8 @@ fitNULLGLMM = function(plinkFile = "",
 		cateVarRatioVec = c(1,1,1,1,1,1),
 		qr_sparse = FALSE,
 		Cholesky_sparse = FALSE,
-		pcg_sparse = FALSE){
+		pcg_sparse = FALSE,
+		isCovariateTransform = TRUE){
                 #formula, phenoType = "binary",prefix, centerVariables = "", tol=0.02, maxiter=20, tolPCG=1e-5, maxiterPCG=500, nThreads = 1, Cutoff = 2, numMarkers = 1000, skipModelFitting = FALSE){
   if(nThreads > 1){
     RcppParallel:::setThreadOptions(numThreads = nThreads)
@@ -591,16 +600,6 @@ fitNULLGLMM = function(plinkFile = "",
 #    cat("dataMerge_sort$IID ", dataMerge_sort$IID, "\n")
   }
 
-#  #center some covariates
-#  if(length(centerVariables)!=0){
-#    for(i in centerVariables){
-#      if (!(i %in% colnames(dataMerge_sort))){
-#        stop("ERROR! column for ", i, " does not exsit in the phenoFile \n")
-#      }else{
-#        dataMerge_sort[,which(colnames(dataMerge_sort) == i)] = dataMerge_sort[,which(colnames(dataMerge_sort) == i)] - mean(dataMerge_sort[,which(colnames(dataMerge_sort) == i)])
-#      }
-#    }
-#  }
 
   if(invNormalize){
       cat("Perform the inverse nomalization for ", phenoCol, "\n")
@@ -608,6 +607,8 @@ fitNULLGLMM = function(plinkFile = "",
       dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
   }
 
+  if(isCovariateTransform){
+  
   out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
   formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
   if(length(out.transform$Param.transform$X_name) > 1){
@@ -615,6 +616,7 @@ fitNULLGLMM = function(plinkFile = "",
       formulaNewList = c(formulaNewList, "+", out.transform$Param.transform$X_name[i])
     }
   }
+
   formulaNewList = paste0(formulaNewList, collapse="")
   formulaNewList = paste0(formulaNewList, "-1")
   formula.new = as.formula(paste0(formulaNewList, collapse=""))
@@ -623,6 +625,11 @@ fitNULLGLMM = function(plinkFile = "",
   cat("colnames(data.new) is ", colnames(data.new), "\n")
   cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
 
+}else{ #if(isCovariateTransform) else
+  formula.new = formula.null
+  data.new = dataMerge_sort
+
+}
 
 #  data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
 #  colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
@@ -685,6 +692,8 @@ fitNULLGLMM = function(plinkFile = "",
  
     obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.new, data.new)
     fit0 = glm(formula.new, data=data.new,family=gaussian(link = "identity"))
+    print(fit0)
+
 
     if(!skipModelFitting){
 
