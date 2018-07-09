@@ -407,7 +407,8 @@ if(traitType == "quantitative"){
     OUT = NULL
     cat("It is a quantitative trait\n")
     mth = 0
-    resultHeader = c("Gene", "Pvalue", "N_MAC1","N_MAC2","N_MAC3","N_MAC4","N_MAC5","N_MACgt5","markerIDs","markerAFs")
+#    resultHeader = c("Gene", "Pvalue", "N_MAC1","N_MAC2","N_MAC3","N_MAC4","N_MAC5","N_MACgt5","markerIDs","markerAFs")
+    resultHeader = c("Gene","Pvalue","Pvalue_cond","N_MAC1","N_MAC2","N_MAC3","N_MAC4","N_MAC5","N_MACgt5","markerIDs","markerAFs")
     write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
 
     gf = file(groupFile, "r")
@@ -436,23 +437,24 @@ if(traitType == "quantitative"){
 #	 cat("Gmat[,2]: ", Gmat[,2], "\n")	
 	#  saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null, ratioVec)
 	 cat("colSums(Gmat): ", colSums(Gmat), "\n")
-	 saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null, ratioVec, isSparseSigma = TRUE, sparseSigma = sparseSigma)
+	 saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null, ratioVec, Z_cond=dosage_cond, Z_cond_es=OUT_cond[,1], max_maf = maxMAF, sparseSigma = sparseSigma)
 		
 
 
 	  cat("saigeskatTest$p.value: ", saigeskatTest$p.value, "\n")
 
 
-	  if(isCondition){	
-		saigeskatTest_cond = SAIGE_SKAT_withRatioVec_cond(Gmat, obj.glmm.null, ratioVec, Z_cond=dosage_cond, Z_cond_es=OUT_cond[,1],isSparseSigma = TRUE, sparseSigma = sparseSigma )
+#	  if(isCondition){	
+#		saigeskatTest_cond = SAIGE_SKAT_withRatioVec_cond(Gmat, obj.glmm.null, ratioVec, Z_cond=dosage_cond, Z_cond_es=OUT_cond[,1], sparseSigma = sparseSigma )
 		
-	  }
+#	  }
+	 OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$p.value.cond, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
 
-	 if(!isCondition){	
-          OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
-	}else{
-	   OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest_cond$p.value, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
-	}
+#	 if(!isCondition){	
+#          OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
+#	}else{
+#	   OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest_cond$p.value, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
+#	}
 
           mth = mth + 1
           if(mth %% numLinesOutput == 0){
@@ -499,8 +501,8 @@ if(traitType == "quantitative"){
 #               res: residual from the full Kinship
 #
 
-SAIGE_SKAT_withRatioVec  = function( Z, obj, ratioVec, kernel= "linear.weighted", method="davies", weights.beta=c(1,25), weights=NULL, impute.method="fixed"
-, r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, isSparseSigma, sparseSigma, ratioVec1 = NULL){
+SAIGE_SKAT_withRatioVec_old  = function( Z, obj, ratioVec, kernel= "linear.weighted", method="davies", weights.beta=c(1,25), weights=NULL, impute.method="fixed"
+, r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma){
         m = ncol(Z)
         n = nrow(Z)
 
@@ -564,7 +566,7 @@ SAIGE_SKAT_withRatioVec  = function( Z, obj, ratioVec, kernel= "linear.weighted"
 	Z = Z_tilde
 
 if(is.null(obj$P)){
-        if(isSparseSigma){
+        if(!is.null(sparseSigma)){
                 pcginvSigma<-NULL
                 for(i in 1:ncol(Z)){
                         c3<-pcg(sparseSigma, Z[,i])
@@ -637,39 +639,14 @@ if(is.null(obj$P)){
 }
 
 
-
-SAIGE_SKAT_withRatioVec_cond  = function(Z, obj, ratioVec, Z_cond, Z_cond_es, kernel= "linear.weighted", method="davies", weights.beta=c(1,25), weights=NULL, impute.method="fixed"
-, r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, isSparseSigma, sparseSigma, ratioVec1 = NULL){
+SAIGE_SKAT_withRatioVec  = function(Z, obj, ratioVec, Z_cond = NULL, Z_cond_es, kernel= "linear.weighted", method="davies", weights.beta=c(1,25), weights=NULL, impute.method="fixed"
+, r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL){
 
 	obj.noK = obj$obj.noK
         m = ncol(Z)
         n = nrow(Z)
-	m_cond = ncol(Z_cond)
-
-	Zall = cbind(Z, Z_cond)
-
-        GratioMatrixall = getGratioMatrix(Zall, ratioVec)
-        cat("dim(GratioMatrixall) is ", dim(GratioMatrixall), "\n")
-	print(GratioMatrixall)
-
-	MACvec = colSums(Z)
-        MACvec_indVec = MACvec
-        MACvec_indVec[which(MACvec <= 1.5)] = 1
-        MACvec_indVec[which(MACvec <= 2.5 & MACvec > 1.5)] = 2
-        MACvec_indVec[which(MACvec <= 3.5 & MACvec > 2.5)] = 3
-        MACvec_indVec[which(MACvec <= 4.5 & MACvec > 3.5)] = 4
-        MACvec_indVec[which(MACvec <= 5.5 & MACvec > 4.5)] = 5
-        MACvec_indVec[which(MACvec_indVec > 5.5)] = 6
-
-        cat("MACvec_indVec: ", MACvec_indVec, "\n")
- 
-
-	cat("m is ", m , "\n")
-	cat("m_cond is ", m_cond , "\n")
-
 
         id_include<-1:n
-
         # Added by SLEE 4/24/2017
         out.method<-SKAT:::SKAT_Check_Method(method,r.corr, n=n, m=m)
         method=out.method$method
@@ -692,10 +669,36 @@ SAIGE_SKAT_withRatioVec_cond  = function(Z, obj, ratioVec, Z_cond, Z_cond_es, ke
         cat("dim(Z) is ", dim(Z), "\n")
 	print(Z[1,])
 
-        # If Z is sparse, change it to the sparse matrix
-#        if(mean(Z) < 0.1){
-#                Z = as(Z, "sparseMatrix")
-#        }
+	m = ncol(Z)
+
+if(m >  0){
+	if(!is.null(Z_cond)){
+                m_cond = ncol(Z_cond)
+                Zall = cbind(Z, Z_cond)
+        }else{
+                Zall = Z
+        }
+
+        GratioMatrixall = getGratioMatrix(Zall, ratioVec)
+
+        cat("dim(GratioMatrixall) is ", dim(GratioMatrixall), "\n")
+        print(GratioMatrixall)
+
+        MACvec_indVec = getMACvec_indVec(Z)
+
+        cat("MACvec_indVec: ", MACvec_indVec, "\n")
+        cat("m is ", m , "\n")
+        cat("m_cond is ", m_cond , "\n")
+        ##summaize the number of markers falling in each MAC category
+        markerNumbyMAC = c(sum(MACvec_indVec == 1), sum(MACvec_indVec == 2), sum(MACvec_indVec == 3), sum(MACvec_indVec == 4), sum(MACvec_indVec == 5), sum(MACvec_indVec == 6))
+
+
+
+
+#         If Z is sparse, change it to the sparse matrix
+        if(mean(Z) < 0.1){
+                Z = as(Z, "sparseMatrix")
+        }
 
         if (kernel == "linear.weighted") {
 	        Z = t(t(Z) * (weights))
@@ -705,97 +708,107 @@ SAIGE_SKAT_withRatioVec_cond  = function(Z, obj, ratioVec, Z_cond, Z_cond_es, ke
         Z_tilde = Z  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% Z)
 
 #        Score = as.vector(t(Z) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
-	Z_cond_tilde<- Z_cond  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% Z_cond)
+	if(!is.null(Z_cond)){
+		Z_cond_tilde<- Z_cond  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% Z_cond)
 
-	cat("Z_cond_tilde: ", Z_cond_tilde[1:10], "\n")
-	cat("Z_cond_es ", Z_cond_es, "\n")
-	cat("Z_cond_tilde%*%Z_cond_es: ", (Z_cond_tilde%*%Z_cond_es)[1:10], "\n")
+		cat("Z_cond_tilde: ", Z_cond_tilde[1:10], "\n")
+		cat("Z_cond_es ", Z_cond_es, "\n")
+		cat("Z_cond_tilde%*%Z_cond_es: ", (Z_cond_tilde%*%Z_cond_es)[1:10], "\n")
 
-	Score = as.vector(t(Z) %*% matrix(obj$residuals - Z_cond_tilde%*%Z_cond_es, ncol=1)) / as.numeric(obj$theta[1])
+		Score_cond = as.vector(t(Z) %*% matrix(obj$residuals - Z_cond_tilde%*%Z_cond_es, ncol=1)) / as.numeric(obj$theta[1])
 #	Score = as.vector(t(Z_tilde) %*% matrix(obj$residuals - Z_cond_tilde%*%Z_cond_es, ncol=1)) / as.numeric(obj$theta[1])
-#	Score_uncond = as.vector(t(Z_tilde) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
+	}
+	Score = as.vector(t(Z) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
+	
 
+	if(is.null(obj$P)){
 
-        if(isSparseSigma){
-        #        pcginvSigma<-NULL
-        #        for(i in 1:ncol(Z)){
-        #                c3<-pcg(sparseSigma, Z[,i])
-        #                pcginvSigma<-cbind(pcginvSigma, c3)
-        #        }
-        #        Phi = as.matrix(t(Z) %*% pcginvSigma)
-#		G1_tilde_Ps_G1_tilde = getcovM(Z_tilde, Z_tilde, sparseSigma)
-#		G2_tilde_Ps_G2_tilde = getcovM(Z_cond_tilde, Z_cond_tilde, sparseSigma)
-#		G1_tilde_Ps_G2_tilde = getcovM(Z_tilde, Z_cond_tilde, sparseSigma)
-#		G2_tilde_Ps_G1_tilde = getcovM(Z_cond_tilde, Z_tilde, sparseSigma)
+        	if(!is.null(sparseSigma)){
+			if(!is.null(Z_cond)){
+		#		G1_tilde_Ps_G1_tilde = getcovM(Z_tilde, Z_tilde, sparseSigma)
+		#		G2_tilde_Ps_G2_tilde = getcovM(Z_cond_tilde, Z_cond_tilde, sparseSigma)
+		#		G1_tilde_Ps_G2_tilde = getcovM(Z_tilde, Z_cond_tilde, sparseSigma)
+		#		G2_tilde_Ps_G1_tilde = getcovM(Z_cond_tilde, Z_tilde, sparseSigma)
 
-		G1_tilde_Ps_G1_tilde = t(Z_tilde)%*% solve(sparseSigma) %*% Z_tilde
-		G2_tilde_Ps_G2_tilde = t(Z_cond_tilde)%*% solve(sparseSigma) %*% Z_cond_tilde
-		G1_tilde_Ps_G2_tilde = t(Z_tilde)%*% solve(sparseSigma) %*% Z_cond_tilde
-		G2_tilde_Ps_G1_tilde = t(Z_cond_tilde)%*% solve(sparseSigma) %*% Z_tilde
+				G1_tilde_Ps_G1_tilde = t(Z_tilde)%*% solve(sparseSigma) %*% Z_tilde
+				G2_tilde_Ps_G2_tilde = t(Z_cond_tilde)%*% solve(sparseSigma) %*% Z_cond_tilde
+				G1_tilde_Ps_G2_tilde = t(Z_tilde)%*% solve(sparseSigma) %*% Z_cond_tilde
+				G2_tilde_Ps_G1_tilde = t(Z_cond_tilde)%*% solve(sparseSigma) %*% Z_tilde
 
+		#		cat("GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))]: ", GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))], "\n")		
+				Phi_cond = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m]) - (G1_tilde_Ps_G2_tilde*(GratioMatrixall[1:m,c((m+1):(m+m_cond))]))%*%(solve(G2_tilde_Ps_G2_tilde*(GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))]))) %*% (G2_tilde_Ps_G1_tilde * (GratioMatrixall[c((m+1):(m+m_cond)), 1:m]))
 
+				Phi_cond = as.matrix(Phi_cond)
+			}
 
-#		cat("G1_tilde_Ps_G1_tilde\n")
-#		print(G1_tilde_Ps_G1_tilde)
-#		print(G2_tilde_Ps_G2_tilde)
-#		print(G1_tilde_Ps_G2_tilde)
-#		print(G2_tilde_Ps_G1_tilde)
+			Phi = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m])
+			
+		}else{
+			if(!is.null(Z_cond)){
+				G1_tilde_G1_tilde = t(Z_tilde) %*% Z_tilde
+				G2_tilde_G2_tilde = t(Z_cond_tilde) %*% Z_cond_tilde	
+				G1_tilde_G2_tilde = t(Z_tilde) %*% Z_cond_tilde
+				G2_tilde_G1_tilde = t(Z_cond_tilde) %*% Z_tilde
 
-		cat("GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))]: ", GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))], "\n")		
-		Phi = G1_tilde_Ps_G1_tilde*GratioMatrixall[1:m,1:m] - (G1_tilde_Ps_G2_tilde*GratioMatrixall[1:m,c((m+1):(m+m_cond))])%*%(solve(G2_tilde_Ps_G2_tilde*GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))])) %*% (G2_tilde_Ps_G1_tilde * GratioMatrixall[c((m+1):(m+m_cond)), 1:m])
+				Phi_cond = G1_tilde_G1_tilde*(GratioMatrixall[1:m,1:m]) - (G1_tilde_G2_tilde*(GratioMatrixall[1:m,c((m+1):(m+m_cond))]))%*%(solve(G2_tilde_G2_tilde*(GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))]))) %*% (G2_tilde_G1_tilde * (GratioMatrixall[c((m+1):(m+m_cond)), 1:m])) 
 
-		Phi = as.matrix(Phi)
-		cat("dim(Phi): ", dim(Phi), "\n")
+			}
 
-#		G1_tilde_Ps_G1_tilde = getcovM(Z, Z, sparseSigma)
-#                G2_tilde_Ps_G2_tilde = getcovM(Z_cond, Z_cond, sparseSigma)
-#                G1_tilde_Ps_G2_tilde = getcovM(Z, Z_cond, sparseSigma)
-#                G2_tilde_Ps_G1_tilde = getcovM(Z_cond, Z, sparseSigma)	
+			Phi = G1_tilde_G1_tilde*(GratioMatrixall[1:m,1:m])
+			
 
-#		Phi = G1_tilde_Ps_G1_tilde*GratioMatrixall[1:m,1:m] - (G1_tilde_Ps_G2_tilde*GratioMatrixall[1:m,c((m+1):(m+m_cond))])%*%(solve(G2_tilde_Ps_G2_tilde*GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))])) %*% (G2_tilde_Ps_G1_tilde * GratioMatrixall[c((m+1):(m+m_cond)), 1:m])
-#		Phi_uncond = G1_tilde_Ps_G1_tilde*GratioMatrixall[1:m,1:m]
+		}
 
         }else{
-                # Phi
-        if(!is.null(obj$P)){
-                Phi = t(Z) %*% (obj$P %*% Z) - (t(Z) %*% (obj$P %*% Z_cond)) %*% solve(t(Z_cond) %*% (obj$P %*% Z_cond)) %*% (t(Z_cond) %*% (obj$P %*% Z))
-        } else {
-                XVZ = obj$obj.noK$XV %*% Z
-                Z1 = Z  -  (obj$obj.noK$XXVX_inv %*% XVZ) # G1 is X adjusted
-#                Score = as.vector(t(Z) %*% obj$residuals)/as.numeric(obj$theta[1])
-		XVZ_cond = obj$obj.noK$XV %*% Z_cond
-		Z1_cond = Z_cond - (obj$obj.noK$XXVX_inv %*% XVZ_cond)
-
+		if(!is.null(Z_cond)){
+                	Phi_cond = t(Z_tilde) %*% (obj$P %*% Z_tilde) - (t(Z_tilde) %*% (obj$P %*% Z_cond_tilde)) %*% solve(t(Z_cond_tilde) %*% (obj$P %*% Z_cond_tilde)) %*% (t(Z_cond_tilde) %*% (obj$P %*% Z_tilde))
+		}
+                Phi = t(Z_tilde) %*% (obj$P %*% Z_tilde)
 		
-
-                Phi = t(Z) %*% Z1 - (t(Z) %*% Z1_cond) %*% solve(t(Z_cond) %*% Z1_cond) %*% (t(Z_cond) %*% Z1)
         }
 
-        }
-        #Phi = Phi * obj$ratio
-#        print(Phi)
-        #PhiMulti = Phi * GratioMatrix
 
-        cat("Phi cond: ", diag(Phi), "\n")
-        cat("Score cond: ", Score, "\n")
+        cat("diag(Phi_cond): ", diag(Phi_cond), "\n")
+        cat("Score_cond: ", Score_cond, "\n")
 #	dP = diag(Phi)
 #	if(sum(dP < 10^-5) > 0){
 #		cat("dP[which(dP < 10^-5)]: ",  dP[which(dP < 10^-5)] , "\n")
 #		re = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
 #	}else{
-        	re = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
 #	}
 
-	
-        re$IsMeta=TRUE
+	if(!is.null(Z_cond)){
+		if(sum(diag(Phi_cond)) < 10^-5){
+			re_cond = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
+		}else{
+        		re_cond = SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL)
+		}
+	}
 
-        ##summaize the number of markers falling in each MAC category
-        markerNumbyMAC = c(sum(MACvec_indVec == 1), sum(MACvec_indVec == 2), sum(MACvec_indVec == 3), sum(MACvec_indVec == 4), sum(MACvec_indVec == 5), sum(MACvec_indVec == 6))
-        re$markerNumbyMAC = markerNumbyMAC
+	re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
+
+
+	if(!is.null(Z_cond)){
+		re$p.value.cond = re_cond$p.value
+	}else{
+		re$p.value.cond = NA
+	}
 
         print(re)
-        return(re)
+
+  }else{ #no marker is left for test
+    re = list(p.value = NA, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, p.value.cond=NA)
+    markerNumbyMAC = c(0,0,0,0,0,0)
+
+  }
+
+  re$IsMeta=TRUE
+  re$markerNumbyMAC = markerNumbyMAC
+  return(re)
+
 }
+
+
 
 
 getGratioMatrix = function(G, ratioVec){
@@ -855,4 +868,18 @@ getvarRatio = function(MAC, ratioVec){
 	}
 	varRatio = ratioVec[i]
 	return(varRatio)
+}
+
+getMACvec_indVec = function(Z){
+
+	MACvec = colSums(Z)
+        MACvec_indVec = MACvec
+        MACvec_indVec[which(MACvec <= 1.5)] = 1
+        MACvec_indVec[which(MACvec <= 2.5 & MACvec > 1.5)] = 2
+        MACvec_indVec[which(MACvec <= 3.5 & MACvec > 2.5)] = 3
+        MACvec_indVec[which(MACvec <= 4.5 & MACvec > 3.5)] = 4
+        MACvec_indVec[which(MACvec <= 5.5 & MACvec > 4.5)] = 5
+        MACvec_indVec[which(MACvec_indVec > 5.5)] = 6
+
+	return(MACvec_indVec)	
 }
