@@ -1297,8 +1297,10 @@ if(FALSE){
 } #if(FALSE)
 
   cat("HERE2b\n")
-    XVG0 = eigenMapMatMult(obj.noK$XV, G0)
-    G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
+    #XVG0 = eigenMapMatMult(obj.noK$XV, G0)
+    XVG0 = obj.noK$XV %*% G0
+    #G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
+    G = G0  -  obj.noK$XXVX_inv %*% XVG0 # G1 is X adjusted
     g = G/sqrt(AC2)
     q = innerProduct(g, y)
     m1 = innerProduct(mu, g)
