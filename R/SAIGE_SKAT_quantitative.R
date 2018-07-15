@@ -20,7 +20,7 @@ options(stringsAsFactors=F)
 #' @param chrom character. string for the chromosome to include from vcf file. Required for vcf file. If LOCO is specified, providing chrom will save computation cost
 #' @param start numeric. start genome position to include from vcf file. 
 #' @param end numeric. end genome position to include from vcf file. 
-#' @param minMAC numeric. Minimum minor allele count of markers to test. By default, 1. The higher threshold between minMAC and minMAF will be used
+#' @param minMAC numeric. Minimum minor allele count of markers to test. By default, 0. The higher threshold between minMAC and minMAF will be used
 #' @param minMAF numeric. Minimum minor allele frequency of markers to test. By default 0. The higher threshold between minMAC and minMAF will be used
 #' @param maxMAF numeric. Maximum minor allele frequency of markers to test. By default 0.5. 
 #' @param minInfo numeric. Minimum imputation info of markers to test (in bgen file)
@@ -56,7 +56,7 @@ SKATtest = function(dosageFile = "",
 		 chrom = "",
 		 start = 1,
 		 end = 250000000,	
-		 minMAC = 1, 
+		 minMAC = 0, 
                  minMAF = 0,
                  maxMAF = 0.5,
         	 minInfo = 0,
@@ -226,6 +226,7 @@ SKATtest = function(dosageFile = "",
     cat("conditioning on ", unlist(Gx_cond$markerIDs), "\n")
     #G0 = Gx_cond$dosages
      cntMarker = Gx_cond$cnt
+
      if(cntMarker > 0){
           dosage_cond = matrix(Gx_cond$dosages, byrow=F, ncol = cntMarker)
      }
@@ -372,7 +373,8 @@ SKATtest = function(dosageFile = "",
 }
 
   #determine minimum MAF for markers to be tested
-  if(minMAC < 1){minMAC = 1} ##01-19-2018
+  #if(minMAC < 1){minMAC = 1} ##01-19-2018
+  if(!(minMAC  > 0)){minMAC == 0} ##07-15-2018
   cat("minMAC: ",minMAC,"\n")
   cat("minMAF: ",minMAF,"\n")
   cat("maxMAF: ",maxMAF,"\n")
@@ -428,6 +430,7 @@ if(traitType == "quantitative"){
 
         G0 = Gx$dosages
         cntMarker = Gx$cnt
+	cat("cntMarker: ", cntMarker, "\n")
 #	cat("markerIDs: ", Gx$markerIDs, "\n")
 #	cat("G0: ", G0, "\n")
         if(cntMarker > 0){
@@ -905,7 +908,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, ratioVec, G2_cond = NULL, G2_cond_e
 	obj.noK = obj$obj.noK
         m = ncol(G1)
         n = nrow(G1)
-        id_include<-1:n
+	cat("m=", m, "\n") 
+       id_include<-1:n
         # Added by SLEE 4/24/2017
         out.method<-SKAT:::SKAT_Check_Method(method,r.corr, n=n, m=m)
         method=out.method$method
@@ -975,13 +979,13 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, ratioVec, G2_cond = NULL, G2_cond_e
 				G1_tilde_Ps_G1_tilde = getcovM(G1_tilde, G1_tilde, sparseSigma)
 				if(!is.null(G2_cond)){
 		#		G1_tilde_Ps_G1_tilde = getcovM(Z_tilde, Z_tilde, sparseSigma)
-		#		G2_tilde_Ps_G2_tilde = getcovM(Z_cond_tilde, Z_cond_tilde, sparseSigma)
-		#		G1_tilde_Ps_G2_tilde = getcovM(Z_tilde, Z_cond_tilde, sparseSigma)
-		#		G2_tilde_Ps_G1_tilde = getcovM(Z_cond_tilde, Z_tilde, sparseSigma)
+				G2_tilde_Ps_G2_tilde = getcovM(G2_cond_tilde, G2_cond_tilde, sparseSigma)
+				G1_tilde_Ps_G2_tilde = getcovM(G1_tilde, G2_cond_tilde, sparseSigma)
+				G2_tilde_Ps_G1_tilde = getcovM(G2_cond_tilde, G1_tilde, sparseSigma)
 
-				G2_tilde_Ps_G2_tilde = t(G2_cond_tilde)%*% solve(sparseSigma) %*% G2_cond_tilde
-				G1_tilde_Ps_G2_tilde = t(G1_tilde)%*% solve(sparseSigma) %*% G2_cond_tilde
-				G2_tilde_Ps_G1_tilde = t(G2_cond_tilde)%*% solve(sparseSigma) %*% G1_tilde
+		#		G2_tilde_Ps_G2_tilde = t(G2_cond_tilde)%*% solve(sparseSigma) %*% G2_cond_tilde
+		#		G1_tilde_Ps_G2_tilde = t(G1_tilde)%*% solve(sparseSigma) %*% G2_cond_tilde
+		#		G2_tilde_Ps_G1_tilde = t(G2_cond_tilde)%*% solve(sparseSigma) %*% G1_tilde
 
 				G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv = (G1_tilde_Ps_G2_tilde*(GratioMatrixall[1:m,c((m+1):(m+m_cond))]))%*%(solve(G2_tilde_Ps_G2_tilde*(GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))])))
 		
@@ -1020,7 +1024,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, ratioVec, G2_cond = NULL, G2_cond_e
 
         	}else{
 			if(!is.null(G2_cond)){
-				G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv = (t(G1_tilde) %*% (obj$P %*% G2_cond_tilde)) %*% solve(t(G2_cond_tilde) %*% (obj$P %*% G2_cond_tilde))
+				#G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv = (t(G1_tilde) %*% (obj$P %*% G2_cond_tilde)) %*% solve(t(G2_cond_tilde) %*% (obj$P %*% G2_cond_tilde))
+				G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv = (t(G1_tilde) %*% (obj$P %*% G2_cond_tilde)) %*% getcovM(G2_cond_tilde, G2_cond_tilde, obj$P) 
 
 				Score_cond = Score - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% T2
 
