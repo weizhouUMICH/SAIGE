@@ -8,7 +8,10 @@ Rscript step1_fitNULLGLMM.R \
 	--traitType=binary \
 	--outputPrefix=./output/example \
 	--nThreads=4 \
-	--LOCO=FALSE
+	--LOCO=FALSE \
+	--IsSparseKin=TRUE	\
+	--traitType=quantitative	\
+	--isCateVarianceRatio=FALSE
 
 
 Rscript step1_fitNULLGLMM.R \

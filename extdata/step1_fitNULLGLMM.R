@@ -1,7 +1,9 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
-library(SAIGE)
+#library(SAIGE)
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.31.conditional.bug.fixed")
+
 require(optparse) #install.packages("optparse")
 
 ## set list of cmd line arguments
@@ -33,7 +35,11 @@ option_list <- list(
   make_option("--LOCO", type="logical", default=FALSE,
     help="Whether to apply the leave-one-chromosome-out (LOCO) approach. By default, FALSE. This option has not been extensively tested."), 
   make_option("--outputPrefix", type="character", default="~/",
-    help="path and prefix to the output files [default='~/']")
+    help="path and prefix to the output files [default='~/']"),
+  make_option("--IsSparseKin", type="logical", default=FALSE,
+    help="Whether to use sparse kinship for association test"),
+  make_option("--isCateVarianceRatio", type="logical", default=FALSE,
+    help="Whether to calculate categorical variance ratio")
 )
 
 ## list of options
@@ -62,6 +68,8 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
 	    traceCVcutoff = opt$traceCVcutoff,
 	    ratioCVcutoff = opt$ratioCVcutoff,
             LOCO = opt$LOCO,
-            outputPrefix = opt$outputPrefix)
+            outputPrefix = opt$outputPrefix,
+	    IsSparseKin = opt$IsSparseKin,
+	    isCateVarianceRatio = opt$isCateVarianceRatio)
 
 
