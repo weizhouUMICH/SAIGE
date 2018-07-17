@@ -86,7 +86,7 @@ test_stdGeno = function(subSampleInGeno){
 
 
 #Fits the null glmm for binary traits
-glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff) {
+glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff, isCovariateTransform) {
   #Fits the null generalized linear mixed model for a binary trait
   #Args:
   #  genofile: string. Plink file for the M1 markers to be used to construct the genetic relationship matrix 
@@ -489,7 +489,7 @@ fitNULLGLMM = function(plinkFile = "",
 		cateVarRatioVec = c(1,1,1,1,1,1),
 		qr_sparse = FALSE,
 		Cholesky_sparse = FALSE,
-		pcg_sparse = FALSE,
+		pcg_sparse = TRUE,
 		isCovariateTransform = TRUE){
                 #formula, phenoType = "binary",prefix, centerVariables = "", tol=0.02, maxiter=20, tolPCG=1e-5, maxiterPCG=500, nThreads = 1, Cutoff = 2, numMarkers = 1000, skipModelFitting = FALSE){
   if(nThreads > 1){
@@ -654,7 +654,7 @@ fitNULLGLMM = function(plinkFile = "",
 
 
     if(!skipModelFitting){
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform))
       save(modglmm, file = modelOut)
     }else{
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)	
@@ -1190,6 +1190,7 @@ while(ratioCV > ratioCVcutoff){
   varRatioTable = rbind(varRatioTable, c(varRatio))
 #  write(varRatio, varRatioOutFile)
   print(varRatio)
+  print(varRatioTable)
 
 }else{# if(cateVarRatioVec[k] == 1)
   varRatioTable = rbind(varRatioTable, c(1))
@@ -1197,7 +1198,12 @@ while(ratioCV > ratioCVcutoff){
 
 } #for(k in 1:length(listOfMarkersForVarRatio)){
 
+
+print(varRatioTable)
+print(varRatioOutFile)
 write.table(varRatioTable, varRatioOutFile, quote=F, col.names=F, row.names=F)
+data = read.table(varRatioOutFile, header=F)
+print(data)
 
 }
 

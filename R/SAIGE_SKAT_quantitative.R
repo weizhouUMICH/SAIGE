@@ -110,11 +110,11 @@ SKATtest = function(dosageFile = "",
   if(!file.exists(varianceRatioFile)){
     #stop("ERROR! varianceRatioFile ", varianceRatioFile, " does not exsit\n")
   }else{
-    varRatio = data.frame(data.table:::fread(varianceRatioFile, header=F, stringsAsFactors=FALSE))
-    if(nrow(varRatio) == 1){
-      ratioVec = rep(varRatio[1,1],6)
+    varRatioData = data.frame(data.table:::fread(varianceRatioFile, header=F, stringsAsFactors=FALSE))
+    if(nrow(varRatioData) == 1){
+      ratioVec = rep(varRatioData[1,1],6)
     }else{
-      ratioVec = varRatio[,1]
+      ratioVec = varRatioData[,1]
     }
     #cat("variance Ratio is ", varRatio, "\n")
     cat("variance Ratio is ", ratioVec, "\n")
@@ -1111,12 +1111,16 @@ getGratioMatrix = function(G, ratioVec){
 
 getcovM = function(G1, G2, sparseSigma){
 
+  if(!is.null(sparseSigma)){
    pcginvSigma = NULL
    for(i in 1:ncol(G2)){
      c3<-pcg(sparseSigma, G2[,i])
      pcginvSigma<-cbind(pcginvSigma, c3)
    }
    covM = as.matrix(t(G1) %*% pcginvSigma)
+  }else{
+    covM = as.matrix(t(G1) %*% G2)
+  }
    return(covM)
 }
 
