@@ -975,19 +975,25 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, ratioVec, G2_cond = NULL, G2_cond_e
 		if(is.null(obj$P)){
 
         		if(!is.null(sparseSigma)){
+				cat("first\n")
 				#G1_tilde_Ps_G1_tilde = t(G1_tilde)%*% solve(sparseSigma) %*% G1_tilde
 				G1_tilde_Ps_G1_tilde = getcovM(G1_tilde, G1_tilde, sparseSigma)
 				if(!is.null(G2_cond)){
+				cat("second\n")
 		#		G1_tilde_Ps_G1_tilde = getcovM(Z_tilde, Z_tilde, sparseSigma)
 				G2_tilde_Ps_G2_tilde = getcovM(G2_cond_tilde, G2_cond_tilde, sparseSigma)
+				cat("second2\n")
 				G1_tilde_Ps_G2_tilde = getcovM(G1_tilde, G2_cond_tilde, sparseSigma)
+				cat("second3\n")
 				G2_tilde_Ps_G1_tilde = getcovM(G2_cond_tilde, G1_tilde, sparseSigma)
+				cat("second4\n")
 
 		#		G2_tilde_Ps_G2_tilde = t(G2_cond_tilde)%*% solve(sparseSigma) %*% G2_cond_tilde
 		#		G1_tilde_Ps_G2_tilde = t(G1_tilde)%*% solve(sparseSigma) %*% G2_cond_tilde
 		#		G2_tilde_Ps_G1_tilde = t(G2_cond_tilde)%*% solve(sparseSigma) %*% G1_tilde
 
 				G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv = (G1_tilde_Ps_G2_tilde*(GratioMatrixall[1:m,c((m+1):(m+m_cond))]))%*%(solve(G2_tilde_Ps_G2_tilde*(GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))])))
+				cat("second5\n")
 		
 				Score_cond = Score - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% T2	
 
