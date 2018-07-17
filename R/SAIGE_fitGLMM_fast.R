@@ -1272,6 +1272,7 @@ pcg<-function (A, b, M=NULL, maxiter = 1e+05, tol = 1e-06){
   sumr2 = sum(r^2)
   while (sumr2 > tol & iter < maxiter) {
     iter = iter + 1
+    cat("iter is ", iter, "\n")
     Ap = crossprod(p, A)[1,]
     a = as.numeric((t(r) %*% z)/(t(p) %*% Ap))
     x = x + a * p

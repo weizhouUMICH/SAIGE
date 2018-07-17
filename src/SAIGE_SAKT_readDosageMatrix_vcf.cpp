@@ -124,10 +124,10 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line) {
             ++missing_cnt;
             indexforMissing.push_back(genetest_sample_idx_vcfDosage[i]);
           }else {
-//	    if(genetest_sample_idx_vcfDosage[i] < 100){	
-//	      std::cout << "*dose_it " << *dose_it << std::endl;	
-//	      std::cout << "i " << i << std::endl;	
-//	    }
+	      if(i < 1000){
+	      std::cout << "*dose_it " << *dose_it << std::endl;	
+	      std::cout << "i " << i << std::endl;	
+	    }	
             dosagesforOneMarker[genetest_sample_idx_vcfDosage[i]] = *dose_it;
             AC = AC + *dose_it;
           }
