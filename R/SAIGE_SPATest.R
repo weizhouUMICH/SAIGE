@@ -70,6 +70,8 @@ SPAGMMATtest = function(dosageFile = "",
 		 sparseSigmaFile=""){
 
 
+  cat("HERE!!! START\n")
+
   #check and read files
   #sparseSigmaFile
   if(sparseSigmaFile == ""){
@@ -213,7 +215,7 @@ SPAGMMATtest = function(dosageFile = "",
   }
 
 
-  if(isConditio){
+  if(isCondition){
   
 
   conditionlist = paste(c("condMarkers",unlist(strsplit(condition,","))),collapse="\t")
@@ -355,7 +357,7 @@ SPAGMMATtest = function(dosageFile = "",
     }
 
     varRatio = getvarRatio(MAC, ratioVec)
-
+    cat("varRatio is ", varRatio, "\n")
     rowHeader = paste0("condMarker",i)
     if(traitType == "binary"){
         #To be updated
@@ -518,7 +520,13 @@ SPAGMMATtest = function(dosageFile = "",
 #####
   }else if(traitType == "quantitative"){
     cat("It is a quantitative trait\n")
-    resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
+    if(!isCondition){
+    	resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
+    }else{
+	resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar","Tstat_cond", "p.value_cond", "varT_cond", "BETA_cond", "SE_cond" )
+    }	
+
+
     write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
     OUT = NULL
     numPassMarker = 0
@@ -565,9 +573,12 @@ if(isCondition){
     N  = length(G0)
     AF = AC/(2*N)
     MAF = AF
+    MAC = AC
     if(AF > 0.5){
       MAF = 1-AF
+      MAC = 2*N - MAC
     }
+    varRatio = getvarRatio(MAC, ratioVec)
     
     rowHeader = paste0("condMarker",i)
     if(traitType == "binary"){
@@ -596,14 +607,17 @@ if(isCondition){
       #dosage_cond_tilde = cbind(G0_tilde, dosage_cond_tilde)
       covM = matrix(0,nrow=Mcond+1, ncol = Mcond+1)
       covMsub = getcovM(dosage_cond_tilde, dosage_cond_tilde, sparseSigma)
-
       covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
+
+      GratioMatrix_cond = getGratioMatrix(dosage_cond, ratioVec)
+      G2tilde_P_G2tilde_inv = solve(covMsub %*% GratioMatrix_cond)
 
 }else{# end of if(isCondition)	
   OUT_cond = NULL
-
-
+  G2tilde_P_G2tilde_inv = NULL
 }
+
+
 while(isVariant){
     mth = mth + 1
     if(dosageFileType == "plain"){
@@ -650,6 +664,11 @@ while(isVariant){
       isVariant = getGenoOfnthVar_vcfDosage_pre()
     }
 
+    MAC = AC
+    if(AF > 0.5){
+      MAC = 2*N - AC
+    }
+    varRatio = getvarRatio(MAC, ratioVec)
 
     if(indChromCheck){
       CHR = as.character(CHR)
@@ -688,11 +707,10 @@ while(isVariant){
 
       #covM[1,2:ncol(covM)] = (t(mu.a*(1-mu.a)*G0_tilde)) %*% dosage_cond_tilde			
       covM[1,2:ncol(covM)] = getcovM(G0_tilde, dosage_cond_tilde,sparseSigma)			
-
+      G1tilde_P_G2tilde = covM[1,c(2:ncol(covM))]*(GratioMatrixall[1,c(2:ncol(covM))])
    }else{ #end of if(isCondition)
+      G1tilde_P_G2tilde = NULL
       GratioMatrixall = NULL
-      covM = NULL
- 
    }
 
   if(traitType == "binary"){
@@ -718,14 +736,15 @@ while(isVariant){
 
         }
 
-        out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma, isCondition=isCondition, covM=covM, OUT_cond=OUT_cond, GratioMatrixall=GratioMatrixall)
+        out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 
 #        out1 = scoreTest_SAIGE_quantitativeTrait_cond(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, covM, OUT_cond, covariateVec)
-       if(!isCondition){ 
+       if(!isCondition){
          OUT = rbind(OUT, c(rowHeader, N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
        }else{
-         OUT = rbind(OUT, c(rowHeader, N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2, out1$p.value.c, out1$BETA_c, out1$SE_c))
+         OUT = rbind(OUT, c(rowHeader, N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2, out1$Tstat_c,  out1$p.value.c, out1$var1_c, out1$BETA_c, out1$SE_c))
        }
+
 
     }
 
@@ -781,9 +800,9 @@ scoreTest_SAIGE_quantitativeTrait_old=function(G0, obj.noK, AC, y, mu, varRatio,
 
 #Use Sparsity trick for rare variants
 scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec){
-  cat("HERE\n")
-  cat("AC: ",AC,"\n")
-  cat("AF: ",AF,"\n")
+#  cat("HERE\n")
+#  cat("AC: ",AC,"\n")
+#  cat("AF: ",AF,"\n")
   N = length(G0)
   if(AF > 0.5){
     G0 = 2-G0
@@ -792,9 +811,9 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio,
     AC2 = AC
   }
   maf = min(AF, 1-AF)
-  cat("HERE2\n")
+#  cat("HERE2\n")
   if(maf < 0.05){
-  cat("HERE2a\n")
+#  cat("HERE2a\n")
     idx_no0<-which(G0>0)
     #cat("length(idx_no0): ", length(idx_no0), "\n")
     #cat("maf: ", maf, "\n")
@@ -837,7 +856,7 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio,
     S<- S1+S2
     Tstat = S/tauVec[1]
   }else{
-  cat("HERE2b\n")
+#  cat("HERE2b\n")
     XVG0 = eigenMapMatMult(obj.noK$XV, G0)
     G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
     g = G/sqrt(AC2)
@@ -1154,10 +1173,11 @@ if(var1c > 10^-5){
 
 
 
-scoreTest_SAIGE_quantitativeTrait_sparseSigma=function(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=NULL, isCondition=FALSE, covM=NULL, OUT_cond=NULL, GratioMatrixall=NULL){
-  cat("HERE\n")
-  cat("AC: ",AC,"\n")
-  cat("AF: ",AF,"\n")
+scoreTest_SAIGE_quantitativeTrait_sparseSigma=function(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+
+#  cat("HERE\n")
+#  cat("AC: ",AC,"\n")
+#  cat("AF: ",AF,"\n")
   N = length(G0)
   if(AF > 0.5){
     G0 = 2-G0
@@ -1166,11 +1186,11 @@ scoreTest_SAIGE_quantitativeTrait_sparseSigma=function(G0, obj.noK, AC, AF, y, m
     AC2 = AC
   }
   maf = min(AF, 1-AF)
-  cat("HERE2\n")
+#  cat("HERE2\n")
 
 
 if(maf < 0.05){
-  cat("HERE2a\n")
+#  cat("HERE2a\n")
     idx_no0<-which(G0>0)
     #cat("length(idx_no0): ", length(idx_no0), "\n")
     #cat("maf: ", maf, "\n")
@@ -1214,7 +1234,7 @@ if(maf < 0.05){
     S<- S1+S2
     Tstat = S/tauVec[1]
   }else{
-  cat("HERE2b\n")
+#    cat("HERE2b\n")
     XVG0 = eigenMapMatMult(obj.noK$XV, G0)
     G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
 #    g = G/sqrt(AC2)
@@ -1227,18 +1247,40 @@ if(maf < 0.05){
   }
 
 if(!is.null(sparseSigma)){
+  XVG0 = eigenMapMatMult(obj.noK$XV, G0)
+  g = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
+#  print(G0)
+#  print(g)
   pcginvSigma<-pcg(sparseSigma, g)
-  var2_new = as.matrix(t(g) %*% pcginvSigma) 
-  var1_new = var2_new * varRatio 
+#  print(pcginvSigma)
+#  pcginvSigma = solve(sparseSigma) %*% g
+#  print(solve(sparseSigma))
+  var2 = as.matrix(t(g) %*% pcginvSigma) 
+#  cat("var2 is ", var2, "\n")
+
+  var1 = var2 * varRatio 
 
 }
-
+#cat("Tstat is ", Tstat, "\n")
 
 if(isCondition){
+
   T2stat = OUT_cond[,2]
-  m_all = nrow(GratioMatrixall)
-  Tstat_c = Tstat - covM[1,c(2:m_all)] %*% (solve(covM[c(2:m_all),c(2:m_all)])) %*% T2stat
-  var1_c = var1 - (covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
+  #m_all = nrow(GratioMatrixall)
+
+
+#  G1tilde_P_G2tilde = (covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)]))
+#  G2tilde_P_G2tilde_inv = solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)]))
+
+ 
+  #Tstat_c = Tstat - covM[1,c(2:m_all)] %*% (solve(covM[c(2:m_all),c(2:m_all)])) %*% T2stat
+  Tstat_c = Tstat - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% T2stat
+
+  #var1_c = var1 - (covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
+  var1_c = var1 - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
+
+#(covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
+
 }
 
 
@@ -1248,22 +1290,38 @@ if(AF > 0.5){
       Tstat_c = (-1)*Tstat_c
     }	
 }
+
+if(var1 == 0){
+  p.value = 1
+  BETA = NA
+  SE = NA
+}else{
   p.value = pchisq(Tstat^2/var1, lower.tail = FALSE, df=1)
-  BETA = (Tstat/var1)/sqrt(AC2)
+#  BETA = (Tstat/var1)/sqrt(AC2)
+  BETA = (Tstat/var1)
   SE = abs(BETA/qnorm(p.value/2))
+}
+
 
   if(isCondition){
-    p.value.c = pchisq(Tstat_c^2/var1_c, lower.tail = FALSE, df=1)
-    BETA_c = (Tstat_c/var1_c)/sqrt(AC2)
-    SE_c = abs(BETA_c/qnorm(p.value.c/2))
-
+    if(var1_c == 0){
+      p.value.c = 1
+      BETA_c = NA
+      SE_c = NA
+    }else{
+      p.value.c = pchisq(Tstat_c^2/var1_c, lower.tail = FALSE, df=1)
+#    BETA_c = (Tstat_c/var1_c)/sqrt(AC2)
+      BETA_c = (Tstat_c/var1_c)
+      SE_c = abs(BETA_c/qnorm(p.value.c/2))
+    }
   }
   
   if(isCondition){
-    out1 = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2, BETA = BETA, SE = SE, Tstat_c = Tstat_c, p.value.c = p.value.c, var1_c = var1_c)
+    out1 = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2, BETA_c = BETA_c, SE_c = SE_c, Tstat_c = Tstat_c, p.value.c = p.value.c, var1_c = var1_c)
   }else{
     out1 = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2, BETA = BETA, SE = SE)
   }
+
 
   return(out1)
 }
