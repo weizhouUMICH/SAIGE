@@ -90,6 +90,8 @@ SKATtest = function(dosageFile = "",
 
     sparseSigma = NULL
   }
+
+
   #file for the glmm null model
   if(!file.exists(GMMATmodelFile)){
     stop("ERROR! GMMATmodelFile ", GMMATmodelFile, " does not exsit\n")
@@ -106,6 +108,7 @@ SKATtest = function(dosageFile = "",
     obj.noK = obj.glmm.null$obj.noK   
     traitType = obj.glmm.null$traitType 
   }
+
 
   if(!file.exists(varianceRatioFile)){
     #stop("ERROR! varianceRatioFile ", varianceRatioFile, " does not exsit\n")
