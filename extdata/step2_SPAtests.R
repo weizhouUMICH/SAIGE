@@ -1,7 +1,9 @@
 options(stringsAsFactors=F, digits=3)
 #library(SAIGE)
 
-library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.31.conditional.bug.fixed")
+#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.31.conditional.bug.fixed")
+
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.32_merge_single_gene")
 
 library(optparse)
 
@@ -53,8 +55,9 @@ option_list <- list(
   make_option("--LOCO", type="logical", default=FALSE,
     help="Whether to apply the leave-one-chromosome-out option. This option has not been extensively tested."),
   make_option("--condition", type="character",default="",
-    help="conditioning marker ids")
-
+    help="conditioning marker ids"),
+  make_option("--maxMAFforGroupTest", type="numeric", default=0,
+    help="max MAF for markers tested in group test")
 )
 
 parser <- OptionParser(usage="%prog [options]", option_list=option_list)
@@ -90,7 +93,8 @@ SPAGMMATtest(dosageFile=opt$dosageFile,
              numLinesOutput = opt$numLinesOutput,
 	     IsOutputAFinCaseCtrl = opt$IsOutputAFinCaseCtrl,
 	     LOCO = opt$LOCO,
-	     condition = opt$condition
+	     condition = opt$condition,
+	     maxMAFforGroupTest = opt$maxMAFforGroupTest
 )
 
 

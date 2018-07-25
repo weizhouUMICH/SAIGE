@@ -10,7 +10,7 @@ Rscript step1_fitNULLGLMM.R \
 	--nThreads=4 \
 	--LOCO=FALSE \
 	--IsSparseKin=TRUE	\
-	--traitType=quantitative	\
+	--traitType=binary	\
 	--isCateVarianceRatio=FALSE
 
 

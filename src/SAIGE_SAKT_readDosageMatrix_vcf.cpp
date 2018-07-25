@@ -73,7 +73,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line) {
   //savvy::variant_group_iterator<savvy::compressed_vector<float>> it(marker_file, marker_group_line);
   savvy::variant_group_iterator<savvy::compressed_vector<float>> it(marker_file, marker_group_line);
   savvy::variant_group_iterator<savvy::compressed_vector<float>> end{};
-  std::cout << "it.sites().size(): " << it.sites().size() << std::endl; 
+//  std::cout << "it.sites().size(): " << it.sites().size() << std::endl; 
 //  std::string marker_id = it->chromosome() + ":" + std::to_string(it->position()) + "_" + it->ref() + "/" + it->alt();
 //  std::cout << marker_id << std::endl;
   group_matrix.resize(0);
@@ -124,10 +124,10 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line) {
             ++missing_cnt;
             indexforMissing.push_back(genetest_sample_idx_vcfDosage[i]);
           }else {
-	      if(i < 1000){
-	      std::cout << "*dose_it " << *dose_it << std::endl;	
-	      std::cout << "i " << i << std::endl;	
-	    }	
+	      //if(i < 1000){
+	      //std::cout << "*dose_it " << *dose_it << std::endl;	
+	      //std::cout << "i " << i << std::endl;	
+	    //}	
             dosagesforOneMarker[genetest_sample_idx_vcfDosage[i]] = *dose_it;
             AC = AC + *dose_it;
           }
@@ -143,22 +143,22 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line) {
       }else{
         MAF = AF;
       }
-      std::cout << "MAF: " << MAF << std::endl;
-      std::cout << "minMAF: " << minMAF << std::endl;
-      std::cout << "maxMAF: " << maxMAF << std::endl;
-      std::cout << "marker_id: " << marker_id << std::endl;
+//      std::cout << "MAF: " << MAF << std::endl;
+//      std::cout << "minMAF: " << minMAF << std::endl;
+//      std::cout << "maxMAF: " << maxMAF << std::endl;
+//      std::cout << "marker_id: " << marker_id << std::endl;
       if(MAF >= minMAF && MAF <= maxMAF){
-      std::cout << "In "<< std::endl;
+//      std::cout << "In "<< std::endl;
       //set missing dosages to be the 2*AF
         if(missing_cnt > 0){
-	  std::cout << "missing_cnt > 0!!" << std::endl;
+	  std::cout << "missing_cnt > 0!" << std::endl;
           float imputeDosage = 2*AF;
           for (unsigned int i = 0; i < indexforMissing.size(); i++){
           dosagesforOneMarker[indexforMissing[i]] = imputeDosage;
         }
       }
         group_matrix.insert(std::end(group_matrix), std::begin(dosagesforOneMarker), std::end(dosagesforOneMarker));
-  std::cout << "here5!" << std::endl; 
+//  std::cout << "here5!" << std::endl; 
         //group_matrix[cnt * sample_size + dose_it.offset()] = *dose_it;
         cnt = cnt + 1;
         markerIDs.push_back(marker_id);
