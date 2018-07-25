@@ -868,7 +868,11 @@ while(ratioCV > ratioCVcutoff){
     }
   } # end of while(numTestedMarker < numMarkers) 
 
+  colnames(OUTtotal) = resultHeader
+  print(OUTtotal)
   ratioVec = as.numeric(OUTtotal$var1)/as.numeric(OUTtotal$var2)
+  cat("ratioVec\n")
+  print(ratioVec)
   ratioCV = calCV(ratioVec)
 
   if(ratioCV > ratioCVcutoff){

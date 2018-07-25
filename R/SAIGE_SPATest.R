@@ -20,8 +20,9 @@ options(stringsAsFactors=F)
 #' @param chrom character. string for the chromosome to include from vcf file. Required for vcf file. If LOCO is specified, providing chrom will save computation cost
 #' @param start numeric. start genome position to include from vcf file. 
 #' @param end numeric. end genome position to include from vcf file. 
-#' @param minMAC numeric. Minimum minor allele count of markers to test. By default, 1. The higher threshold between minMAC and minMAF will be used
+#' @param minMAC numeric. Minimum minor allele count of markers to test. By default, 0.5. The higher threshold between minMAC and minMAF will be used
 #' @param minMAF numeric. Minimum minor allele frequency of markers to test. By default 0. The higher threshold between minMAC and minMAF will be used
+#' @param maxMAFforGroupTest numeric. Maximum minor allele frequency of markers to test in group test. By default 1.
 #' @param minInfo numeric. Minimum imputation info of markers to test (in bgen file)
 #' @param sampleFile character. Path to the file that contains one column for IDs of samples in the dosage, vcf, sav, or bgen file with NO header
 #' @param GMMATmodelFile character. Path to the input file containing the glmm model, which is output from previous step. Will be used by load()
@@ -56,8 +57,9 @@ SPAGMMATtest = function(dosageFile = "",
 		 chrom = "",
 		 start = 1,
 		 end = 250000000,	
-		 minMAC = 1, 
+		 minMAC = 0.5, 
                  minMAF = 0,
+		 maxMAFforGroupTest = 1,
         	 minInfo = 0,
                  GMMATmodelFile = "", 
                  varianceRatioFile = "", 
@@ -75,6 +77,7 @@ SPAGMMATtest = function(dosageFile = "",
 		 weights.beta=c(1,25),
 		 r.corr=0){
 
+
   if(groupFile == ""){
     isGroupTest = FALSE
   }else{
@@ -89,6 +92,7 @@ SPAGMMATtest = function(dosageFile = "",
 
 ####check and read files
   #sparseSigmaFile
+ cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
   if(sparseSigmaFile == ""){
     sparseSigma = NULL
   }else{
@@ -97,10 +101,14 @@ SPAGMMATtest = function(dosageFile = "",
       stop("ERROR! sparseSigmaFile ", sparseSigmaFile, " does not exsit\n")
     }else{
       sparseSigma = Matrix:::readMM(sparseSigmaFile)
+ cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
     }
   }
 
+
   #output file
+  if(file.exists(SAIGEOutputFile)){file.remove(SAIGEOutputFile)}
+
   if(!file.exists(SAIGEOutputFile)){
     file.create(SAIGEOutputFile, showWarnings = TRUE)
   }
@@ -227,21 +235,17 @@ SPAGMMATtest = function(dosageFile = "",
   startTime = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
   cat("Analysis started at ", startTime, "Seconds\n")
 
-  if(file.exists(SAIGEOutputFile)){file.remove(SAIGEOutputFile)}
+#  if(file.exists(SAIGEOutputFile)){file.remove(SAIGEOutputFile)}
 
-if(!isGroupTest){
+  if(!isGroupTest){
 
-  if (dosageFileType == "bgen" | dosageFileType == "vcf"){
-    dosageFilecolnamesSkip = c("CHR","POS","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2")
-  }else{
-    dosageFilecolnamesSkip = c(dosageFilecolnamesSkip, "AC", "AF")
+    if (dosageFileType == "bgen" | dosageFileType == "vcf"){
+      dosageFilecolnamesSkip = c("CHR","POS","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2")
+    }else{
+      dosageFilecolnamesSkip = c(dosageFilecolnamesSkip, "AC", "AF")
+    }
 
   }
-
-}
-
-
-
 
   if(condition != ""){
     isCondition = TRUE
@@ -261,7 +265,7 @@ if(!isGroupTest){
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
       Gx_cond = getGenoOfGene_vcf(conditionlist)
     }else if(dosageFileType == "bgen"){
-      Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist, testMinMAF, maxMAF)
+      Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist)
     }else{
       cat("WARNING: conditional analysis can only work for dosageFileType vcf, sav or bgen\n")
     }
@@ -277,11 +281,12 @@ if(!isGroupTest){
       cat("WARNING: conditioning markers are not found in the provided dosage file \n")
       #print(dim(dosage_cond))
       isCondition = FALSE
+      dosage_cond = NULL
     }
 
-  }#end of if(isCondition){
-
-
+  }else{#end of if(isCondition){
+    dosage_cond = NULL
+  }
 
 if(traitType == "binary"){
   cat("It is a binary trait\n")
@@ -293,150 +298,147 @@ if(traitType == "binary"){
     write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
   }
 
-    if(Cutoff < 10^-2){
-        Cutoff=10^-2
-    }
+  if(Cutoff < 10^-2){
+    Cutoff=10^-2
+  }
 
-    y = obj.glm.null$y
+  y = obj.glm.null$y
     #OUT = NULL
     #numPassMarker = 0
     #NSparse=0
     #mth = 0
-    y1Index = which(y == 1)
-    NCase = length(y1Index)
-    y0Index = which(y == 0)
-    NCtrl = length(y0Index)
+  y1Index = which(y == 1)
+  NCase = length(y1Index)
+  y0Index = which(y == 0)
+  NCtrl = length(y0Index)
 
-    cat("Analyzing ", NCase, " cases and ",NCtrl, " controls \n")
+  cat("Analyzing ", NCase, " cases and ",NCtrl, " controls \n")
 
-    N = length(y)
-    obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
-    indChromCheck = FALSE
-    if(!obj.glmm.null$LOCO){
+  N = length(y)
+  obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
+  indChromCheck = FALSE
+  if(!obj.glmm.null$LOCO){
+    mu = obj.glmm.null$fitted.values
+    mu.a<-as.vector(mu)
+    mu2.a<-mu.a *(1-mu.a)
+    obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
+    obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+  }else if(chrom != ""){
+    chrom_v2 = as.character(chrom)
+    chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
+    if(obj.glmm.null$LOCOResult[[chrom_v3]]$isLOCO){
+      mu = obj.glmm.null$LOCOResult[[chrom_v3]]$fitted.values
+      mu.a<-as.vector(mu)
+      mu2.a<-mu.a *(1-mu.a)
+    }else{
       mu = obj.glmm.null$fitted.values
       mu.a<-as.vector(mu)
       mu2.a<-mu.a *(1-mu.a)
-      obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
-      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
-    }else if(chrom != ""){
-      chrom_v2 = as.character(chrom)
-      chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
-      if(obj.glmm.null$LOCOResult[[chrom_v3]]$isLOCO){
-        mu = obj.glmm.null$LOCOResult[[chrom_v3]]$fitted.values
-        mu.a<-as.vector(mu)
-        mu2.a<-mu.a *(1-mu.a)
-      }else{
-        mu = obj.glmm.null$fitted.values
-        mu.a<-as.vector(mu)
-        mu2.a<-mu.a *(1-mu.a)
-      }
-      obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
-      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
-    }else{
-      cat("LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
-      indChromCheck = TRUE
     }
+    obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
+    obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+  }else{
+    cat("LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
+    indChromCheck = TRUE
+  }
 #####
 
 
-  }else if(traitType == "quantitative"){
-    cat("It is a quantitative trait\n")
-  if(!isGroupTest){
-
-    if(!isCondition){
-        resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
-    }else{
-        resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar","Tstat_cond", "p.value_cond", "varT_cond", "BETA_cond", "SE_cond" )
-    }
-       write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
-  }
+}else if(traitType == "quantitative"){
+ cat("It is a quantitative trait\n")
+ if(!isGroupTest){
+   if(!isCondition){
+     resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
+   }else{
+     resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar","Tstat_cond", "p.value_cond", "varT_cond", "BETA_cond", "SE_cond" )
+   }
+   write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
+ }
 
     #OUT = NULL
     #numPassMarker = 0
     #mth = 0
     #sampleIndex = sampleIndex - 1
-    y = obj.glm.null$y
-    N = length(y)
-    tauVec = obj.glmm.null$theta
-    obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1)
-    obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
+  y = obj.glm.null$y
+  N = length(y)
+  tauVec = obj.glmm.null$theta
+  obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1)
+  obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
 
-    indChromCheck = FALSE
-    cat("obj.glmm.null$LOCO ", obj.glmm.null$LOCO, "\n")
-   if(!obj.glmm.null$LOCO){
+  indChromCheck = FALSE
+  cat("obj.glmm.null$LOCO ", obj.glmm.null$LOCO, "\n")
+  if(!obj.glmm.null$LOCO){
+    mu = obj.glmm.null$fitted.values
+    mu.a<-as.vector(mu)
+    obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+
+  }else if(chrom != ""){
+    chrom_v2 = as.character(chrom)
+    chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
+    if(obj.glmm.null$LOCOResult[[chrom_v3]]$isLOCO){
+      mu = obj.glmm.null$LOCOResult[[chrom_v3]]$fitted.values
+      mu.a<-as.vector(mu)
+    }else{
       mu = obj.glmm.null$fitted.values
       mu.a<-as.vector(mu)
-      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
-
-    }else if(chrom != ""){
-      chrom_v2 = as.character(chrom)
-      chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
-      if(obj.glmm.null$LOCOResult[[chrom_v3]]$isLOCO){
-        mu = obj.glmm.null$LOCOResult[[chrom_v3]]$fitted.values
-        mu.a<-as.vector(mu)
-      }else{
-        mu = obj.glmm.null$fitted.values
-        mu.a<-as.vector(mu)
-      }
-      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
-
-    }else{
-      cat("LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
-      indChromCheck = TRUE
     }
+    obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
 
   }else{
-    stop("ERROR! The type of the trait has to be either binary or quantitative\n")
+    cat("LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
+    indChromCheck = TRUE
   }
+
+}else{
+  stop("ERROR! The type of the trait has to be either binary or quantitative\n")
+}
 
 
 if(isCondition){
-    OUT_cond = NULL
-    for(i in 1:ncol(dosage_cond)){
-      G0  = dosage_cond[,i]
-      AC = sum(G0)
-      N  = length(G0)
-      AF = AC/(2*N)
-      MAF = AF
-      MAC = AC
-      if(AF > 0.5){
-        MAF = 1-AF
-        MAC = 2*N - MAC
-      }
-      varRatio = getvarRatio(MAC, ratioVec)
+  OUT_cond = NULL
+  for(i in 1:ncol(dosage_cond)){
+    G0  = dosage_cond[,i]
+    AC = sum(G0)
+    N  = length(G0)
+    AF = AC/(2*N)
+    MAF = AF
+    MAC = AC
+    if(AF > 0.5){
+      MAF = 1-AF
+      MAC = 2*N - MAC
+    }
+    varRatio = getvarRatio(MAC, ratioVec)
 
-      rowHeader = paste0("condMarker",i)
+    rowHeader = paste0("condMarker",i)
 
-      if(traitType == "binary"){
-        out1 = scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader)
-        OUT_cond = rbind(OUT_cond, c(as.numeric(out1[3]), as.numeric(out1[5]), as.numeric(out1[9])))
-      }else if(traitType == "quantitative"){
-        mu = obj.glmm.null$fitted.values
-        mu.a<-as.vector(mu)
-        obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+    if(traitType == "binary"){
+      out1 = scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader)
+      OUT_cond = rbind(OUT_cond, c(as.numeric(out1[3]), as.numeric(out1[5]), as.numeric(out1[9])))
+    }else if(traitType == "quantitative"){
 
-        out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma)
+      out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma)
         #out1 = scoreTest_SAIGE_quantitativeTrait(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec)
-        OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
-      }
-   OUT_cond = as.matrix(OUT_cond)
+      OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
+    }
+   
+     OUT_cond = as.matrix(OUT_cond)
 
-   } # end of for(i in 1:ncol(dosage_cond)){
+  } # end of for(i in 1:ncol(dosage_cond)){
 
   #covM for conditioning markers
-      cat("dim(obj.noK$XVX_inv_XV): ", dim(obj.noK$XVX_inv_XV), "\n")
-      cat("dim(dosage_cond): ", dim(dosage_cond), "\n")
-      dosage_cond_tilde<-dosage_cond  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% dosage_cond)
-#      dosage_cond_tilde = dosage_cond - (obj.noK$XVX_inv_XV)%*%dosage_cond
-      Mcond = ncol(dosage_cond_tilde)
+  cat("dim(obj.noK$XVX_inv_XV): ", dim(obj.noK$XVX_inv_XV), "\n")
+  cat("dim(dosage_cond): ", dim(dosage_cond), "\n")
+  dosage_cond_tilde<-dosage_cond  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% dosage_cond)
+#  dosage_cond_tilde = dosage_cond - (obj.noK$XVX_inv_XV)%*%dosage_cond
+  Mcond = ncol(dosage_cond_tilde)
       #G0_tilde = G0 - (obj.noK$XVX_inv_XV)%*%G0
       #dosage_cond_tilde = cbind(G0_tilde, dosage_cond_tilde)
-      covM = matrix(0,nrow=Mcond+1, ncol = Mcond+1)
-      covMsub = getcovM(dosage_cond_tilde, dosage_cond_tilde, sparseSigma)
-      covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
+  covM = matrix(0,nrow=Mcond+1, ncol = Mcond+1)
+  covMsub = getcovM(dosage_cond_tilde, dosage_cond_tilde, sparseSigma)
+  covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
 
-      GratioMatrix_cond = getGratioMatrix(dosage_cond, ratioVec)
-      G2tilde_P_G2tilde_inv = solve(covMsub %*% GratioMatrix_cond)
+  GratioMatrix_cond = getGratioMatrix(dosage_cond, ratioVec)
+  G2tilde_P_G2tilde_inv = solve(covMsub %*% GratioMatrix_cond)
 
 }else{# end of if(isCondition)
   OUT_cond = NULL
@@ -444,11 +446,8 @@ if(isCondition){
 }
 
 
-
-
-
 #determine minimum MAF for markers to be tested
-  if(minMAC < 1){minMAC = 1} ##01-19-2018
+  if(minMAC == 0){minMAC = 0.5} ##01-19-2018
   cat("minMAC: ",minMAC,"\n")
   cat("minMAF: ",minMAF,"\n")
   minMAFBasedOnMAC = minMAC/(2*N) 
@@ -459,9 +458,6 @@ if(isCondition){
   ##############START TEST########################
   startTime = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
   cat("Analysis started at ", startTime, "Seconds\n")
-
-  if(file.exists(SAIGEOutputFile)){file.remove(SAIGEOutputFile)}
-
 
 if(!isGroupTest){
 
@@ -517,8 +513,10 @@ if(!isGroupTest){
     SetSampleIdx_vcfDosage(sampleIndex, N)
   }
 
+if(!isVariant){
   cat("isVariant: ", isVariant, "\n") 
-
+  stop("ERROR! opening dosage file failed!!\n")
+}
 
 write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
 OUT = NULL
@@ -572,9 +570,16 @@ while(isVariant){
     }
 
     MAC = AC
+    MAF = AF
     if(AF > 0.5){
       MAC = 2*N - AC
+      MAF = 1 - AF
     }
+
+if(MAF >= testMinMAF & markerInfo >= minInfo){
+   numPassMarker = numPassMarker + 1
+
+
     varRatio = getvarRatio(MAC, ratioVec)
 
     if(indChromCheck){
@@ -601,10 +606,7 @@ while(isVariant){
       obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
 
     }
-    MAF = min(AF, 1-AF)
 
-if(MAF >= testMinMAF & markerInfo >= minInfo){
-      numPassMarker = numPassMarker + 1
   
 ##conditional analysis
    if(isCondition){	
@@ -615,8 +617,8 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
       G0_tilde = G0 - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0)
       #dosage_cond_tilde = cbind(G0_tilde, dosage_cond_tilde)	
       #covM = matrix(0,nrow=ncol(dosage_cond_tilde), ncol = ncol(dosage_cond_tilde))	
-      print(dim(G0_tilde))
-      print(dim(dosage_cond_tilde))	
+      #print(dim(G0_tilde))
+      #print(dim(dosage_cond_tilde))	
 
       #covM[1,2:ncol(covM)] = (t(mu.a*(1-mu.a)*G0_tilde)) %*% dosage_cond_tilde			
       covM[1,2:ncol(covM)] = getcovM(G0_tilde, dosage_cond_tilde,sparseSigma)			
@@ -628,11 +630,14 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
 
   if(traitType == "binary"){
     if(!IsOutputAFinCaseCtrl){
-      OUT = rbind(OUT, scoreTest_SAIGE_binaryTrait_cond(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, covM, OUT_cond, covariateVec))
+
+      OUT = rbind(OUT, scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader) )	
+      #OUT = rbind(OUT, scoreTest_SAIGE_binaryTrait_cond(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, covM, OUT_cond, covariateVec))
     }else{
       AFCase = sum(G0[y1Index])/(2*NCase)
       AFCtrl = sum(G0[y0Index])/(2*NCtrl)
-      OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait_cond(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, covM, OUT_cond, covariateVec),AFCase, AFCtrl))
+      OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader),AFCase, AFCtrl))	
+      #OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait_cond(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, covM, OUT_cond, covariateVec),AFCase, AFCtrl))
     }
    }else if(traitType == "quantitative"){
 
@@ -662,23 +667,95 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
   #if(mth == 100){break}
 } ####end of while(isVariant)
 
-}else{ #
+}else{ #end if(!isGroupTest){
   if(!isCondition){
     if(dosageFileType == "plain"){
       isCondition = FALSE
     }else if(dosageFileType == "bgen"){
       SetSampleIdx(sampleIndex, N)
     }else if(dosageFileType == "vcf"){
+      setMAFcutoffs(0, maxMAFforGroupTest)
       isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
     }
   }
   
-  
+  if(traitType == "quantitative"){
+    OUT = NULL
+    cat("It is a quantitative trait\n")
+    mth = 0
+    if(!isCondition){
+      resultHeader = c("Gene", "Pvalue", "N_MAC1","N_MAC2","N_MAC3","N_MAC4","N_MAC5","N_MACgt5","markerIDs","markerAFs")
+    }else{
+      resultHeader = c("Gene","Pvalue","Pvalue_cond","N_MAC1","N_MAC2","N_MAC3","N_MAC4","N_MAC5","N_MACgt5","markerIDs","markerAFs")
+    }
+    write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
 
-  
+    gf = file(groupFile, "r")
+    while ( TRUE ) {
+      marker_group_line = readLines(gf, n = 1)
+    #  print(marker_group_line)
+      if(length(marker_group_line) == 0 ){
+        break
+      }else{
+        geneID = strsplit(marker_group_line, split="\t")[[1]][1]
+        if(dosageFileType == "vcf"){
+          Gx = getGenoOfGene_vcf(marker_group_line)
+        }else if(dosageFileType == "bgen"){
+          Gx = getGenoOfGene_bgen(bgenFile,bgenFileIndex,marker_group_line, 0, maxMAFforGroupTest)
+        }
 
-}
+        G0 = Gx$dosages
+        cntMarker = Gx$cnt
+        cat("cntMarker: ", cntMarker, "\n")
+#       cat("markerIDs: ", Gx$markerIDs, "\n")
+#       cat("G0: ", G0, "\n")
+        if(cntMarker > 0){
+         Gmat = matrix(G0, byrow=F, ncol = cntMarker)
+#        cat("dim(Gmat): ", dim(Gmat), "\n")
+#        cat("Gmat[,1]: ", Gmat[,1], "\n")
+#        cat("ratioVec: ", ratioVec, "\n")
+#        cat("Gmat[,2]: ", Gmat[,2], "\n")
+        #  saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null, ratioVec)
+#        cat("colSums(Gmat): ", colSums(Gmat), "\n")
+         #saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null, ratioVec, Z_cond=dosage_cond, Z_cond_es=OUT_cond[,1], max_maf = maxMAF, sparseSigma = sparseSigma, method = "optimal.adj")
+	 #print(is.null(sparseSigma))
+	 #print("is.null(sparseSigma)")
+         saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null, ratioVec, G2_cond=dosage_cond, G2_cond_es=OUT_cond[,1], kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma)
+
+
+          cat("saigeskatTest$p.value: ", saigeskatTest$p.value, "\n")
+
+	if(isCondition){
+          OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$p.value.cond, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
+	}else{
+	  OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
+	}
+          mth = mth + 1
+          if(mth %% numLinesOutput == 0){
+            ptm <- proc.time()
+            print(ptm)
+            print(mth)
+            OUT = as.data.frame(OUT)
+            write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
+            OUT = NULL
+          }
+        }
+      }#end of else for if(length(line) == 0 )
+    } # end of while ( TRUE ) {
+
+    if(!is.null(OUT)){
+      OUT = as.data.frame(OUT)
+      write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
+      OUT = NULL
+    }
+  }else{
+    stop("ERROR! The type of the trait has to be quantitative\n")
+  }  
+  
+}#if(groupTest)
+
+
   #close the dosage file after tests
   if(dosageFileType == "plain"){
     closetestGenoFile_plainDosage()  
@@ -1234,7 +1311,7 @@ if(var1 == 0){
   if(isCondition){
     out1 = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2, BETA_c = BETA_c, SE_c = SE_c, Tstat_c = Tstat_c, p.value.c = p.value.c, var1_c = var1_c)
   }else{
-    out1 = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2,)
+    out1 = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2)
   }
 
 

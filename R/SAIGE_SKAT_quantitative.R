@@ -221,7 +221,7 @@ SKATtest = function(dosageFile = "",
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
       Gx_cond = getGenoOfGene_vcf(conditionlist)
     }else if(dosageFileType == "bgen"){
-      Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist, testMinMAF, maxMAF)
+      Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist)
     }else{
       cat("WARNING: conditional analysis can only work for dosageFileType vcf, sav or bgen\n")
     }
@@ -912,7 +912,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, ratioVec, G2_cond = NULL, G2_cond_e
         m = ncol(G1)
         n = nrow(G1)
 	cat("m=", m, "\n") 
-       id_include<-1:n
+        id_include<-1:n
         # Added by SLEE 4/24/2017
         out.method<-SKAT:::SKAT_Check_Method(method,r.corr, n=n, m=m)
         method=out.method$method
@@ -953,7 +953,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, ratioVec, G2_cond = NULL, G2_cond_e
 
 	#         If G1 is sparse, change it to the sparse matrix
         	if(mean(G1) < 0.1){
-                G1 = as(G1, "sparseMatrix")
+                  G1 = as(G1, "sparseMatrix")
         	}
 
         	if (kernel == "linear.weighted") {
@@ -962,8 +962,9 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, ratioVec, G2_cond = NULL, G2_cond_e
         	}
 
         	G1_tilde = G1  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G1)
-
+		cat("dim(G1)", dim(G1), "\n")
 		Score = as.vector(t(G1) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
+		cat("dim(Score)", length(Score), "\n")
 
 		#compute Score test statistics after conditionining		
 		if(!is.null(G2_cond)){
@@ -978,25 +979,25 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, ratioVec, G2_cond = NULL, G2_cond_e
 		if(is.null(obj$P)){
 
         		if(!is.null(sparseSigma)){
-				cat("first\n")
+#				cat("first\n")
 				#G1_tilde_Ps_G1_tilde = t(G1_tilde)%*% solve(sparseSigma) %*% G1_tilde
 				G1_tilde_Ps_G1_tilde = getcovM(G1_tilde, G1_tilde, sparseSigma)
 				if(!is.null(G2_cond)){
-				cat("second\n")
+#				cat("second\n")
 		#		G1_tilde_Ps_G1_tilde = getcovM(Z_tilde, Z_tilde, sparseSigma)
 				G2_tilde_Ps_G2_tilde = getcovM(G2_cond_tilde, G2_cond_tilde, sparseSigma)
-				cat("second2\n")
+#				cat("second2\n")
 				G1_tilde_Ps_G2_tilde = getcovM(G1_tilde, G2_cond_tilde, sparseSigma)
-				cat("second3\n")
+#				cat("second3\n")
 				G2_tilde_Ps_G1_tilde = getcovM(G2_cond_tilde, G1_tilde, sparseSigma)
-				cat("second4\n")
+#				cat("second4\n")
 
 		#		G2_tilde_Ps_G2_tilde = t(G2_cond_tilde)%*% solve(sparseSigma) %*% G2_cond_tilde
 		#		G1_tilde_Ps_G2_tilde = t(G1_tilde)%*% solve(sparseSigma) %*% G2_cond_tilde
 		#		G2_tilde_Ps_G1_tilde = t(G2_cond_tilde)%*% solve(sparseSigma) %*% G1_tilde
 
 				G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv = (G1_tilde_Ps_G2_tilde*(GratioMatrixall[1:m,c((m+1):(m+m_cond))]))%*%(solve(G2_tilde_Ps_G2_tilde*(GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))])))
-				cat("second5\n")
+#				cat("second5\n")
 		
 				Score_cond = Score - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% T2	
 
@@ -1005,8 +1006,9 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, ratioVec, G2_cond = NULL, G2_cond_e
 				Phi_cond = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m]) - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% (G2_tilde_Ps_G1_tilde * (GratioMatrixall[c((m+1):(m+m_cond)), 1:m]))
 				Phi_cond = as.matrix(Phi_cond)
 			}
-
-				Phi = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m])
+#			print("OKKKKKK")
+			Phi = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m])
+			cat("dim(Phi)", dim(Phi), "\n")
 			
 			}else{
 				G1_tilde_G1_tilde = t(G1_tilde) %*% G1_tilde
@@ -1051,10 +1053,15 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, ratioVec, G2_cond = NULL, G2_cond_e
 			#if(sum(diag(Phi_cond) < 10^-5) > 0){
 			#	re_cond = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
 			#}else{
-        			re_cond = SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL)
+        		re_cond = SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL)
 			#}
 		}
 
+#		print("HERE SKAT:::Met_SKAT_Get_Pvalue")
+#		print(Phi)
+#		print(Score)
+#		print(r.corr)
+#		print(method)
 		re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
 
 		if(!is.null(G2_cond)){
