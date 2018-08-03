@@ -911,7 +911,9 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, ratioVec, G2_cond = NULL, G2_cond_e
 	obj.noK = obj$obj.noK
         m = ncol(G1)
         n = nrow(G1)
-	cat("m=", m, "\n") 
+	cat("m =", m, "\n") 
+	#cat(colSums(G1),"\n")
+
         id_include<-1:n
         # Added by SLEE 4/24/2017
         out.method<-SKAT:::SKAT_Check_Method(method,r.corr, n=n, m=m)

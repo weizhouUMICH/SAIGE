@@ -147,7 +147,8 @@ Rcpp::List getGenoOfnthVar_vcfDosage(int mth) {
     Named("allele1") = alleles1,
     _["stringsAsFactors"] = false,
     Named("AC") = AC,
-    Named("AF") = AF
+    Named("AF") = AF,
+    Named("markerInfo") = record.prop("R2")
   );
 
 
