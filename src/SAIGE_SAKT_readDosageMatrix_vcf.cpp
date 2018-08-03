@@ -65,7 +65,7 @@ bool setvcfDosageMatrix(const std::string& vcfFileName,  const std::string& vcfF
 }
 
 // [[Rcpp::export]]
-Rcpp::List getGenoOfGene_vcf(std::string marker_group_line) {
+Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
   //bool isGetDosage = TRUE;
   using namespace Rcpp;
   List result ;
@@ -108,9 +108,10 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line) {
  //     std::cout << "it.sites(): " << it.sites() << std::endl;	
 
       std::string marker_id = it->chromosome() + ":" + std::to_string(it->position()) + "_" + it->ref() + "/" + it->alt();
-//  std::cout << "here4!" << std::endl; 
-    
-    
+      //std::cout << "here4!" << std::endl; 
+      //std::cout << it->prop("R2") << std::endl; 
+      std::string markerInfo_str = it->prop("R2");
+      float markerInfo = strtof((markerInfo_str).c_str(),0);
       for (auto dose_it = it->data().begin(); dose_it != it->data().end(); ++dose_it){
 	int lengthi = std::distance(it->data().begin(), it->data().end());
 	//std::cout << "lengthi: " << lengthi << std::endl;
@@ -143,13 +144,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line) {
       }else{
         MAF = AF;
       }
-//      std::cout << "MAF: " << MAF << std::endl;
-//      std::cout << "minMAF: " << minMAF << std::endl;
-//      std::cout << "maxMAF: " << maxMAF << std::endl;
-//      std::cout << "marker_id: " << marker_id << std::endl;
-      if(MAF >= minMAF && MAF <= maxMAF){
-//      std::cout << "In "<< std::endl;
-      //set missing dosages to be the 2*AF
+      if(MAF >= minMAF && MAF <= maxMAF && markerInfo >= minInfo){
         if(missing_cnt > 0){
 	  std::cout << "missing_cnt > 0!" << std::endl;
           float imputeDosage = 2*AF;
@@ -158,8 +153,6 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line) {
         }
       }
         group_matrix.insert(std::end(group_matrix), std::begin(dosagesforOneMarker), std::end(dosagesforOneMarker));
-//  std::cout << "here5!" << std::endl; 
-        //group_matrix[cnt * sample_size + dose_it.offset()] = *dose_it;
         cnt = cnt + 1;
         markerIDs.push_back(marker_id);
         markerAFs.push_back(AF);

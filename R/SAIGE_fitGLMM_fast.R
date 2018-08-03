@@ -956,10 +956,11 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 
 
   listOfMarkersForVarRatio = list()	
+  MACvector = getMACVec()
   if(!isCateVarianceRatio){
-    listOfMarkersForVarRatio[[1]] = sample(c(1:mMarkers), size = mMarkers, replace = FALSE)
+    MACindex = which(MACvector >= 20)
+    listOfMarkersForVarRatio[[1]] = sample(MACindex, size = length(MACindex), replace = FALSE)
   }else{
-    MACvector = getMACVec()
     #MAC == 1
     MACindex = which(MACvector == 1) 
     listOfMarkersForVarRatio[[1]] = sample(MACindex, size = length(MACindex), replace = FALSE)

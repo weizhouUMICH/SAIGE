@@ -263,7 +263,7 @@ SPAGMMATtest = function(dosageFile = "",
       setMAFcutoffs(0, 0.5)
       isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
-      Gx_cond = getGenoOfGene_vcf(conditionlist)
+      Gx_cond = getGenoOfGene_vcf(conditionlist, minInfo)
     }else if(dosageFileType == "bgen"){
       Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist)
     }else{
@@ -447,7 +447,7 @@ if(isCondition){
 
 
 #determine minimum MAF for markers to be tested
-  if(minMAC == 0){minMAC = 0.5} ##01-19-2018
+  if(minMAC == 0){minMAC = 1} ##01-19-2018
   cat("minMAC: ",minMAC,"\n")
   cat("minMAF: ",minMAF,"\n")
   minMAFBasedOnMAC = minMAC/(2*N) 
@@ -562,6 +562,7 @@ while(isVariant){
       G0 = Gx$dosages
       AC = Gx$variants$AC
       AF = Gx$variants$AF
+      markerInfo = Gx$markerInfo
       rowHeader=as.vector(unlist(Gx$variants))
       if(indChromCheck){
         CHR = Gx$variants$chromosome
@@ -674,7 +675,7 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
     }else if(dosageFileType == "bgen"){
       SetSampleIdx(sampleIndex, N)
     }else if(dosageFileType == "vcf"){
-      setMAFcutoffs(0, maxMAFforGroupTest)
+      setMAFcutoffs(testMinMAF, maxMAFforGroupTest)
       isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
     }
@@ -700,9 +701,9 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
       }else{
         geneID = strsplit(marker_group_line, split="\t")[[1]][1]
         if(dosageFileType == "vcf"){
-          Gx = getGenoOfGene_vcf(marker_group_line)
+          Gx = getGenoOfGene_vcf(marker_group_line, minInfo)
         }else if(dosageFileType == "bgen"){
-          Gx = getGenoOfGene_bgen(bgenFile,bgenFileIndex,marker_group_line, 0, maxMAFforGroupTest)
+          Gx = getGenoOfGene_bgen(bgenFile,bgenFileIndex, marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)
         }
 
         G0 = Gx$dosages

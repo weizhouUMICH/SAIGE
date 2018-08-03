@@ -1,5 +1,5 @@
 
-getGenoOfGene_bgen = function(bgenFile,bgenFileIndex,marker_group_line, minMAF=0, maxMAF=0.5){
+getGenoOfGene_bgen = function(bgenFile,bgenFileIndex,marker_group_line, minMAF=0, maxMAF=0.5, minInfo){
   ids_to_exclude = as.character(vector())
   ranges_to_include = data.frame(chromosome = NULL, start = NULL, end = NULL)
   ranges_to_exclude = data.frame(chromosome = NULL, start = NULL, end = NULL)
@@ -14,12 +14,13 @@ getGenoOfGene_bgen = function(bgenFile,bgenFileIndex,marker_group_line, minMAF=0
     for(i in 1:Mtest){
       Gx = getDosage_bgen_withquery()
       AF = Gx$variants$AF
+      markerInfo = getMarkerInfo()
       if(AF >= 0.5){
         MAF = 1 - AF
       }else{
         MAF = AF
       }
-      if(MAF >= minMAF && MAF < maxMAF){
+      if(MAF >= minMAF & MAF < maxMAF & markerInfo >= minInfo){
         Gvec = c(Gvec, Gx$dosages)
         markerIDs = c(markerIDs, Gx$variants$SNPID)
         markerAFs = c(markerIDs, Gx$variants$AF)

@@ -1075,13 +1075,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // getGenoOfGene_vcf
-Rcpp::List getGenoOfGene_vcf(std::string marker_group_line);
-RcppExport SEXP _SAIGE_getGenoOfGene_vcf(SEXP marker_group_lineSEXP) {
+Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo);
+RcppExport SEXP _SAIGE_getGenoOfGene_vcf(SEXP marker_group_lineSEXP, SEXP minInfoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type marker_group_line(marker_group_lineSEXP);
-    rcpp_result_gen = Rcpp::wrap(getGenoOfGene_vcf(marker_group_line));
+    Rcpp::traits::input_parameter< float >::type minInfo(minInfoSEXP);
+    rcpp_result_gen = Rcpp::wrap(getGenoOfGene_vcf(marker_group_line, minInfo));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1206,7 +1207,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_SetSampleIdx_forGenetest_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_forGenetest_vcfDosage, 2},
     {"_SAIGE_setMAFcutoffs", (DL_FUNC) &_SAIGE_setMAFcutoffs, 2},
     {"_SAIGE_setvcfDosageMatrix", (DL_FUNC) &_SAIGE_setvcfDosageMatrix, 3},
-    {"_SAIGE_getGenoOfGene_vcf", (DL_FUNC) &_SAIGE_getGenoOfGene_vcf, 1},
+    {"_SAIGE_getGenoOfGene_vcf", (DL_FUNC) &_SAIGE_getGenoOfGene_vcf, 2},
     {"_SAIGE_closevcfDosageFile", (DL_FUNC) &_SAIGE_closevcfDosageFile, 0},
     {"_SAIGE_sparse_row_idx_mult_v2", (DL_FUNC) &_SAIGE_sparse_row_idx_mult_v2, 1},
     {"_SAIGE_sparse_row_idx_mult", (DL_FUNC) &_SAIGE_sparse_row_idx_mult, 2},

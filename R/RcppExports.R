@@ -349,8 +349,8 @@ setvcfDosageMatrix <- function(vcfFileName, vcfFileIndex, vcfField) {
     .Call('_SAIGE_setvcfDosageMatrix', PACKAGE = 'SAIGE', vcfFileName, vcfFileIndex, vcfField)
 }
 
-getGenoOfGene_vcf <- function(marker_group_line) {
-    .Call('_SAIGE_getGenoOfGene_vcf', PACKAGE = 'SAIGE', marker_group_line)
+getGenoOfGene_vcf <- function(marker_group_line, minInfo) {
+    .Call('_SAIGE_getGenoOfGene_vcf', PACKAGE = 'SAIGE', marker_group_line, minInfo)
 }
 
 closevcfDosageFile <- function() {
