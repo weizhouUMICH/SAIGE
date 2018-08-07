@@ -384,7 +384,7 @@ public:
                         cout << "size of genoVecofPointers: " << genoVecofPointers.size() << endl;
 			try{	
                         for (int i = 0; i < numofGenoArray-1; i++){
-				//cout << "i = " << i << endl;
+			//	cout << "i = " << i << endl;
                                 genoVecofPointers[i] = new vector<unsigned char>;
                                 genoVecofPointers[i]->reserve(numMarkersofEachArray*ceil(float(N)/4));
 				//cout <<((*genoVecofPointers[i]).capacity()==numMarkersofEachArray*ceil(float(N)/4))<< endl;
