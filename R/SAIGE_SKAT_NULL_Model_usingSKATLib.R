@@ -19,7 +19,8 @@
 #' @param isCateVarianceRatio logical. Whether to estimate variance ratio based on different MAC categories. If yes, six categories will be used MAC = 1, 2, 3, 4, 5, >5. Currently, if isCateVarianceRatio=TRUE, then LOCO=FALSE 
 #' @param IsSparseKin logical. Whether to exploit the sparsity of GRM to estimate the variance ratio. By default, TRUE
 #' @param numRandomMarkerforSparseKin integer (>0). Number of markers to be used for first estimating the relatedness between each sample pair  if IsSparseKin is TRUE
-#' @param relatednessCutoff float. The threshold to treat two samples as unrelated if IsSparseKin is TRUE 
+#' @param relatednessCutoff float. The threshold to treat two samples as unrelated if IsSparseKin is TRUE
+#' @param methodforRelatedSample character. The method to fit model for related samples. GMMAT or EMMAX
 #' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio value, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
 #' @export
 fit_SKAT_NULL = function(kins = NULL, 
@@ -32,7 +33,8 @@ fit_SKAT_NULL = function(kins = NULL,
                 sampleIDColinphenoFile = "",
 		outputPrefix = "",
 		isCovariateTransform = TRUE,
-		sampleFileForDosages=""){
+		sampleFileForDosages="",
+		methodforRelatedSample="EMMAX"){
 
   #check and read files
 
@@ -97,10 +99,18 @@ fit_SKAT_NULL = function(kins = NULL,
 
 
   if(!is.null(kins)){
-    if(traitType == "quantitative"){
-      out.obj = SKAT_NULL_emmaX(formula.null, data = mmat_nomissing, K=kins)
-    }else{
-      stop("SKAT_NULL_emmaX does not work for binary tratis \n")
+    if(methodforRelatedSample == "EMMAX"){
+      if(traitType == "quantitative"){
+        out.obj = SKAT:::SKAT_NULL_emmaX(formula.null, data = mmat_nomissing, K=kins)
+      }else{
+        stop("SKAT_NULL_emmaX does not work for binary tratis \n")
+      }
+    }else if(methodforRelatedSample == "GMMAT"){
+      if(traitType == "quantitative"){
+        out.obj = GMMAT:::glmmkin(formula.null, data = mmat_nomissing, family=gaussian(link = "identity"), kins=as.matrix(kins), verbose=T)
+      }else{
+        out.obj = GMMAT:::glmmkin(formula.null, data = mmat_nomissing, family=binomial(link = "logit"), kins=as.matrix(kins), verbose=T) 
+      }
     }
   }else{
     if(traitType == "quantitative"){
