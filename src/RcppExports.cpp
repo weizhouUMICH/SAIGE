@@ -194,14 +194,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // setgeno
-void setgeno(std::string genofile, std::vector<int>& subSampleInGeno, float memoryChunk);
-RcppExport SEXP _SAIGE_setgeno(SEXP genofileSEXP, SEXP subSampleInGenoSEXP, SEXP memoryChunkSEXP) {
+void setgeno(std::string genofile, std::vector<int>& subSampleInGeno, float memoryChunk, bool isDiagofKinSetAsOne);
+RcppExport SEXP _SAIGE_setgeno(SEXP genofileSEXP, SEXP subSampleInGenoSEXP, SEXP memoryChunkSEXP, SEXP isDiagofKinSetAsOneSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type genofile(genofileSEXP);
     Rcpp::traits::input_parameter< std::vector<int>& >::type subSampleInGeno(subSampleInGenoSEXP);
     Rcpp::traits::input_parameter< float >::type memoryChunk(memoryChunkSEXP);
-    setgeno(genofile, subSampleInGeno, memoryChunk);
+    Rcpp::traits::input_parameter< bool >::type isDiagofKinSetAsOne(isDiagofKinSetAsOneSEXP);
+    setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne);
     return R_NilValue;
 END_RCPP
 }
@@ -1138,7 +1139,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_findIndiceRelatedSample", (DL_FUNC) &_SAIGE_findIndiceRelatedSample, 0},
     {"_SAIGE_parallelcalsparseGRM", (DL_FUNC) &_SAIGE_parallelcalsparseGRM, 1},
     {"_SAIGE_parallelsumTwoVec", (DL_FUNC) &_SAIGE_parallelsumTwoVec, 1},
-    {"_SAIGE_setgeno", (DL_FUNC) &_SAIGE_setgeno, 3},
+    {"_SAIGE_setgeno", (DL_FUNC) &_SAIGE_setgeno, 4},
     {"_SAIGE_Get_OneSNP_Geno", (DL_FUNC) &_SAIGE_Get_OneSNP_Geno, 1},
     {"_SAIGE_Get_OneSNP_Geno_forVarianceRatio", (DL_FUNC) &_SAIGE_Get_OneSNP_Geno_forVarianceRatio, 1},
     {"_SAIGE_Get_OneSNP_StdGeno", (DL_FUNC) &_SAIGE_Get_OneSNP_StdGeno, 1},

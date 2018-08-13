@@ -86,7 +86,7 @@ test_stdGeno = function(subSampleInGeno){
 
 
 #Fits the null glmm for binary traits
-glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff, isCovariateTransform) {
+glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff, isCovariateTransform, isDiagofKinSetAsOne) {
   #Fits the null generalized linear mixed model for a binary trait
   #Args:
   #  genofile: string. Plink file for the M1 markers to be used to construct the genetic relationship matrix 
@@ -116,7 +116,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     print("Start reading genotype plink file here")
   }
 
-  re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk)})
+  re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne)})
 
   if(verbose){
     print("Genotype reading is done")
@@ -248,7 +248,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
 
 
 #Fits the null glmm for a quantitative trait
-glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff){
+glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff, isCovariateTransform, isDiagofKinSetAsOne){
   #Fits the null linear mixed model for a quantitative trait
   #Args:
   #  genofile: string. Plink file for the M1 markers to be used to construct the genetic relationship matrix
@@ -279,7 +279,7 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     print("Start reading genotype plink file here")
   }
 
-  re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk)})
+  re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne)})
 
   if(verbose){
     print("Genotype reading is done")
@@ -295,8 +295,14 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   mu.eta = family$mu.eta(eta)
   Y = eta - offset + (y - mu)/mu.eta
   sqrtW = mu.eta/sqrt(fit0$family$variance(mu))
+#  cat("sqrtW: ",sqrtW,"\n")
   W = sqrtW^2
+  cat("fit0\n")
+  print(fit0)
   X = model.matrix(fit0)
+#  cat("X\n")
+#  print(X)
+
 
   X1 = SPAtest:::ScoreTest_wSaddleApprox_Get_X1(X)
 
@@ -323,8 +329,43 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 
   tau0 = tau
   cat("inital tau is ", tau,"\n")
+  #bvtest = rep(3.08474, n)
+  A = NULL
+  for(i in c(1:n)){
+  	bvtest = rep(0, n)
+  	bvtest[i] = 1
+  	a = getCrossprodMatAndKin(bvtest)
+  	A = c(A, a[i])
+  }
+  A = matrix(A, ncol=1)
+  write.table(A, "diagOfKin.txt", quote=F, row.names=F, col.names=F)
+
+  #bvtest = rep(0.05, n)
+  #a = getCrossprodMatAndKin(bvtest)
+  #print(a)
+
+  #bvtest = rep(5, n)
+  #a = getCrossprodMatAndKin(bvtest)
+  #print(a)
+
+
+  #bvtest = rep(1, n)
+  #a = getCrossprodMatAndKin(bvtest)
+  #print(a)
+
 
   re = getAIScore_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG, traceCVcutoff)
+  #cat("X\n")
+  #print(X)
+  #cat("Sigma_iX:\n")
+  #print(re$Sigma_iX)
+  #cat("Trace\n")
+  #print(re$Trace)
+  #cat("YPAPY:\n")
+  #print(re$YPAPY)
+  #cat("YPA0PY:\n")
+  #print(re$YPA0PY)
+
   tau[2] = max(0, tau0[2] + tau0[2]^2 * (re$YPAPY - re$Trace[2])/n)
   tau[1] = max(0, tau0[1] + tau0[1]^2 * (re$YPA0PY - re$Trace[1])/n)
   cat("tauv3 ",tau,"\n")
@@ -346,6 +387,7 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     fit = fitglmmaiRPCG_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
     tau = as.numeric(fit$tau)
     cov = as.matrix(fit$cov)
+    cat("cov: ", cov, "\n")
     alpha = as.numeric(fit$alpha)
     eta = as.numeric(fit$eta) + offset
     if(verbose) {
@@ -371,7 +413,15 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   res = y - mu
   Sigma_iy = getSigma_G(W, tau, res, maxiterPCG, tolPCG)
   Sigma_iX = getSigma_X(W, tau, X1, maxiterPCG, tolPCG)
-  coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+  #cat("Sigma_iX: ", Sigma_iX, "\n")
+
+  if(isCovariateTransform){
+    coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+  }else{
+    coef.alpha = alpha
+  }
+
+  #coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
 
 
   lmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged, sampleID = subPheno$IID, Sigma_iy = Sigma_iy, Sigma_iX = Sigma_iX, obj.noK=obj.noK, obj.glm.null=fit0, traitType="quantitative")
@@ -396,7 +446,13 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     	mu.eta = family$mu.eta(eta)
     	Y = eta - offset + (y - mu)/mu.eta
         res = y - mu
+        if(isCovariateTransform){
         coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+        }else{
+        coef.alpha = alpha
+        }
+
+        #coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
         lmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov)
       }else{
         lmmResult$LOCOResult[[j]] = list(isLOCO = FALSE)
@@ -490,7 +546,8 @@ fitNULLGLMM = function(plinkFile = "",
 		qr_sparse = FALSE,
 		Cholesky_sparse = FALSE,
 		pcg_sparse = TRUE,
-		isCovariateTransform = TRUE){
+		isCovariateTransform = TRUE,
+		isDiagofKinSetAsOne = FALSE){
                 #formula, phenoType = "binary",prefix, centerVariables = "", tol=0.02, maxiter=20, tolPCG=1e-5, maxiterPCG=500, nThreads = 1, Cutoff = 2, numMarkers = 1000, skipModelFitting = FALSE){
   if(nThreads > 1){
     RcppParallel:::setThreadOptions(numThreads = nThreads)
@@ -599,7 +656,8 @@ fitNULLGLMM = function(plinkFile = "",
     cat(nrow(dataMerge_sort), " samples will be used for analysis\n")
 #    cat("dataMerge_sort$IID ", dataMerge_sort$IID, "\n")
   }
-
+  #cat("dataMerge_sort:\n")
+  #print(dataMerge_sort)
 
   if(invNormalize){
       cat("Perform the inverse nomalization for ", phenoCol, "\n")
@@ -654,10 +712,10 @@ fitNULLGLMM = function(plinkFile = "",
 
 
     if(!skipModelFitting){
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
       save(modglmm, file = modelOut)
     }else{
-      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)	
+      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
       load(modelOut)
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
     }
@@ -697,11 +755,11 @@ fitNULLGLMM = function(plinkFile = "",
 
     if(!skipModelFitting){
 
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff))
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
       save(modglmm, file = modelOut)
       print("step2")
     }else{
-      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk)
+      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
       load(modelOut)
 
 

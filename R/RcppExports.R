@@ -73,8 +73,8 @@ parallelsumTwoVec <- function(x) {
     invisible(.Call('_SAIGE_parallelsumTwoVec', PACKAGE = 'SAIGE', x))
 }
 
-setgeno <- function(genofile, subSampleInGeno, memoryChunk) {
-    invisible(.Call('_SAIGE_setgeno', PACKAGE = 'SAIGE', genofile, subSampleInGeno, memoryChunk))
+setgeno <- function(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne) {
+    invisible(.Call('_SAIGE_setgeno', PACKAGE = 'SAIGE', genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne))
 }
 
 Get_OneSNP_Geno <- function(SNPIdx) {

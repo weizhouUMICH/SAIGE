@@ -57,6 +57,8 @@ public:
 	arma::ivec xout;
         arma::ivec yout;
 
+	bool setKinDiagtoOne;
+
         //std::vector<float> stdGenoVec;
 	//for LOCO
 	//bool LOCO = false;
@@ -297,8 +299,9 @@ public:
   	//This function is used instead of using a constructor because using constructor can not take
   	//genofile as an argument from runModel.R 
         //genofile is the predix for plink bim, bed, fam, files   
-  	void setGenoObj(std::string genofile, std::vector<int> subSampleInGeno, float memoryChunk){
-		//cout << "OK1\n";   
+  	void setGenoObj(std::string genofile, std::vector<int> subSampleInGeno, float memoryChunk, bool  isDiagofKinSetAsOne){
+		//cout << "OK1\n";
+		setKinDiagtoOne = isDiagofKinSetAsOne;   
 		ptrsubSampleInGeno = subSampleInGeno;
 		Nnomissing = subSampleInGeno.size(); 
     		// reset
@@ -965,7 +968,14 @@ struct CorssProd : public Worker
   	  	for(unsigned int i = begin; i < end; i++){
 			geno.Get_OneSNP_StdGeno(i, &vec);
 			float val1 = dot(vec,  m_bVec);
-			m_bout += val1 * (vec);
+			m_bout += val1 * (vec) ;
+		/*	std::cout << "i: " << i << std::endl;
+			for(unsigned int j = 0; j < 10; j++){
+				std::cout << "m_bVec[j] " << m_bVec[j] << std::endl;
+				std::cout << "vec[j] " << vec[j] << std::endl;
+			}
+		*/
+			//m_bout += val1 * (vec) / m_M;
   		}
   	}
   
@@ -1056,14 +1066,17 @@ arma::fvec parallelCrossProd(arma::fcolvec & bVec) {
   // call paralleReduce to start the work
   	parallelReduce(0, M, CorssProd);
  	
-	//cout << "M: " << M << endl;
-        //for(int i=0; i<100; ++i)
+	//cout << "print test; M: " << M << endl;
+        //for(int i=0; i<10; ++i)
         //{
-        //        cout << (CorssProd.m_bout/M)[i] << ' ';
+        //        cout << (CorssProd.m_bout)[i] << ' ' << endl;
+        //        cout << bVec[i] << ' ' << endl;
+        //        cout << (CorssProd.m_bout/M)[i] << ' ' << endl;
         //}
-        //cout << endl; 
+        ////cout << endl; 
   // return the computed product
   	return CorssProd.m_bout/M;
+  	//return CorssProd.m_bout;
 }
 
 
@@ -1310,11 +1323,10 @@ void  parallelsumTwoVec(arma::fvec &x) {
 
 
 // [[Rcpp::export]]
-void setgeno(std::string genofile, std::vector<int> & subSampleInGeno, float memoryChunk)
+void setgeno(std::string genofile, std::vector<int> & subSampleInGeno, float memoryChunk, bool isDiagofKinSetAsOne)
 {
-	
 	int start_s=clock();
-        geno.setGenoObj(genofile, subSampleInGeno, memoryChunk);
+        geno.setGenoObj(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne);
 	//geno.printAlleleFreqVec();
 	//geno.printGenoVec();
 	int stop_s=clock();
@@ -1371,8 +1383,11 @@ arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
 	float floatBuffer;
   	//float minvElement;
   
-   
-	diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno()) /M + tauVec(0)/wVec;
+  	if(!(geno.setKinDiagtoOne)){ 
+	  diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno()) /M + tauVec(0)/wVec;
+	}else{
+	  diagVec = tauVec(1) + tauVec(0)/wVec;
+	}
 	//make diag of kin to be 1 to compare results of emmax and gmmat
 	//diagVec = tauVec(1) + tauVec(0)/wVec;
 	for(unsigned int i=0; i< Nnomissing; i++){
@@ -1425,7 +1440,22 @@ arma::fcolvec getCrossprod(arma::fcolvec& bVec, arma::fvec& wVec, arma::fvec& ta
         }
         //
         arma::fvec crossProd1  = getCrossprodMatAndKin(bVec);
+	
+	//for(int j = 0; j < 10; j++){
+        //        std::cout << "bVec(j): " << bVec(j) << std::endl;
+        //        std::cout << "crossProd1(j): " << crossProd1(j) << std::endl;
+
+        //}
+
+
         crossProdVec = tauVec(0)*(bVec % (1/wVec)) + tauVec(1)*crossProd1;
+
+	//for(int j = 0; j < 10; j++){
+        //        std::cout << "crossProdVec(j): " << j << " " << crossProdVec(j) << std::endl;
+
+        //}
+
+
 
         return(crossProdVec);
 }
@@ -1474,11 +1504,24 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
         //        cout << "full set minvVec[i]: " << minvVec[i] << endl;
         //}
   	float sumr2 = sum(rVec % rVec);
-
+/*	if(bVec[0] == 1 && bVec[99] == 1){
+        for(int i = 0; i < 100; i++){
+                cout << "rVec[i]: " << i << " " << rVec[i] << endl;
+                cout << "minvVec[i]: " << i << " " << minvVec[i] << endl;
+                cout << "wVec[i]: " << i << " " << wVec[i] << endl;
+        }
+        }
+*/
   	arma::fvec zVec = minvVec % rVec;
   	arma::fvec z1Vec;
  	arma::fvec pVec = zVec;
-  
+	/*
+        if(bVec[0] == 1 && bVec[2] == 1){
+	for(int i = 0; i < 10; i++){ 
+		cout << "pVec[i]: " << i << " " << pVec[i] << endl;
+ 	}
+	}
+*/
   	arma::fvec xVec(Nnomissing);
   	xVec.zeros();
   
@@ -1489,11 +1532,41 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
     		arma::fvec preA = (rVec.t() * zVec)/(pVec.t() * ApVec);
 
     		float a = preA(0);
-    
+	
+/*	     if(bVec[0] == 1 && bVec[2] == 1){
+			cout << "bVec[0] == 1 && bVec[2] == 1: " << endl;
+        		for(int i = 0; i < 10; i++){
+			
+                		cout << "ApVec[i]: " << i << " " << ApVec[i] << endl;
+                		cout << "pVec[i]: " << i << " " << pVec[i] << endl;
+                		cout << "zVec[i]: " << i << " " << zVec[i] << endl;
+                		cout << "rVec[i]: " << i << " " << rVec[i] << endl;
+        		}
+        	    }   
+*/	
+ 
     		xVec = xVec + a * pVec;
-    
-    		r1Vec = rVec - a * ApVec;
+/*
+		if(bVec[0] == 1 && bVec[2] == 1){
+        		for(int i = 0; i < 10; i++){
+                		cout << "xVec[i]: " << i << " " << xVec[i] << endl;
+        		}
+        	}   
 
+*/
+
+ 
+    		r1Vec = rVec - a * ApVec;
+/*
+		if(bVec[0] == 1 && bVec[2] == 1){
+                        cout << "a: " << a  << endl;
+                        for(int i = 0; i < 10; i++){
+                                cout << "ApVec[i]: " << i << " " << ApVec[i] << endl;
+                                cout << "rVec[i]: " << i << " " << rVec[i] << endl;
+                                cout << "r1Vec[i]: " << i << " " << r1Vec[i] << endl;
+                        }
+                }
+*/
     		z1Vec = minvVec % r1Vec;
     		arma::fvec Prebet = (z1Vec.t() * r1Vec)/(zVec.t() * rVec);
     		float bet = Prebet(0);
@@ -1502,6 +1575,12 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
     		rVec = r1Vec;
     
     		sumr2 = sum(rVec % rVec);
+/*
+		if(bVec[0] == 1 && bVec[2] == 1){
+			std::cout << "sumr2: " << sumr2 << std::endl;
+			std::cout << "tolPCG: " << tolPCG << std::endl;
+		}
+*/
   	}
   
   	if (iter >= maxiterPCG){
@@ -1954,11 +2033,14 @@ Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  a
 
  	for(int i = 0; i < colNumX; i++){
     		XmatVecTemp = Xmat.col(i);
-
+		
     		Sigma_iX1.col(i) = getPCG1ofSigmaAndVector(wVec, tauVec, XmatVecTemp, maxiterPCG, tolPCG);
 
   	}
+//	for(int j = 0; j < 10; j++){
+//		std::cout << "Sigma_iX1(j,0): " << Sigma_iX1(j,0) << std::endl;
 
+//	}
 
   	arma::fmat Sigma_iX1t = Sigma_iX1.t();
   	arma::fmat Xmatt = Xmat.t();
@@ -1992,10 +2074,10 @@ Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  a
 
   	AI(1,0) = AI(0,1);
 
-  	cout << "AI " << AI << endl;
-  	cout << "Trace " << Trace << endl;
-  	cout << "YPAPY " << YPAPY << endl;
-  	cout << "cov " << cov1 << endl;
+  	//cout << "AI " << AI << endl;
+  	//cout << "Trace " << Trace << endl;
+  	//cout << "YPAPY " << YPAPY << endl;
+  	//cout << "cov " << cov1 << endl;
 
   	return Rcpp::List::create(Named("YPAPY") = YPAPY, Named("Trace") = Trace,Named("Sigma_iY") = Sigma_iY1, Named("Sigma_iX") = Sigma_iX1, Named("PY") = PY1, Named("AI") = AI, Named("cov") = cov1,  Named("YPA0PY") = YPA0PY);
 }
@@ -2070,6 +2152,7 @@ Rcpp::List fitglmmaiRPCG_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,
 
   	arma::fmat cov = re["cov"];
   	arma::fmat Sigma_iX = re["Sigma_iX"];
+	//std::cout << "Sigma_iX: " << Sigma_iX << std::endl;
  	arma::fmat Sigma_iXt = Sigma_iX.t();
 
   	arma::fvec alpha1 = cov * (Sigma_iXt * Yvec);
@@ -2104,14 +2187,14 @@ Rcpp::List fitglmmaiRPCG_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,
   	float step = 1.0;
 
 
-  	cout << "tau2 " << tauVec(0) << " " << tauVec(1) << endl;
+  	//cout << "tau2 " << tauVec(0) << " " << tauVec(1) << endl;
   	while (tauVec(0) < 0.0 || tauVec(1)  < 0.0){ //for Quantitative
-     		cout << "tauVec Here: " << tauVec << endl;
+     	//	cout << "tauVec Here: " << tauVec << endl;
     		step = step*0.5;
     		tauVec = tau0 + step * Dtau; //for Quantitative
-    		cout << "tau_4: " << tauVec << endl;
+    	//	cout << "tau_4: " << tauVec << endl;
     		tauVec.elem( find(zeroVec % (tauVec < tol)) ).zeros(); //for Quantitative Copied from GMMAT
-    		cout << "tau_5: " << tauVec << endl;
+    	//	cout << "tau_5: " << tauVec << endl;
  	}
 
 
@@ -2509,7 +2592,7 @@ Rcpp::List createSparseKin(arma::fvec& markerIndexVec, float relatednessCutoff, 
 */   // end of the openMP version 
 
 	std::cout << "ni: " << ni << std::endl;
-	for(size_t j=0; j < 100; j++){
+	for(size_t j=0; j < 10; j++){
 		std::cout << "iIndexVec[j]: " << iIndexVec[j] << std::endl;
 		std::cout << "jIndexVec[j]: " << jIndexVec[j] << std::endl;
 		std::cout << "kinValueVec[j]: " << kinValueVec[j] << std::endl;

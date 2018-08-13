@@ -32,9 +32,10 @@ fit_SKAT_NULL = function(kins = NULL,
                 qCovarCol = NULL,
                 sampleIDColinphenoFile = "",
 		outputPrefix = "",
-		isCovariateTransform = TRUE,
+		isCovariateTransform = FALSE,
 		sampleFileForDosages="",
-		methodforRelatedSample="EMMAX"){
+		methodforRelatedSample="EMMAX",
+		isDiagofKinSetAsOne = FALSE){
 
   #check and read files
 
@@ -70,23 +71,27 @@ fit_SKAT_NULL = function(kins = NULL,
     mmat = model.frame(formula.null, data, na.action=NULL)
     mmat$IID = data[,which(sampleIDColinphenoFile == colnames(data))]
 
-    mmat_nomissing0 = mmat[complete.cases(mmat),]
-    cat(nrow(mmat_nomissing0), " samples have non-missing phenotypes\n")
+    #mmat_nomissing0 = mmat[complete.cases(mmat),]
+    mmat_nomissing = mmat[complete.cases(mmat),]
+    #cat(nrow(mmat_nomissing0), " samples have non-missing phenotypes\n")
+    cat(nrow(mmat_nomissing), " samples have non-missing phenotypes\n")
   }
 
+#  cat("mmat_nomissing0\n")
+#  print(mmat_nomissing0)
 
-  if(!file.exists(sampleFileForDosages)){
-    stop("ERROR! sampleFile ", sampleFileForDosages, " does not exsit\n")
-  }else{
-    sampleListinDosage = data.frame(data.table:::fread(sampleFileForDosages, header=F, stringsAsFactors=FALSE))
-    sampleListinDosage$IndexDose = seq(1,nrow(sampleListinDosage), by=1)
-    cat(nrow(sampleListinDosage), " sample IDs are found in sample file\n")
-    colnames(sampleListinDosage)[1] = "IIDDose"
-
-    mmat_nomissing = merge(mmat_nomissing0, sampleListinDosage, by.x="IID", by.y="IIDDose")	
-  }
-
-
+#  if(!file.exists(sampleFileForDosages)){
+#    stop("ERROR! sampleFile ", sampleFileForDosages, " does not exsit\n")
+#  }else{
+#    sampleListinDosage = data.frame(data.table:::fread(sampleFileForDosages, header=F, stringsAsFactors=FALSE))
+#    sampleListinDosage$IndexDose = seq(1,nrow(sampleListinDosage), by=1)
+#    cat(nrow(sampleListinDosage), " sample IDs are found in sample file\n")
+#    colnames(sampleListinDosage)[1] = "IIDDose"
+#    mmat_nomissing = merge(mmat_nomissing0, sampleListinDosage, by.x="IID", by.y="IIDDose")	
+#  }
+#  mmat_nomissing = mmat_nomissing0
+#  cat("mmat_nomissing\n")
+#  print(mmat_nomissing)
 
 
   if(traitType == "quantitative"){
@@ -99,6 +104,9 @@ fit_SKAT_NULL = function(kins = NULL,
 
 
   if(!is.null(kins)){
+    if(isDiagofKinSetAsOne){
+      diag(kins) = 1
+    }
     if(methodforRelatedSample == "EMMAX"){
       if(traitType == "quantitative"){
         out.obj = SKAT:::SKAT_NULL_emmaX(formula.null, data = mmat_nomissing, K=kins)

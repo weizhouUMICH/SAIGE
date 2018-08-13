@@ -1158,12 +1158,3 @@ getMACvec_indVec = function(Z){
 
 	MACvec = colSums(Z)
         MACvec_indVec = MACvec
-        MACvec_indVec[which(MACvec <= 1.5)] = 1
-        MACvec_indVec[which(MACvec <= 2.5 & MACvec > 1.5)] = 2
-        MACvec_indVec[which(MACvec <= 3.5 & MACvec > 2.5)] = 3
-        MACvec_indVec[which(MACvec <= 4.5 & MACvec > 3.5)] = 4
-        MACvec_indVec[which(MACvec <= 5.5 & MACvec > 4.5)] = 5
-        MACvec_indVec[which(MACvec_indVec > 5.5)] = 6
-
-	return(MACvec_indVec)	
-}
