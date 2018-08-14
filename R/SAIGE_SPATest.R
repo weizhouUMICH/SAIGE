@@ -75,7 +75,10 @@ SPAGMMATtest = function(dosageFile = "",
 		 kernel="linear.weighted",
 		 method="optimal.adj",
 		 weights.beta=c(1,25),
-		 r.corr=0){
+		 r.corr=0,
+		 IsSingleVarinGroupTest = TRUE,
+		 cateVarRatioMinMACVecExclude=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5), 
+		 cateVarRatioMaxMACVecInclude=c(1.5,2.5,3.5,4.5,5.5,10.5,20.5)){
 
 
   if(groupFile == ""){
@@ -669,6 +672,14 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
 } ####end of while(isVariant)
 
 }else{ #end if(!isGroupTest){
+  OUT_single = NULL
+  if(IsSingleVarinGroupTest){
+    SAIGEOutputFile_single = paste0(SAIGEOutputFile, "_single")
+    headerline = c("markerID", "AC", "AF", "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
+    write(headerline,file = SAIGEOutputFile_single, ncolumns = length(headerline))
+  }
+
+
   if(!isCondition){
     if(dosageFileType == "plain"){
       isCondition = FALSE
@@ -682,6 +693,10 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
   }
   
   if(traitType == "quantitative"){
+    if(IsSingleVarinGroupTest){
+      
+    }
+
     OUT = NULL
     cat("It is a quantitative trait\n")
     mth = 0
@@ -722,10 +737,24 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
          #saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null, ratioVec, Z_cond=dosage_cond, Z_cond_es=OUT_cond[,1], max_maf = maxMAF, sparseSigma = sparseSigma, method = "optimal.adj")
 	 #print(is.null(sparseSigma))
 	 #print("is.null(sparseSigma)")
-         saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null, ratioVec, G2_cond=dosage_cond, G2_cond_es=OUT_cond[,1], kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma)
-
+         #saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null, ratioVec, G2_cond=dosage_cond, G2_cond_es=OUT_cond[,1], kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma)
+         saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=dosage_cond, G2_cond_es=OUT_cond[,1], kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma)
 
           cat("saigeskatTest$p.value: ", saigeskatTest$p.value, "\n")
+
+	if(IsSingleVarinGroupTest){
+		for(nc in 1:ncol(Gmat)){
+			G0_single = Gmat[,nc]
+			AC = sum(G0_single)
+			AF = AC/(2*length(G0_single))
+			MAC = min(AC, 2*length(G0_single)-AC)
+			varRatio = getvarRatio(MAC, ratioVec)
+			
+		      	out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma)
+			OUT_single = rbind(OUT_single, c((Gx$markerIDs)[nc], AC, (Gx$markerAFs)[nc], N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
+		}
+
+	}
 
 	if(isCondition){
           OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$p.value.cond, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
@@ -740,6 +769,10 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
             OUT = as.data.frame(OUT)
             write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
             OUT = NULL
+		
+	    OUT_single = as.data.frame(OUT_single)
+	    write.table(OUT_single, SAIGEOutputFile_single, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)	
+	    OUT_single = NULL	
           }
         }
       }#end of else for if(length(line) == 0 )
@@ -749,6 +782,12 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
       OUT = as.data.frame(OUT)
       write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
       OUT = NULL
+
+      OUT_single = as.data.frame(OUT_single)
+      write.table(OUT_single, SAIGEOutputFile_single, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
+      OUT_single = NULL
+	
+
     }
   }else{
     stop("ERROR! The type of the trait has to be quantitative\n")

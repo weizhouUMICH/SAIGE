@@ -542,7 +542,9 @@ fitNULLGLMM = function(plinkFile = "",
 		numRandomMarkerforSparseKin = 500,
 		relatednessCutoff = 0.125, 
 		isCateVarianceRatio = FALSE,
-		cateVarRatioVec = c(1,1,1,1,1,1),
+		cateVarRatioIndexVec = c(1,1,1,1,1,1),
+		cateVarRatioMinMACVecExclude = c(0.5,1.5,2.5,3.5,4.5,5.5),
+		cateVarRatioMaxMACVecInclude = c(1.5,2.5,3.5,4.5,5.5),
 		qr_sparse = FALSE,
 		Cholesky_sparse = FALSE,
 		pcg_sparse = TRUE,
@@ -785,7 +787,7 @@ fitNULLGLMM = function(plinkFile = "",
                                                     chromosomeStartIndexVec = chromosomeStartIndexVec,
                                                     chromosomeEndIndexVec = chromosomeEndIndexVec,
 						    isCateVarianceRatio = isCateVarianceRatio,
-						    cateVarRatioVec = cateVarRatioVec,
+						    cateVarRatioIndexVec = cateVarRatioIndexVec,
 						    IsSparseKin = IsSparseKin,
 						    numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
 						    relatednessCutoff = relatednessCutoff,
@@ -969,7 +971,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                                                     chromosomeStartIndexVec,
                                                     chromosomeEndIndexVec,
 						    isCateVarianceRatio,
-						    cateVarRatioVec,
+						    cateVarRatioIndexVec,
 						    IsSparseKin,
 						    numRandomMarkerforSparseKin,
                                                     relatednessCutoff,
@@ -1019,19 +1021,17 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
     MACindex = which(MACvector >= 20)
     listOfMarkersForVarRatio[[1]] = sample(MACindex, size = length(MACindex), replace = FALSE)
   }else{
-    #MAC == 1
-    MACindex = which(MACvector == 1) 
-    listOfMarkersForVarRatio[[1]] = sample(MACindex, size = length(MACindex), replace = FALSE)
-    MACindex = which(MACvector == 2)
-    listOfMarkersForVarRatio[[2]] = sample(MACindex, size = length(MACindex), replace = FALSE)
-    MACindex = which(MACvector == 3)
-    listOfMarkersForVarRatio[[3]] = sample(MACindex, size = length(MACindex), replace = FALSE)
-    MACindex = which(MACvector == 4)
-    listOfMarkersForVarRatio[[4]] = sample(MACindex, size = length(MACindex), replace = FALSE)
-    MACindex = which(MACvector == 5)
-    listOfMarkersForVarRatio[[5]] = sample(MACindex, size = length(MACindex), replace = FALSE)
-    MACindex = which(MACvector > 5)
-    listOfMarkersForVarRatio[[6]] = sample(MACindex, size = length(MACindex), replace = FALSE)
+    numCate = length(cateVarRatioIndexVec)
+    for(i in 1:(numCate-1)){
+      MACindex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
+      listOfMarkersForVarRatio[[i]] = sample(MACindex, size = length(MACindex), replace = FALSE)	
+    }
+    if(length(cateVarRatioMaxMACVecInclude) == (numCate-1)){
+      MACindex = which(MACvector > cateVarRatioMinMACVecExclude[numCate])
+    }else{
+      MACindex = which(MACvector > cateVarRatioMinMACVecExclude[numCate] & MACvector <= cateVarRatioMaxMACVecInclude[numCate])
+    }
+    listOfMarkersForVarRatio[[numCate]] = sample(MACindex, size = length(MACindex), replace = FALSE)
   }
 #getMACVec
  # listOfMarkersForVarRatio = c(1:mMarkers)
@@ -1115,7 +1115,7 @@ Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
 
 
 for(k in 1:length(listOfMarkersForVarRatio)){
-  if(cateVarRatioVec[k] == 1){
+  if(cateVarRatioIndexVec[k] == 1){
 
   numMarkers0 = numMarkers
   OUTtotal = NULL
