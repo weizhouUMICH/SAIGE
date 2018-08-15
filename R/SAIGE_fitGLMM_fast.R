@@ -338,7 +338,7 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   	A = c(A, a[i])
   }
   A = matrix(A, ncol=1)
-  write.table(A, "diagOfKin.txt", quote=F, row.names=F, col.names=F)
+  write.table(A, "/net/hunt/disk2/zhowei/project/SAIGE_SKAT/simulation_08_2018/jobs/SAIGE_SKATO/step1/jobs/diagOfKin.txt", quote=F, row.names=F, col.names=F)
 
   #bvtest = rep(0.05, n)
   #a = getCrossprodMatAndKin(bvtest)
