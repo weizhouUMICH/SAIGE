@@ -544,8 +544,8 @@ SAIGE_SKAT_withRatioVec_old  = function( Z, obj, ratioVec, kernel= "linear.weigh
         MACvec_indVec[which(MACvec <= 5.5 & MACvec > 4.5)] = 5
         MACvec_indVec[which(MACvec_indVec > 5.5)] = 6
 
-        cat("MACvec_indVec: ", MACvec_indVec, "\n")
-        cat("dim(Z) is ", dim(Z), "\n")
+  #      cat("MACvec_indVec: ", MACvec_indVec, "\n")
+  #      cat("dim(Z) is ", dim(Z), "\n")
 	#print(Z)
         # If Z is sparse, change it to the sparse matrix
         if(mean(Z) < 0.1){
@@ -695,9 +695,9 @@ if(m >  0){
 
         MACvec_indVec = getMACvec_indVec(Z)
 
-        cat("MACvec_indVec: ", MACvec_indVec, "\n")
-        cat("m is ", m , "\n")
-        cat("m_cond is ", m_cond , "\n")
+       # cat("MACvec_indVec: ", MACvec_indVec, "\n")
+       # cat("m is ", m , "\n")
+       # cat("m_cond is ", m_cond , "\n")
         ##summaize the number of markers falling in each MAC category
         markerNumbyMAC = c(sum(MACvec_indVec == 1), sum(MACvec_indVec == 2), sum(MACvec_indVec == 3), sum(MACvec_indVec == 4), sum(MACvec_indVec == 5), sum(MACvec_indVec == 6))
 
@@ -831,7 +831,7 @@ getGratioMatrix = function(G, ratioVec){
         MACvec_indVec[which(MACvec <= 5.5 & MACvec > 4.5)] = 5
         MACvec_indVec[which(MACvec_indVec > 5.5)] = 6
 
-        cat("MACvec_indVec: ", MACvec_indVec, "\n")
+       # cat("MACvec_indVec: ", MACvec_indVec, "\n")
 
         indMatrix = contr.sum(6, contrasts = FALSE)
 
@@ -851,7 +851,6 @@ getGratioMatrix = function(G, ratioVec){
 
 
 getcovM = function(G1, G2, sparseSigma){
-
    pcginvSigma = NULL
    for(i in 1:ncol(G2)){
      c3<-pcg(sparseSigma, G2[,i])
@@ -1314,7 +1313,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 getGratioMatrix = function(MACvec_indVec, ratioVec){
 
 	numCate = length(ratioVec)
-        cat("MACvec_indVec: ", MACvec_indVec, "\n")
+       # cat("MACvec_indVec: ", MACvec_indVec, "\n")
 
         indMatrix = contr.sum(numCate, contrasts = FALSE)
 
@@ -1344,7 +1343,7 @@ getGratioMatrix_old = function(G, ratioVec){
         MACvec_indVec[which(MACvec <= 5.5 & MACvec > 4.5)] = 5
         MACvec_indVec[which(MACvec_indVec > 5.5)] = 6
 
-        cat("MACvec_indVec: ", MACvec_indVec, "\n")
+       # cat("MACvec_indVec: ", MACvec_indVec, "\n")
 
         indMatrix = contr.sum(6, contrasts = FALSE)
 
@@ -1415,12 +1414,16 @@ getMACvec_indVec = function(Z){
 
 getCateVarRatio_indVec = function(G, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude){
 
+	
 	if(ncol(G) > 1){
         	MACvector = colSums(G)
+		
 	}else{
 		MACvector = NULL
 		MACvector = c(MACvector, sum(as.vector(G[,1])) )
 	}
+
+	MACvector[which(MACvector > nrow(G))] = 2*nrow(G) - MACvector[which(MACvector > nrow(G))]
 
         MACvec_indVec = rep(0, length(MACvector))
 	#cat("here1 MACvec_indVec: ", MACvec_indVec, "\n")		

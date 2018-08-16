@@ -1,4 +1,4 @@
-options(stringsAsFactors=F)
+options(stringsAsFactors=F, digits=4)
 #' Run single variant score tests with SPA based on the logistic mixed model.
 #'
 #' @param dosageFile character. Path to dosage file. Each line contains dosages for a marker to be tested
@@ -243,7 +243,7 @@ SPAGMMATtest = function(dosageFile = "",
   if(!isGroupTest){
 
     if (dosageFileType == "bgen" | dosageFileType == "vcf"){
-      dosageFilecolnamesSkip = c("CHR","POS","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2")
+      dosageFilecolnamesSkip = c("CHR","POS","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
     }else{
       dosageFilecolnamesSkip = c(dosageFilecolnamesSkip, "AC", "AF")
     }
@@ -440,7 +440,17 @@ if(isCondition){
   covMsub = getcovM(dosage_cond_tilde, dosage_cond_tilde, sparseSigma)
   covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
 
-  GratioMatrix_cond = getGratioMatrix(dosage_cond, ratioVec)
+
+  MACvec_indVec_cond = getCateVarRatio_indVec(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
+  GratioMatrix_cond = getGratioMatrix(MACvec_indVec_cond, ratioVec)
+
+ print("covMsub")
+ print(covMsub)
+ print("GratioMatrix_cond")
+ print(GratioMatrix_cond)
+
+ print(covMsub%*%GratioMatrix_cond)
+#  GratioMatrix_cond = getGratioMatrix(dosage_cond, ratioVec)
   G2tilde_P_G2tilde_inv = solve(covMsub %*% GratioMatrix_cond)
 
 }else{# end of if(isCondition)
@@ -534,7 +544,7 @@ while(isVariant){
       AC = sum(G0)
       AF = AC/(2*N)
       rowHeader=getrowHeaderVec_plainDosage()
-      rowHeader = c(rowHeader, AC, AF)
+      rowHeader = c(rowHeader, AC, AF, markerInfo)
       if(indChromCheck){      
         CHR = rowHeader[which(dosageFilecolnamesSkip == dosageFileChrCol)]
         #cat("CHR is here ", CHR , "\n")
@@ -552,7 +562,7 @@ while(isVariant){
       G0 = Gx$dosages
       AC = Gx$variants$AC
       AF = Gx$variants$AF
-
+      Gx$variants$markerInfo = markerInfo
       rowHeader=as.vector(unlist(Gx$variants))
       if(indChromCheck){
 	CHR = Gx$variants$chromosome
@@ -565,7 +575,7 @@ while(isVariant){
       G0 = Gx$dosages
       AC = Gx$variants$AC
       AF = Gx$variants$AF
-      markerInfo = Gx$markerInfo
+      markerInfo = Gx$variants$markerInfo
       rowHeader=as.vector(unlist(Gx$variants))
       if(indChromCheck){
         CHR = Gx$variants$chromosome
@@ -580,6 +590,11 @@ while(isVariant){
       MAF = 1 - AF
     }
 
+
+#cat("MAF is ", MAF, "\n")
+#cat("testMinMAF is ", testMinMAF, "\n")
+#cat("markerInfo is ", markerInfo, "\n")
+#cat("minInfo is ", minInfo, "\n")
 if(MAF >= testMinMAF & markerInfo >= minInfo){
    numPassMarker = numPassMarker + 1
 
@@ -617,16 +632,45 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
       #dosage_cond_tilde = dosage_cond - (obj.noK$XVX_inv_XV)%*%dosage_cond
 #      G0_tilde = G0 - (obj.noK$XVX_inv_XV)%*%G0
       Gall = cbind(G0, dosage_cond)
-      GratioMatrixall = getGratioMatrix(Gall, ratioVec)
+if(FALSE){
+      G0test = G0	
+      if(AF > 0.5){G0test = 2-G0}
+      G0condtest=dosage_cond
+      for(i in 1:ncol(dosage_cond)){
+		AFcond = mean(dosage_cond[,i])/2
+			
+		if(AFcond > 0.5){
+		G0condtest[,i] = 2-dosage_cond[,i]
+		MAFcond = 1-AFcond
+		G0condtest[,i] = (G0condtest[,i]-MAFcond)/sqrt(MAFcond*2*(1-MAFcond))
+
+		}else{
+			MAFcond = AFcond
+			G0condtest[,i] = dosage_cond[,i]
+			G0condtest[,i] = (G0condtest[,i]-MAFcond)/sqrt(MAFcond*2*(1-MAFcond))
+
+		}
+	}
+
+      Gcorr = t((G0test-MAF)/(sqrt(2*MAF*(1-MAF))))%*%G0condtest/N
+      print("Gcorr")
+      print(Gcorr)
+}
+
+      MACvec_indVec_Gall = getCateVarRatio_indVec(Gall, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
+      GratioMatrixall = getGratioMatrix(MACvec_indVec_Gall, ratioVec)
+	
+
+      #GratioMatrixall = getGratioMatrix(Gall, ratioVec)
       G0_tilde = G0 - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0)
       #dosage_cond_tilde = cbind(G0_tilde, dosage_cond_tilde)	
       #covM = matrix(0,nrow=ncol(dosage_cond_tilde), ncol = ncol(dosage_cond_tilde))	
       #print(dim(G0_tilde))
       #print(dim(dosage_cond_tilde))	
-
       #covM[1,2:ncol(covM)] = (t(mu.a*(1-mu.a)*G0_tilde)) %*% dosage_cond_tilde			
       covM[1,2:ncol(covM)] = getcovM(G0_tilde, dosage_cond_tilde,sparseSigma)			
       G1tilde_P_G2tilde = covM[1,c(2:ncol(covM))]*(GratioMatrixall[1,c(2:ncol(covM))])
+
    }else{ #end of if(isCondition)
       G1tilde_P_G2tilde = NULL
       GratioMatrixall = NULL
@@ -693,10 +737,6 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
   }
   
   if(traitType == "quantitative"){
-    if(IsSingleVarinGroupTest){
-      
-    }
-
     OUT = NULL
     cat("It is a quantitative trait\n")
     mth = 0
@@ -1307,6 +1347,9 @@ if(isCondition){
  
   #Tstat_c = Tstat - covM[1,c(2:m_all)] %*% (solve(covM[c(2:m_all),c(2:m_all)])) %*% T2stat
   Tstat_c = Tstat - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% T2stat
+  cat("G1tilde_P_G2tilde: ", G1tilde_P_G2tilde, "\n")
+  cat("G2tilde_P_G2tilde_inv: ", G2tilde_P_G2tilde_inv, "\n")
+  cat("T2stat: ", T2stat, "\n")
 
   #var1_c = var1 - (covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
   var1_c = var1 - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
@@ -1323,7 +1366,7 @@ if(AF > 0.5){
     }	
 }
 
-if(var1 == 0){
+if(var1 < 1*10^-5){
   p.value = 1
   BETA = NA
   SE = NA
@@ -1336,7 +1379,7 @@ if(var1 == 0){
 
 
   if(isCondition){
-    if(var1_c == 0){
+    if(var1_c < 1*10^-5){
       p.value.c = 1
       BETA_c = NA
       SE_c = NA
