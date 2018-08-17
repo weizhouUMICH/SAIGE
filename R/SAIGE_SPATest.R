@@ -81,6 +81,7 @@ SPAGMMATtest = function(dosageFile = "",
 		 cateVarRatioMaxMACVecInclude=c(1.5,2.5,3.5,4.5,5.5,10.5,20.5),
 		 singleGClambda = 1){
 
+  # if group file is specified, the region-based test will be performed, otherwise, the single-variant assoc test will be performed. 
 
   if(groupFile == ""){
     isGroupTest = FALSE
@@ -94,8 +95,8 @@ SPAGMMATtest = function(dosageFile = "",
   }
 
 
-####check and read files
-  #sparseSigmaFile
+ ####check and read files
+ #sparseSigmaFile
  cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
   if(sparseSigmaFile == ""){
     sparseSigma = NULL
@@ -1347,11 +1348,15 @@ if(isCondition){
 #  G2tilde_P_G2tilde_inv = solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)]))
 
  
+#  cat("Tstat: ", Tstat, "\n")
+  G1tilde_P_G2tilde = matrix(G1tilde_P_G2tilde,nrow=1)
   #Tstat_c = Tstat - covM[1,c(2:m_all)] %*% (solve(covM[c(2:m_all),c(2:m_all)])) %*% T2stat
   Tstat_c = Tstat - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% T2stat
-  cat("G1tilde_P_G2tilde: ", G1tilde_P_G2tilde, "\n")
-  cat("G2tilde_P_G2tilde_inv: ", G2tilde_P_G2tilde_inv, "\n")
-  cat("T2stat: ", T2stat, "\n")
+#  cat("G1tilde_P_G2tilde: ", G1tilde_P_G2tilde, "\n")
+#  print(dim(G1tilde_P_G2tilde))
+#  print(dim(G2tilde_P_G2tilde_inv))
+#  cat("G2tilde_P_G2tilde_inv: ", G2tilde_P_G2tilde_inv, "\n")
+#  cat("T2stat: ", T2stat, "\n")
 
   #var1_c = var1 - (covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
   var1_c = var1 - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
