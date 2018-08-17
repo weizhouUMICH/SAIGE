@@ -450,9 +450,10 @@ if(isCondition){
  print("GratioMatrix_cond")
  print(GratioMatrix_cond)
 
- print(covMsub%*%GratioMatrix_cond)
+ #print(covMsub%*%GratioMatrix_cond)
 #  GratioMatrix_cond = getGratioMatrix(dosage_cond, ratioVec)
-  G2tilde_P_G2tilde_inv = solve(covMsub %*% GratioMatrix_cond)
+#  G2tilde_P_G2tilde_inv = solve(covMsub %*% GratioMatrix_cond)
+  G2tilde_P_G2tilde_inv = solve(covMsub * GratioMatrix_cond)
 
 }else{# end of if(isCondition)
   OUT_cond = NULL
