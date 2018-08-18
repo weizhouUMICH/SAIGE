@@ -15,16 +15,6 @@
 #include "data_format.hpp"
 #include "savvy.hpp"
 
-//namespace savvy
-//{
-//namespace vcf
-//{
-#include <htslib/synced_bcf_reader.h>
-#include <htslib/vcf.h>
-//}
-//}
-#include <shrinkwrap/gz.hpp>
-
 #include <fstream>
 #include <iterator>
 #include <string>
@@ -35,8 +25,9 @@
 #include <cmath>
 #include <algorithm>
 #include <set>
+#include <unordered_set>
 #include <ctime>
-#include <htslib/hts.h>
+#include <cassert>
 
 namespace savvy
 {
@@ -48,9 +39,51 @@ namespace savvy
       none = 0,
       bgzip
     };
+
+    enum class empty_vector_policy : std::uint8_t
+    {
+      fail = 0,
+      skip,
+      skip_with_warning
+    };
     //################################################################//
 
     std::vector<std::string> query_chromosomes(const std::string& file_path);
+
+    namespace detail
+    {
+      enum class hts_info_type
+      {
+        bcf_bt_null  = 0,
+        bcf_bt_int8  = 1,
+        bcf_bt_int16 = 2,
+        bcf_bt_int32 = 3,
+        bcf_bt_float = 5,
+        bcf_bt_char  = 7
+      };
+
+      class hts_file_base
+      {
+      public:
+        static std::unique_ptr<hts_file_base> create_file(const std::string& file_path);
+        static std::unique_ptr<hts_file_base> create_indexed_file(const std::string& file_path, const region& reg);
+
+        virtual ~hts_file_base() {}
+
+        virtual void init_headers(std::vector<std::pair<std::string,std::string>>& destination) = 0;
+        virtual void init_sample_ids(std::vector<std::string>& destination) = 0;
+        virtual void init_info_fields(std::vector<std::string>& destination) = 0;
+        virtual std::size_t cur_fmt_field_size() const = 0;
+        virtual const char*const cur_fmt_field(std::size_t idx) const = 0;
+        virtual std::size_t cur_num_alleles() const = 0;
+        virtual bool read_next_record() = 0;
+        virtual site_info cur_site_info(std::size_t allele_index) const = 0;
+        virtual bool get_cur_format_values_int32(const char* tag, int**buf, int*sz) const = 0;
+        virtual bool get_cur_format_values_float(const char* tag, int**buf, int*sz) const = 0;
+      };
+
+      std::unique_ptr<std::ostream> create_out_stream(const std::string& file_path, compression_type type);
+    }
 
     //################################################################//
     template <std::size_t VecCnt>
@@ -68,8 +101,10 @@ namespace savvy
       reader_base(reader_base&& source) :
         headers_(std::move(source.headers_)),
         subset_map_(std::move(source.subset_map_)),
+        hts_file_(std::move(source.hts_file_)),
         subset_size_(source.subset_size_),
         state_(source.state_),
+        empty_vector_policy_(source.empty_vector_policy_),
         gt_(source.gt_),
         gt_sz_(source.gt_sz_),
         allele_index_(source.allele_index_),
@@ -98,10 +133,9 @@ namespace savvy
       const std::vector<std::string>& samples() const;
       const std::vector<std::string>& info_fields() const;
       const std::vector<std::pair<std::string, std::string>>& headers() const { return headers_; }
+      void set_policy(enum empty_vector_policy policy) { empty_vector_policy_ = policy; }
     protected:
-      virtual bcf_hdr_t* hts_hdr() const = 0;
-      virtual bcf1_t* hts_rec() const = 0;
-      virtual bool read_hts_record() = 0;
+      static const int bcf_gt_missing = 0;
       void init_sample_ids();
       void init_property_fields();
       void init_headers();
@@ -114,26 +148,26 @@ namespace savvy
       void read_variant_details(site_info& destination);
 
       template <typename... T>
-      std::size_t read_requested_genos(T&... vec);
+      std::size_t read_requested_genos(site_info& annotations, T&... vec);
       template <std::size_t Idx, typename T1>
-      bool read_genos_to(fmt data_format, T1& vec);
+      bool read_genos_to(fmt data_format, site_info& annotations, T1& vec);
       template <std::size_t Idx, typename T1, typename... T2>
-      bool read_genos_to(fmt data_format, T1& vec, T2&... others);
+      bool read_genos_to(fmt data_format, site_info& annotations, T1& vec, T2&... others);
 
       template <typename T>
-      void read_genotypes_al(T& destination);
+      void read_genotypes_al(site_info& annotations, T& destination);
       template <typename T>
-      void read_genotypes_gt(T& destination);
+      void read_genotypes_gt(site_info& annotations, T& destination);
       template <typename T>
-      void read_genotypes_gp(T& destination);
+      void read_genotypes_gp(site_info& annotations, T& destination);
       template <typename T>
-      void read_genotypes_ds(T& destination);
+      void read_genotypes_ds(site_info& annotations, T& destination);
       template <typename T>
-      void read_genotypes_hds(T& destination);
+      void read_genotypes_hds(site_info& annotations, T& destination);
       template <typename T>
-      void read_genotypes_gl(T& destination);
+      void read_genotypes_gl(site_info& annotations, T& destination);
       template <typename T>
-      void read_genotypes_pl(T& destination);
+      void read_genotypes_pl(site_info& annotations, T& destination);
 
       void init_requested_formats(fmt f);
       template <typename... T2>
@@ -144,7 +178,9 @@ namespace savvy
       std::vector<std::string> property_fields_;
       std::array<fmt, VecCnt> requested_data_formats_;
       std::vector<std::uint64_t> subset_map_;
+      std::unique_ptr<detail::hts_file_base> hts_file_;
       std::uint64_t subset_size_;
+      empty_vector_policy empty_vector_policy_ = empty_vector_policy::fail;
       std::ios::iostate state_;
       int* gt_;
       int gt_sz_;
@@ -211,14 +247,12 @@ namespace savvy
 //        return ret;
 //      }
 
-      bool read_hts_record();
-
-      bcf_hdr_t* hts_hdr() const { return hts_hdr_; }
-      bcf1_t* hts_rec() const { return hts_rec_; }
+//      bcf_hdr_t* hts_hdr() const { return hts_hdr_; }
+//      bcf1_t* hts_rec() const { return hts_rec_; }
     private:
-      htsFile* hts_file_;
-      bcf_hdr_t* hts_hdr_;
-      bcf1_t* hts_rec_;
+//      htsFile* hts_file_;
+//      bcf_hdr_t* hts_hdr_;
+//      bcf1_t* hts_rec_;
     };
     //################################################################//
 
@@ -246,17 +280,16 @@ namespace savvy
       template <typename Pred, typename... T>
       indexed_reader<VecCnt>& read_if(Pred fn, site_info& annotations, T&... destinations);
     private:
-      bool read_hts_record();
 //      index_reader& seek(const std::string& chromosome, std::uint64_t position);
 //
 //      static std::string get_chromosome(const index_reader& rdr, const marker& mkr);
-      bcf_hdr_t* hts_hdr() const { return bcf_sr_get_header(synced_readers_, 0); }
-      bcf1_t* hts_rec() const { return hts_rec_; }
+//      bcf_hdr_t* hts_hdr() const { return bcf_sr_get_header(synced_readers_, 0); }
+//      bcf1_t* hts_rec() const { return hts_rec_; }
     private:
       region region_;
       std::string file_path_;
-      bcf_srs_t* synced_readers_;
-      bcf1_t* hts_rec_;
+//      bcf_srs_t* synced_readers_;
+//      bcf1_t* hts_rec_;
       bounding_point bounding_type_;
     };
     //################################################################//
@@ -303,9 +336,11 @@ namespace savvy
       void write_multi_sample_level_data(const std::size_t ploidy, const T&... data);
     private:
       std::vector<std::string> info_fields_;
+      std::vector<int> info_field_types_;
       std::vector<fmt> format_fields_;
       std::unique_ptr<std::ostream> output_stream_;
       std::size_t sample_size_;
+      char phase_character_ = '|';
     };
     //################################################################//
 
@@ -318,43 +353,9 @@ namespace savvy
     template <std::size_t VecCnt>
     void reader_base<VecCnt>::init_headers()
     {
-      bcf_hdr_t* hdr = hts_hdr();
-      if (hdr)
+      if (hts_file_)
       {
-        this->headers_.reserve(std::size_t(hdr->nhrec - 1));
-        for (int i = 0; i < hdr->nhrec; ++i)
-        {
-          std::string key, val;
-          if (hdr->hrec[i]->key && hdr->hrec[i]->value)
-          {
-            key = hdr->hrec[i]->key;
-            val = hdr->hrec[i]->value;
-          }
-          else if (hdr->hrec[i]->key && hdr->hrec[i]->nkeys) // (hdr->hrec[i]->type == BCF_HL_INFO || hdr->hrec[i]->type == BCF_HL_FLT || hdr->hrec[i]->type == BCF_HL_STR))
-          {
-            bcf_hrec_t* r = hdr->hrec[i];
-            key = r->key;
-            std::stringstream ss_val;
-
-            ss_val << "<";
-            for (int j = 0; j < r->nkeys - 1; ++j) // minus 1 to remove IDX;
-            {
-              if (j > 0)
-                ss_val << ",";
-              if (r->keys[j])
-                ss_val << r->keys[j];
-              ss_val << "=";
-              if (r->vals[j])
-                ss_val << r->vals[j];
-            }
-            ss_val << ">";
-            val = ss_val.str();
-          }
-
-          if (key.size())
-            this->headers_.emplace_back(std::move(key), std::move(val));
-          //ret.insert(std::upper_bound(ret.begin(), ret.end(), std::make_pair(key, std::string()), [](const auto& a, const auto& b) { return a.first < b.first; }), {std::move(key), std::move(val)});
-        }
+        hts_file_->init_headers(headers_);
       }
     }
 
@@ -362,18 +363,18 @@ namespace savvy
     std::vector<std::string> reader_base<VecCnt>::subset_samples(const std::set<std::string>& subset)
     {
       std::vector<std::string> ret;
-      const char** beg = hts_hdr() ? (const char**) hts_hdr()->samples : nullptr;
-      const char** end = hts_hdr() ? (const char**) (hts_hdr()->samples + bcf_hdr_nsamples(hts_hdr())) : nullptr;
-      ret.reserve(std::min(subset.size(), (std::size_t)std::distance(beg, end)));
+//      const char** beg = hts_hdr() ? (const char**) hts_hdr()->samples : nullptr;
+//      const char** end = hts_hdr() ? (const char**) (hts_hdr()->samples + bcf_hdr_nsamples(hts_hdr())) : nullptr;
+      ret.reserve(std::min(subset.size(), (std::size_t)std::distance(sample_ids_.begin(), sample_ids_.end())));
 
       subset_map_.clear();
-      subset_map_.resize((std::size_t)std::distance(beg, end), std::numeric_limits<std::uint64_t>::max());
+      subset_map_.resize((std::size_t)std::distance(sample_ids_.begin(), sample_ids_.end()), std::numeric_limits<std::uint64_t>::max());
       std::uint64_t subset_index = 0;
-      for (auto it = beg; it != end; ++it)
+      for (auto it = sample_ids_.begin(); it != sample_ids_.end(); ++it)
       {
         if (subset.find(*it) != subset.end())
         {
-          subset_map_[std::distance(beg, it)] = subset_index;
+          subset_map_[std::distance(sample_ids_.begin(), it)] = subset_index;
           ret.push_back(*it);
           ++subset_index;
         }
@@ -399,45 +400,15 @@ namespace savvy
     template <std::size_t VecCnt>
     void reader_base<VecCnt>::init_sample_ids()
     {
-      bcf_hdr_t* hdr = hts_hdr();
-      if (hdr)
-      {
-        const char **beg = (const char **) (hdr->samples);
-        const char **end = (const char **) (hdr->samples + bcf_hdr_nsamples(hdr));
-        sample_ids_.reserve(end - beg);
-
-        for (; beg != end; ++beg)
-        {
-          sample_ids_.emplace_back(*beg);
-        }
-      }
+      if (hts_file_)
+        hts_file_->init_sample_ids(sample_ids_);
     }
 
     template <std::size_t VecCnt>
     void reader_base<VecCnt>::init_property_fields()
     {
-      bcf_hdr_t* hdr = hts_hdr();
-      if (hdr)
-      {
-
-        this->property_fields_ = {"ID", "QUAL", "FILTER"};
-        for (int i = 0; i < hdr->nhrec; ++i)
-        {
-          if (hdr->hrec[i]->type == BCF_HL_INFO)
-          {
-            bcf_hrec_t* r = hdr->hrec[i];
-            for (int j = 0; j < r->nkeys; ++j)
-            {
-              if (strcmp(r->keys[j], "ID") == 0)
-              {
-                const char* inf = r->vals[j];
-                if (inf)
-                  this->property_fields_.emplace_back(inf);
-              }
-            }
-          }
-        }
-      }
+      if (hts_file_)
+        hts_file_->init_info_fields(property_fields_);
     }
 
     template <std::size_t VecCnt>
@@ -471,15 +442,14 @@ namespace savvy
 
     template <std::size_t VecCnt>
     template <typename... T>
-    std::size_t reader_base<VecCnt>::read_requested_genos(T&... destinations)
+    std::size_t reader_base<VecCnt>::read_requested_genos(savvy::site_info& annotations, T&... destinations)
     {
       std::size_t cnt = 0;
       clear_destinations(destinations...);
-      bcf_unpack(hts_rec(), BCF_UN_ALL);
-      for (int i = 0; i < hts_rec()->n_fmt; ++i)
+
+      for (int i = 0; i < hts_file_->cur_fmt_field_size(); ++i)
       {
-        int fmt_id = hts_rec()->d.fmt[i].id;
-        std::string fmt_key = hts_hdr()->id[BCF_DT_ID][fmt_id].key;
+        std::string fmt_key = hts_file_->cur_fmt_field(i);
 
         std::int64_t gt_idx     = std::distance(requested_data_formats_.begin(), std::find(requested_data_formats_.begin(), requested_data_formats_.end(), fmt::ac));
         std::int64_t allele_idx = std::distance(requested_data_formats_.begin(), std::find(requested_data_formats_.begin(), requested_data_formats_.end(), fmt::gt));
@@ -488,44 +458,52 @@ namespace savvy
         {
           if (gt_idx < VecCnt)
           {
-            cnt += read_genos_to<0>(fmt::ac, destinations...);
+            cnt += read_genos_to<0>(fmt::ac, annotations, destinations...);
           }
           else // allele_idx < VecCnt
           {
-            cnt += read_genos_to<0>(fmt::gt, destinations...);
+            cnt += read_genos_to<0>(fmt::gt, annotations, destinations...);
           }
         }
         else if (fmt_key == "DS")
         {
-          cnt += read_genos_to<0>(fmt::ds, destinations...);
+          cnt += read_genos_to<0>(fmt::ds, annotations, destinations...);
         }
         else if (fmt_key == "HDS")
         {
-          cnt += read_genos_to<0>(fmt::hds, destinations...);
+          cnt += read_genos_to<0>(fmt::hds, annotations, destinations...);
         }
         else if (fmt_key == "GP")
         {
-          cnt += read_genos_to<0>(fmt::gp, destinations...);
+          cnt += read_genos_to<0>(fmt::gp, annotations, destinations...);
         }
         else if (fmt_key == "GL")
         {
-          cnt += read_genos_to<0>(fmt::gl, destinations...);
+          cnt += read_genos_to<0>(fmt::gl, annotations, destinations...);
         }
         else if (fmt_key == "PL")
         {
-          cnt += read_genos_to<0>(fmt::pl, destinations...);
+          cnt += read_genos_to<0>(fmt::pl, annotations, destinations...);
         }
         else
         {
           // Discard
         }
       }
+
+      if (cnt != VecCnt && empty_vector_policy_ != empty_vector_policy::skip)
+      {
+        std::cerr << "Variant is missing requested data format type." << std::endl;
+        if (empty_vector_policy_ == empty_vector_policy::fail)
+          state_ = std::ios::badbit | state_;
+      }
+
       return cnt;
     }
 
     template <std::size_t VecCnt>
     template <std::size_t Idx, typename T1>
-    bool reader_base<VecCnt>::read_genos_to(fmt data_format, T1& destination)
+    bool reader_base<VecCnt>::read_genos_to(fmt data_format, site_info& annotations, T1& destination)
     {
       bool ret = true;
       if (requested_data_formats_[Idx] == data_format)
@@ -533,25 +511,25 @@ namespace savvy
         switch (data_format)
         {
           case fmt::gt:
-            read_genotypes_al(destination);
+            read_genotypes_al(annotations, destination);
             break;
           case fmt::ac:
-            read_genotypes_gt(destination);
+            read_genotypes_gt(annotations, destination);
             break;
           case fmt::gp:
-            read_genotypes_gp(destination);
+            read_genotypes_gp(annotations, destination);
             break;
           case fmt::ds:
-            read_genotypes_ds(destination);
+            read_genotypes_ds(annotations, destination);
             break;
           case fmt::hds:
-            read_genotypes_hds(destination);
+            read_genotypes_hds(annotations, destination);
             break;
           case fmt::gl:
-            read_genotypes_gl(destination);
+            read_genotypes_gl(annotations, destination);
             break;
           case fmt::pl:
-            read_genotypes_pl(destination);
+            read_genotypes_pl(annotations, destination);
             break;
         }
       }
@@ -565,15 +543,15 @@ namespace savvy
 
     template <std::size_t VecCnt>
     template <std::size_t Idx, typename T1, typename... T2>
-    bool reader_base<VecCnt>::read_genos_to(fmt data_format, T1& vec, T2&... others)
+    bool reader_base<VecCnt>::read_genos_to(fmt data_format, site_info& annotations, T1& vec, T2&... others)
     {
       if (requested_data_formats_[Idx] == data_format)
       {
-        return read_genos_to<Idx>(data_format, vec);
+        return read_genos_to<Idx>(data_format, annotations, vec);
       }
       else
       {
-        return read_genos_to<Idx + 1>(data_format, others...);
+        return read_genos_to<Idx + 1>(data_format, annotations, others...);
       }
     }
 
@@ -584,81 +562,17 @@ namespace savvy
       {
         bool res = true;
         ++allele_index_;
-        if (!hts_rec() || allele_index_ >= hts_rec()->n_allele)
+        if (allele_index_ >= hts_file_->cur_num_alleles())
         {
-          res = read_hts_record();
-          if (res)
-            bcf_unpack(hts_rec(), BCF_UN_SHR);
+          res = hts_file_->read_next_record();
+
 
           this->allele_index_ = 1;
         }
         
         if (res)
         {
-          std::size_t n_info = hts_rec()->n_info;
-          std::size_t n_flt = hts_rec()->d.n_flt;
-          bcf_info_t* info = hts_rec()->d.info;
-          std::unordered_map<std::string, std::string> props;
-          props.reserve(n_info + 2);
-
-          if (std::isnan(hts_rec()->qual))
-          {
-            props["QUAL"] = ".";
-          }
-          else
-          {
-            std::string qual(std::to_string(hts_rec()->qual));
-            qual.erase(qual.find_last_not_of(".0") + 1); // rtrim zeros.
-            props["QUAL"] = std::move(qual);
-          }
-
-          std::stringstream ss;
-          for (std::size_t i = 0; i < n_flt; ++i)
-          {
-            if (i > 0)
-              ss << ";";
-            ss << bcf_hdr_int2id(hts_hdr(), BCF_DT_ID, hts_rec()->d.flt[i]);
-          }
-          std::string fltr(ss.str());
-          if (fltr == "." || fltr == "PASS")
-            fltr.clear();
-          props["FILTER"] = std::move(fltr);
-          props["ID"] = hts_rec()->d.id;
-
-
-          for (std::size_t i = 0; i < n_info; ++i)
-          {
-            // bcf_hdr_t::id[BCF_DT_ID][$key].key
-            const char* key = hts_hdr()->id[BCF_DT_ID][info[i].key].key;
-            if (key)
-            {
-              switch (info[i].type)
-              {
-                case BCF_BT_NULL:
-                  props[key] = "1"; // Flag present so should be true.
-                  break;
-                case BCF_BT_INT8:
-                case BCF_BT_INT16:
-                case BCF_BT_INT32:
-                  props[key] = std::to_string(info[i].v1.i);
-                  break;
-                case BCF_BT_FLOAT:
-                  props[key] = std::to_string(info[i].v1.f);
-                  props[key].erase(props[key].find_last_not_of(".0") + 1); // rtrim zeros.
-                  break;
-                case BCF_BT_CHAR:
-                  props[key] = std::string((char*)info[i].vptr, info[i].vptr_len);
-                  break;
-              }
-            }
-          }
-
-          destination = site_info(
-            std::string(bcf_hdr_id2name(hts_hdr(), hts_rec()->rid)),
-            static_cast<std::uint64_t>(hts_rec()->pos + 1),
-            std::string(hts_rec()->d.allele[0]),
-            std::string(hts_rec()->n_allele > 1 ? hts_rec()->d.allele[allele_index_] : ""),
-            std::move(props));
+          destination = hts_file_->cur_site_info(allele_index_);
         }
 
         if (!res)
@@ -669,24 +583,30 @@ namespace savvy
 
     template <std::size_t VecCnt>
     template <typename T>
-    void reader_base<VecCnt>::read_genotypes_al(T& destination)
+    void reader_base<VecCnt>::read_genotypes_al(site_info& annotations, T& destination)
     {
       if (good())
       {
         const typename T::value_type alt_value = typename T::value_type(1);
-        if (allele_index_ > 1 || bcf_get_genotypes(hts_hdr(), hts_rec(), &(gt_), &(gt_sz_)) >= 0)
+        if (allele_index_ > 1 || hts_file_->get_cur_format_values_int32("GT", &(gt_), &(gt_sz_)))
         {
           if (gt_sz_ % samples().size() != 0)
           {
-            // TODO: mixed ploidy at site error.
+            std::cerr << "ERROR: mixed ploidy at site" << std::endl;
+            state_ = std::ios::badbit;
           }
           else
           {
             const int allele_index_plus_one = allele_index_ + 1;
             const std::uint64_t ploidy(gt_sz_ / samples().size());
+
+            std::size_t an = samples().size() * ploidy;
+            std::size_t ac = 0;
+
             if (subset_map_.size())
             {
-              destination.resize(subset_size_ * ploidy);
+              an = subset_size_ * ploidy;
+              destination.resize(an);
 
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
@@ -694,24 +614,42 @@ namespace savvy
                 if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
                 {
                   if (gt_[i] == bcf_gt_missing)
+                  {
                     destination[subset_map_[sample_index] * ploidy + (i % ploidy)] = std::numeric_limits<typename T::value_type>::quiet_NaN();
+                    --an;
+                  }
                   else if ((gt_[i] >> 1) == allele_index_plus_one)
+                  {
                     destination[subset_map_[sample_index] * ploidy + (i % ploidy)] = alt_value;
+                    ++ac;
+                  }
                 }
               }
             }
             else
             {
-              destination.resize(gt_sz_);
+              destination.resize(an);
 
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
                 if (gt_[i] == bcf_gt_missing)
+                {
                   destination[i] = std::numeric_limits<typename T::value_type>::quiet_NaN();
+                  --an;
+                }
                 else if ((gt_[i] >> 1) == allele_index_plus_one)
+                {
                   destination[i] = alt_value;
+                  ++ac;
+                }
               }
             }
+
+            annotations.prop("AC", std::to_string(ac));
+            annotations.prop("AN", std::to_string(an));
+            if (an)
+              annotations.prop("AF", std::to_string(static_cast<float>(ac) / static_cast<float>(an)));
+
             return;
           }
         }
@@ -722,25 +660,31 @@ namespace savvy
 
     template <std::size_t VecCnt>
     template <typename T>
-    void reader_base<VecCnt>::read_genotypes_gt(T& destination)
+    void reader_base<VecCnt>::read_genotypes_gt(site_info& annotations, T& destination)
     {
       if (good())
       {
         const typename T::value_type alt_value = typename T::value_type(1);
-        if (allele_index_ > 1 || bcf_get_genotypes(hts_hdr(), hts_rec(), &(gt_), &(gt_sz_)) >= 0)
+        if (allele_index_ > 1 || hts_file_->get_cur_format_values_int32("GT", &(gt_), &(gt_sz_)))
         {
           if (gt_sz_ % samples().size() != 0)
           {
-            // TODO: mixed ploidy at site error.
+            std::cerr << "ERROR: mixed ploidy at site" << std::endl;
+            state_ = std::ios::badbit;
           }
           else
           {
             const std::uint64_t ploidy(gt_sz_ / samples().size());
             const int allele_index_plus_one = allele_index_ + 1;
 
+            std::size_t an = samples().size() * ploidy;
+            std::size_t ac = 0;
+
             if (subset_map_.size())
             {
               destination.resize(subset_size_);
+
+              an = subset_size_ * ploidy;
 
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
@@ -748,9 +692,15 @@ namespace savvy
                 if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
                 {
                   if (gt_[i] == bcf_gt_missing)
+                  {
                     destination[subset_map_[sample_index]] += std::numeric_limits<typename T::value_type>::quiet_NaN();
+                    --an;
+                  }
                   else if ((gt_[i] >> 1) == allele_index_plus_one)
+                  {
                     destination[subset_map_[sample_index]] += alt_value;
+                    ++ac;
+                  }
                 }
               }
             }
@@ -761,11 +711,23 @@ namespace savvy
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
                 if (gt_[i] == bcf_gt_missing)
+                {
                   destination[i / ploidy] += std::numeric_limits<typename T::value_type>::quiet_NaN();
+                  --an;
+                }
                 else if ((gt_[i] >> 1) == allele_index_plus_one)
+                {
                   destination[i / ploidy] += alt_value;
+                  ++ac;
+                }
               }
             }
+
+            annotations.prop("AC", std::to_string(ac));
+            annotations.prop("AN", std::to_string(an));
+            if (an)
+              annotations.prop("AF", std::to_string(static_cast<float>(ac) / static_cast<float>(an)));
+
             return;
           }
         }
@@ -776,40 +738,54 @@ namespace savvy
 
     template <std::size_t VecCnt>
     template <typename T>
-    void reader_base<VecCnt>::read_genotypes_ds(T& destination)
+    void reader_base<VecCnt>::read_genotypes_ds(site_info& annotations, T& destination)
     {
       if (good())
       {
-        if (hts_rec()->n_allele > 2)
+        if (hts_file_->cur_num_alleles() > 2)
         {
-          state_ = std::ios::failbit; // multi allelic GP not supported.
+          std::cerr << "multi-allelic GP not supported" << std::endl;
+          state_ = std::ios::badbit;
           return;
         }
 
-        if (bcf_get_format_float(hts_hdr(),hts_rec(),"DS", &(gt_), &(gt_sz_)) >= 0)
+
+        if (hts_file_->get_cur_format_values_float("DS", &(gt_), &(gt_sz_)))
         {
-          int num_samples = hts_hdr()->n[BCF_DT_SAMPLE];
+          float* ds = (float*) (void*) (gt_);
+          const std::size_t num_samples = sample_ids_.size();
           if (gt_sz_ % num_samples != 0)
           {
-            // TODO: mixed ploidy at site error.
+            std::cerr << "ERROR: mixed ploidy at site" << std::endl;
+            state_ = std::ios::badbit;
           }
           else
           {
-            const std::uint64_t ploidy(gt_sz_ / hts_rec()->n_sample);
+            const std::uint64_t ploidy(gt_sz_ / num_samples);
             const typename T::value_type zero_value{0};
+
+            std::size_t an = samples().size() * ploidy;
+            float dose_sum = 0.f;
 
             if (subset_map_.size())
             {
               destination.resize(subset_size_);
+              an = subset_size_ * ploidy;
 
-              float* ds = (float*) (void*) (gt_);
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
                 const std::uint64_t sample_index = i / ploidy;
                 if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
                 {
-                  if (ds[i] != zero_value)
-                    destination[subset_map_[sample_index]] = ds[i];
+                  float cur_ds = ds[i];
+                  if (cur_ds != zero_value)
+                  {
+                    destination[subset_map_[sample_index]] = cur_ds;
+                    if (std::isnan(cur_ds))
+                      an -= ploidy;
+                    else
+                      dose_sum += cur_ds;
+                  }
                 }
               }
             }
@@ -817,13 +793,24 @@ namespace savvy
             {
               destination.resize(gt_sz_);
 
-              float* ds = (float*) (void*) (gt_);
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
-                if (ds[i] != zero_value)
-                  destination[i] = ds[i];
+                float cur_ds = ds[i];
+                if (cur_ds != zero_value)
+                {
+                  destination[i] = cur_ds;
+                  if (std::isnan(cur_ds))
+                    an -= ploidy;
+                  else
+                    dose_sum += cur_ds;
+                }
               }
             }
+
+            annotations.prop("AN", std::to_string(an));
+            if (an)
+              annotations.prop("AF", std::to_string(dose_sum / static_cast<float>(an)));
+
             return;
           }
         }
@@ -834,40 +821,54 @@ namespace savvy
 
     template <std::size_t VecCnt>
     template <typename T>
-    void reader_base<VecCnt>::read_genotypes_hds(T& destination)
+    void reader_base<VecCnt>::read_genotypes_hds(site_info& annotations, T& destination)
     {
       if (good())
       {
-        if (hts_rec()->n_allele > 2)
+        if (hts_file_->cur_num_alleles() > 2)
         {
-          state_ = std::ios::failbit; // multi allelic HDS not supported.
+          std::cerr << "multi allelic HDS not supported" << std::endl;
+          state_ = std::ios::badbit;
           return;
         }
 
-        if (bcf_get_format_float(hts_hdr(),hts_rec(),"HDS", &(gt_), &(gt_sz_)) >= 0)
+
+        if (hts_file_->get_cur_format_values_float("HDS", &(gt_), &(gt_sz_)))
         {
-          int num_samples = hts_hdr()->n[BCF_DT_SAMPLE];
+          float *hds = (float *) (void *) (gt_);
+          const std::size_t num_samples = sample_ids_.size();
           if (gt_sz_ % num_samples != 0)
           {
-            // TODO: mixed ploidy at site error.
+            std::cerr << "ERROR: mixed ploidy at site" << std::endl;
+            state_ = std::ios::badbit;
           }
           else
           {
-            const std::uint64_t ploidy(gt_sz_ / hts_rec()->n_sample);
+            const std::uint64_t ploidy(gt_sz_ / num_samples);
             const typename T::value_type zero_value{0};
+
+            std::size_t an = samples().size() * ploidy;
+            float dose_sum = 0.f;
 
             if (subset_map_.size())
             {
-              destination.resize(subset_size_ * ploidy);
+              an = subset_size_ * ploidy;
+              destination.resize(an);
 
-              float* hds = (float*) (void*) (gt_);
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
                 const std::uint64_t sample_index = i / ploidy;
                 if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
                 {
-                  if (hds[i] != zero_value)
-                    destination[subset_map_[sample_index] * ploidy + (i % ploidy)] = hds[i];
+                  float cur_hds = hds[i];
+                  if (cur_hds != zero_value)
+                  {
+                    destination[subset_map_[sample_index] * ploidy + (i % ploidy)] = cur_hds;
+                    if (std::isnan(cur_hds))
+                      --an;
+                    else
+                      dose_sum += cur_hds;
+                  }
                 }
               }
             }
@@ -875,13 +876,24 @@ namespace savvy
             {
               destination.resize(gt_sz_);
 
-              float* hds = (float*) (void*) (gt_);
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
-                if (hds[i] != zero_value)
-                  destination[i] = hds[i];
+                float cur_hds = hds[i];
+                if (cur_hds != zero_value)
+                {
+                  destination[i] = cur_hds;
+                  if (std::isnan(cur_hds))
+                    --an;
+                  else
+                    dose_sum += cur_hds;
+                }
               }
             }
+
+            annotations.prop("AN", std::to_string(an));
+            if (an)
+              annotations.prop("AF", std::to_string(dose_sum / static_cast<float>(an)));
+
             return;
           }
         }
@@ -892,33 +904,36 @@ namespace savvy
 
     template <std::size_t VecCnt>
     template <typename T>
-    void reader_base<VecCnt>::read_genotypes_gp(T& destination)
+    void reader_base<VecCnt>::read_genotypes_gp(site_info& annotations, T& destination)
     {
       if (good())
       {
-        if (hts_rec()->n_allele > 2)
+        if (hts_file_->cur_num_alleles() > 2)
         {
-          state_ = std::ios::failbit; // multi allelic GP not supported.
+          std::cerr << "multi allelic GP not supported" << std::endl;
+          state_ = std::ios::badbit;
           return;
         }
 
-        if (bcf_get_format_float(hts_hdr(),hts_rec(),"GP", &(gt_), &(gt_sz_)) >= 0)
+
+        if (hts_file_->get_cur_format_values_float("GP", &(gt_), &(gt_sz_)))
         {
-          int num_samples = hts_hdr()->n[BCF_DT_SAMPLE];
+          float* gp = (float*) (void*) (gt_);
+          const std::size_t num_samples = sample_ids_.size();
           if (gt_sz_ % num_samples != 0)
           {
-            // TODO: mixed ploidy at site error.
+            std::cerr << "ERROR: mixed ploidy at site" << std::endl;
+            state_ = std::ios::badbit;
           }
           else
           {
-            const std::uint64_t ploidy(gt_sz_ / hts_rec()->n_sample - 1);
+            const std::uint64_t ploidy(gt_sz_ / num_samples - 1);
             const std::uint64_t ploidy_plus_one = ploidy + 1;
 
             if (subset_map_.size())
             {
               destination.resize(subset_size_ * ploidy_plus_one);
 
-              float* gp = (float*) (void*) (gt_);
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
                 const std::uint64_t sample_index = i / ploidy_plus_one;
@@ -930,7 +945,6 @@ namespace savvy
             {
               destination.resize(gt_sz_);
 
-              float* gp = (float*) (void*) (gt_);
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
                 destination[i] = gp[i];
@@ -946,48 +960,50 @@ namespace savvy
 
     template <std::size_t VecCnt>
     template <typename T>
-    void reader_base<VecCnt>::read_genotypes_gl(T& destination)
+    void reader_base<VecCnt>::read_genotypes_gl(site_info& annotations, T& destination)
     {
       if (good())
       {
-        if (hts_rec()->n_allele > 2)
+        if (hts_file_->cur_num_alleles() > 2)
         {
-          state_ = std::ios::failbit; // multi allelic GP not supported.
+          std::cerr << "multi allelic GL not supported" << std::endl;
+          state_ = std::ios::badbit;
           return;
         }
 
-        if (bcf_get_format_float(hts_hdr(),hts_rec(),"GL", &(gt_), &(gt_sz_)) >= 0)
+
+        if (hts_file_->get_cur_format_values_float("GL", &(gt_), &(gt_sz_)))
         {
-          int num_samples = hts_hdr()->n[BCF_DT_SAMPLE];
+          float* gl = (float*) (void*) (gt_);
+          const std::size_t num_samples = sample_ids_.size();
           if (gt_sz_ % num_samples != 0)
           {
-            // TODO: mixed ploidy at site error.
+            std::cerr << "ERROR: mixed ploidy at site" << std::endl;
+            state_ = std::ios::badbit;
           }
           else
           {
-            const std::uint64_t ploidy(gt_sz_ / hts_rec()->n_sample - 1);
+            const std::uint64_t ploidy(gt_sz_ / num_samples - 1);
             const std::uint64_t ploidy_plus_one = ploidy + 1;
 
             if (subset_map_.size())
             {
               destination.resize(subset_size_ * ploidy_plus_one);
 
-              float* gp = (float*) (void*) (gt_);
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
                 const std::uint64_t sample_index = i / ploidy_plus_one;
                 if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
-                  destination[subset_map_[sample_index] * ploidy + (i % ploidy_plus_one)] = gp[i];
+                  destination[subset_map_[sample_index] * ploidy + (i % ploidy_plus_one)] = gl[i];
               }
             }
             else
             {
               destination.resize(gt_sz_);
 
-              float* gp = (float*) (void*) (gt_);
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
-                destination[i] = gp[i];
+                destination[i] = gl[i];
               }
             }
             return;
@@ -1000,32 +1016,33 @@ namespace savvy
 
     template <std::size_t VecCnt>
     template <typename T>
-    void reader_base<VecCnt>::read_genotypes_pl(T& destination)
+    void reader_base<VecCnt>::read_genotypes_pl(site_info& annotations, T& destination)
     {
       if (good())
       {
-        if (hts_rec()->n_allele > 2)
+        if (hts_file_->cur_num_alleles() > 2)
         {
-          state_ = std::ios::failbit; // multi allelic GP not supported.
+          std::cerr << "multi allelic PL not supported" << std::endl;
+          state_ = std::ios::badbit;
           return;
         }
 
-        if (bcf_get_format_int32(hts_hdr(),hts_rec(),"PL", &(gt_), &(gt_sz_)) >= 0)
+        if (hts_file_->get_cur_format_values_int32("PL", &(gt_), &(gt_sz_)))
         {
-          int num_samples = hts_hdr()->n[BCF_DT_SAMPLE];
+          const std::size_t num_samples = sample_ids_.size();
           if (gt_sz_ % num_samples != 0)
           {
-            // TODO: mixed ploidy at site error.
+            std::cerr << "ERROR: mixed ploidy at site" << std::endl;
+            state_ = std::ios::badbit;
           }
           else
           {
-            const std::uint64_t ploidy(gt_sz_ / hts_rec()->n_sample - 1);
+            const std::uint64_t ploidy(gt_sz_ / num_samples - 1);
             const std::uint64_t ploidy_plus_one = ploidy + 1;
 
             if (subset_map_.size())
             {
               destination.resize(subset_size_ * ploidy_plus_one);
-
 
               for (std::size_t i = 0; i < gt_sz_; ++i)
               {
@@ -1055,41 +1072,29 @@ namespace savvy
     //################################################################//
     template <std::size_t VecCnt>
     template <typename... T>
-    reader<VecCnt>::reader(const std::string& file_path, T... data_formats) :
-      hts_file_(bcf_open(file_path.c_str(), "r")),
-      hts_hdr_(nullptr),
-      hts_rec_(bcf_init1())
+    reader<VecCnt>::reader(const std::string& file_path, T... data_formats)
     {
       static_assert(VecCnt == sizeof...(T), "Number of requested format fields do not match VecCnt template parameter");
       this->init_requested_formats(data_formats...);
-      if (!hts_file_ || !hts_rec_)
+
+
+      this->hts_file_ = detail::hts_file_base::create_file(file_path);
+      if (!this->hts_file_)
       {
         this->state_ = std::ios::badbit;
       }
       else
       {
-        hts_hdr_ = bcf_hdr_read(hts_file_);
-        if (!hts_hdr_)
-          this->state_ = std::ios::badbit;
-        else
-        {
-          this->init_property_fields();
-          this->init_headers();
-          this->init_sample_ids();
-        }
+        this->init_property_fields();
+        this->init_headers();
+        this->init_sample_ids();
       }
     }
 
     template <std::size_t VecCnt>
     reader<VecCnt>::reader(reader<VecCnt>&& source) :
-      reader_base<VecCnt>(std::move(source)),
-      hts_file_(source.hts_file_),
-      hts_hdr_(source.hts_hdr_),
-      hts_rec_(source.hts_rec_)
+      reader_base<VecCnt>(std::move(source))
     {
-      source.hts_file_ = nullptr;
-      source.hts_hdr_ = nullptr;
-      source.hts_rec_ = nullptr;
       source.gt_ = nullptr;
       source.state_ = std::ios::badbit;
     }
@@ -1097,19 +1102,7 @@ namespace savvy
     template <std::size_t VecCnt>
     reader<VecCnt>::~reader()
     {
-      try
-      {
-        if (hts_hdr_)
-          bcf_hdr_destroy(hts_hdr_);
-        if (hts_file_)
-          bcf_close(hts_file_);
-        if (hts_rec_)
-          bcf_destroy1(hts_rec_);
-      }
-      catch (...)
-      {
-        assert(!"bcf_hdr_destroy or bcf_close threw exception!");
-      }
+
     }
 
 //    std::vector<std::string> reader::chromosomes() const
@@ -1123,15 +1116,6 @@ namespace savvy
 //    }
 
 
-    template <std::size_t VecCnt>
-    bool reader<VecCnt>::read_hts_record()
-    {
-      if (bcf_read(hts_file_, hts_hdr_, hts_rec_) >= 0)
-      {
-        return true;
-      }
-      return false;
-    }
 
     template <std::size_t VecCnt>
     template <typename... T>
@@ -1142,7 +1126,7 @@ namespace savvy
       while (vecs_read == 0 && this->good())
       {
         this->read_variant_details(annotations);
-        vecs_read = this->read_requested_genos(destinations...);
+        vecs_read = this->read_requested_genos(annotations, destinations...);
       }
 
       return *this;
@@ -1170,7 +1154,7 @@ namespace savvy
         this->read_variant_details(annotations);
         if (this->good() && region_compare(bounding_type_, annotations, region_))
         {
-          if (this->read_requested_genos(destinations...) > 0)
+          if (this->read_requested_genos(annotations, destinations...) > 0)
             break;
         }
       }
@@ -1189,7 +1173,7 @@ namespace savvy
         {
           if (fn(annotations) && region_compare(bounding_type_, annotations, region_))
           {
-            if (this->read_requested_genos(destinations...) > 0)
+            if (this->read_requested_genos(annotations, destinations...) > 0)
               break;
           }
         }
@@ -1210,20 +1194,14 @@ namespace savvy
     indexed_reader<VecCnt>::indexed_reader(const std::string& file_path, const region& reg, bounding_point bounding_type, T... data_formats) :
       region_(reg),
       file_path_(file_path),
-      synced_readers_(bcf_sr_init()),
-      hts_rec_(nullptr),
       bounding_type_(bounding_type)
     {
       static_assert(VecCnt == sizeof...(T), "Number of requested format fields do not match VecCnt template parameter");
 
       this->init_requested_formats(data_formats...);
-      std::stringstream contigs;
-      contigs << reg.chromosome();
-      if (reg.from() > 1 || reg.to() != std::numeric_limits<std::uint64_t>::max())
-        contigs << ":" << reg.from() << "-" << reg.to();
 
-
-      if (bcf_sr_set_regions(synced_readers_, contigs.str().c_str(), 0) == 0 && bcf_sr_add_reader(synced_readers_, file_path_.c_str()) == 1)
+      this->hts_file_ = detail::hts_file_base::create_indexed_file(file_path, reg);
+      if (this->hts_file_)
       {
         this->init_property_fields();
         this->init_headers();
@@ -1236,8 +1214,7 @@ namespace savvy
     template <std::size_t VecCnt>
     indexed_reader<VecCnt>::~indexed_reader()
     {
-      if (synced_readers_)
-        bcf_sr_destroy(synced_readers_);
+
     }
 
     template <std::size_t VecCnt>
@@ -1256,34 +1233,12 @@ namespace savvy
     template <std::size_t VecCnt>
     void indexed_reader<VecCnt>::reset_region(const region& reg)
     {
-//      if (this->good())
-//      {
-        region_ = reg;
+      region_ = reg;
+      this->state_ = std::ios::goodbit;
+      this->hts_file_ = detail::hts_file_base::create_indexed_file(file_path_, reg);
 
-        if (synced_readers_)
-          bcf_sr_destroy(synced_readers_);
-        synced_readers_ = bcf_sr_init();
-        hts_rec_ = nullptr;
-        this->state_ = std::ios::goodbit;
-
-        std::stringstream contigs;
-        contigs << reg.chromosome();
-        if (reg.from() > 1 || reg.to() != std::numeric_limits<std::uint64_t>::max())
-          contigs << ":" << reg.from() << "-" << reg.to();
-
-        if (bcf_sr_set_regions(synced_readers_, contigs.str().c_str(), 0) != 0 || bcf_sr_add_reader(synced_readers_, file_path_.c_str()) != 1)
-          this->state_ = std::ios::failbit;
-//      }
-    }
-
-    template <std::size_t VecCnt>
-    bool indexed_reader<VecCnt>::read_hts_record()
-    {
-      if (bcf_sr_next_line(synced_readers_) && (hts_rec_ = bcf_sr_get_line(synced_readers_, 0)))
-      {
-        return true;
-      }
-      return false;
+      if (!this->hts_file_)
+        this->state_ = std::ios::failbit;
     }
     //################################################################//
 
@@ -1300,19 +1255,22 @@ namespace savvy
     template <std::size_t VecCnt>
     template <typename RandAccessStringIterator, typename RandAccessKVPIterator, typename... Fmt>
     writer<VecCnt>::writer(const std::string& file_path, const options& opts, RandAccessStringIterator samples_beg, RandAccessStringIterator samples_end, RandAccessKVPIterator headers_beg, RandAccessKVPIterator headers_end, Fmt... data_formats) :
-      output_stream_(opts.compression == compression_type::none ? std::unique_ptr<std::ostream>(new std::ofstream(file_path)) : std::unique_ptr<std::ostream>(new shrinkwrap::bgzf::ostream(file_path))),
+      output_stream_(detail::create_out_stream(file_path, opts.compression)),
       sample_size_(0)
     {
       static_assert(VecCnt == sizeof...(Fmt), "Number of requested format fields do not match VecCnt template parameter");
 
       this->format_fields_.reserve(sizeof...(Fmt));
       this->init_format_fields(data_formats...);
+      std::unordered_set<std::string> unique_info_fields;
 
       (*output_stream_) << "##fileformat=VCFv4.2\n";
 
-
       for (auto it = headers_beg; it != headers_end; ++it)
       {
+        if (it->first == "phasing" && (it->second == "partial" || it->second == "none"))
+          phase_character_ = '/';
+
         if (it->first != "FORMAT" && it->first != "fileformat")
         {
           if (it->first == "fileDate")
@@ -1332,38 +1290,14 @@ namespace savvy
             {
               if (it->second.size() && it->second.front() == '<' && it->second.back() == '>')
               {
-                std::string header_value = it->second;
-                header_value.resize(header_value.size() - 1);
-
-                auto curr_pos = header_value.begin() + 1;
-                auto comma_pos = std::find(curr_pos, header_value.end(), ',');
-
-                while (comma_pos != header_value.end())
+                auto header_info = parse_header_value(it->second);
+                if (unique_info_fields.emplace(header_info.id).second)
                 {
-                  auto equals_pos = std::find(curr_pos, comma_pos, '=');
-                  if (equals_pos != comma_pos)
-                  {
-                    std::string key(curr_pos, equals_pos);
-                    std::string val(equals_pos + 1, comma_pos);
-
-                    if (key == "ID")
-                      info_fields_.emplace_back(std::move(val));
-                  }
-
-                  curr_pos = comma_pos + 1;
-                  comma_pos = std::find(curr_pos, header_value.end(), ',');
-                }
-
-                auto equals_pos = std::find(curr_pos, comma_pos, '=');
-                if (equals_pos != comma_pos)
-                {
-                  std::string key(curr_pos, equals_pos);
-                  std::string val(equals_pos + 1, comma_pos);
-
-                  if (key == "ID")
-                    info_fields_.emplace_back(std::move(val));
-
-                  curr_pos = comma_pos + 1;
+                  info_fields_.emplace_back(header_info.id);
+                  int field_int_type = -1;
+                  if (header_info.type == "Flag")
+                    field_int_type = (int)detail::hts_info_type::bcf_bt_null;
+                  info_field_types_.emplace_back(field_int_type);
                 }
               }
             }
@@ -1482,7 +1416,10 @@ namespace savvy
               else
                 (*output_stream_) << ";";
 
-              (*output_stream_) << (*it + "=" + anno.prop(*it));
+              if (info_field_types_[std::distance(info_fields_.begin(), it)] == (int)detail::hts_info_type::bcf_bt_null)
+                (*output_stream_) << (*it); // Flag
+              else
+                (*output_stream_) << (*it + "=" + anno.prop(*it));
 
               ++i;
             }
@@ -1549,7 +1486,7 @@ namespace savvy
               ++i;
               for ( ; i < end; ++i)
               {
-                out_it = '|';
+                out_it = phase_character_;
 
                 if (std::isnan(v[i]))
                   out_it = '.';
