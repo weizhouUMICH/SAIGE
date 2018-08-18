@@ -17,8 +17,6 @@
 #include "data_format.hpp"
 #include "compressed_vector.hpp"
 
-#include <shrinkwrap/istream.hpp>
-
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -31,6 +29,7 @@
 #include <type_traits>
 #include <memory>
 #include <set>
+#include <unordered_set>
 #include <random>
 #include <chrono>
 
@@ -268,7 +267,7 @@ namespace savvy
       }
 
       template <std::size_t BitWidth, typename T>
-      void read_genotypes_al(T& destination)
+      void read_genotypes_al(site_info& annotations, T& destination)
       {
         if (good())
         {
@@ -297,66 +296,75 @@ namespace savvy
             varint_decode(in_it, end_it, sz);
             std::uint64_t total_offset = 0;
 
+            std::size_t an = samples().size() * ploidy_level;
+            std::size_t ac = 0;
+
             if (subset_size_ != samples().size())
             {
-              destination.resize(subset_size_ * ploidy_level);
+              an = subset_size_ * ploidy_level;
+              destination.resize(an);
 
-              if (BitWidth == 1)
+              for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
               {
-                for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
-                {
-                  typename T::value_type allele;
-                  std::uint64_t offset;
-                  std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
-                  total_offset += offset;
+                typename T::value_type allele;
+                std::uint64_t offset;
+                std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
+                total_offset += offset;
 
-                  const std::uint64_t sample_index = total_offset / ploidy_level;
-                  if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
-                    destination[subset_map_[sample_index] * ploidy_level + (total_offset % ploidy_level)] = allele; //(allele ? missing_value : alt_value);
-                }
-              }
-              else
-              {
-                for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
+                const std::uint64_t sample_index = total_offset / ploidy_level;
+                if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
                 {
-                  typename T::value_type allele;
-                  std::uint64_t offset;
-                  std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
-                  total_offset += offset;
+                  if (BitWidth != 1)
+                  {
+                    allele = std::round(allele);
+                    if (allele != typename T::value_type())
+                      destination[subset_map_[sample_index] * ploidy_level + (total_offset % ploidy_level)] = allele;
+                  }
+                  else
+                  {
+                    destination[subset_map_[sample_index] * ploidy_level + (total_offset % ploidy_level)] = allele;
+                  }
 
-                  const std::uint64_t sample_index = total_offset / ploidy_level;
-                  if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
-                    destination[subset_map_[sample_index] * ploidy_level + (total_offset % ploidy_level)] = std::round(allele); //(allele ? missing_value : alt_value);
+                  if (std::isnan(allele))
+                    --an;
+                  else if (allele)
+                    ++ac;
                 }
               }
             }
             else
             {
-              destination.resize(samples().size() * ploidy_level);
+              destination.resize(an);
 
-              if (BitWidth == 1)
+              for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
               {
-                for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
+                typename T::value_type allele;
+                std::uint64_t offset;
+                std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
+                total_offset += offset;
+
+                if (BitWidth != 1)
                 {
-                  typename T::value_type allele;
-                  std::uint64_t offset;
-                  std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
-                  total_offset += offset;
-                  destination[total_offset] = allele; //(allele ? missing_value : alt_value);
+                  allele = std::round(allele);
+                  if (allele != typename T::value_type())
+                    destination[total_offset] = allele;
                 }
-              }
-              else
-              {
-                for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
+                else
                 {
-                  typename T::value_type allele;
-                  std::uint64_t offset;
-                  std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
-                  total_offset += offset;
-                  destination[total_offset] = std::round(allele); //(allele ? missing_value : alt_value);
+                  destination[total_offset] = allele;
                 }
+
+                if (std::isnan(allele))
+                  --an;
+                else if (allele)
+                  ++ac;
               }
             }
+
+            annotations.prop("AC", std::to_string(ac));
+            annotations.prop("AN", std::to_string(an));
+            if (an)
+              annotations.prop("AF", std::to_string(static_cast<float>(ac) / static_cast<float>(an)));
 
             if (input_stream_->get() == std::char_traits<char>::eof())
             {
@@ -368,7 +376,7 @@ namespace savvy
       }
 
       template <std::size_t BitWidth, typename T>
-      void read_genotypes_gt(T& destination)
+      void read_genotypes_gt(site_info& annotations, T& destination)
       {
         if (good())
         {
@@ -397,36 +405,40 @@ namespace savvy
             varint_decode(in_it, end_it, sz);
             std::uint64_t total_offset = 0;
 
+            std::size_t an = samples().size() * ploidy_level;
+            std::size_t ac = 0;
+
             if (subset_size_ != samples().size())
             {
               destination.resize(subset_size_);
 
-              if (BitWidth == 1)
-              {
-                for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
-                {
-                  typename T::value_type allele;
-                  std::uint64_t offset;
-                  std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
-                  total_offset += offset;
+              an = subset_size_ * ploidy_level;
 
-                  const std::uint64_t sample_index = total_offset / ploidy_level;
-                  if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
-                    destination[subset_map_[sample_index]] += allele; //(allele ? missing_value : alt_value);
-                }
-              }
-              else
+              for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
               {
-                for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
-                {
-                  typename T::value_type allele;
-                  std::uint64_t offset;
-                  std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
-                  total_offset += offset;
+                typename T::value_type allele;
+                std::uint64_t offset;
+                std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
+                total_offset += offset;
 
-                  const std::uint64_t sample_index = total_offset / ploidy_level;
-                  if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
-                    destination[subset_map_[sample_index]] += std::round(allele); //(allele ? missing_value : alt_value);
+                const std::uint64_t sample_index = total_offset / ploidy_level;
+                if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
+                {
+                  if (BitWidth != 1)
+                  {
+                    allele = std::round(allele);
+                    if (allele != typename T::value_type())
+                      destination[subset_map_[sample_index]] += allele;
+                  }
+                  else
+                  {
+                    destination[subset_map_[sample_index]] += allele;
+                  }
+
+                  if (std::isnan(allele))
+                    --an;
+                  else if (allele)
+                    ++ac;
                 }
               }
             }
@@ -434,29 +446,35 @@ namespace savvy
             {
               destination.resize(samples().size());
 
-              if (BitWidth == 1)
+              for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
               {
-                for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
+                typename T::value_type allele;
+                std::uint64_t offset;
+                std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
+                total_offset += offset;
+
+                if (BitWidth != 1)
                 {
-                  typename T::value_type allele;
-                  std::uint64_t offset;
-                  std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
-                  total_offset += offset;
-                  destination[total_offset / ploidy_level] += allele; //(allele ? missing_value : alt_value);
+                  allele = std::round(allele);
+                  if (allele != typename T::value_type())
+                    destination[total_offset / ploidy_level] += allele;
                 }
-              }
-              else
-              {
-                for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
+                else
                 {
-                  typename T::value_type allele;
-                  std::uint64_t offset;
-                  std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
-                  total_offset += offset;
-                  destination[total_offset / ploidy_level] += std::round(allele); //(allele ? missing_value : alt_value);
+                  destination[total_offset / ploidy_level] += allele;
                 }
+
+                if (std::isnan(allele))
+                  --an;
+                else if (allele)
+                  ++ac;
               }
             }
+
+            annotations.prop("AC", std::to_string(ac));
+            annotations.prop("AN", std::to_string(an));
+            if (an)
+              annotations.prop("AF", std::to_string(static_cast<float>(ac) / static_cast<float>(an)));
 
             if (input_stream_->get() == std::char_traits<char>::eof())
             {
@@ -468,7 +486,7 @@ namespace savvy
       }
 
       template <std::size_t BitWidth, typename T>
-      void read_genotypes_gp(T& destination)
+      void read_genotypes_gp(site_info& annotations, T& destination)
       {
         if (good())
         {
@@ -589,7 +607,7 @@ namespace savvy
       }
 
       template <std::size_t BitWidth, typename T>
-      void read_genotypes_hds(T& destination)
+      void read_genotypes_hds(site_info& annotations, T& destination)
       {
         if (good())
         {
@@ -617,9 +635,13 @@ namespace savvy
             varint_decode(in_it, end_it, sz);
             std::uint64_t total_offset = 0;
 
+            std::size_t an = samples().size() * ploidy_level;
+            float dose_sum = 0.f;
+
             if (subset_size_ != samples().size())
             {
-              destination.resize(subset_size_ * ploidy_level);
+              an = subset_size_ * ploidy_level;
+              destination.resize(an);
 
 
               for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
@@ -632,12 +654,19 @@ namespace savvy
 
                 const std::uint64_t sample_index = total_offset / ploidy_level;
                 if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
+                {
                   destination[subset_map_[sample_index] * ploidy_level + (total_offset % ploidy_level)] = allele;
+
+                  if (std::isnan(allele))
+                    --an;
+                  else
+                    dose_sum += allele;
+                }
               }
             }
             else
             {
-              destination.resize(samples().size() * ploidy_level);
+              destination.resize(an);
 
               for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
               {
@@ -649,8 +678,17 @@ namespace savvy
 
                 assert(total_offset < (samples().size() * ploidy_level));
                 destination[total_offset] = allele;
+
+                if (std::isnan(allele))
+                  --an;
+                else
+                  dose_sum += allele;
               }
             }
+
+            annotations.prop("AN", std::to_string(an));
+            if (an)
+              annotations.prop("AF", std::to_string(dose_sum / static_cast<float>(an)));
 
             if (input_stream_->get() == std::char_traits<char>::eof())
             {
@@ -662,7 +700,7 @@ namespace savvy
       }
 
       template <std::size_t BitWidth, typename T>
-      void read_genotypes_ds(T& destination)
+      void read_genotypes_ds(site_info& annotations, T& destination)
       {
         if (good())
         {
@@ -691,9 +729,13 @@ namespace savvy
             varint_decode(in_it, end_it, sz);
             std::uint64_t total_offset = 0;
 
+            std::size_t an = samples().size() * ploidy_level;
+            float dose_sum = 0.f;
+
             if (subset_size_ != samples().size())
             {
               destination.resize(subset_size_);
+              an = subset_size_ * ploidy_level;
 
               for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
               {
@@ -704,7 +746,14 @@ namespace savvy
 
                 const std::uint64_t sample_index = total_offset / ploidy_level;
                 if (subset_map_[sample_index] != std::numeric_limits<std::uint64_t>::max())
+                {
                   destination[subset_map_[sample_index]] += allele;
+
+                  if (std::isnan(allele))
+                    --an;
+                  else
+                    dose_sum += allele;
+                }
               }
             }
             else
@@ -718,37 +767,17 @@ namespace savvy
                 std::tie(allele, offset) = detail::allele_decoder<BitWidth>::decode(++in_it, end_it, missing_value);
                 total_offset += offset;
                 destination[total_offset / ploidy_level] += allele;
+
+                if (std::isnan(allele))
+                  --an;
+                else
+                  dose_sum += allele;
               }
             }
-//            destination.resize(sample_count());
-//
-//            std::uint64_t sz;
-//            varint_decode(++in_it, end_it, sz);
-//            std::uint64_t total_offset = 0;
-//            //std::uint64_t ploidy_counter = 0;
-//
-//            if (file_data_format_ == fmt::genotype_probability)
-//            {
-//              for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
-//              {
-//                typename T::value_type allele;
-//                std::uint64_t offset;
-//                std::tie(allele, offset) = detail::allele_decoder<7>::decode(++in_it, end_it, std::numeric_limits<typename T::value_type>::quiet_NaN());
-//                total_offset += offset;
-//                destination[total_offset / ploidy_level] += (allele * ((total_offset % ploidy_level) + 1));
-//              }
-//            }
-//            else // fmt::haplotype_dosage
-//            {
-//              for (std::size_t i = 0; i < sz && in_it != end_it; ++i, ++total_offset)
-//              {
-//                typename T::value_type allele;
-//                std::uint64_t offset;
-//                std::tie(allele, offset) = detail::allele_decoder<7>::decode(++in_it, end_it, std::numeric_limits<typename T::value_type>::quiet_NaN());
-//                total_offset += offset;
-//                destination[total_offset / ploidy_level] += allele;
-//              }
-//            }
+
+            annotations.prop("AN", std::to_string(an));
+            if (an)
+              annotations.prop("AF", std::to_string(dose_sum / static_cast<float>(an)));
 
             if (input_stream_->get() == std::char_traits<char>::eof())
             {
@@ -760,21 +789,21 @@ namespace savvy
       }
 
       template <typename T>
-      void read_genotypes(T& destination)
+      void read_genotypes(site_info& annotations, T& destination)
       {
         destination.resize(0);
         if (true) //requested_data_formats_[idx] == file_data_format_)
         {
           if (requested_data_format_ == fmt::gt)
-            file_data_format_ == fmt::gt ? read_genotypes_al<1>(destination) : read_genotypes_al<7>(destination);
+            file_data_format_ == fmt::gt ? read_genotypes_al<1>(annotations, destination) : read_genotypes_al<7>(annotations, destination);
           else if (requested_data_format_== fmt::ac)
-            file_data_format_ == fmt::gt ? read_genotypes_gt<1>(destination) : read_genotypes_gt<7>(destination);
+            file_data_format_ == fmt::gt ? read_genotypes_gt<1>(annotations, destination) : read_genotypes_gt<7>(annotations, destination);
           else if (requested_data_format_ == fmt::gp)
-            file_data_format_ == fmt::gt ? read_genotypes_gp<1>(destination) : read_genotypes_gp<7>(destination);
+            file_data_format_ == fmt::gt ? read_genotypes_gp<1>(annotations, destination) : read_genotypes_gp<7>(annotations, destination);
           else if (requested_data_format_ == fmt::ds)
-            file_data_format_ == fmt::gt ? read_genotypes_ds<1>(destination) : read_genotypes_ds<7>(destination);
+            file_data_format_ == fmt::gt ? read_genotypes_ds<1>(annotations, destination) : read_genotypes_ds<7>(annotations, destination);
           else if (requested_data_format_ == fmt::hds)
-            file_data_format_ == fmt::gt ? read_genotypes_hds<1>(destination) : read_genotypes_hds<7>(destination);
+            file_data_format_ == fmt::gt ? read_genotypes_hds<1>(annotations, destination) : read_genotypes_hds<7>(annotations, destination);
           else
             input_stream_->setstate(std::ios::failbit);
         }
@@ -793,7 +822,7 @@ namespace savvy
       std::vector<std::string> metadata_fields_;
       std::string file_path_;
       std::uint64_t subset_size_;
-      std::unique_ptr<shrinkwrap::zstd::istream> input_stream_;
+      std::unique_ptr<std::istream> input_stream_;
       fmt file_data_format_;
       fmt requested_data_format_;
       std::uint32_t ploidy_ = 0;
@@ -817,7 +846,20 @@ namespace savvy
       reader& read(site_info& annotations, T& destination)
       {
         this->read_variant_details(annotations);
-        this->read_genotypes(destination);
+        this->read_genotypes(annotations, destination);
+        return *this;
+      }
+
+      template <typename Pred, typename T>
+      reader& read_if(Pred fn, site_info& annotations, T& destination)
+      {
+        while (good())
+        {
+          this->read_variant_details(annotations);
+          this->read_genotypes(annotations, destination);
+          if (fn(annotations))
+            break;
+        }
         return *this;
       }
     };
@@ -865,6 +907,7 @@ namespace savvy
       {
         return this->read(destination, destination.data());
       }
+
       template <typename T>
       indexed_reader& read(site_info& annotations, T& destination)
       {
@@ -897,7 +940,7 @@ namespace savvy
             ++current_offset_in_block_;
             if (region_compare(bounding_type_, annotations, reg_))
             {
-              this->read_genotypes(destination);
+              this->read_genotypes(annotations, destination);
               break;
             }
             else
@@ -914,42 +957,9 @@ namespace savvy
       {
         while (this->good())
         {
-          if (current_offset_in_block_ >= total_in_block_)
-          {
-            if (i_ == query_.end())
-              this->input_stream_->setstate(std::ios::eofbit);
-            else
-            {
-              total_in_block_ = std::uint32_t(0x000000000000FFFF & i_->value()) + 1;
-              current_offset_in_block_ = 0;
-              this->input_stream_->seekg(std::streampos((i_->value() >> 16) & 0x0000FFFFFFFFFFFF));
-              ++i_;
-            }
-          }
-
-          this->read_variant_details(annotations);
-          if (!this->good())
-          {
-            if (current_offset_in_block_ < total_in_block_)
-            {
-              assert(!"Truncated block");
-              this->input_stream_->setstate(std::ios::badbit);
-            }
-          }
-          else
-          {
-            ++current_offset_in_block_;
-            bool predicate_passed = fn(annotations);
-            if (region_compare(bounding_type_, annotations, reg_) && predicate_passed)
-            {
-              this->read_genotypes(destination);
-              break;
-            }
-            else
-            {
-              this->discard_genotypes();
-            }
-          }
+          read(annotations, destination);
+          if (fn(annotations))
+            break;
         }
 
         return *this;
@@ -1001,7 +1011,7 @@ namespace savvy
       template <typename RandAccessStringIterator, typename RandAccessKVPIterator>
       writer(const std::string& file_path, const options& opts, RandAccessStringIterator samples_beg, RandAccessStringIterator samples_end, RandAccessKVPIterator headers_beg, RandAccessKVPIterator headers_end, fmt data_format) :
         rng_(std::chrono::high_resolution_clock::now().time_since_epoch().count() ^ std::clock() ^ (std::uint64_t)this),
-        output_buf_(opts.compression_level > 0 ? std::unique_ptr<std::streambuf>(new shrinkwrap::zstd::obuf(file_path, opts.compression_level)) : std::unique_ptr<std::streambuf>(create_std_filebuf(file_path, std::ios::binary | std::ios::out))), //opts.compression == compression_type::zstd ? std::unique_ptr<std::streambuf>(new shrinkwrap::zstd::obuf(file_path)) : std::unique_ptr<std::streambuf>(new std::filebuf(file_path, std::ios::binary))),
+        output_buf_(create_out_streambuf(file_path, opts.compression_level)), //opts.compression == compression_type::zstd ? std::unique_ptr<std::streambuf>(new shrinkwrap::zstd::obuf(file_path)) : std::unique_ptr<std::streambuf>(new std::filebuf(file_path, std::ios::binary))),
         output_stream_(output_buf_.get()),
         samples_(samples_beg, samples_end),
         file_path_(file_path),
@@ -1074,6 +1084,8 @@ namespace savvy
             fmt_str = "<ID=GT,Type=Integer,Number=" + std::to_string(ploidy_) + ",Description=\"Genotype\">";
           headers_.push_back(std::make_pair(std::string("FORMAT"), fmt_str));
 
+          std::unordered_set<std::string> unique_info_fields;
+
           varint_encode(headers_.size(), out_it);
           for (auto it = headers_.begin(); it != headers_.end(); ++it)
           {
@@ -1091,7 +1103,9 @@ namespace savvy
 
             if (it->first == "INFO")
             {
-              this->property_fields_.push_back(parse_header_sub_field(it->second, "ID"));
+              std::string info_id = parse_header_sub_field(it->second, "ID");
+              if (unique_info_fields.emplace(info_id).second)
+                this->property_fields_.emplace_back(info_id);
             }
           }
 
@@ -1290,6 +1304,8 @@ namespace savvy
         ret->open(file_path.c_str(), mode);
         return ret;
       }
+
+      static std::unique_ptr<std::streambuf> create_out_streambuf(const std::string& file_path, std::int8_t compression_level);
 
       template <std::size_t BitWidth, typename T, typename OutIt>
       static void serialize_alleles(const std::vector<T>& m, OutIt os_it)

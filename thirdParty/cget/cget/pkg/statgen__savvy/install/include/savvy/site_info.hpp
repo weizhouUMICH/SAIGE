@@ -56,6 +56,11 @@ namespace savvy
         return empty_string;
       return it->second;
     }
+
+    void prop(const std::string& key, std::string value)
+    {
+      properties_[key] = std::move(value);
+    }
   private:
     std::unordered_map<std::string, std::string> properties_;
     std::string chromosome_;
