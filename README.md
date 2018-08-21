@@ -43,6 +43,9 @@ The following R pakages need to be installed for running SAIGE:
 Source code for all versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl/AADFqdssvOBjbWZch6Q9zYNaa?dl=0
 
 # Log for fixing bugs
+* 0.29.3:
+  update SAIGE step 1 to use the updated R libary SPAtest 3.0.0
+
 * 0.29.2:
   update SAIGE to use the updated R library SPAtest 3.0.0
 
