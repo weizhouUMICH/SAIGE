@@ -260,8 +260,20 @@ SPAGMMATtest = function(dosageFile = "",
 
 
   if(isCondition){
- 
-    conditionlist = paste(c("condMarkers",unlist(strsplit(condition,","))),collapse="\t")
+    condition_original=unlist(strsplit(condition,","))
+
+    if(length(condition_original) > 1){
+    	condition_new=NULL
+    	for(x in 1:length(condition_original)){
+		condition_new = rbind(condition_new, c(as.numeric(strsplit(strsplit(condition_original[x], ":")[[1]][2][1], "_")[[1]][1]), condition_original[x]))
+    	}
+    	condition_new2 = condition_new[order(as.numeric(condition_new[,1])),] 
+    
+    	conditionlist = paste(c("condMarkers",condition_new2[,2]),collapse="\t")
+    }else{
+    	conditionlist= paste(c("condMarkers",unlist(strsplit(condition,","))),collapse="\t")    
+    }
+#    conditionlist = paste(c("condMarkers",unlist(strsplit(condition,","))),collapse="\t")
     cat("conditionlist is ", conditionlist, "\n")
 
     if(dosageFileType == "vcf"){
@@ -664,8 +676,13 @@ if(FALSE){
       GratioMatrixall = getGratioMatrix(MACvec_indVec_Gall, ratioVec)
 	
 
-      #GratioMatrixall = getGratioMatrix(Gall, ratioVec)
-      G0_tilde = G0 - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0)
+      if(AF > 0.5){
+        G0_v2 = 2 - G0
+      }else{
+        G0_v2 = G0
+      }
+      G0_tilde = G0_v2 - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0_v2)
+      #G0_tilde = G0 - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0)
       #dosage_cond_tilde = cbind(G0_tilde, dosage_cond_tilde)	
       #covM = matrix(0,nrow=ncol(dosage_cond_tilde), ncol = ncol(dosage_cond_tilde))	
       #print(dim(G0_tilde))
