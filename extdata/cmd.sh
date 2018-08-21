@@ -33,7 +33,7 @@ Rscript step2_SPAtests.R \
         --vcfField=GT \
         --chrom=1 \
         --minMAF=0.0001 \
-        --minMAC=1 \
+        --minMAC=4 \
         --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output/example.rda \
         --varianceRatioFile=./output/example.varianceRatio.txt \
@@ -49,7 +49,7 @@ Rscript step2_SPAtests.R \
         --vcfField=DS \
         --chrom=1 \
         --minMAF=0.0001 \
-        --minMAC=1 \
+        --minMAC=4 \
         --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output/example.rda \
         --varianceRatioFile=./output/example.varianceRatio.txt \
@@ -63,7 +63,7 @@ Rscript step2_SPAtests.R	\
 	--savFile=./input/dosage_10markers.sav	\
 	--savFileIndex=./input/dosage_10markers.sav.s1r	\
 	--minMAF=0.0001 \
-        --minMAC=1 \
+        --minMAC=4 \
 	--vcfField=DS \
 	--chrom=1 \
         --sampleFile=./input/samplefileforbgen_10000samples.txt \
@@ -78,7 +78,7 @@ Rscript step2_SPAtests.R \
 	--bgenFile=./input/genotype_100markers.bgen \
 	--bgenFileIndex=./input/genotype_100markers.bgen.bgi \
         --minMAF=0.0001 \
-        --minMAC=1 \
+        --minMAC=4 \
         --sampleFile=./input/samplefileforbgen_10000samples.txt \
         --GMMATmodelFile=./output/example.rda \
         --varianceRatioFile=./output/example.varianceRatio.txt \
