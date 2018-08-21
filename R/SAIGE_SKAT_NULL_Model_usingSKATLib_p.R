@@ -65,7 +65,11 @@ SKATtest_usingSKATLib = function(dosageFile = "",
 		 numLinesOutput = 10000, 
 		 IsOutputAFinCaseCtrl=FALSE,
 		 groupFile="",
-		 condition=""
+		 condition="",
+		 kernel="linear.weighted",
+                 method="optimal.adj",
+                 weights.beta=c(1,25),
+                 r.corr=0
 ){
 
 
@@ -183,7 +187,7 @@ SKATtest_usingSKATLib = function(dosageFile = "",
       setMAFcutoffs(0, 0.5)
       isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
-      Gx_cond = getGenoOfGene_vcf(conditionlist)
+      Gx_cond = getGenoOfGene_vcf(conditionlist, minInfo)
     }else if(dosageFileType == "bgen"){
       Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist, testMinMAF, maxMAF)
     }else{
@@ -249,7 +253,7 @@ if(traitType == "quantitative"){
         break
       }else{
         if(dosageFileType == "vcf"){
-          Gx = getGenoOfGene_vcf(marker_group_line)
+          Gx = getGenoOfGene_vcf(marker_group_line, minInfo)
         }else if(dosageFileType == "bgen"){
           Gx = getGenoOfGene_bgen(bgenFile,bgenFileIndex,marker_group_line, testMinMAF, maxMAF)          
         }
@@ -264,7 +268,7 @@ if(traitType == "quantitative"){
 	 #cat("Gmat[,1]: ", Gmat[,1], "\n")	
 	 #cat("colSums(Gmat): ", colSums(Gmat), "\n")
 
-         skatTest = SKAT:::SKAT(Gmat, out.obj, max_maf = maxMAF, method="optimal.adj")
+         skatTest = SKAT:::SKAT(Gmat, out.obj, max_maf = maxMAF, method=method, kernel = kernel, weights.beta = weights.beta, r.corr = r.corr)
 	 
 	 OUT = rbind(OUT, c(geneID, skatTest$p.value, skatTest$param$Is_Converged, skatTest$param$n.marker, skatTest$param$n.marker.test, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
 
