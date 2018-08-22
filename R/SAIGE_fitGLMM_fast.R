@@ -330,15 +330,15 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   tau0 = tau
   cat("inital tau is ", tau,"\n")
   #bvtest = rep(3.08474, n)
-  A = NULL
-  for(i in c(1:n)){
-  	bvtest = rep(0, n)
-  	bvtest[i] = 1
-  	a = getCrossprodMatAndKin(bvtest)
-  	A = c(A, a[i])
-  }
-  A = matrix(A, ncol=1)
-  write.table(A, "/net/hunt/disk2/zhowei/project/SAIGE_SKAT/simulation_08_2018/jobs/SAIGE_SKATO/step1/jobs/diagOfKin.txt", quote=F, row.names=F, col.names=F)
+#  A = NULL
+#  for(i in c(1:n)){
+#  	bvtest = rep(0, n)
+#  	bvtest[i] = 1
+#  	a = getCrossprodMatAndKin(bvtest)
+#  	A = c(A, a[i])
+#  }
+#  A = matrix(A, ncol=1)
+#  write.table(A, "/net/hunt/disk2/zhowei/project/SAIGE_SKAT/simulation_08_2018/jobs/SAIGE_SKATO/step1/jobs/diagOfKin.txt", quote=F, row.names=F, col.names=F)
 
   #bvtest = rep(0.05, n)
   #a = getCrossprodMatAndKin(bvtest)
