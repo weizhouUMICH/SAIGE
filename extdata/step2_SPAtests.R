@@ -1,5 +1,6 @@
 options(stringsAsFactors=F, digits=3)
-library(SAIGE)
+#library(SAIGE)
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.29.3")
 library(optparse)
 
 option_list <- list(
