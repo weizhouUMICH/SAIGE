@@ -829,10 +829,11 @@ if(FALSE){
             OUT = as.data.frame(OUT)
             write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
             OUT = NULL
-		
-	    OUT_single = as.data.frame(OUT_single)
-	    write.table(OUT_single, SAIGEOutputFile_single, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)	
-	    OUT_single = NULL	
+	    if(IsSingleVarinGroupTest){	
+	      OUT_single = as.data.frame(OUT_single)
+	      write.table(OUT_single, SAIGEOutputFile_single, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)	
+	      OUT_single = NULL
+            }	
           }
         }
       }#end of else for if(length(line) == 0 )
@@ -842,11 +843,11 @@ if(FALSE){
       OUT = as.data.frame(OUT)
       write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
       OUT = NULL
-
-      OUT_single = as.data.frame(OUT_single)
-      write.table(OUT_single, SAIGEOutputFile_single, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
-      OUT_single = NULL
-	
+      if(IsSingleVarinGroupTest){
+        OUT_single = as.data.frame(OUT_single)
+        write.table(OUT_single, SAIGEOutputFile_single, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
+        OUT_single = NULL
+      }	
 
     }
   }else{
