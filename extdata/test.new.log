@@ -1,0 +1,260 @@
+$plinkFile
+[1] "./input/plinkforGRM_1000samples_10kMarkers"
+
+$phenoFile
+[1] "./input/pheno_1000samples.txt"
+
+$phenoCol
+[1] "y"
+
+$traitType
+[1] "binary"
+
+$invNormalize
+[1] FALSE
+
+$covarColList
+[1] "x1,x2"
+
+$sampleIDColinphenoFile
+[1] "IID"
+
+$numMarkers
+[1] 30
+
+$nThreads
+[1] 4
+
+$skipModelFitting
+[1] FALSE
+
+$traceCVcutoff
+[1] 1
+
+$ratioCVcutoff
+[1] 1
+
+$LOCO
+[1] FALSE
+
+$outputPrefix
+[1] "./output/example"
+
+$IsSparseKin
+[1] TRUE
+
+$isCateVarianceRatio
+[1] FALSE
+
+$help
+[1] FALSE
+
+4  threads are set to be used  
+1000  samples have genotypes
+formula is  y~x1+x2 
+1000  samples have non-missing phenotypes
+1000  samples will be used for analysis
+colnames(data.new) is  Y minus1 x1 x2 
+out.transform$Param.transform$qrr:  3 3 
+y  is a binary trait
+
+Call:  glm(formula = formula.new, family = binomial, data = data.new)
+
+Coefficients:
+ minus1       x1       x2  
+ 2.5205  -0.7667  -0.4558  
+
+Degrees of Freedom: 1000 Total (i.e. Null);  997 Residual
+Null Deviance:	    1386 
+Residual Deviance: 578 	AIC: 584
+[1] "Start reading genotype plink file here"
+nbyte: 250
+nbyte: 250
+reserve: 2520000
+
+M: 10000, N: 1000
+size of genoVecofPointers: 1
+here
+setgeno mark1
+setgeno mark2
+setgeno mark5
+setgeno mark6
+time: 195.175
+[1] "Genotype reading is done"
+inital tau is  1 0.5 
+iGet_Coef:  1 
+setgeno mark7 0
+-0.250837 -0.250837 -0.250837 -0.250837 -0.250837 -0.250837 -0.250837 -0.250837 -0.250837 -0.250837 
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+Tau:
+[1] 1.0 0.5
+Fixed-effect coefficients:
+           [,1]
+[1,]  2.5211773
+[2,] -0.7766696
+[3,] -0.4592957
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 3
+Variance component estimates:
+[1] 1.0000000 0.4994063
+
+Iteration  1 1 0.4994063 :
+tau0_v1:  1 0.4994063 
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+Tau:
+[1] 1.0000000 0.4994063
+Fixed-effect coefficients:
+           [,1]
+[1,]  2.5211768
+[2,] -0.7766588
+[3,] -0.4592923
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 3
+[1] 0.000000 0.203596
+tau:  1 0.3270676 
+tau0:  1 0.4994063 
+
+Iteration  2 1 0.3270676 :
+tau0_v1:  1 0.3270676 
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+Tau:
+[1] 1.0000000 0.3270676
+Fixed-effect coefficients:
+           [,1]
+[1,]  2.5210407
+[2,] -0.7736250
+[3,] -0.4582875
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+[1] 0.000000000 0.003483766
+tau:  1 0.3247272 
+tau0:  1 0.3270676 
+
+Final  1 0.3247272 :
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+Tau:
+[1] 1.0000000 0.3247272
+Fixed-effect coefficients:
+           [,1]
+[1,]  2.5210397
+[2,] -0.7735819
+[3,] -0.4582720
+
+Family: binomial 
+Link function: logit 
+
+ [1] "theta"             "coefficients"      "linear.predictors"
+ [4] "fitted.values"     "Y"                 "residuals"        
+ [7] "cov"               "converged"         "sampleID"         
+[10] "obj.noK"           "obj.glm.null"      "traitType"        
+[13] "LOCO"             
+3
+1000x1
+2x1
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+i is  2551 
+iter from getPCG1ofSigmaAndVector 3

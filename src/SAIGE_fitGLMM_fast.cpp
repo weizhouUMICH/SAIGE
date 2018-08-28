@@ -254,13 +254,21 @@ public:
 			m_DiagStd.zeros(Nnomissing);
 			for(size_t i=0; i< M; i++){
 				Get_OneSNP_StdGeno(i, temp);
-				//cout << "setgeno mark7 " << i <<  endl;
+
+				//if(i == 0){
+				//	cout << "setgeno mark7 " << i <<  endl;
+				//	for(int j=0; j<10; ++j)
+				//	{
+                		//		cout << (*temp)[j] << ' ';
+                		//	}
+                		//	cout << endl;
+				//}
 				m_DiagStd = m_DiagStd + (*temp) % (*temp);
 			}
 		
 		}
 
-
+		//std::cout << "test\n";
 		//for(int i=0; i<10; ++i)
         	//{
         	//  cout << m_DiagStd[i] << ' ';
@@ -931,8 +939,6 @@ void Get_MultiMarkersBySample_StdGeno(arma::fvec& markerIndexVec, std::vector<fl
 }
 
 
-
-
 //http://gallery.rcpp.org/articles/parallel-inner-product/
 struct CorssProd : public Worker
 {   
@@ -1079,8 +1085,6 @@ arma::fvec parallelCrossProd(arma::fcolvec & bVec) {
   	//return CorssProd.m_bout;
 }
 
-
-
 // [[Rcpp::export]]
 float innerProductFun(std::vector<float> &x, std::vector<float> & y) {
    return std::inner_product(x.begin(), x.end(), y.begin(), 0.0);
@@ -1118,6 +1122,10 @@ arma::fvec getCrossprodMatAndKin(arma::fcolvec& bVec){
   
   	return(crossProdVec);
 }
+
+
+
+
 
 
 // [[Rcpp::export]]
@@ -1388,18 +1396,28 @@ arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
 	}else{
 	  diagVec = tauVec(1) + tauVec(0)/wVec;
 	}
+
+	//std::cout << "M " << M << std::endl;
+	//std::cout << "tauVec(0) " << tauVec(0) << std::endl;
+	//std::cout << "tauVec(1) " << tauVec(1) << std::endl;
+        //for(unsigned int i=0; i< Nnomissing; i++){
+	//	std::cout << "(*geno.Get_Diagof_StdGeno()) /M: " << (*geno.Get_Diagof_StdGeno()) /M << std::endl;
+	//}
+
 	//make diag of kin to be 1 to compare results of emmax and gmmat
 	//diagVec = tauVec(1) + tauVec(0)/wVec;
 	for(unsigned int i=0; i< Nnomissing; i++){
+		//std::cout << i << "th element of diag of sigma and wVec " << diagVec(i) << " " << wVec(i) << std::endl;
   		if(diagVec(i) < 1e-4){
   			diagVec(i) = 1e-4 ;
   		}
   	}
   
+
+
     //cout << *geno.Get_Diagof_StdGeno() << endl ;
     //cout << diagVec << endl ;
   	return(diagVec);
-
 }
 
 // [[Rcpp::export]]
@@ -1499,12 +1517,13 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
 	//cout << "HELL2: "  << endl;
 
   	arma::fvec minvVec = 1/getDiagOfSigma(wVec, tauVec);
-	//cout << "HELL3: "  << endl;
-	//for(int i = 0; i < 10; i++){
-        //        cout << "full set minvVec[i]: " << minvVec[i] << endl;
-        //}
+//	cout << "HELL3: "  << endl;
+//	for(int i = 0; i < 10; i++){
+//                cout << "full set minvVec[i]: " << minvVec[i] << endl;
+//        }
   	float sumr2 = sum(rVec % rVec);
-/*	if(bVec[0] == 1 && bVec[99] == 1){
+/*
+	if(bVec[0] == 1 && bVec[99] == 1){
         for(int i = 0; i < 100; i++){
                 cout << "rVec[i]: " << i << " " << rVec[i] << endl;
                 cout << "minvVec[i]: " << i << " " << minvVec[i] << endl;
@@ -1850,11 +1869,12 @@ int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff){
   	return Rcpp::List::create(Named("YPAPY") = YPAPY, Named("Trace") = Trace, Named("PY") = PY1, Named("AI") = AI);
 }
 
+//Rcpp::List fitglmmaiRPCG(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec,
 // Modified by SLEE, 04/16/2017
 // Modified that (Sigma_iY, Sigma_iX, cov) are input parameters. Previously they are calculated in the function
 //This function needs the function getPCG1ofSigmaAndVector and function getCrossprod, getAIScore
 // [[Rcpp::export]]
-Rcpp::List fitglmmaiRPCG(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec,
+Rcpp::List fitglmmaiRPCG(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec &wVec,  arma::fvec &tauVec,
 arma::fvec& Sigma_iY, arma::fmat & Sigma_iX, arma::fmat & cov,
 int nrun, int maxiterPCG, float tolPCG, float tol, float traceCVcutoff){
 
@@ -2005,7 +2025,9 @@ arma::fvec GetTrace_q(arma::fmat Sigma_iX, arma::fmat& Xmat, arma::fvec& wVec, a
           nrunEnd = nrunEnd + 10;
           tempVec.resize(nrunEnd);
           tempVec0.resize(nrunEnd);
-          cout << "CV for trace random estimator using "<< nrun << " runs is " << traceCV <<  "(> " << traceCVcutoff << endl;
+
+	  std::cout << "arma::mean(tempVec0): " << arma::mean(tempVec0) << std::endl;	
+          cout << "CV for trace random estimator using "<< nrunStart << " runs is " << traceCV <<  "(> " << traceCVcutoff << endl;
           cout << "try " << nrunEnd << "runs" << endl;
         }
 
@@ -2033,14 +2055,15 @@ Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  a
 
  	for(int i = 0; i < colNumX; i++){
     		XmatVecTemp = Xmat.col(i);
-		
     		Sigma_iX1.col(i) = getPCG1ofSigmaAndVector(wVec, tauVec, XmatVecTemp, maxiterPCG, tolPCG);
+//	if(i == 0){
+//		for(int j = 0; j < 10; j++){
+//			std::cout << "Xmat(j,i): " << Xmat(j,i) << std::endl;
+//			std::cout << "Sigma_iX1(j,0): " << Sigma_iX1(j,0) << std::endl;
+//		}
+//	}	
 
   	}
-//	for(int j = 0; j < 10; j++){
-//		std::cout << "Sigma_iX1(j,0): " << Sigma_iX1(j,0) << std::endl;
-
-//	}
 
   	arma::fmat Sigma_iX1t = Sigma_iX1.t();
   	arma::fmat Xmatt = Xmat.t();

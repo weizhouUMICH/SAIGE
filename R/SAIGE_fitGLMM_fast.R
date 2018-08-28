@@ -171,6 +171,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     if(verbose) cat("\nIteration ", i, tau, ":\n")
     alpha0 = re.coef$alpha
     tau0 = tau
+      cat("tau0_v1: ", tau0, "\n")
 
     # use Get_Coef before getAIScore        
     re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
@@ -183,9 +184,18 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     Y = re.coef$Y
     mu = re.coef$mu
 
+     print(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol))
+      cat("tau: ", tau, "\n")
+      cat("tau0: ", tau0, "\n")
+
+
     if(tau[2] == 0) break
       # Use only tau for convergence evaluation, because alpha was evaluated already in Get_Coef
       if(max(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
+      #print(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol))	
+      #cat("tau: ", tau, "\n")
+      #cat("tau0: ", tau0, "\n")
+
       if(max(tau) > tol^(-2)) {
         warning("Large variance estimate observed in the iterations, model not converged...", call. = FALSE)
       	i = maxiter
@@ -297,8 +307,8 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   sqrtW = mu.eta/sqrt(fit0$family$variance(mu))
 #  cat("sqrtW: ",sqrtW,"\n")
   W = sqrtW^2
-  cat("fit0\n")
-  print(fit0)
+#  cat("fit0\n")
+#  print(fit0)
   X = model.matrix(fit0)
 #  cat("X\n")
 #  print(X)
@@ -328,7 +338,7 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   }
 
   tau0 = tau
-  cat("inital tau is ", tau,"\n")
+  cat("initial tau is ", tau,"\n")
   #bvtest = rep(3.08474, n)
 #  A = NULL
 #  for(i in c(1:n)){
@@ -355,20 +365,30 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 
 
   re = getAIScore_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG, traceCVcutoff)
-  #cat("X\n")
-  #print(X)
-  #cat("Sigma_iX:\n")
-  #print(re$Sigma_iX)
-  #cat("Trace\n")
-  #print(re$Trace)
-  #cat("YPAPY:\n")
-  #print(re$YPAPY)
-  #cat("YPA0PY:\n")
-  #print(re$YPA0PY)
-
+#  cat(names(re))
+#  cat("X\n")
+#  print(X)
+#  cat("Sigma_iX:\n")
+#  print(re$Sigma_iX[1:20,])
+#  cat("PY\n")
+#  print(re$PY)
+  cat("Trace\n")
+  print(re$Trace)
+#  cat("YPAPY:\n")
+#  print(re$YPAPY)
+#  cat("YPA0PY:\n")
+#  print(re$YPA0PY)
+  #print(sum((re$PY/W)^2))
   tau[2] = max(0, tau0[2] + tau0[2]^2 * (re$YPAPY - re$Trace[2])/n)
   tau[1] = max(0, tau0[1] + tau0[1]^2 * (re$YPA0PY - re$Trace[1])/n)
-  cat("tauv3 ",tau,"\n")
+  #tau[1] = max(0, tau0[1] + tau0[1]^2 * (sum((re$PY/W)^2) - re$Trace[1])/n) #try 
+  #testVec=rep(1,100)
+  #testVec[50] = 1
+  #testVecResult=getCrossprodMatAndKin(testVec)
+  #cat("testVecResult\n")
+
+  #print(testVecResult)
+  #cat("tauv3 ",tau,"\n")
 
 
   if(verbose) {
@@ -384,7 +404,10 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     alpha0 = alpha
 
     tau0 = tau
+#    cat("tau0: ", tau0,"\n")
     fit = fitglmmaiRPCG_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
+#    cat("tau0_after_fit: ", tau0,"\n")
+#    print(fit)
     tau = as.numeric(fit$tau)
     cov = as.matrix(fit$cov)
     cat("cov: ", cov, "\n")
@@ -400,6 +423,18 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     mu.eta = family$mu.eta(eta)
     Y = eta - offset + (y - mu)/mu.eta
     sqrtW = mu.eta/sqrt(family$variance(mu))
+
+    cat("abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)\n")
+    print(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol))	
+    cat("tau: ", tau,"\n")
+    cat("tau0: ", tau0,"\n")
+    cat("abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)\n")
+    print(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol))
+    cat("tol: ")
+    print(tol)
+
+    print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
+    print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol)
 
     if(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
     if(max(tau) > tol^(-2)) {
