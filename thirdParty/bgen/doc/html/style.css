@@ -1,0 +1,250 @@
+body {
+	width: 800px ;
+	margin-left: auto ;
+	margin-right: auto ;
+	overflow-y: scroll ;
+	/* border: 1px solid red; */
+}
+
+.header_text {
+	float: left ;
+	padding-left: 10px ;
+	padding-right: 10px ;
+	font-family: Arial, Helvetica, Tahoma, sans-serif;
+	font-size: 40px ;
+}
+
+div.header_subtext {
+	padding-top: 20px ;
+	padding-left: 100px ;
+}
+
+div.header {
+	border-bottom: 2px solid black ;
+	font-family: sans-serif ;
+	font-size: 15px ;
+}
+
+#overview {
+	clear: both ;
+}
+
+div.version {
+	float: left ;
+	clear: both ;
+	margin-left: 2px ;
+	margin-right: 2px ;
+	margin-top: 10px ;
+	margin-bottom: 20px ;
+	
+	padding: 10px ;
+	font-size: 24px ;
+	font-family: sans-serif;
+	font-weight: bold ;
+	border: 2px solid black ;
+	border-radius: 1em ;
+	background-color: yellow ;
+}
+
+div.version_overview {
+	float: right ;
+	clear: right ;
+	width: 650px ;
+	margin-top: 10px ;
+	margin-bottom: 20px ;
+}
+
+div.section {
+	clear: both ;
+}
+
+table.filespec {
+	width: 80% ;
+	max-width: 900px ;
+	border-width: 5px;
+	border-spacing: ;
+	border-style: solid;
+	border-color: gray;
+	border-collapse: collapse;
+	background-color: white;
+	margin-left: auto ;
+	margin-right: auto ;
+}
+
+table.filespec th {
+	border-width: 2px;
+	padding: 4px;
+	padding-left: 10px;
+	padding-right: 10px;
+	border-style: solid;
+	border-color: black;
+	background-color: #D0D0D0;
+	v-align: middle;
+	min-width: 50px ;
+}
+
+table.filespec td {
+	border-width: 1px;
+	padding: 4px;
+	border-style: solid;
+	border-color: gray;
+	background-color: white;
+	-moz-border-radius: ;
+	
+	text-align: center ;
+	v-align: middle;
+}
+
+table.linkedfiles {
+	width: 60% ;
+	border-width: 5px;
+	border-spacing: ;
+	border-style: dotted;
+	border-color: gray;
+	border-collapse: collapse;
+	background-color: white;
+}
+table.linkedfiles th {
+	border-width: 2px;
+	padding: 4px;
+	border-style: solid;
+	border-color: black;
+	background-color: #D0D0D0;
+	-moz-border-radius: ;
+	v-align: middle;
+}
+table.linkedfiles td {
+	border-width: 1px;
+	padding: 4px;
+	border-style: solid;
+	border-color: gray;
+	background-color: white;
+	-moz-border-radius: ;
+	
+	text-align: center ;
+	v-align: middle;
+}
+
+table.field_encoding_scheme {
+	width: 80% ;
+	font-family: monospace ;
+	border: 0px ;
+	margin-left margin-right: 10% ;
+}
+
+table.field_encoding_scheme td {
+	width: 1px ;
+	border: 0px ;
+	padding: 0px ;
+	padding-right: 10px ;
+	text-align: left ;
+}
+
+#history .boxed {
+	font-size: 80% ;
+}
+
+#history dl dt {
+	font-family: sans-serif ;
+	font-weight: bold ;
+}
+
+.changes {
+	width: 90% ;
+	border: 1px solid grey ;
+	padding: 15px ;
+	border-radius: 15px ;
+	font-family: sans-serif ;
+}
+
+.changes th {
+	border-bottom: 1px solid black ;
+	margin:0px ;
+}
+
+
+h1, h2, h3, h4, .gavsheader {
+	text-align: left ;
+	font-family: helvetica ;
+}
+
+h2 {
+	border-bottom: 1px solid black ;
+	margin-top: 50px ;
+}
+
+.displayFormula {
+	text-align: center;
+	font-family: sans-serif ;
+}
+
+.printStyleTable {
+	border-collapse: collapse ;
+	margin-left: auto ;
+	margin-right: auto ;
+}
+
+.printStyleTable thead th {
+	border-bottom: 1px solid black ;
+	padding-left: 5px ;
+	padding-right: 10px ;
+}
+
+.printStyleTable tbody th {
+	padding-right: 10px ;
+	text-align: center;
+}
+
+.printStyleTable tbody td {
+	padding-right: 10px ;
+	text-align: center;
+}
+
+
+.rationale_note {
+    font-size: 75% ;
+}
+
+.expandButton {
+	float: right ;
+}
+
+table.allele_counts th {
+	font-family: monospace, sans-serif ;
+	font-size: 80% ;
+	border-bottom: 1px solid black ;
+}
+
+table.allele_counts td {
+	font-family: monospace, fixed, courier ;
+	font-size: 80% ;
+	padding-right: 80px ;
+}
+
+div.logo_container {
+	position: relative ;
+	font-size: 150%;
+	width: 100% ;
+	padding-left: 75px;
+	padding-right: 75px;
+	padding-bottom: 20px ;
+	padding-top: 20px ;
+}
+
+div.logo_container > a {
+	float: left ;
+	display: block ;
+	min-width: 20% ;
+	height: 50px ;
+	width: 250px ;
+	text-decoration: none ;
+	text-color: "black" ;
+}
+
+div.logo_container + p {
+	clear: both;
+	padding-top: 20px ;
+}
+
+
+

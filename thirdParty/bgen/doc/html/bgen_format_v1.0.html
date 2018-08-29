@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//SoftQuad Software//DTD HoTMetaL PRO 6.0::19990601::extensions to HTML 4.0//EN" "hmpro6.dtd">
+<HTML> 
+  <HEAD> 
+	<LINK HREF="style.css" REL="stylesheet">  </HEAD> 
+  <BODY> 
+			 <!--#include virtual="/header.shtml" -->
+  <div class="header">
+    <div class="header_text">
+      The BGEN format
+    </div>
+
+    <div class="header_subtext">
+      A compressed binary format for typed and imputed genotype data
+    </div>
+  </div>
+            <p>
+            <b>This page documents v1.0 of the BGEN format, which is now deprecated.</b>
+			<em>This format should not be used for new files.  See <a href="bgen_format.html">here</a> for the most recent
+				version of the BGEN format.</em>
+            </p>
+            <p>Note: The data layout documented here has the limitation that alleles can be only 1 character long.
+            This prevents its use with (for example) the latest 1000 genomes data release, which contains structural variants many kilobases long.
+            <a href="bgen_format.html">Version 1.1</a> was developed to be backwards-compatible with this format, and addresses this issue.
+            </p>
+
+<h3>SNP block format</h3>
+<p>
+	Each snp block in a BGEN v1.0 file consists of the following data in order.
+</p>
+<center>
+<table class="filespec">
+	<thead>
+	<tr><th>No. of bytes</th><th>Description</th></tr>
+	</thead>
+	<tbody>
+	<tr><td>4</td><td>The number of individuals the row represents, hereafter denoted <em>N</em>.
+		This is an integer encoded in two bytes.</td></tr>
+	<tr><td>1</td><td>An unsigned integer <em>S</em>, indicating the length of the storage used for the
+    SNPID and RSID fields in the row.</td></tr>
+	<tr><td>1</td><td>The length, <em>SNPID_size</em> of (the data part of) the SNPID string.
+		This must be between 0 and <em>S</em>.</td></tr>
+	<tr><td><em>S</em></td><td>The SNPID of the row.  
+		Only the first <em>SNPID_size</em> bytes will be used.</td></tr>
+	<tr><td>1</td><td>The length, <em>RSID_size</em> of (the data part of) the RSID string.
+			This must be between 0 and <em>S</em>.</td></tr>
+	<td><em>S</em></td><td>The RSID of the row.  
+		Only the first <em>RSID_size</em> bytes will be used.</td></tr>
+	<tr><td>1</td><td>
+		The chromosome on which the SNP is found, encoded as an unsigned 8-bit integer.
+		The encoding is:
+		<table class="field_encoding_scheme" >
+			<tr><td>1-22:</td><td>SNP lies in the chromosome with the given number.</td></tr>
+			<tr><td>23</td><td>SNP lies in the non pseudo-autosomal part of the X chromosome.</td></tr>
+			<tr><td>24:</td><td>SNP lies in the non pseudo-autosomal part of the Y chromosome.</td></tr>
+			<tr><td>253:</td><td>SNP lies in the pseudo-autosomal region of the X/Y chromosomes.</td></tr>
+			<tr><td>254:</td><td>SNP lies in the mitochondrial DNA</td></tr>
+			<tr><td>255:</td><td>Indicates the chromosome is unknown.  We advise that this only be used for test data.</td></tr>
+		</table>
+	</td>
+	<tr><td>4</td><td>The SNP position, encoded as an unsigned 32-bit integer.</td></tr>
+	<tr><td>1</td><td>The length <em>LA</em>of the 'A' allele, encoded as an unsigned 8-bit integer.</td></tr>
+	<tr><td><em>LA</em></td><td>The B allele.</td></tr>
+	<tr><td>1</td><td>The length <em>LB</em> fo the B allele, encoded as an unsigned 8-bit integer.</td></tr>
+	<tr><td><em>LB</em></td><td>The B allele.</td></tr>
+	<tr><td><em>P</em></td><td>Genotype probability data for the SNP for each of the N individuals in
+    the cohort.  If the <em>CompressedSNPBlocks</em> flag is not set, this field consists of <em>P</em>=6*<em>N</em> bytes representing the probabilities.
+ 	If <em>CompressedSNPBlocks</em> is set, this field contains a 32-bit unsigned integer specifying the length of the compressed data,
+	followed by the compressed data itself.  See below for more details.</td></tr>
+	</tbody>
+	<tfoot>
+	<tr><th>13 + 2*<em>S</em> + <em>P</em></th><th>TOTAL</th></tr>
+	</tfoot>
+</table>
+</center>
+</p>
+<h3>SNP block probability data</h3>
+<p>
+		The probability data is listed as a sequence of 2-byte signed integers.  These should be interpreted in triples,
+		the first member being the probability of AA, the second the probability of AB, the third the probability of BB.
+		Altogether these occupy 6*<em>N</em> bytes where <em>N</em> is the number of samples.  These 6 * <em>N</em> bytes are written directly.
+<b>Alternatively</b>, if the <em>CompressedSNPBlocks</em> flag is set in the header, these 6 * <em>N</em> bytes are first compressed using <a href="http://www.zlib.net/">zlib</a>.
+The SNP block then contains a 4-byte integer representing the length of the compressed data followed by the compressed data itself.
+</p>
+<p>
+		To convert the stored 2-byte integers into probabilities, the following calculation should be performed:
+	</p>
+	<ol>
+		<li>Convert the number into a floating-point format (e.g. float or double).</li>
+		<li>Divide by 10,000.</li>
+	</ol>
+	<p>
+		Note that the range of a two-byte unsigned integer is 0 - 65535 inclusive. Thus the resulting probabilities
+        can take on values between 0 and 6.5535 inclusive and are accurate to four decimal places.
+	</p>
+	<p>
+		<b>Note</b>: to convert a floating point number to the format, do the following:
+	</p>
+	<ol>
+		<li>Check the number lies in the half-open interval [ 0, 6.55355 ).</li>
+		<li>Multiply by 10000 and round to the nearest integer.</li>
+	</ol>
+	<p>
+		All numbers are stored in little-endian (least significant byte first) order.
+	</p>
+</body>
+</html>
