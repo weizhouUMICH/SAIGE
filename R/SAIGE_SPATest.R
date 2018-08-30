@@ -761,9 +761,15 @@ if(FALSE){
     cat("It is a quantitative trait\n")
     mth = 0
     if(!isCondition){
+	 if(singleGClambda == 1){
       resultHeader = c("Gene", "Pvalue", "N_MAC1","N_MAC2","N_MAC3","N_MAC4","N_MAC5","N_MACgt5","markerIDs","markerAFs")
+}else{
+	resultHeader = c("Gene", "Pvalue", "Pvalue_singleGCadjust", "N_MAC1","N_MAC2","N_MAC3","N_MAC4","N_MAC5","N_MACgt5","markerIDs","markerAFs")
+
+}
     }else{
-      resultHeader = c("Gene","Pvalue","Pvalue_cond","N_MAC1","N_MAC2","N_MAC3","N_MAC4","N_MAC5","N_MACgt5","markerIDs","markerAFs")
+      		resultHeader = c("Gene","Pvalue","Pvalue_cond","N_MAC1","N_MAC2","N_MAC3","N_MAC4","N_MAC5","N_MACgt5","markerIDs","markerAFs")
+
     }
     write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
 
@@ -819,7 +825,12 @@ if(FALSE){
 	if(isCondition){
           OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$p.value.cond, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
 	}else{
+	if(singleGClambda == 1){
 	  OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
+	}else{
+	  OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$P_singlGCadj, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
+	}
+
 	}
           mth = mth + 1
           if(mth %% numLinesOutput == 0){
