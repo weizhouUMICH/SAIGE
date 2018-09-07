@@ -1146,6 +1146,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
 		MACvec_indVec_Zall = getCateVarRatio_indVec(Zall, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
 		GratioMatrixall = getGratioMatrix(MACvec_indVec_Zall, ratioVec)
+#		print(GratioMatrixall)
                 #GratioMatrixall = getGratioMatrix(Zall, ratioVec)
                 #MACvec_indVec = getMACvec_indVec(G1)
 		if(!is.null(G2_cond)){
@@ -1323,7 +1324,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 getGratioMatrix = function(MACvec_indVec, ratioVec){
 
 	numCate = length(ratioVec)
-       # cat("MACvec_indVec: ", MACvec_indVec, "\n")
+        cat("MACvec_indVec: ", MACvec_indVec, "\n")
 
         indMatrix = contr.sum(numCate, contrasts = FALSE)
 
@@ -1346,6 +1347,7 @@ getGratioMatrix_old = function(G, ratioVec){
 
 	MACvec = colSums(G)
         MACvec_indVec = MACvec
+#        cat("MACvec: ", MACvec, "\n")
         MACvec_indVec[which(MACvec <= 1.5)] = 1
         MACvec_indVec[which(MACvec <= 2.5 & MACvec > 1.5)] = 2
         MACvec_indVec[which(MACvec <= 3.5 & MACvec > 2.5)] = 3
@@ -1353,7 +1355,7 @@ getGratioMatrix_old = function(G, ratioVec){
         MACvec_indVec[which(MACvec <= 5.5 & MACvec > 4.5)] = 5
         MACvec_indVec[which(MACvec_indVec > 5.5)] = 6
 
-       # cat("MACvec_indVec: ", MACvec_indVec, "\n")
+#        cat("MACvec_indVec: ", MACvec_indVec, "\n")
 
         indMatrix = contr.sum(6, contrasts = FALSE)
 
@@ -1440,6 +1442,8 @@ getCateVarRatio_indVec = function(G, cateVarRatioMinMACVecExclude, cateVarRatioM
 	#cat("cateVarRatioMinMACVecExclude: ", cateVarRatioMinMACVecExclude, "\n")
 	#cat("cateVarRatioMaxMACVecInclude: ", cateVarRatioMaxMACVecInclude, "\n")
   	numCate = length(cateVarRatioMinMACVecExclude)
+#	cat("numCate: ", numCate, "\n")
+#	cat("MACvector: ", MACvector, "\n")
     	for(i in 1:(numCate-1)){
 		MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
 		if(length(MACvecIndex) > 0){
@@ -1447,7 +1451,8 @@ getCateVarRatio_indVec = function(G, cateVarRatioMinMACVecExclude, cateVarRatioM
 		}
 
     	}
-	#cat("here2 MACvec_indVec: ", MACvec_indVec, "\n")		
+#	cat("here2 MACvec_indVec: ", MACvec_indVec, "\n")		
+#	cat("here2 length(cateVarRatioMaxMACVecInclude): ", length(cateVarRatioMaxMACVecInclude), "\n")		
 
     	if(length(cateVarRatioMaxMACVecInclude) == (numCate-1)){
 		MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[numCate])
@@ -1458,7 +1463,7 @@ getCateVarRatio_indVec = function(G, cateVarRatioMinMACVecExclude, cateVarRatioM
 	if(length(MACvecIndex) > 0){
         	MACvec_indVec[MACvecIndex] = numCate
         }
-	#cat("here3 MACvec_indVec: ", MACvec_indVec, "\n")		
+#	cat("here3 MACvec_indVec: ", MACvec_indVec, "\n")		
 
         return(MACvec_indVec)
 }
