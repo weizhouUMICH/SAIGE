@@ -1,4 +1,4 @@
-# This branch is for development. Current version is 0.29
+# This branch is for development to run the null SPA test. Current version is 0.29.2.0.
 
 # SAIGE
 

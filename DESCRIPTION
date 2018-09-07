@@ -2,7 +2,7 @@ Package: SAIGE
 Type: Package
 Title: Efficiently controlling for unbalanced case-control ratios and
         sample relatedness for binary traits in PheWAS by large cohorts
-Version: 0.29.2
+Version: 0.29.2.0
 Date: 2017-04-24
 Author: Wei Zhou, Seunggeun Lee, Cristen Willer
 Maintainer: Wei Zhou <zhowei@umich.edu>
