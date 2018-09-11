@@ -158,8 +158,11 @@ int setgenoTest_bgenDosage(std::string & filename,
 
 
      if(isQuery){
+        std::cout << "debug for id query for bgen file" << std::endl;
         genoToTest_bgenDosage = View::create( filename ) ;
+        std::cout << "debug for id query for bgen file2" << std::endl;
 	IndexQuery::UniquePtr query = IndexQuery::create( index_filename ) ;
+        std::cout << "debug for id query for bgen file3" << std::endl;
 
 	std::cout << "ranges_to_include.nrow() " << ranges_to_include.nrow() << std::endl;
 	std::cout << "ranges_to_exclude.nrow() " << ranges_to_exclude.nrow() << std::endl;
