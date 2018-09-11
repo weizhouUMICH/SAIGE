@@ -596,6 +596,20 @@ fitNULLGLMM = function(plinkFile = "",
       dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
   }
 
+  if(traitType == "binary"){
+    out_checksep = checkPerfectSep(formula.null, data=dataMerge_sort)
+    formulaNewList = c("Y ~ ", out_checksep$X_name[1])
+    if(length(out_checksep$X_name) > 1){
+      for(i in c(2:length(out_checksep$X_name))){
+        formulaNewList = c(formulaNewList, "+", out_checksep$X_name[i])
+      }
+    }   
+    formula.null = paste0(formulaNewList, collapse="")
+    dataMerge_sort = data.frame(cbind(out_checksep$Y, out_checksep$X1))
+    colnames(dataMerge_sort) =  c("Y",out_checksep$X_name)
+  }
+
+
   out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
   formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
   if(length(out.transform$Param.transform$X_name) > 1){
@@ -1005,6 +1019,39 @@ while(ratioCV > ratioCVcutoff){
   write(varRatio, varRatioOutFile)
   print(varRatio)
 }
+
+
+checkPerfectSep<-function(formula, data){
+  X1<-model.matrix(formula,data=data)
+  X_name = colnames(X1)
+  X1 = as.matrix(X1[,-1])
+  X_name = X_name[-1]
+  colnames(X1) = X_name
+#  X1=X1[,c(2:ncol(X1))] #remove intercept
+  formula.frame<-model.frame(formula,data=data)
+  Y = model.response(formula.frame, type = "any")
+  q = length(X_name)
+  coltodelete = NULL
+  for(i in 1:q){
+    if (length(unique(X1[,i])) == 2){
+       sumTable = table(Y, X1[,i])
+       if(sum(sumTable == 0) > 0){
+         #X1<-X1[, -i]
+         #X_name = X_name[-i]
+         coltodelete = c(coltodelete, i)
+	 cat("Warning: perfect seperation is detected! ", X_name[i], " will be excluded in the model\n")
+       }
+    }
+  }
+
+  if(length(coltodelete) > 0){
+    X1 <- X1[,-coltodelete]
+    X_name <- X_name[,-coltodelete]
+  }
+
+  re<-list(Y =Y, X1 = X1, X_name=X_name)
+}
+
 
 
 ##suggested by Shawn 01-19-2018
