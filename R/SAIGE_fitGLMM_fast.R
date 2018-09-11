@@ -1078,6 +1078,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   if(IsSparseKin){
     qrsparseSigmaOutFile = paste0(varRatioOutFile, ".qr.sparseSigma.rda")
     sparseSigmaOutFile = paste0(varRatioOutFile, ".sparseSigma.mtx")
+    sparseSigmaOutFile_orig = paste0(varRatioOutFile, ".sparseSigma_orig.mtx")
     if(pcg_sparse & (!file.exists(sparseSigmaOutFile))){
       sparseSigmaOutFileFlag = TRUE
     }
@@ -1094,6 +1095,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   if(sparseSigmaOutFileFlag){
       MAFindex = which(freqVec >= 0.01 & freqVec <= 0.99)
       markerIndexforSparseM = sample(MAFindex, size = numRandomMarkerforSparseKin, replace=FALSE)
+#      sparseSigmaOutFile_orig_markerIndex = paste0(sparseSigmaOutFile_orig, "_markerIndex.txt")
+#      write.table(markerIndexforSparseM, sparseSigmaOutFile_orig_markerIndex, col.names=F, row.names=F, quote=F)		
+
       setSubMarkerIndex(markerIndexforSparseM -1)
       ta = proc.time()
     #sparseMList = createSparseKin(markerIndexforSparseM -1, relatednessCutoff, W, tauVecNew)
@@ -1111,6 +1115,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
       cat("length(sparseMList$kinValue): ", length(sparseMList$kinValue), "\n")
       print(sparseMList$kinValue[1:102])	 
       sparseSigma = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE)  
+#      sparseSigma_orig = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue_orig), symmetric = TRUE)  
 #    sparseSigma = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE) 
       cat("nrow(sparseSigma): ", nrow(sparseSigma), "\n")	
       cat("ncol(sparseSigma): ", ncol(sparseSigma), "\n")	
@@ -1121,6 +1126,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
       cat("OK1", "\n")
       sparseSigmaOutFile = paste0(varRatioOutFile, ".sparseSigma.mtx")
       cat("OK2", "\n")
+#      Matrix:::writeMM(sparseSigma_orig, sparseSigmaOutFile_orig)
       Matrix:::writeMM(sparseSigma, sparseSigmaOutFile)
       cat("OK3", "\n")
     }else{

@@ -2697,6 +2697,7 @@ Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tau
         std::vector<unsigned int>     jIndexVec2;
 //	std::vector<float>     kinValueVec;
         std::vector<float>     kinValueVec2;
+ //       std::vector<float>     kinValueVec_orig; //for test original kinship
 
 	arma::fvec * temp = &(geno.m_OneSNP_StdGeno);
 	(*temp).clear();
@@ -2725,6 +2726,7 @@ Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tau
 
   	for(size_t i=0; i< Mmarker; i++){
 //		std::cout << "OKKK: "  << std::endl;
+//		std::cout << "Mmarker: " << std::endl;
                 geno.Get_OneSNP_StdGeno(i, temp);
 		//std::cout << "geno.m_OneSNP_StdGeno(i) " << geno.m_OneSNP_StdGeno(i) <<  std::endl;	
 		//kinValueVecTemp = parallelcalsparseGRM(iMat);
@@ -2756,6 +2758,7 @@ Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tau
 //		std::cout << "j: " << j << " geno.kinValueVecFinal[j]: " << geno.kinValueVecFinal[j] << std::endl;
                 if(geno.kinValueVecFinal[j] >= relatednessCutoff){
         //      std::cout << "kinValueVec[j]: " << kinValueVec[j] << std::endl;
+			//kinValueVec_orig.push_back((geno.kinValueVecFinal)[j]); //for test	
                         (geno.kinValueVecFinal)[j] = tauVec(1)*(geno.kinValueVecFinal)[j];
  				 a1 = (geno.indiceVec)[j].first + 1;
 				 a2 = (geno.indiceVec)[j].second + 1;
@@ -2781,6 +2784,7 @@ Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tau
         }
 
 	std::cout << "kinValueVec2.size(): " << kinValueVec2.size() << std::endl;
+	//return Rcpp::List::create(Named("iIndex") = iIndexVec2, Named("jIndex") = jIndexVec2, Named("kinValue") = kinValueVec2,  Named("kinValue_orig") = kinValueVec_orig);	
 	return Rcpp::List::create(Named("iIndex") = iIndexVec2, Named("jIndex") = jIndexVec2, Named("kinValue") = kinValueVec2);	
 }
 
