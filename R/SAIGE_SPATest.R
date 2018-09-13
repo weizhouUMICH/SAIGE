@@ -823,15 +823,43 @@ if(FALSE){
 	}
 
 	if(isCondition){
-          OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$p.value.cond, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
+	  outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$p.value.cond, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
+          #OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$p.value.cond, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
 	}else{
+	
+
 	if(singleGClambda == 1){
-	  OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
+	  outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
+	  #OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
 	}else{
-	  OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$P_singlGCadj, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
+	  outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$P_singlGCadj, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
+
+	  #OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$P_singlGCadj, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
 	}
+	 if(method=="optimal.adj"){
+                #rho = 1 for burden, 0 for skat
+                p.val.vec = saigeskatTest$param$p.val.each
+                rho.val.vec=saigeskatTest$param$rho
+                outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
+		if(isCondition){
+			p.val.cond.vec = saigeskatTest$condOut$param$p.val.each
+			rho.val.cond.vec = saigeskatTest$condOut$param$rho
+			outVec = c(outVec, p.val.cond.vec[which(rho.val.cond.vec == 1)], p.val.cond.vec[which(rho.val.cond.vec == 0)])
+		}else{
+			if(singleGClambda != 1){
+				p.val.GCadj.vec = saigeskatTest$GCadjOut$param$p.val.each
+				rho.val.GCadj.vec = saigeskatTest$GCadjOut$param$rho
+				outVec = c(outVec, p.val.GCadj.vec[which(rho.val.GCadj.vec == 1)], p.val.GCadj.vec[which(rho.val.GCadj.vec == 0)])
+			}	
+		}
+
+          }
+
 
 	}
+
+	OUT = rbind(OUT, outVec)
+
           mth = mth + 1
           if(mth %% numLinesOutput == 0){
             ptm <- proc.time()

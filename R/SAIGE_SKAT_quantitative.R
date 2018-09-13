@@ -1283,11 +1283,13 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 		  Phi = Phi * singleGClambda
 		  re_GCadj = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
 		  re$P_singlGCadj = re_GCadj$p.value
+		  re$GCadjOut = re_GCadj	
 
 		}
 
                 if(!is.null(G2_cond)){
                         re$p.value.cond = re_cond$p.value
+			re$condOut = re_cond
                 }else{
                         re$p.value.cond = NA
                 }
