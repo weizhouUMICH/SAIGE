@@ -11,7 +11,7 @@ PKG_CPPFLAGS = \
 -I ../thirdParty/zlib-1.2.8 \
 -I ../thirdParty/cget/include \
 -I ../thirdParty/cget/lib \
--D SQLITE_ENABLE_COLUMN_METADATA -O3 -fpic -Wall -Wextra -pedantic
+-D SQLITE_ENABLE_COLUMN_METADATA -O3 -fpic -Wall -Wextra -pedantic -D_GLIBCXX_USE_CXX11_ABI=0
 
 ZLIB_LIB = ../thirdParty/zlib-1.2.8/libz.so.1.2.8
 
