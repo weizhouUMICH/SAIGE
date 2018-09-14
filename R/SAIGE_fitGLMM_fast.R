@@ -596,6 +596,8 @@ fitNULLGLMM = function(plinkFile = "",
       dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
   }
 
+  #check for perfect separation
+  if(FALSE){
   if(traitType == "binary"){
     out_checksep = checkPerfectSep(formula.null, data=dataMerge_sort)
     formulaNewList = c("Y ~ ", out_checksep$X_name[1])
@@ -608,7 +610,7 @@ fitNULLGLMM = function(plinkFile = "",
     dataMerge_sort = data.frame(cbind(out_checksep$Y, out_checksep$X1))
     colnames(dataMerge_sort) =  c("Y",out_checksep$X_name)
   }
-
+ }
 
   out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
   formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
