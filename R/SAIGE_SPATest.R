@@ -258,7 +258,7 @@ SPAGMMATtest = function(dosageFile = "",
  
   if(traitType == "binary"){
     cat("It is a binary trait\n")
-    resultHeader = c(dosageFilecolnamesSkip, "N", "BETA", "SE", "Tstat", "p.value", "p.value.NA", "Is.SPA.converge","varT","varTstar")
+    resultHeader = c(dosageFilecolnamesSkip, "N", "BETA", "SE", "Tstat", "p.value", "p.value.NA", "Is.SPA.converge","varT","varTstar", "N.Cases", "N.Controls")
 
     if(IsOutputAFinCaseCtrl){
       resultHeader = c(resultHeader, "AF.Cases", "AF.Controls")
@@ -451,12 +451,12 @@ SPAGMMATtest = function(dosageFile = "",
       if(traitType == "binary"){
 	
         if(!IsOutputAFinCaseCtrl){
-          OUT = rbind(OUT, scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader))
+          OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader), NCase, NCtrl))
         }else{
 
           AFCase = sum(G0[y1Index])/(2*NCase)
           AFCtrl = sum(G0[y0Index])/(2*NCtrl)
-	  OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader),AFCase, AFCtrl))
+	  OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader),NCase, NCtrl, AFCase, AFCtrl))
         }
       }else if(traitType == "quantitative"){
         if(indChromCheck){
@@ -478,7 +478,7 @@ SPAGMMATtest = function(dosageFile = "",
           }
 	}
         out1 = scoreTest_SAIGE_quantitativeTrait(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec)
-        OUT = rbind(OUT, c(rowHeader, N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
+        OUT = rbind(OUT, c(rowHeader, Nnomiss, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
       }
     } #end of the if(MAF >= bgenMinMaf & markerInfo >= bgenMinInfo)
       #if(mth %% 100000 == 0 | mth == Mtest){
