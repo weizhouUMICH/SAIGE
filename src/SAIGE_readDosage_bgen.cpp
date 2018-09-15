@@ -396,14 +396,27 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
       std::cerr << "ERROR: " << snpName << " has maximum ploidy = " << Pmax << " (not 2)" << std::endl;
       exit(1);
     }
+
+    std::vector <bool> missingIdxVec;
+    missingIdxVec.clear();
+    missingIdxVec.reserve(N);
+    missingIdxVec.resize(N); 
+    int missingSamplesize = 0;
     for (uint i = 0; i < N; i++) {
       uint ploidyMiss = *bufAt; bufAt++;
+      std::cout << "assume ploidy is 2" << std::endl;
       //if (ploidyMiss != 2U) {
-      if (ploidyMiss < 2U) {
-        std::cerr << "ERROR: " << snpName << " has ploidy/missingness byte = " << ploidyMiss
-             << " (not 2)" << std::endl;
-        exit(1);
-      }
+      //if (ploidyMiss < 2U) {
+      //  std::cerr << "ERROR: " << snpName << " has ploidy/missingness byte = " << ploidyMiss
+      //       << " (not 2)" << std::endl;
+      //  exit(1);
+      //}else{
+	bool const missing = (ploidyMiss & 0x80) ;
+	missingIdxVec[i] = missing;
+	if(missing){
+          missingSamplesize = missingSamplesize + 1;
+        }	
+      //}
     }
     uint Phased = *bufAt; bufAt++;
     if (Phased != 0U) {
@@ -416,6 +429,10 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
       exit(1);
     }
 
+
+     
+
+
         // Parse 
     double lut[256];
     for (int i = 0; i <= 255; i++)
@@ -426,12 +443,21 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
     dosages.clear();
     dosages.reserve(gmtest_samplesize);
     dosages.resize(gmtest_samplesize);
+    int missingssintest = 0;
 
    for (uint i = 0; i < N; i++) {
       p11 = lut[*bufAt]; bufAt++;
       p10 = lut[*bufAt]; bufAt++;
 
-      dosage = 2*p11 + p10;
+      if(missingIdxVec[i] == 1){
+        dosage = -9;
+	if(gm_sample_idx[i] >= 0){
+	  missingssintest = missingssintest + 1;	
+          dosages[gm_sample_idx[i]] = dosage;
+        }      
+      }else{ 		
+
+        dosage = 2*p11 + p10;
 /*
     if(i < 3){
         std::cout << "p11: " << p11 << std::endl;
@@ -448,19 +474,24 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
 	sum_eij_sub += eij;
       }
 
-    }
+    } //if the dosage is not missing
 
+} //end of for loop
+     int nonMissingss = N - missingSamplesize; 
+     int nonMissingssintest = gmtest_samplesize - missingssintest; 
+     //AC = 2* ((double) gmtest_samplesize) - sum_eij_sub;
+     //AF = AC/ 2/ ((double)gmtest_samplesize) ;
 
-     AC = 2* ((double) gmtest_samplesize) - sum_eij_sub;
-     AF = AC/ 2/ ((double)gmtest_samplesize) ;
+	AC = 2* ((double) nonMissingssintest) - sum_eij_sub;
+	AF = AC/ 2/ ((double) nonMissingssintest) ;
 
+    
 
-     double thetaHat = sum_eij / (2*N);
+     //double thetaHat = sum_eij / (2*N);
+     double thetaHat = sum_eij / (2*nonMissingss);
      double info = thetaHat==0 || thetaHat==1 ? 1 :
-     1 - sum_fij_minus_eij2 / (2*N*thetaHat*(1-thetaHat));
-
-
-
+     //1 - sum_fij_minus_eij2 / (2*N*thetaHat*(1-thetaHat));
+     1 - sum_fij_minus_eij2 / (2*nonMissingss*thetaHat*(1-thetaHat));
 
 
 /*
@@ -506,6 +537,7 @@ Rcpp::List getDosage_inner_bgen_withquery_new(){
   std::vector< std::string > alleles ;
   std::vector< std::vector< double > > probs ;
   std::vector< double > dosages;
+  //std::vector< bool > missingIdxVec;
   double AC, AF; 
   //clock_t t1,t2;
   //t1=clock();

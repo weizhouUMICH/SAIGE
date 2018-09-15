@@ -400,6 +400,9 @@ SPAGMMATtest = function(dosageFile = "",
       isVariant = getGenoOfnthVar_vcfDosage_pre()
     }
 
+  Nnomiss = sum(G0 != -9)
+  Nmiss = N - Nnomiss
+  missingind = which(G0 == -9)
 
     if(indChromCheck){
       CHR = as.character(CHR)
@@ -416,17 +419,41 @@ SPAGMMATtest = function(dosageFile = "",
         mu.a<-as.vector(mu)
         mu2.a<-mu.a *(1-mu.a)
       }
+     
       obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
       obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
       obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
     }
-    MAF = min(AF, 1-AF)
+
+  MAF = min(AF, 1-AF)
+  if(Nmiss > 0){
+    y = y[missingind] 
+    G0 = G0[missingind]
+    y1Index = which(y == 1)
+    NCase = length(y1Index)
+    y0Index = which(y == 0)
+    NCtrl = length(y0Index)
+    mu.a = mu.a[missingind]
+    mu2.a = mu2.a[missingind]
+    obj.noK$X1 = obj.noK$X1[missingind,]
+    obj.noK$XXVX_inv = obj.noK$XXVX_inv[missingind,]
+    obj.noK$V = obj.noK$V[missingind]
+    obj.noK$XV = obj.noK$XV[missingind,]
+    obj.noK$y = obj.noK$y[missingind]
+    obj.noK$XVX_inv_XV = obj.noK$XVX_inv_XV[missingind,]
+    obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
+    obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))	
+  }
+
     if(MAF >= testMinMAF & markerInfo >= minInfo){
       numPassMarker = numPassMarker + 1
+
       if(traitType == "binary"){
+	
         if(!IsOutputAFinCaseCtrl){
           OUT = rbind(OUT, scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader))
         }else{
+
           AFCase = sum(G0[y1Index])/(2*NCase)
           AFCtrl = sum(G0[y0Index])/(2*NCtrl)
 	  OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader),AFCase, AFCtrl))
@@ -442,9 +469,14 @@ SPAGMMATtest = function(dosageFile = "",
             mu = obj.glmm.null$fitted.values
             mu.a<-as.vector(mu)
           }
-          obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
 
-        }
+	  if(Nmiss > 0){
+             mu.a = mu.a[missingind]
+	     mu2.a<-mu.a *(1-mu.a)
+	     obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
+             obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+          }
+	}
         out1 = scoreTest_SAIGE_quantitativeTrait(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec)
         OUT = rbind(OUT, c(rowHeader, N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
       }
@@ -636,6 +668,17 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 
 
 Score_Test<-function(obj.null, G, mu, mu2, varRatio){
+  ##missing dosages
+#  missingind = which(Go == -9)
+#  if(missingind > 0){
+#    G = Go[missingind]
+#    obj.null$XXVX_inv = (obj.null$XXVX_inv)[missingind, ]
+#    obj.null$XV = (obj.null$XV)[,missingind]
+#    obj.null$y = (obj.null$y)[missingind]
+#    mu = mu[missingind]
+#    mu2 = mu2[missingind]
+#  }
+  
   g<-G  -  obj.null$XXVX_inv %*%  (obj.null$XV %*% G)
   q<-crossprod(g, obj.null$y) 
   m1<-crossprod(mu, g)
@@ -693,6 +736,7 @@ scoreTest_SAIGE_binaryTrait=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, m
   N = length(G0)
   if(AF > 0.5){
     G0 = 2-G0
+    #AC2 = 2*N - AC
     AC2 = 2*N - AC
   }else{
     AC2 = AC
@@ -715,8 +759,9 @@ scoreTest_SAIGE_binaryTrait=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, m
          #out.score["Tstat"][1] = (-1)*out.score["Tstat"][1]
        }
 
-       #OUT = rbind(OUT, c(rowHeader, N, unlist(out.score)))
+
        outVec = c(rowHeader, N, unlist(out.score))
+       #outVec = c(rowHeader, Nnonmiss, unlist(out.score))
        #NSparse=NSparse+1
        Run1=FALSE
        	
