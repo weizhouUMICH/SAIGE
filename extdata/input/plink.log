@@ -1,0 +1,12 @@
+PLINK v1.90p 64-bit (25 Mar 2016)
+Options in effect:
+  --export
+
+Hostname: dumbo
+Working directory: /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/extdata/input
+Start time: Sat Sep 15 00:21:12 2018
+
+Error: Unrecognized flag ('--export').
+For more information, try 'plink --help [flag name]' or 'plink --help | more'.
+
+End time: Sat Sep 15 00:21:12 2018

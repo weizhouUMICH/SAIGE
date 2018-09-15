@@ -404,7 +404,7 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
     int missingSamplesize = 0;
     for (uint i = 0; i < N; i++) {
       uint ploidyMiss = *bufAt; bufAt++;
-      std::cout << "assume ploidy is 2" << std::endl;
+      //std::cout << "assume ploidy is 2" << std::endl;
       //if (ploidyMiss != 2U) {
       //if (ploidyMiss < 2U) {
       //  std::cerr << "ERROR: " << snpName << " has ploidy/missingness byte = " << ploidyMiss

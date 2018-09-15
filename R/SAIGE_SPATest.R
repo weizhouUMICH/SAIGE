@@ -402,7 +402,7 @@ SPAGMMATtest = function(dosageFile = "",
 
   Nnomiss = sum(G0 != -9)
   Nmiss = N - Nnomiss
-  missingind = which(G0 == -9)
+  missingind = which(G0 != -9)
 
     if(indChromCheck){
       CHR = as.character(CHR)
@@ -426,24 +426,29 @@ SPAGMMATtest = function(dosageFile = "",
     }
 
   MAF = min(AF, 1-AF)
+  cat("Nmiss: ", Nmiss, "\n")
+  cat("missingind", missingind, "\n")
   if(Nmiss > 0){
-    y = y[missingind] 
+    obj.noK.sub = obj.noK
+    y.sub = y[missingind] 
     G0 = G0[missingind]
-    y1Index = which(y == 1)
-    NCase = length(y1Index)
-    y0Index = which(y == 0)
-    NCtrl = length(y0Index)
-    mu.a = mu.a[missingind]
-    mu2.a = mu2.a[missingind]
-    obj.noK$X1 = obj.noK$X1[missingind,]
-    obj.noK$XXVX_inv = obj.noK$XXVX_inv[missingind,]
-    obj.noK$V = obj.noK$V[missingind]
-    obj.noK$XV = obj.noK$XV[missingind,]
-    obj.noK$y = obj.noK$y[missingind]
-    obj.noK$XVX_inv_XV = obj.noK$XVX_inv_XV[missingind,]
-    obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
-    obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))	
+    y1Index.sub = which(y.sub == 1)
+    NCase.sub = length(y1Index.sub)
+    y0Index.sub = which(y.sub == 0)
+    NCtrl.sub = length(y0Index.sub)
+    mu.a.sub = mu.a[missingind]
+    mu2.a.sub = mu2.a[missingind]
+    obj.noK.sub$X1 = obj.noK.sub$X1[missingind,]
+    print(obj.noK.sub$X1)	
+    obj.noK.sub$XXVX_inv = obj.noK.sub$XXVX_inv[missingind,]
+    obj.noK.sub$V = obj.noK.sub$V[missingind]
+    obj.noK.sub$XV = obj.noK.sub$XV[,missingind]
+    obj.noK.sub$y = obj.noK.sub$y[missingind]
+    obj.noK.sub$XVX_inv_XV = obj.noK.sub$XVX_inv_XV[missingind,]
+    obj.noK.sub$XVX = t(obj.noK.sub$X1) %*% (obj.noK.sub$X1 * mu2.a.sub)
+    obj.noK.sub$S_a = colSums(obj.noK.sub$X1 * (y.sub - mu.a.sub))	
   }
+   
 
     if(MAF >= testMinMAF & markerInfo >= minInfo){
       numPassMarker = numPassMarker + 1
@@ -451,12 +456,24 @@ SPAGMMATtest = function(dosageFile = "",
       if(traitType == "binary"){
 	
         if(!IsOutputAFinCaseCtrl){
+	  if(Nmiss > 0){
+	    OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK.sub, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader), NCase.sub, NCtrl.sub))	
+	  }else{
           OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader), NCase, NCtrl))
-        }else{
+	  }
 
+        }else{
+	  if(Nmiss > 0){
+		AFCase.sub = sum(G0[y1Index.sub])/(2*NCase.sub)
+		AFCtrl.sub = sum(G0[y0Index.sub])/(2*NCtrl.sub)
+		OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK.sub, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader),NCase.sub, NCtrl.sub, AFCase.sub, AFCtrl.sub))
+
+	  }else{
           AFCase = sum(G0[y1Index])/(2*NCase)
           AFCtrl = sum(G0[y0Index])/(2*NCtrl)
 	  OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader),NCase, NCtrl, AFCase, AFCtrl))
+	}
+
         }
       }else if(traitType == "quantitative"){
         if(indChromCheck){
@@ -471,13 +488,21 @@ SPAGMMATtest = function(dosageFile = "",
           }
 
 	  if(Nmiss > 0){
-             mu.a = mu.a[missingind]
-	     mu2.a<-mu.a *(1-mu.a)
-	     obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
-             obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+	     mu.sub = mu[missingind]	
+             mu.a.sub = mu.a[missingind]
+	     mu2.a.sub<-mu.a.sub *(1-mu.a.sub)
+	     #obj.noK.sub = obj.noK	
+	     obj.noK.sub$XVX = t(obj.noK.sub$X1) %*% (obj.noK.sub$X1 * mu2.a.sub)
+             obj.noK.sub$S_a = colSums(obj.noK.sub$X1 * (y.sub - mu.a.sub))
           }
 	}
-        out1 = scoreTest_SAIGE_quantitativeTrait(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec)
+
+	if(Nmiss > 0){
+               out1 = scoreTest_SAIGE_quantitativeTrait(G0, obj.noK.sub, AC, AF, y.sub, mu.sub, varRatio, tauVec)
+	}else{
+		out1 = scoreTest_SAIGE_quantitativeTrait(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec)
+	}
+
         OUT = rbind(OUT, c(rowHeader, Nnomiss, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
       }
     } #end of the if(MAF >= bgenMinMaf & markerInfo >= bgenMinInfo)
@@ -606,7 +631,7 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
   # mu=mu.a; mu2= mu2.a; G=G0; obj.null=obj.noK
   idx_no0<-which(G>0)
   #print(G[1:10])
-  #print(idx_no0)
+  print(idx_no0)
   g1<-G[idx_no0]
   A1<-obj.null$XVX_inv_XV[idx_no0,]
 
@@ -622,10 +647,10 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 
   if(length(idx_no0) > 1){
     #cat("idx_no0 ", idx_no0, "\n")
-    #cat("dim(X1) ", X1, "\n")
+    cat("dim(X1) ", X1, "\n")
     Z = t(A1) %*% g1
     B<-X1 %*% Z
-    #cat("dim(Z) ", Z, "\n")
+    cat("dim(Z) ", Z, "\n")
     g_tilde1 = g1 - B
     var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
     var1 = var2 * varRatio
@@ -640,10 +665,11 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
     S2 = -S_a2 %*% Z
   }else{
     #cat("idx_no0 ", idx_no0, "\n")
-    #cat("dim(X1) ", X1, "\n")
+#    cat("dim(X1) ", X1, "\n")
+    print(X1)
     Z = A1 * g1
-    #cat("dim(Z) ", Z, "\n")
-    #cat("dim(Z) here ", Z, "\n")
+#    cat("dim(Z) ", Z, "\n")
+    cat("dim(Z) here ", Z, "\n")
     B<-X1 %*% Z
     g_tilde1 = g1 - B
     var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21

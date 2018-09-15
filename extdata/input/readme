@@ -1,0 +1,1 @@
+/net/dumbo/home/zhowei/tools/qctool/build/release/qctool_v2.0.1 -g genotype_10markers.missing.vcf -bgen-bits 8 -og genotype_10markers.missing.bgen

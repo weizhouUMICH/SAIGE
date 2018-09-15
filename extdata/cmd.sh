@@ -85,3 +85,15 @@ Rscript step2_SPAtests.R \
         --SAIGEOutputFile=./output/example.SAIGE.bgen.txt \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE
+
+Rscript step2_SPAtests.R \
+        --bgenFile=./input/genotype_10markers.missing.bgen \
+        --bgenFileIndex=./input/genotype_100markers.missing.bgen.bgi \
+        --minMAF=0.0001 \
+        --minMAC=4 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output/example.rda \
+        --varianceRatioFile=./output/example.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example.SAIGE.bgen.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE
