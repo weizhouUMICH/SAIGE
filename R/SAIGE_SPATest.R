@@ -427,7 +427,7 @@ SPAGMMATtest = function(dosageFile = "",
 
   MAF = min(AF, 1-AF)
   cat("Nmiss: ", Nmiss, "\n")
-  cat("missingind", missingind, "\n")
+#  cat("missingind", missingind, "\n")
   if(Nmiss > 0){
     obj.noK.sub = obj.noK
     y.sub = y[missingind] 
@@ -439,7 +439,7 @@ SPAGMMATtest = function(dosageFile = "",
     mu.a.sub = mu.a[missingind]
     mu2.a.sub = mu2.a[missingind]
     obj.noK.sub$X1 = obj.noK.sub$X1[missingind,]
-    print(obj.noK.sub$X1)	
+    #print(obj.noK.sub$X1)	
     obj.noK.sub$XXVX_inv = obj.noK.sub$XXVX_inv[missingind,]
     obj.noK.sub$V = obj.noK.sub$V[missingind]
     obj.noK.sub$XV = obj.noK.sub$XV[,missingind]
@@ -631,7 +631,7 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
   # mu=mu.a; mu2= mu2.a; G=G0; obj.null=obj.noK
   idx_no0<-which(G>0)
   #print(G[1:10])
-  print(idx_no0)
+  #print(idx_no0)
   g1<-G[idx_no0]
   A1<-obj.null$XVX_inv_XV[idx_no0,]
 
@@ -647,10 +647,10 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 
   if(length(idx_no0) > 1){
     #cat("idx_no0 ", idx_no0, "\n")
-    cat("dim(X1) ", X1, "\n")
+#    cat("dim(X1) ", X1, "\n")
     Z = t(A1) %*% g1
     B<-X1 %*% Z
-    cat("dim(Z) ", Z, "\n")
+#    cat("dim(Z) ", Z, "\n")
     g_tilde1 = g1 - B
     var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
     var1 = var2 * varRatio
@@ -666,10 +666,10 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
   }else{
     #cat("idx_no0 ", idx_no0, "\n")
 #    cat("dim(X1) ", X1, "\n")
-    print(X1)
+#    print(X1)
     Z = A1 * g1
 #    cat("dim(Z) ", Z, "\n")
-    cat("dim(Z) here ", Z, "\n")
+#    cat("dim(Z) here ", Z, "\n")
     B<-X1 %*% Z
     g_tilde1 = g1 - B
     var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
