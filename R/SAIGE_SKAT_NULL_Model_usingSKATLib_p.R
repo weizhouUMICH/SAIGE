@@ -247,11 +247,11 @@ if(traitType == "quantitative"){
     gf = file(groupFile, "r")
     while ( TRUE ) {
       marker_group_line = readLines(gf, n = 1)
-      print(marker_group_line)
-      geneID = strsplit(marker_group_line, split="\t")[[1]][1]
       if(length(marker_group_line) == 0 ){
         break
-      }else{
+      }else{	
+        print(marker_group_line)
+        geneID = strsplit(marker_group_line, split="\t")[[1]][1]
         if(dosageFileType == "vcf"){
           Gx = getGenoOfGene_vcf(marker_group_line, minInfo)
         }else if(dosageFileType == "bgen"){
