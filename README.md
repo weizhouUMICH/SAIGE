@@ -17,7 +17,7 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.29.4
+## Current version is 0.29.4/0.29.4.2(for R 3.5.1)
 
 SAIGE is an R package that implements the Scalable and Accurate Implementation of Generalized mixed model that uses the saddlepoint approximation (SPA)(mhof, J. P. , 1961; Kuonen, D. 1999; Dey, R. et.al 2017) 
 and large scale optimization techniques to calibrate case-control ratios in logistic mixed model score tests
@@ -43,9 +43,10 @@ The following R pakages need to be installed for running SAIGE:
 Source code for all versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl/AADFqdssvOBjbWZch6Q9zYNaa?dl=0
 
 # Log for fixing bugs
-* 0.29.4
+* 0.29.4.2 (this version works with R-3.5.1)
+* 0.29.4 (this version works with R-3.4.4)
   update SAIGE as a bug for reading vcf and sav files was fixed in the savvy library
-
+ 
 * 0.29.3.2
   this version works with R-3.5.1
 
