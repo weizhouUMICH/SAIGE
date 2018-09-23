@@ -31,9 +31,21 @@ namespace savvy
     class internal_entry
     {
     public:
-      std::uint32_t region_start() const { return be32toh(region_start_); }
-      std::uint32_t region_length() const { return be32toh(region_length_); }
-      std::uint32_t region_end() const { return this->region_start() + this->region_length(); }
+      std::uint32_t region_start() const
+      {
+        std::uint32_t ret = be32toh(region_start_);
+        return ret;
+      }
+      std::uint32_t region_length() const
+      {
+        std::uint32_t ret = be32toh(region_length_);
+        return ret;
+      }
+      std::uint32_t region_end() const
+      {
+        std::uint32_t ret = this->region_start() + this->region_length();
+        return ret;
+      }
 
       internal_entry() :
         region_start_(0),
@@ -782,9 +794,15 @@ namespace savvy
 
           std::uint32_t node_range_min = (std::uint32_t)-1;
           std::uint32_t node_range_max = 0;
-          const std::size_t current_leaf_node_end = last_leaf_node
-            ? detail::entries_per_leaf_node(block_size_) - (this->chromosomes_.back().second % detail::entries_per_leaf_node(block_size_))
+          std::size_t current_leaf_node_end = last_leaf_node
+            ? (this->chromosomes_.back().second % detail::entries_per_leaf_node(block_size_)) //detail::entries_per_leaf_node(block_size_) - (this->chromosomes_.back().second % detail::entries_per_leaf_node(block_size_))
             : detail::entries_per_leaf_node(block_size_);
+
+          if (!current_leaf_node_end)
+          {
+            current_leaf_node_end = detail::entries_per_leaf_node(block_size_);
+          }
+
           for (std::size_t i = 0; i < current_leaf_node_end; ++i)
           {
             node_range_min = std::min(node_range_min, current_leaf_node[i].region_start());
