@@ -1310,6 +1310,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
         re$IsMeta=TRUE
         re$markerNumbyMAC = markerNumbyMAC
+	re$m = m
         print(re)
         return(re)
 

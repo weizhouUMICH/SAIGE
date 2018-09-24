@@ -836,7 +836,7 @@ if(FALSE){
 
 	  #OUT = rbind(OUT, c(geneID, saigeskatTest$p.value, saigeskatTest$P_singlGCadj, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
 	}
-	 if(method=="optimal.adj"){
+	 if(method=="optimal.adj" & saigeskatTest$m > 0){
                 #rho = 1 for burden, 0 for skat
                 p.val.vec = saigeskatTest$param$p.val.each
                 rho.val.vec=saigeskatTest$param$rho
