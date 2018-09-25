@@ -435,7 +435,7 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 
     print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
     print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol)
-
+    if(tau[2] == 0) break
     if(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
     if(max(tau) > tol^(-2)) {
       warning("Large variance estimate observed in the iterations, model not converged...", call. = FALSE)
@@ -1058,7 +1058,19 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   }else{
     numCate = length(cateVarRatioIndexVec)
     for(i in 1:(numCate-1)){
+       #print("i 1:(numCate-1)")
+       #print(i)
+       #print(cateVarRatioMinMACVecExclude[i])
+       #print(cateVarRatioMaxMACVecInclude[i])
+       #print(length(MACvector))	
+       #print(MACvector[1:10])	
+       #print(min(MACvector))
+
       MACindex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
+      #print(length(MACindex))	
+      #tempindex = which(MACvector > 0.5 & MACvector <= 1.5)	
+      #print(length(tempindex))
+
       listOfMarkersForVarRatio[[i]] = sample(MACindex, size = length(MACindex), replace = FALSE)	
     }
     if(length(cateVarRatioMaxMACVecInclude) == (numCate-1)){
@@ -1068,6 +1080,10 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
     }
     listOfMarkersForVarRatio[[numCate]] = sample(MACindex, size = length(MACindex), replace = FALSE)
   }
+
+#  print("TEST debug")
+#  print(listOfMarkersForVarRatio[[1]])
+
 #getMACVec
  # listOfMarkersForVarRatio = c(1:mMarkers)
   freqVec = getAlleleFreqVec()
@@ -1156,6 +1172,10 @@ Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
 
 
 for(k in 1:length(listOfMarkersForVarRatio)){
+  if(length(listOfMarkersForVarRatio[[k]]) == 0){
+    cateVarRatioIndexVec[k] = 0
+    cat("no marker is found in the MAC category ", k, "\n")
+  }
   if(cateVarRatioIndexVec[k] == 1){
 
   numMarkers0 = numMarkers
@@ -1255,7 +1275,9 @@ while(ratioCV > ratioCVcutoff){
 
       indexInMarkerList = indexInMarkerList + 1
       numTestedMarker = numTestedMarker + 1
-      if(numTestedMarker %% 10 == 0 | numTestedMarker == numMarkers){
+      	
+	
+      if(numTestedMarker %% 10 == 0 | numTestedMarker == numMarkers | indexInMarkerList-1 == length(listOfMarkersForVarRatio[[k]]) ){
         OUT = as.data.frame(OUT)
 	print("OK")
         OUTtotal = rbind(OUTtotal, OUT)
@@ -1264,8 +1286,12 @@ while(ratioCV > ratioCVcutoff){
         OUT = NULL
       }
     }
+
+    if(indexInMarkerList-1 == length(listOfMarkersForVarRatio[[k]])){
+      numTestedMarker = numMarkers0
+    }
   } #end of while(numTestedMarker < numMarkers)
-	print("OK2")
+  print("OK2")
   #OUTtotal = as.data.frame(OUTtotal)
   #colnames(OUTtotal) = resultHeader
   OUT1 = OUTtotal
@@ -1281,6 +1307,12 @@ while(ratioCV > ratioCVcutoff){
   }else{
     cat("CV for variance ratio estimate using ", numMarkers0, " markers is ", ratioCV, " < ", ratioCVcutoff, "\n")
   }
+
+  if(indexInMarkerList-1 == length(listOfMarkersForVarRatio[[k]])){
+      ratioCV = ratioCVcutoff
+      cat("no more markers are available in the MAC category ", k, "\n")
+      print(indexInMarkerList-1)	
+    }
 
 } #end of while(ratioCV > ratioCVcutoff)
 
