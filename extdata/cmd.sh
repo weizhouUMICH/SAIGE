@@ -1,9 +1,9 @@
 #step 1: fit the NULL GLMM
 Rscript step1_fitNULLGLMM.R \
 	--plinkFile=./input/plinkforGRM_1000samples_10kMarkers \
-	--phenoFile=./input/pheno_1000samples.txt \
+	--phenoFile=./input/pheno_1000samples.txt_forperfectSep \
 	--phenoCol=y \
-	--covarColList=x1,x2 \
+	--covarColList=x1,x3 \
 	--sampleIDColinphenoFile=IID \
 	--traitType=binary \
 	--outputPrefix=./output/example \

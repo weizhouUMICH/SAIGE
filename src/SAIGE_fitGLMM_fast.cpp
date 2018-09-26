@@ -281,7 +281,7 @@ public:
   	//genofile as an argument from runModel.R 
         //genofile is the predix for plink bim, bed, fam, files   
   	void setGenoObj(std::string genofile, std::vector<int> subSampleInGeno, float memoryChunk){
-		//cout << "OK1\n";   
+		cout << "OK1\n";   
 		ptrsubSampleInGeno = subSampleInGeno;
 		Nnomissing = subSampleInGeno.size(); 
     		// reset

@@ -597,22 +597,31 @@ fitNULLGLMM = function(plinkFile = "",
   }
 
   #check for perfect separation
-  if(FALSE){
+#  if(FALSE){
   if(traitType == "binary"){
     out_checksep = checkPerfectSep(formula.null, data=dataMerge_sort)
+    print("HERE")
+    print(out_checksep)
+
     formulaNewList = c("Y ~ ", out_checksep$X_name[1])
+    print("HERE2")
     if(length(out_checksep$X_name) > 1){
       for(i in c(2:length(out_checksep$X_name))){
         formulaNewList = c(formulaNewList, "+", out_checksep$X_name[i])
       }
     }   
-    formula.null = paste0(formulaNewList, collapse="")
+    print("HERE3")
+    formula.null = as.formula(paste0(formulaNewList, collapse=""))
     dataMerge_sort = data.frame(cbind(out_checksep$Y, out_checksep$X1))
+    print("HERE4")
+    dim(dataMerge_sort)
     colnames(dataMerge_sort) =  c("Y",out_checksep$X_name)
+    print("HERE5")
   }
- }
+# }
 
   out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
+    print("HERE6")
   formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
   if(length(out.transform$Param.transform$X_name) > 1){
     for(i in c(2:length(out.transform$Param.transform$X_name))){
@@ -1046,12 +1055,15 @@ checkPerfectSep<-function(formula, data){
     }
   }
 
+  cat("coltodelete: ", coltodelete, "\n")
+
   if(length(coltodelete) > 0){
     X1 <- X1[,-coltodelete]
-    X_name <- X_name[,-coltodelete]
+    X_name <- X_name[-coltodelete]
   }
 
   re<-list(Y =Y, X1 = X1, X_name=X_name)
+  return(re)
 }
 
 
