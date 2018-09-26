@@ -1101,7 +1101,7 @@ SAIGE_SKAT_withRatioVec_oldAugust13  = function(G1, obj, ratioVec, G2_cond = NUL
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
 SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta=c(1,25), weights=NULL, impute.method="fixed"
-, r.corr=0, is_check_genotype=TRUE, is_dosage = FALSE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1){
+, r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1){
 	
         #check the input genotype G1
         obj.noK = obj$obj.noK
@@ -1146,7 +1146,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
 		MACvec_indVec_Zall = getCateVarRatio_indVec(Zall, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
 		GratioMatrixall = getGratioMatrix(MACvec_indVec_Zall, ratioVec)
-#		print(GratioMatrixall)
+		#print(GratioMatrixall)
                 #GratioMatrixall = getGratioMatrix(Zall, ratioVec)
                 #MACvec_indVec = getMACvec_indVec(G1)
 		if(!is.null(G2_cond)){
@@ -1177,6 +1177,9 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                 cat("dim(G1)", dim(G1), "\n")
                 Score = as.vector(t(G1) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
                 cat("dim(Score)", length(Score), "\n")
+
+
+
 
                 #compute Score test statistics after conditionining
                 if(!is.null(G2_cond)){
@@ -1443,6 +1446,8 @@ getCateVarRatio_indVec = function(G, cateVarRatioMinMACVecExclude, cateVarRatioM
 
 	MACvector[which(MACvector > nrow(G))] = 2*nrow(G) - MACvector[which(MACvector > nrow(G))]
 
+	#cat("MACvector: ", MACvector, "\n")
+        #print(length(MACvector))
         MACvec_indVec = rep(0, length(MACvector))
 	#cat("here1 MACvec_indVec: ", MACvec_indVec, "\n")		
 	#cat("cateVarRatioMinMACVecExclude: ", cateVarRatioMinMACVecExclude, "\n")

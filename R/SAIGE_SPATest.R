@@ -454,8 +454,9 @@ if(isCondition){
   covMsub = getcovM(dosage_cond_tilde, dosage_cond_tilde, sparseSigma)
   covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
 
-
+   
   MACvec_indVec_cond = getCateVarRatio_indVec(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
+
   GratioMatrix_cond = getGratioMatrix(MACvec_indVec_cond, ratioVec)
 
  print("covMsub")
@@ -747,15 +748,21 @@ if(FALSE){
   if(!isCondition){
     if(dosageFileType == "plain"){
       isCondition = FALSE
-    }else if(dosageFileType == "bgen"){
+    }
+  }else{
+     if(dosageFileType == "plain"){
+      isCondition = TRUE
+    }
+  }
+
+  if(dosageFileType == "bgen"){
       SetSampleIdx(sampleIndex, N)
-    }else if(dosageFileType == "vcf"){
+  }else if(dosageFileType == "vcf"){
       setMAFcutoffs(testMinMAF, maxMAFforGroupTest)
       isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
-    }
-  }
-  
+ }
+
   if(traitType == "quantitative"){
     OUT = NULL
     cat("It is a quantitative trait\n")
@@ -794,6 +801,9 @@ if(FALSE){
 #       cat("G0: ", G0, "\n")
         if(cntMarker > 0){
          Gmat = matrix(G0, byrow=F, ncol = cntMarker)
+	#MACtemp = colSums(Gmat)
+	#print(MACtemp)
+
 #        cat("dim(Gmat): ", dim(Gmat), "\n")
 #        cat("Gmat[,1]: ", Gmat[,1], "\n")
 #        cat("ratioVec: ", ratioVec, "\n")
