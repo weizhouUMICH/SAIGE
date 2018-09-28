@@ -124,8 +124,9 @@ Rscript step2_SPAtests.R \
 
 
 ########sav file
-Rscript step2_SPAtests.R	\
 	--savFile=./input/dosage_10markers.sav	\
+Rscript step2_SPAtests.R	\
+	--savFile=/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/extdata/input/dosage_10markers.sav	\
 	--savFileIndex=./input/dosage_10markers.sav.s1r	\
 	--minMAF=0.0001 \
         --minMAC=1 \

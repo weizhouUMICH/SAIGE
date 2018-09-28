@@ -72,6 +72,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
 //  std::cout << "here0!" << std::endl; 
   //savvy::variant_group_iterator<savvy::compressed_vector<float>> it(marker_file, marker_group_line);
   savvy::variant_group_iterator<savvy::compressed_vector<float>> it(marker_file, marker_group_line);
+//  std::cout << "here1!" << std::endl;
   savvy::variant_group_iterator<savvy::compressed_vector<float>> end{};
 //  std::cout << "it.sites().size(): " << it.sites().size() << std::endl; 
 //  std::string marker_id = it->chromosome() + ":" + std::to_string(it->position()) + "_" + it->ref() + "/" + it->alt();
