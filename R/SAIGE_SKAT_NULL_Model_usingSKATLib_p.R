@@ -22,7 +22,7 @@ options(stringsAsFactors=F)
 #' @param end numeric. end genome position to include from vcf file. 
 #' @param minMAC numeric. Minimum minor allele count of markers to test. By default, 1. The higher threshold between minMAC and minMAF will be used
 #' @param minMAF numeric. Minimum minor allele frequency of markers to test. By default 0. The higher threshold between minMAC and minMAF will be used
-#' @param maxMAF numeric. Maximum minor allele frequency of markers to test. By default 0.5. 
+#' @param maxMAFforGroupTest numeric. Maximum minor allele frequency of markers to test in group test. By default 1.
 #' @param minInfo numeric. Minimum imputation info of markers to test (in bgen file)
 #' @param sampleFile character. Path to the file that contains one column for IDs of samples in the dosage, vcf, sav, or bgen file with NO header
 #' @param GMMATmodelFile character. Path to the input file containing the glmm model, which is output from previous step. Will be used by load()
@@ -56,9 +56,9 @@ SKATtest_usingSKATLib = function(dosageFile = "",
 		 chrom = "",
 		 start = 1,
 		 end = 250000000,	
-		 minMAC = 1, 
+		 minMAC = 0.5, 
                  minMAF = 0,
-                 maxMAF = 0.5,
+		 maxMAFforGroupTest = 1,
         	 minInfo = 0,
                  SKATmodelFile = "", 
                  SAIGEOutputFile = "",
@@ -189,7 +189,7 @@ SKATtest_usingSKATLib = function(dosageFile = "",
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
       Gx_cond = getGenoOfGene_vcf(conditionlist, minInfo)
     }else if(dosageFileType == "bgen"){
-      Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist, testMinMAF, maxMAF)
+      Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist, testMinMAF, 0.5)
     }else{
       cat("WARNING: conditional analysis can only work for dosageFileType vcf, sav or bgen\n")
     }
@@ -206,17 +206,14 @@ SKATtest_usingSKATLib = function(dosageFile = "",
 
 
   #determine minimum MAF for markers to be tested
-  if(minMAC < 1){minMAC = 1} ##01-19-2018
+  if(minMAC == 0){minMAC = 1} ##01-19-2018
   cat("minMAC: ",minMAC,"\n")
   cat("minMAF: ",minMAF,"\n")
-  cat("maxMAF: ",maxMAF,"\n")
-
   minMAFBasedOnMAC = minMAC/(2*N) 
   testMinMAF = max(minMAFBasedOnMAC, minMAF) 
   cat("Minimum MAF of markers to be testd is ", testMinMAF, "\n")
   
-  if(dosageFileType == "vcf"){ setMAFcutoffs(testMinMAF, maxMAF) }
-
+  if(dosageFileType == "vcf"){ setMAFcutoffs(testMinMAF, maxMAFforGroupTest) }
 
   ##############START TEST########################
   startTime = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
@@ -255,7 +252,7 @@ if(traitType == "quantitative"){
         if(dosageFileType == "vcf"){
           Gx = getGenoOfGene_vcf(marker_group_line, minInfo)
         }else if(dosageFileType == "bgen"){
-          Gx = getGenoOfGene_bgen(bgenFile,bgenFileIndex,marker_group_line, testMinMAF, maxMAF)          
+          Gx = getGenoOfGene_bgen(bgenFile,bgenFileIndex,marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)          
         }
 
         G0 = Gx$dosages
@@ -264,11 +261,10 @@ if(traitType == "quantitative"){
 #	cat("G0: ", G0, "\n")
         if(cntMarker > 0){
          Gmat = matrix(G0, byrow=F, ncol = cntMarker)	  
-	 #cat("dim(Gmat): ", dim(Gmat), "\n")	
+	 cat("dim(Gmat): ", dim(Gmat), "\n")	
 	 #cat("Gmat[,1]: ", Gmat[,1], "\n")	
 	 #cat("colSums(Gmat): ", colSums(Gmat), "\n")
-
-         skatTest = SKAT:::SKAT(Gmat, out.obj, max_maf = maxMAF, method=method, kernel = kernel, weights.beta = weights.beta, r.corr = r.corr)
+         skatTest = SKAT:::SKAT(Gmat, out.obj, max_maf = 1, method=method, kernel = kernel, weights.beta = weights.beta, r.corr = r.corr, is_check_genotype=FALSE, is_dosage = TRUE)
 	 print(skatTest$param)	 
 	outVec = c(geneID, skatTest$p.value, skatTest$param$Is_Converged, skatTest$param$n.marker, skatTest$param$n.marker.test, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
 	if(method=="optimal.adj"){

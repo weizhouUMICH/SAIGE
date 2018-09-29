@@ -1117,9 +1117,13 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
         r.corr=out.method$r.corr
         IsMeta=out.method$IsMeta
         SKAT:::SKAT_Check_RCorr(kernel, r.corr)
-
-        out.z<-SKAT:::SKAT_MAIN_Check_Z(G1, n, id_include, SetID, weights, weights.beta, impute.method, is_check_genotype
-        , is_dosage, missing_cutoff, max_maf=max_maf, estimate_MAF=estimate_MAF)
+#	print(ncol(G1))
+#        print(is_check_genotype)
+#	print(is_dosage)
+#	print(missing_cutoff)
+#	print(max_maf)
+#	print(estimate_MAF)
+        out.z<-SKAT:::SKAT_MAIN_Check_Z(G1, n, id_include, SetID, weights, weights.beta, impute.method, is_check_genotype, is_dosage, missing_cutoff, max_maf=1, estimate_MAF=estimate_MAF)
 
 
         if(out.z$return ==1){
