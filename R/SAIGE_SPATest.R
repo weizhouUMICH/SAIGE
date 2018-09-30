@@ -97,18 +97,18 @@ SPAGMMATtest = function(dosageFile = "",
 
  ####check and read files
  #sparseSigmaFile
- cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
-  if(sparseSigmaFile == ""){
-    sparseSigma = NULL
-  }else{
-    cat("sparse kinship matrix is going to be used\n")
-    if(!file.exists(sparseSigmaFile)){
-      stop("ERROR! sparseSigmaFile ", sparseSigmaFile, " does not exsit\n")
-    }else{
-      sparseSigma = Matrix:::readMM(sparseSigmaFile)
- cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
-    }
-  }
+# cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
+#  if(sparseSigmaFile == ""){
+#    sparseSigma = NULL
+#  }else{
+#    cat("sparse kinship matrix is going to be used\n")
+#    if(!file.exists(sparseSigmaFile)){
+#      stop("ERROR! sparseSigmaFile ", sparseSigmaFile, " does not exsit\n")
+#    }else{
+#      sparseSigma = Matrix:::readMM(sparseSigmaFile)
+# cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
+#    }
+#  }
 
 
   #output file
@@ -141,6 +141,9 @@ SPAGMMATtest = function(dosageFile = "",
     }
  
   }
+
+
+
 
 
   #allowing for categorical variance ratio
@@ -185,6 +188,28 @@ SPAGMMATtest = function(dosageFile = "",
       sampleIndex = sampleIndex - 1
     }
   }
+
+
+     ####check and read files
+ #sparseSigmaFile
+ cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
+  if(sparseSigmaFile == ""){
+    sparseSigma = NULL
+  }else{
+    cat("sparse kinship matrix is going to be used\n")
+    if(!file.exists(sparseSigmaFile)){
+      stop("ERROR! sparseSigmaFile ", sparseSigmaFile, " does not exsit\n")
+    }else{
+
+      sparseSigma = Matrix:::readMM(sparseSigmaFile)
+      cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
+
+    }
+  }
+
+
+
+
 
 
   ##Needs to check the number of columns and the number of samples in sample file

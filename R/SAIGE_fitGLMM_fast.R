@@ -574,6 +574,8 @@ fitNULLGLMM = function(plinkFile = "",
 		ratioCVcutoff = 0.001, 
                 outputPrefix = "",
 		IsSparseKin = FALSE,
+		sparseSigmaFile="",
+                sparseSigmaSampleIDFile="",
 		numRandomMarkerforSparseKin = 500,
 		relatednessCutoff = 0.125, 
 		isCateVarianceRatio = FALSE,
@@ -749,8 +751,14 @@ fitNULLGLMM = function(plinkFile = "",
 
 
     if(!skipModelFitting){
+      t_begin = proc.time()
+
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
       save(modglmm, file = modelOut)
+      t_end = proc.time()
+      cat("t_end - t_begin, fitting the NULL model took\n")
+      print(t_end - t_begin)
+
     }else{
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
       load(modelOut)
@@ -791,9 +799,12 @@ fitNULLGLMM = function(plinkFile = "",
 
 
     if(!skipModelFitting){
-
+      t_begin = proc.time()
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
       save(modglmm, file = modelOut)
+      t_end = proc.time()
+      cat("t_end - t_begin, fitting the NULL model took \n")
+      print(t_end - t_begin)
       print("step2")
     }else{
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
@@ -824,6 +835,8 @@ fitNULLGLMM = function(plinkFile = "",
 						    isCateVarianceRatio = isCateVarianceRatio,
 						    cateVarRatioIndexVec = cateVarRatioIndexVec,
 						    IsSparseKin = IsSparseKin,
+						    sparseSigmaFile = sparseSigmaFile,
+                				    sparseSigmaSampleIDFile = sparseSigmaSampleIDFile,	
 						    numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
 						    relatednessCutoff = relatednessCutoff,
 						    nThreads = nThreads,
@@ -1008,6 +1021,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 						    isCateVarianceRatio,
 						    cateVarRatioIndexVec,
 						    IsSparseKin,
+						    sparseSigmaFile,
+                                                    sparseSigmaSampleIDFile,
 						    numRandomMarkerforSparseKin,
                                                     relatednessCutoff,
 						    nThreads, 	
@@ -1109,6 +1124,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
     }
 
   if(sparseSigmaOutFileFlag){
+    if(sparseSigmaFile == ""){
+
+
       MAFindex = which(freqVec >= 0.01 & freqVec <= 0.99)
       markerIndexforSparseM = sample(MAFindex, size = numRandomMarkerforSparseKin, replace=FALSE)
 #      sparseSigmaOutFile_orig_markerIndex = paste0(sparseSigmaOutFile_orig, "_markerIndex.txt")
@@ -1145,6 +1163,33 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 #      Matrix:::writeMM(sparseSigma_orig, sparseSigmaOutFile_orig)
       Matrix:::writeMM(sparseSigma, sparseSigmaOutFile)
       cat("OK3", "\n")
+     }else{ # if(sparseSigmaFile=="")
+      sparseSigmaLarge = Matrix:::readMM(sparseSigmaFile)
+      cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
+      if(sparseSigmaSampleIDFile != ""){
+        if(!file.exists(sparseSigmaSampleIDFile)){
+          stop("ERROR! sparseSigmaSampleIDFile ", sparseSigmaSampleIDFile, " does not exsit\n")
+        }else{
+          sparseSigmaSampleID = data.frame(data.table:::fread(sparseSigmaSampleIDFile, header=F, stringsAsFactors=FALSE))
+          colnames(sparseSigmaSampleID) = c("sampleID")
+          sparseSigmaSampleID$IndexSigma = seq(1,nrow(sparseSigmaSampleID), by=1)
+          sampleInModel = NULL
+    	  sampleInModel$IID = obj.glmm.null$sampleID
+          sampleInModel = data.frame(sampleInModel)
+          sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
+          cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
+	  mergeID = merge(sampleInModel, sparseSigmaSampleID, by.x="IID", by.y = "sampleID")
+	
+
+          mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
+          indexIDofSigma=mergeID$IndexSigma
+          sparseSigma = sparseSigmaLarge[indexIDofSigma, indexIDofSigma]
+	  rm(sparseSigmaLarge)
+        }
+      }#end of if(sparseSigmaSampleIDFile != "")       
+
+     }  
+
     }else{
       sparseSigma = Matrix:::readMM(sparseSigmaOutFile)
     }
