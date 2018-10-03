@@ -1,0 +1,23 @@
+PLINK v1.90b4.4 64-bit (21 May 2017)
+Options in effect:
+  --bfile plinkforGRM_1000samples_10kMarkers
+  --freq
+  --out plinkforGRM_1000samples_10kMarkers
+
+Hostname: dumbo
+Working directory: /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/extdata/input
+Start time: Wed Oct  3 09:40:04 2018
+
+Random number seed: 1538574004
+290211 MB RAM detected; reserving 145105 MB for main workspace.
+Allocated 61215 MB successfully, after larger attempt(s) failed.
+10000 variants loaded from .bim file.
+1000 people (0 males, 0 females, 1000 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to plinkforGRM_1000samples_10kMarkers.nosex .
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 1000 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+--freq: Allele frequencies (founders only) written to
+plinkforGRM_1000samples_10kMarkers.frq .
+
+End time: Wed Oct  3 09:40:04 2018

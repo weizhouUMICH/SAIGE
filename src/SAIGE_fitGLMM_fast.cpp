@@ -42,7 +42,7 @@ public:
 	vector<int>	ptrsubSampleInGeno;
 	
   	arma::fvec 	alleleFreqVec;
-  	arma::fvec	m_OneSNP_Geno;
+  	arma::ivec	m_OneSNP_Geno;
   	arma::fvec	m_OneSNP_StdGeno;
   	arma::fvec	m_DiagStd;
 
@@ -77,7 +77,7 @@ public:
 
 	
 	//look-up table for std geno
-	int stdGenoLookUpArr[3] = {0};
+	float stdGenoLookUpArr[3] = {0};
 	void setStdGenoLookUpArr(float mafVal, float invsdVal){
 		float mafVal2 = 2*mafVal;
 		stdGenoLookUpArr[0] = (0-mafVal2)*invsdVal;
@@ -87,7 +87,7 @@ public:
 
 
         //look-up table in a 2D array for sparseKin 
-        int sKinLookUpArr[3][3] = {0};
+        float sKinLookUpArr[3][3] = {{0}};
 	//(g - 2*freq)* invStd;;
         void setSparseKinLookUpArr(float mafVal, float invsdVal){
 		float mafVal2 = 2*mafVal;
@@ -141,7 +141,7 @@ public:
 	}
 	
 
-        arma::fvec * Get_OneSNP_Geno(size_t SNPIdx){
+        arma::ivec * Get_OneSNP_Geno(size_t SNPIdx){
                 m_OneSNP_Geno.zeros(Nnomissing);
 
 		//avoid large continuous memory usage
@@ -175,9 +175,9 @@ public:
                 return & m_OneSNP_Geno;
        }
    
-	arma::fvec * Get_OneSNP_Geno_atBeginning(size_t SNPIdx, vector<int> & indexNA, vector<unsigned char> & genoVecOneMarkerOld){
+	arma::ivec * Get_OneSNP_Geno_atBeginning(size_t SNPIdx, vector<int> & indexNA, vector<unsigned char> & genoVecOneMarkerOld){
 
-		arma::fvec m_OneSNP_GenoTemp;
+		arma::ivec m_OneSNP_GenoTemp;
 		m_OneSNP_GenoTemp.zeros(N);
 		m_OneSNP_Geno.zeros(Nnomissing);
 		int m_size_of_esi_temp = (N+3)/4;
@@ -248,6 +248,11 @@ public:
 		float freq = alleleFreqVec[SNPIdx];
 //		cout << "Get_OneSNP_StdGeno here" << endl; 
 		float invStd = invstdvVec[SNPIdx];
+
+		setStdGenoLookUpArr(freq, invStd);
+		//std::cout << "stdGenoLookUpArr[0]: " << stdGenoLookUpArr[0] << std::endl;
+		//std::cout << "stdGenoLookUpArr[1]: " << stdGenoLookUpArr[1] << std::endl;
+		//std::cout << "stdGenoLookUpArr[2]: " << stdGenoLookUpArr[2] << std::endl;
 //		cout << "Get_OneSNP_StdGeno here2"  << endl;
 		for(size_t i=Start_idx; i< Start_idx+m_size_of_esi; i++){
 //			geno1 = genoVec[i];
@@ -257,7 +262,8 @@ public:
     			int b = geno1 & 1 ;
     			geno1 = geno1 >> 1;
     			int a = geno1 & 1 ;
-    			(*out)[ind] = ((2-(a+b)) - 2*freq)* invStd;;
+    			//(*out)[ind] = ((2-(a+b)) - 2*freq)* invStd;;
+    			(*out)[ind] = stdGenoLookUpArr[2-(a+b)];
 			ind++;
     			geno1 = geno1 >> 1;
     			
@@ -576,7 +582,7 @@ public:
 			
 //			cout << "setgeno mark4" << endl;
 
-			freq = sum(m_OneSNP_Geno)/(2*Nnomissing);
+			freq = float(sum(m_OneSNP_Geno))/(2*Nnomissing);
       			Std = std::sqrt(2*freq*(1-freq));
       			if(Std == 0){
       				invStd= 0;
@@ -599,7 +605,7 @@ public:
 
         	test_bedfile.close();
 		cout << "setgeno mark5" << endl;
-		//printAlleleFreqVec();
+		printAlleleFreqVec();
 		//printGenoVec();
    		//Get_Diagof_StdGeno();
 		cout << "setgeno mark6" << endl;
@@ -1297,7 +1303,7 @@ struct sparseGRMUsingOneMarker : public Worker {
 	//use Look-Up table for calucate GRMvec(i)
 	    int ival = geno.m_OneSNP_Geno(iint);	
 	    int jval = geno.m_OneSNP_Geno(jint);
-	    GRMvec(i) = sKinLookUpArr[ival][jval]; 
+	    GRMvec(i) = geno.sKinLookUpArr[ival][jval]; 
 
       }
    }
@@ -1381,20 +1387,20 @@ void setgeno(std::string genofile, std::vector<int> & subSampleInGeno, float mem
 
 
 // [[Rcpp::export]]
-arma::fvec Get_OneSNP_Geno(int SNPIdx)
+arma::ivec Get_OneSNP_Geno(int SNPIdx)
 {
 
-	arma::fvec temp = * geno.Get_OneSNP_Geno(SNPIdx);
+	arma::ivec temp = * geno.Get_OneSNP_Geno(SNPIdx);
 	return(temp);
 
 }
 
 
 // [[Rcpp::export]]
-arma::fvec Get_OneSNP_Geno_forVarianceRatio(int SNPIdx)
+arma::ivec Get_OneSNP_Geno_forVarianceRatio(int SNPIdx)
 {
        
-        arma::fvec temp = * geno.Get_OneSNP_Geno(SNPIdx);
+        arma::ivec temp = * geno.Get_OneSNP_Geno(SNPIdx);
         return(temp);
 
 }
@@ -2765,9 +2771,9 @@ Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tau
 //		std::cout << "Mmarker: " << std::endl;
 
 //                geno.Get_OneSNP_StdGeno(i, temp);
-                geno.Get_OneSNP_Geno(i, temp);
-		float freqv = alleleFreqVec[i];
-		float invstdv = invstdvVec[i];
+                geno.Get_OneSNP_Geno(i);
+		float freqv = geno.alleleFreqVec[i];
+		float invstdv = geno.invstdvVec[i];
 		geno.setSparseKinLookUpArr(freqv, invstdv);			
 	
 		//std::cout << "geno.m_OneSNP_StdGeno(i) " << geno.m_OneSNP_StdGeno(i) <<  std::endl;	

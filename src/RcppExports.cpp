@@ -207,7 +207,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // Get_OneSNP_Geno
-arma::fvec Get_OneSNP_Geno(int SNPIdx);
+arma::ivec Get_OneSNP_Geno(int SNPIdx);
 RcppExport SEXP _SAIGE_Get_OneSNP_Geno(SEXP SNPIdxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -218,7 +218,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // Get_OneSNP_Geno_forVarianceRatio
-arma::fvec Get_OneSNP_Geno_forVarianceRatio(int SNPIdx);
+arma::ivec Get_OneSNP_Geno_forVarianceRatio(int SNPIdx);
 RcppExport SEXP _SAIGE_Get_OneSNP_Geno_forVarianceRatio(SEXP SNPIdxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
