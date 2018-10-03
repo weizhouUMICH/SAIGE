@@ -75,9 +75,19 @@ public:
 	int m_size_of_esi;
 	unsigned char m_bits_val[8];
 
+	
+	//look-up table for std geno
+	int stdGenoLookUpArr[3] = {0};
+	void setStdGenoLookUpArr(float mafVal, float invsdVal){
+		float mafVal2 = 2*mafVal;
+		stdGenoLookUpArr[0] = (0-mafVal2)*invsdVal;
+		stdGenoLookUpArr[1] = (1-mafVal2)*invsdVal;
+		stdGenoLookUpArr[2] = (2-mafVal2)*invsdVal;
+	}
+
+
         //look-up table in a 2D array for sparseKin 
         int sKinLookUpArr[3][3] = {0};
-
 	//(g - 2*freq)* invStd;;
         void setSparseKinLookUpArr(float mafVal, float invsdVal){
 		float mafVal2 = 2*mafVal;
@@ -96,6 +106,7 @@ public:
 		sKinLookUpArr[2][2] = a2*a2;
 
 	}
+
 
         void setBit(unsigned char & ch, int ii, int aVal, int bVal){
 
@@ -117,8 +128,6 @@ public:
 	void setGenotype(unsigned char* c, const int pos, const int geno) {
     		(*c) |= (geno << (pos << 1));
   	}
-
-
 
 
 
@@ -1278,12 +1287,18 @@ struct sparseGRMUsingOneMarker : public Worker {
 //            int jint = iMat(i,1);
 	   int iint = (geno.indiceVec)[i].first;	
 	   int jint = (geno.indiceVec)[i].second;	
-
+/*
             float ival = geno.m_OneSNP_StdGeno(iint);
             float jval = geno.m_OneSNP_StdGeno(jint);
             // write to output matrix
             //rmat(i,j) = sqrt(.5 * (d1 + d2));
             GRMvec(i) = ival*jval/M;
+*/
+	//use Look-Up table for calucate GRMvec(i)
+	    int ival = geno.m_OneSNP_Geno(iint);	
+	    int jval = geno.m_OneSNP_Geno(jint);
+	    GRMvec(i) = sKinLookUpArr[ival][jval]; 
+
       }
    }
 };
@@ -2748,7 +2763,13 @@ Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tau
   	for(size_t i=0; i< Mmarker; i++){
 //		std::cout << "OKKK: "  << std::endl;
 //		std::cout << "Mmarker: " << std::endl;
-                geno.Get_OneSNP_StdGeno(i, temp);
+
+//                geno.Get_OneSNP_StdGeno(i, temp);
+                geno.Get_OneSNP_Geno(i, temp);
+		float freqv = alleleFreqVec[i];
+		float invstdv = invstdvVec[i];
+		geno.setSparseKinLookUpArr(freqv, invstdv);			
+	
 		//std::cout << "geno.m_OneSNP_StdGeno(i) " << geno.m_OneSNP_StdGeno(i) <<  std::endl;	
 		//kinValueVecTemp = parallelcalsparseGRM(iMat);
 //		parallelcalsparseGRM(iMat, GRMvec);
