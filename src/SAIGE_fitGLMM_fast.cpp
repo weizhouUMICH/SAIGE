@@ -75,6 +75,27 @@ public:
 	int m_size_of_esi;
 	unsigned char m_bits_val[8];
 
+        //look-up table in a 2D array for sparseKin 
+        int sKinLookUpArr[3][3] = {0};
+
+	//(g - 2*freq)* invStd;;
+        void setSparseKinLookUpArr(float mafVal, float invsdVal){
+		float mafVal2 = 2*mafVal;
+		float a0 = (0-mafVal2)*invsdVal;
+		float a1 = (1-mafVal2)*invsdVal;
+		float a2 = (2-mafVal2)*invsdVal;
+		
+		sKinLookUpArr[0][0] = a0*a0;
+		sKinLookUpArr[0][1] = a0*a1;
+		sKinLookUpArr[0][2] = a0*a2;
+		sKinLookUpArr[1][0] = sKinLookUpArr[0][1];
+		sKinLookUpArr[1][1] = a1*a1;
+		sKinLookUpArr[1][2] = a1*a2;
+		sKinLookUpArr[2][0] = sKinLookUpArr[0][2];
+		sKinLookUpArr[2][1] = sKinLookUpArr[1][2];
+		sKinLookUpArr[2][2] = a2*a2;
+
+	}
 
         void setBit(unsigned char & ch, int ii, int aVal, int bVal){
 
