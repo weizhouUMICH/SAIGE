@@ -5,12 +5,11 @@ Rscript step1_fitNULLGLMM.R \
 	--phenoCol=y \
 	--covarColList=x1,x2 \
 	--sampleIDColinphenoFile=IID \
-	--traitType=binary \
+	--traitType=quantitative \
 	--outputPrefix=./output/example \
 	--nThreads=4 \
 	--LOCO=FALSE \
 	--IsSparseKin=TRUE	\
-	--traitType=binary	\
 	--isCateVarianceRatio=FALSE
 
 

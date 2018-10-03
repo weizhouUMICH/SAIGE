@@ -77,12 +77,14 @@ public:
 
 	
 	//look-up table for std geno
-	float stdGenoLookUpArr[3] = {0};
-	void setStdGenoLookUpArr(float mafVal, float invsdVal){
+	//float stdGenoLookUpArr[3] = {0};
+	void setStdGenoLookUpArr(float mafVal, float invsdVal, arma::fvec & stdGenoLookUpArr){
+	//	arma::fvec stdGenoLookUpArr(3);
 		float mafVal2 = 2*mafVal;
-		stdGenoLookUpArr[0] = (0-mafVal2)*invsdVal;
-		stdGenoLookUpArr[1] = (1-mafVal2)*invsdVal;
-		stdGenoLookUpArr[2] = (2-mafVal2)*invsdVal;
+		stdGenoLookUpArr(0) = (0-mafVal2)*invsdVal;
+		stdGenoLookUpArr(1) = (1-mafVal2)*invsdVal;
+		stdGenoLookUpArr(2) = (2-mafVal2)*invsdVal;
+	//	return(stdGenoLookUpArr)
 	}
 
 
@@ -249,7 +251,10 @@ public:
 //		cout << "Get_OneSNP_StdGeno here" << endl; 
 		float invStd = invstdvVec[SNPIdx];
 
-		setStdGenoLookUpArr(freq, invStd);
+		arma::fvec stdGenoLookUpArr(3);
+		setStdGenoLookUpArr(freq,invStd,stdGenoLookUpArr);
+
+		//setStdGenoLookUpArr(freq, invStd);
 		//std::cout << "stdGenoLookUpArr[0]: " << stdGenoLookUpArr[0] << std::endl;
 		//std::cout << "stdGenoLookUpArr[1]: " << stdGenoLookUpArr[1] << std::endl;
 		//std::cout << "stdGenoLookUpArr[2]: " << stdGenoLookUpArr[2] << std::endl;
@@ -270,11 +275,12 @@ public:
     			if(ind >= Nnomissing){
 //				cout << "Get_OneSNP_StdGeno " << SNPIdx << endl; 
 //				cout << "Nnomissing " << Nnomissing << endl; 
+				stdGenoLookUpArr.clear();
     				return 1;
     			}
     		}
 		}
-		
+		stdGenoLookUpArr.clear();
 		return 1;
 		
 		
@@ -605,7 +611,7 @@ public:
 
         	test_bedfile.close();
 		cout << "setgeno mark5" << endl;
-		printAlleleFreqVec();
+//		printAlleleFreqVec();
 		//printGenoVec();
    		//Get_Diagof_StdGeno();
 		cout << "setgeno mark6" << endl;
@@ -1339,7 +1345,8 @@ struct sumTwoVec : public Worker
    arma::fvec &x;
    
    arma::fvec &sumVec;
-   
+  
+   int M = geno.getM(); 
    // constructors
    sumTwoVec(arma::fvec &x,arma::fvec &sumVec) 
       : x(x), sumVec(sumVec) {}
@@ -1413,6 +1420,12 @@ arma::fvec Get_OneSNP_StdGeno(int SNPIdx)
 
 	arma::fvec temp; 
 	geno.Get_OneSNP_StdGeno(SNPIdx, & temp);
+//	for(int j = 0; j < 100; j++){
+//                std::cout << "temp(j): " << j << " " << temp(j) << std::endl;
+
+ //       }
+
+
 	return(temp);
 
 }
@@ -1449,7 +1462,9 @@ arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
 	//make diag of kin to be 1 to compare results of emmax and gmmat
 	//diagVec = tauVec(1) + tauVec(0)/wVec;
 	for(unsigned int i=0; i< Nnomissing; i++){
-		//std::cout << i << "th element of diag of sigma and wVec " << diagVec(i) << " " << wVec(i) << std::endl;
+//	if(i < 100){
+//		std::cout << i << "th element of diag of sigma and wVec " << diagVec(i) << " " << wVec(i) << std::endl;
+//	}
   		if(diagVec(i) < 1e-4){
   			diagVec(i) = 1e-4 ;
   		}
@@ -2775,7 +2790,15 @@ Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tau
 		float freqv = geno.alleleFreqVec[i];
 		float invstdv = geno.invstdvVec[i];
 		geno.setSparseKinLookUpArr(freqv, invstdv);			
-	
+
+		//std::cout << "freqv: " << freqv << std::endl;
+		//std::cout << "invstdv: " << invstdv << std::endl;
+		//for (int j = 0; j < 3; j++){
+		//	std::cout << geno.sKinLookUpArr[j][0] << std::endl;	
+		//	std::cout << geno.sKinLookUpArr[j][1] << std::endl;	
+		//	std::cout << geno.sKinLookUpArr[j][2] << std::endl;	
+
+		//}
 		//std::cout << "geno.m_OneSNP_StdGeno(i) " << geno.m_OneSNP_StdGeno(i) <<  std::endl;	
 		//kinValueVecTemp = parallelcalsparseGRM(iMat);
 //		parallelcalsparseGRM(iMat, GRMvec);
@@ -2803,8 +2826,11 @@ Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tau
 	int a1;
 	int a2;
         for(size_t j=0; j < ni; j++){
+		geno.kinValueVecFinal[j] = (geno.kinValueVecFinal[j]) /(Mmarker);
+
 //		std::cout << "j: " << j << " geno.kinValueVecFinal[j]: " << geno.kinValueVecFinal[j] << std::endl;
-                if(geno.kinValueVecFinal[j] >= relatednessCutoff){
+            //    if(geno.kinValueVecFinal[j] >= relatednessCutoff){
+                if((geno.kinValueVecFinal[j]) >= relatednessCutoff){
         //      std::cout << "kinValueVec[j]: " << kinValueVec[j] << std::endl;
 			//kinValueVec_orig.push_back((geno.kinValueVecFinal)[j]); //for test	
                         (geno.kinValueVecFinal)[j] = tauVec(1)*(geno.kinValueVecFinal)[j];
