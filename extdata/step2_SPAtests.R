@@ -49,6 +49,8 @@ option_list <- list(
     help="whether to output allele frequency in cases and controls for dichotomous traits [default=FALSE]"),
   make_option("--LOCO", type="logical", default=FALSE,
     help="Whether to apply the leave-one-chromosome-out option. This option has not been extensively tested.")
+  make_option("--verbose", type="logical", default=FALSE,
+    help="Prints verbose log messages to stdout.")
 )
 
 parser <- OptionParser(usage="%prog [options]", option_list=option_list)
@@ -84,6 +86,7 @@ SPAGMMATtest(dosageFile=opt$dosageFile,
              numLinesOutput = opt$numLinesOutput,
 	     IsOutputAFinCaseCtrl = opt$IsOutputAFinCaseCtrl,
 	     LOCO = opt$LOCO
+             verbose = opt$verbose
 )
 
 
