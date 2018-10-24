@@ -527,29 +527,48 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
 }
 
 
-#' Fit the null logistic mixed model and estimate the variance ratio by a set of randomly selected variants 
+#' Fit the null logistic/linear mixed model and estimate the variance ratios by randomly selected variants 
 #'
-#' @param plinkFile character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM)
-#' @param phenoFile character. Path to the phenotype file
-#' @param phenoCol character. Column name for the trait e.g. "CAD"
+#' @param plinkFile character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM). Genetic markers are also randomly selected from the plink file to estimate the variance ratios
+#' @param phenoFile character. Path to the phenotype file. The phenotype file has a header and contains at least two columns. One column is for phentoype and the other column is for sample IDs. Addiitonal columns can be included in the phenotype file for covariates in the null GLMM. Please note covariates to be used in the NULL GLMM need to specified using the argument covarColList.
+#' @param phenoCol character. Column name for the phenotype in phenoFile e.g. "CAD"
 #' @param traitType character. e.g. "binary" or "quantitative". By default, "binary"
-#' @param invNormalize logical. Whether to perform the inverse normalization of the trait or not. E.g. TRUE or FALSE. By default, FALSE
-#' @param covarColList vector of characters. Covariates to be used in the glm model e.g c("Sex", "Age")
+#' @param invNormalize logical. Whether to perform the inverse normalization for the phentoype or not. E.g. TRUE or FALSE. By default, FALSE
+#' @param covarColList vector of characters. Covariates to be used in the null GLM model e.g c("Sex", "Age")
 #' @param qCovarCol vector of characters. Categorical covariates to be used in the glm model (NOT work yet)
 #' @param sampleIDColinphenoFile character.  Column name for the sample IDs in the phenotype file e.g. "IID".  
+#' @param tol numeric.The tolerance for fitting the null GLMMM to converge. By default, 0.02.
+#' @param maxiter integer. The maximum number of iterations used to fit the null GLMMM. By default, 20.
+#' @param tolPCG numeric. The tolerance for PCG to converge. By default, 1e-5.
+#' @param maxiterPCG integer. The maximum number of iterations for PCG. By default, 500. 
 #' @param nThreads integer. Number of threads to be used. By default, 1 
-#' @param numMarkers integer (>0). Number of markers to be used for estimating the variance ratio. By default, 30
+#' @param SPAcutoff numeric. The cutoff for the deviation of score test statistics from the mean in the unit of sd to perform SPA. By default, 2.
+#' @param numMarkers integer (>0). Minimum number of markers to be used for estimating the variance ratio. By default, 30
 #' @param skipModelFitting logical.  Whether to skip fitting the null model and only calculating the variance ratio, By default, FALSE. If TURE, the model file ".rda" is needed 
+#' @param memoryChunk integer or float. The size (Gb) for each memory chunk. By default, 2
 #' @param tauInit vector of numbers. e.g. c(1,1), Unitial values for tau. For binary traits, the first element will be always be set to 1. If the tauInit is not specified, the second element will be 0.5 for binary traits.  
-#' @param memoryChunk integer or float. The size (Gb) for each memory chunk. By default, 4
 #' @param LOCO logical. Whether to apply the leave-one-chromosome-out (LOCO) option. 
-#' @param traceCVcutoff float. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun
+#' @param traceCVcutoff numeric. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun. By default, 0.0025
+#' @param ratioCVcutoff numeric. The threshold for coefficient of variantion (CV) for the variance ratio estimate. If ratioCV > ratioCVcutoff. numMarkers will be increased by 10. 
 #' @param outputPrefix character. Path to the output files with prefix.
+#' @param IsSparseKin logical. Whether to exploit the sparsity of GRM to estimate the variance ratio. By default, TRUE
+#' @param sparseSigmaFile character. Path to the pre-calculated sparse GRM file. If not specified and  IsSparseKin=TRUE, sparse GRM will be computed
+#' @param sparseSigmaSampleIDFile character. Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to the order of samples in the sparse GRM. 
+#' @param numRandomMarkerforSparseKin integer. number of randomly selected markers (MAF >= 1%) to be used to identify related samples for sparse GRM
+#' @param 
 #' @param isCateVarianceRatio logical. Whether to estimate variance ratio based on different MAC categories. If yes, six categories will be used MAC = 1, 2, 3, 4, 5, >5. Currently, if isCateVarianceRatio=TRUE, then LOCO=FALSE 
 #' @param IsSparseKin logical. Whether to exploit the sparsity of GRM to estimate the variance ratio. By default, TRUE
-#' @param numRandomMarkerforSparseKin integer (>0). Number of markers to be used for first estimating the relatedness between each sample pair  if IsSparseKin is TRUE
-#' @param relatednessCutoff float. The threshold to treat two samples as unrelated if IsSparseKin is TRUE 
-#' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio value, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
+#' @param numRandomMarkerforSparseKin integer (>0). Number of markers to be used for first estimating the relatedness between each sample pair if IsSparseKin is TRUE. By default, 500
+#' @param relatednessCutoff float. The threshold to treat two samples as unrelated if IsSparseKin is TRUE. By default, 0.125
+#' @param cateVarRatioIndexVec vector of integer 0 or 1. The length of cateVarRatioIndexVec is the number of MAC categories for variance ratio estimation. 1 indicates variance ratio in the MAC category is to be estimated, otherwise 0. By default, c(1,1,1,1,1,1)
+#' @param cateVarRatioMinMACVecExclude vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. By default, c(0.5,1.5,2.5,3.5,4.5,5.5)
+#' @param cateVarRatioMaxMACVecInclude vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. By default, c(1.5,2.5,3.5,4.5,5.5)
+#' @param qr_sparse logical. Whether use qr to inverse sparse GRM. By default, FALSE
+#' @param Cholesky_sparse logical. Whether use Cholesky to inverse sparse GRM. By default, FALSE
+#' @param pcg_sparse logical. Whether use pcg to inverse sparse GRM. By default, TRUE
+#' @param isCovariateTransform logical. Whether use qr transformation on non-genetic covariates. By default, TRUE
+#' @param isDiagofKinSetAsOne logical. Whether to set the diagnal elements in GRM to be 1. By default, FALSE
+#' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio values, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
 #' @export
 fitNULLGLMM = function(plinkFile = "", 
                 phenoFile = "",
@@ -564,7 +583,7 @@ fitNULLGLMM = function(plinkFile = "",
                 tolPCG=1e-5,
                 maxiterPCG=500,
                 nThreads = 1, 
-                Cutoff = 2, 
+                SPAcutoff = 2, 
                 numMarkers = 30, 
                 skipModelFitting = FALSE,
 		memoryChunk = 2,
@@ -587,14 +606,15 @@ fitNULLGLMM = function(plinkFile = "",
 		pcg_sparse = TRUE,
 		isCovariateTransform = TRUE,
 		isDiagofKinSetAsOne = FALSE){
-                #formula, phenoType = "binary",prefix, centerVariables = "", tol=0.02, maxiter=20, tolPCG=1e-5, maxiterPCG=500, nThreads = 1, Cutoff = 2, numMarkers = 1000, skipModelFitting = FALSE){
+
+
+  
   if(nThreads > 1){
     RcppParallel:::setThreadOptions(numThreads = nThreads)
     cat(nThreads, " threads are set to be used ", "\n")
   }
 
   #check and read files
-
   #output file
   modelOut=paste0(outputPrefix, ".rda")
   SPAGMMATOut=paste0(outputPrefix, "_", numMarkers,"markers.SAIGE.results.txt")
@@ -616,9 +636,7 @@ fitNULLGLMM = function(plinkFile = "",
     ###if LOCO, record the indices of markers on each chromosome
     if(LOCO){
       bimData = data.table:::fread(paste0(plinkFile,".bim"),  header=F)
-      #chromosomeVec = NULL
       for(i in 1:22){
-	  #chromosomeVecVec = c(chromosomeVec, i)
 	if(length(which(bimData[,1] == i)) > 0){
           chromosomeStartIndexVec = c(chromosomeStartIndexVec, min(which(bimData[,1] == i))-1)
 	  chromosomeEndIndexVec = c(chromosomeEndIndexVec, max(which(bimData[,1] == i))-1)
@@ -768,7 +786,7 @@ fitNULLGLMM = function(plinkFile = "",
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,
                                                     obj.glm.null = fit0,
                                                     obj.noK = obj.noK,
-                                                    Cutoff = Cutoff,
+                                                    Cutoff = SPAcutoff,
                                                     maxiterPCG = maxiterPCG,
                                                     tolPCG = tolPCG,
                                                     numMarkers = numMarkers,
