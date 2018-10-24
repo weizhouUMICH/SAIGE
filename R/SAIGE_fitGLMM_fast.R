@@ -635,11 +635,17 @@ fitNULLGLMM = function(plinkFile = "",
       chromosomeEndIndexVec = NULL
     ###if LOCO, record the indices of markers on each chromosome
     if(LOCO){
+      cat("leave-one-chromosome-out is activated! Note this option will only be applied to autosomal variants\n")
+   
       bimData = data.table:::fread(paste0(plinkFile,".bim"),  header=F)
       for(i in 1:22){
 	if(length(which(bimData[,1] == i)) > 0){
           chromosomeStartIndexVec = c(chromosomeStartIndexVec, min(which(bimData[,1] == i))-1)
 	  chromosomeEndIndexVec = c(chromosomeEndIndexVec, max(which(bimData[,1] == i))-1)
+	  if(chromosomeStartIndexVec[i] <= chromosomeStartIndexVec[i-1] | chromosomeEndIndexVec[i] <= chromosomeEndIndexVec[i-1]){
+		stop(paste0("ERROR! chromosomes need to be ordered from 1 to 22 in ", plinkFile, ".bim\n"))
+	  }
+
 	}else{
 	  chromosomeStartIndexVec = c(chromosomeStartIndexVec, NA)
 	  chromosomeEndIndexVec = c(chromosomeEndIndexVec, NA)
@@ -647,6 +653,8 @@ fitNULLGLMM = function(plinkFile = "",
         }   	
       }
       cat("chromosomeStartIndexVec: ", chromosomeStartIndexVec, "\n")
+      cat("chromosomeEndIndexVec: ", chromosomeEndIndexVec, "\n")
+
      # setChromosomeIndicesforLOCO(chromosomeStartIndexVec, chromosomeEndIndexVec, chromosomeVecVec) 
     }else{
       chromosomeStartIndexVec = rep(NA, 22)
@@ -696,6 +704,7 @@ fitNULLGLMM = function(plinkFile = "",
       formula = paste0(phenoCol,"~ 1")
       hasCovariate = FALSE
     }    
+
     cat("formula is ", formula,"\n")
     formula.null = as.formula(formula)
     mmat = model.frame(formula.null, data, na.action=NULL)
@@ -713,8 +722,6 @@ fitNULLGLMM = function(plinkFile = "",
     cat(nrow(dataMerge_sort), " samples will be used for analysis\n")
 #    cat("dataMerge_sort$IID ", dataMerge_sort$IID, "\n")
   }
-  #cat("dataMerge_sort:\n")
-  #print(dataMerge_sort)
 
   if(invNormalize){
       cat("Perform the inverse nomalization for ", phenoCol, "\n")
@@ -723,28 +730,27 @@ fitNULLGLMM = function(plinkFile = "",
   }
 
   if(isCovariateTransform){
-  
-  out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
-  formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
-  if(length(out.transform$Param.transform$X_name) > 1){
-    for(i in c(2:length(out.transform$Param.transform$X_name))){
-      formulaNewList = c(formulaNewList, "+", out.transform$Param.transform$X_name[i])
+    cat("qr transformation has been performed on covariates\n")
+    out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
+    formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
+    if(length(out.transform$Param.transform$X_name) > 1){
+      for(i in c(2:length(out.transform$Param.transform$X_name))){
+        formulaNewList = c(formulaNewList, "+", out.transform$Param.transform$X_name[i])
+      }
     }
+
+    formulaNewList = paste0(formulaNewList, collapse="")
+    formulaNewList = paste0(formulaNewList, "-1")
+    formula.new = as.formula(paste0(formulaNewList, collapse=""))
+    data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
+    colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
+    cat("colnames(data.new) is ", colnames(data.new), "\n")
+    cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
+
+  }else{ #if(isCovariateTransform) else
+    formula.new = formula.null
+    data.new = dataMerge_sort
   }
-
-  formulaNewList = paste0(formulaNewList, collapse="")
-  formulaNewList = paste0(formulaNewList, "-1")
-  formula.new = as.formula(paste0(formulaNewList, collapse=""))
-  data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
-  colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
-  cat("colnames(data.new) is ", colnames(data.new), "\n")
-  cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
-
-}else{ #if(isCovariateTransform) else
-  formula.new = formula.null
-  data.new = dataMerge_sort
-
-}
 
 #  data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
 #  colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
@@ -762,6 +768,7 @@ fitNULLGLMM = function(plinkFile = "",
     #fit0 = glm(formula.null,data=dataMerge_sort, family=binomial)
     #fit0 = glm(out.transform$Y ~ out.transform$X1,family=binomial)
     fit0 = glm(formula.new, data=data.new, family=binomial)
+    cat("glm:\n")
     print(fit0)
     
     #obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.null, data = dataMerge_sort)
@@ -769,20 +776,26 @@ fitNULLGLMM = function(plinkFile = "",
 
 
     if(!skipModelFitting){
+      cat("Start fitting the NULL GLMM\n")
       t_begin = proc.time()
+      print(t_begin)
 
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
       save(modglmm, file = modelOut)
+
       t_end = proc.time()
+      print(t_end)
       cat("t_end - t_begin, fitting the NULL model took\n")
       print(t_end - t_begin)
 
     }else{
-      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
+      cat("Skip fitting the NULL GLMM\n")
       load(modelOut)
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
-    }
+      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
 
+    }
+    cat("Start estimating variance ratios\n")
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,
                                                     obj.glm.null = fit0,
                                                     obj.noK = obj.noK,
@@ -802,41 +815,44 @@ fitNULLGLMM = function(plinkFile = "",
   }else if(traitType == "quantitative"){
 
     cat(phenoCol, " is a quantitative trait\n")
-#    if(invNormalize){
-#      cat("Perform the inverse nomalization for ", phenoCol, "\n")
-#      invPheno = qnorm((rank(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)], na.last="keep")-0.5)/sum(!is.na(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)])))
-#      dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
-#    }
-
-    #obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.null, dataMerge_sort)
-    #fit0 = glm(formula.null, data=dataMerge_sort,family=gaussian(link = "identity"))
  
     obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.new, data.new)
     fit0 = glm(formula.new, data=data.new,family=gaussian(link = "identity"))
+    cat("glm:\n")
     print(fit0)
 
 
     if(!skipModelFitting){
+      cat("Start fitting the NULL GLMM\n")
       t_begin = proc.time()
+      print(t_begin)
+
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
       save(modglmm, file = modelOut)
+
       t_end = proc.time()
-      cat("t_end - t_begin, fitting the NULL model took \n")
+      print(t_end)
+      cat("t_end - t_begin, fitting the NULL model took\n")
       print(t_end - t_begin)
       print("step2")
-    }else{
-      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
-      load(modelOut)
 
+    }else{
+
+      cat("Skip fitting the NULL GLMM\n")
+      load(modelOut)
+      if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
+      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
 
       #test time
-	btest = rnorm(nrow(data.new))
-	for(i in 1:10){
-		tTimeVec = testTime(i, btest)	
-	}
-      if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
+#	btest = rnorm(nrow(data.new))
+#	for(i in 1:10){
+#		tTimeVec = testTime(i, btest)	
+#	}
+#      if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
     }
 #    cat("dataMerge_sort$IndexGeno: ", dataMerge_sort$IndexGeno, "\n") 
+
+    cat("Start estimating variance ratios\n")
     scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait(obj.glmm.null = modglmm,
                                                     obj.glm.null = fit0,
                                                     obj.noK = obj.noK,
@@ -883,6 +899,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 						    chromosomeEndIndexVec,
 						    isCateVarianceRatio
                                                     ){
+
 
   if(file.exists(testOut)){file.remove(testOut)}
   resultHeader = c("CHR","SNPID","POS","A1","A2","p.value", "p.value.NA", "Is.converge","var1","var2", "N", "AC", "AF")
@@ -1048,6 +1065,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                                                     Cholesky_sparse,
                                                     pcg_sparse){
 
+
   if(file.exists(testOut)){file.remove(testOut)}
 
   if(nThreads > 1){
@@ -1067,7 +1085,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 
   family = obj.glm.null$family
   print(family)
-
   eta = obj.glmm.null$linear.predictors
   mu = obj.glmm.null$fitted.values
   mu.eta = family$mu.eta(eta)
@@ -1076,7 +1093,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   tauVecNew = obj.glmm.null$theta
 
   X1 = obj.noK$X1
-  #Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
   y = obj.glm.null$y
 
   ##randomize the marker orders to be tested
@@ -1085,10 +1101,15 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 
   listOfMarkersForVarRatio = list()	
   MACvector = getMACVec()
+
   if(!isCateVarianceRatio){
+    cat("Only one variance ratio will be estimated using randomly selected markers with MAC >= 20\n")
     MACindex = which(MACvector >= 20)
     listOfMarkersForVarRatio[[1]] = sample(MACindex, size = length(MACindex), replace = FALSE)
+
   }else{
+    cat("Categorical variance ratios will be estimated\n")
+
     numCate = length(cateVarRatioIndexVec)
     for(i in 1:(numCate-1)){
        #print("i 1:(numCate-1)")
@@ -1104,7 +1125,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
       #tempindex = which(MACvector > 0.5 & MACvector <= 1.5)	
       #print(length(tempindex))
 
-      listOfMarkersForVarRatio[[i]] = sample(MACindex, size = length(MACindex), replace = FALSE)	
+      listOfMarkersForVarRatio[[i]] = sample(MACindex, size = length(MACindex), replace = FALSE)
+
     }
     if(length(cateVarRatioMaxMACVecInclude) == (numCate-1)){
       MACindex = which(MACvector > cateVarRatioMinMACVecExclude[numCate])
@@ -1112,22 +1134,41 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
       MACindex = which(MACvector > cateVarRatioMinMACVecExclude[numCate] & MACvector <= cateVarRatioMaxMACVecInclude[numCate])
     }
     listOfMarkersForVarRatio[[numCate]] = sample(MACindex, size = length(MACindex), replace = FALSE)
+
+    for(k in 1:length(cateVarRatioIndexVec)){
+      if(k <= length(cateVarRatioIndexVec)-1){
+        if(cateVarRatioIndexVec[k] == 1){
+          cat(cateVarRatioMinMACVecExclude[k], "< MAC <= ", cateVarRatioMaxMACVecInclude[k],"\n")
+          if(length(listOfMarkersForVarRatio[[k]]) < numMarkers){
+            stop("ERROR! number of genetic variants in ", cateVarRatioMinMACVecExclude[k], "< MAC <= ", cateVarRatioMaxMACVecInclude[k], " is lower than ", numMarkers, "\n", "Please include more markers in this MAC category in the plink file\n")
+          }
+        }
+      }else{
+        if(cateVarRatioIndexVec[k] == 1){	
+          cat(cateVarRatioMinMACVecExclude[k], "< MAC\n")
+          if(length(listOfMarkersForVarRatio[[k]]) < numMarkers){
+            stop("ERROR! number of genetic variants in ", cateVarRatioMinMACVecExclude[k], "< MAC  is lower than ", numMarkers, "\n", "Please include more markers in this MAC category in the plink file\n")
+          }
+        }
+      }
+    }
+
+
   }
 
-#  print("TEST debug")
-#  print(listOfMarkersForVarRatio[[1]])
-
-#getMACVec
- # listOfMarkersForVarRatio = c(1:mMarkers)
   freqVec = getAlleleFreqVec()
 
   sparseSigmaOutFileFlag = FALSE
   qrsparseSigmaOutFileFlag = FALSE
   #####sparse Kin
+
   if(IsSparseKin){
+    cat("sparse GRM will be used\n")
+
     qrsparseSigmaOutFile = paste0(varRatioOutFile, ".qr.sparseSigma.rda")
     sparseSigmaOutFile = paste0(varRatioOutFile, ".sparseSigma.mtx")
     sparseSigmaOutFile_orig = paste0(varRatioOutFile, ".sparseSigma_orig.mtx")
+
     if(pcg_sparse & (!file.exists(sparseSigmaOutFile))){
       sparseSigmaOutFileFlag = TRUE
     }
@@ -1141,76 +1182,105 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
       }
     }
 
-  if(sparseSigmaOutFileFlag){
-    if(sparseSigmaFile == ""){
+    if(sparseSigmaOutFileFlag){
+      if(sparseSigmaFile == ""){
 
 
-      MAFindex = which(freqVec >= 0.01 & freqVec <= 0.99)
-      markerIndexforSparseM = sample(MAFindex, size = numRandomMarkerforSparseKin, replace=FALSE)
+        MAFindex = which(freqVec >= 0.01 & freqVec <= 0.99)
+        cat(numRandomMarkerforSparseKin, "genetic markers are randomly selected to decide which samples are related\n")
+	if(length(MAFindex) < numRandomMarkerforSparseKin){
+          stop("ERROR! not enough genetic markers with MAC >= 1% to detect which samples are related\n","Try include at least ", numRandomMarkerforSparseKin, " genetic markers with MAC >= 1% in the plink file\n")
+        }
+
+        markerIndexforSparseM = sample(MAFindex, size = numRandomMarkerforSparseKin, replace=FALSE)
+       
 #      sparseSigmaOutFile_orig_markerIndex = paste0(sparseSigmaOutFile_orig, "_markerIndex.txt")
 #      write.table(markerIndexforSparseM, sparseSigmaOutFile_orig_markerIndex, col.names=F, row.names=F, quote=F)		
 
-      setSubMarkerIndex(markerIndexforSparseM -1)
-      ta = proc.time()
+	cat("Start detecting related samples for the sparse GRM\n")
+        ta = proc.time()
+        setSubMarkerIndex(markerIndexforSparseM -1)
+	tb = proc.time()
+        cat("tb-ta\n")
+	print(tb-ta)
+
+
+        cat("Start creating sparse GRM\n")
+        ta = proc.time()
     #sparseMList = createSparseKin(markerIndexforSparseM -1, relatednessCutoff, W, tauVecNew)
-      sparseMList = createSparseKinParallel(nblocks = nThreads, ncore = nThreads, relatednessCutoff, W, tauVecNew)
+        sparseMList = createSparseKinParallel(nblocks = nThreads, ncore = nThreads, relatednessCutoff, W, tauVecNew)
 #    sparseSigma = createSparseKin(markerIndexforSparseM -1, relatednessCutoff, W, tauVecNew)
 #    a = sparse_row_idx_mult_v2(sparseSigma)
 #    cat("a: ", a, "\n")	
-      tb = proc.time()
-      cat("tb-ta\n")
-      print(tb-ta)
-      cat("length(sparseMList$iIndex): ", length(sparseMList$iIndex), "\n")
-      print(sparseMList$iIndex[1:102])	 
-      cat("length(sparseMList$jIndex): ", length(sparseMList$jIndex), "\n")
-      print(sparseMList$jIndex[1:102])	 
-      cat("length(sparseMList$kinValue): ", length(sparseMList$kinValue), "\n")
-      print(sparseMList$kinValue[1:102])	 
-      sparseSigma = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE)  
+        tb = proc.time()
+        cat("tb-ta\n")
+        print(tb-ta)
+
+
+
+        cat("length(sparseMList$iIndex): ", length(sparseMList$iIndex), "\n")
+        print(sparseMList$iIndex[1:102])	 
+        cat("length(sparseMList$jIndex): ", length(sparseMList$jIndex), "\n")
+        print(sparseMList$jIndex[1:102])	 
+        cat("length(sparseMList$kinValue): ", length(sparseMList$kinValue), "\n")
+        print(sparseMList$kinValue[1:102])	 
+        sparseSigma = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE)  
 #      sparseSigma_orig = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue_orig), symmetric = TRUE)  
 #    sparseSigma = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE) 
-      cat("nrow(sparseSigma): ", nrow(sparseSigma), "\n")	
-      cat("ncol(sparseSigma): ", ncol(sparseSigma), "\n")	
-      cat("ncol(sparseSigma): ", sum(sparseSigma != 0), "\n")	
-      tc = proc.time()
-      cat("tc-tb\n")
-      print(tc-tb)
-      cat("OK1", "\n")
-      sparseSigmaOutFile = paste0(varRatioOutFile, ".sparseSigma.mtx")
-      cat("OK2", "\n")
+        cat("nrow(sparseSigma): ", nrow(sparseSigma), "\n")	
+        cat("ncol(sparseSigma): ", ncol(sparseSigma), "\n")	
+        cat("ncol(sparseSigma): ", sum(sparseSigma != 0), "\n")	
+
+        tc = proc.time()
+        cat("tc-tb\n")
+        print(tc-tb)
+
+        sparseSigmaOutFile = paste0(varRatioOutFile, ".sparseSigma.mtx")
+        cat("write sparse GRM to ", sparseSigmaOutFile ,"\n")
+        #cat("OK2", "\n")
 #      Matrix:::writeMM(sparseSigma_orig, sparseSigmaOutFile_orig)
-      Matrix:::writeMM(sparseSigma, sparseSigmaOutFile)
-      cat("OK3", "\n")
+        Matrix:::writeMM(sparseSigma, sparseSigmaOutFile)
+        td = proc.time()
+	cat("td-tc\n")
+	print(td-tc)
+        #cat("OK3", "\n")
      }else{ # if(sparseSigmaFile=="")
-      sparseSigmaLarge = Matrix:::readMM(sparseSigmaFile)
-      cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
-      if(sparseSigmaSampleIDFile != ""){
-        if(!file.exists(sparseSigmaSampleIDFile)){
-          stop("ERROR! sparseSigmaSampleIDFile ", sparseSigmaSampleIDFile, " does not exsit\n")
-        }else{
-          sparseSigmaSampleID = data.frame(data.table:::fread(sparseSigmaSampleIDFile, header=F, stringsAsFactors=FALSE))
-          colnames(sparseSigmaSampleID) = c("sampleID")
-          sparseSigmaSampleID$IndexSigma = seq(1,nrow(sparseSigmaSampleID), by=1)
-          sampleInModel = NULL
-    	  sampleInModel$IID = obj.glmm.null$sampleID
-          sampleInModel = data.frame(sampleInModel)
-          sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
-          cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
-	  mergeID = merge(sampleInModel, sparseSigmaSampleID, by.x="IID", by.y = "sampleID")
+
+       cat("sparse GRM has been specified\n")
+       cat("read in sparse GRM from ",sparseSigmaFile,"\n")
+
+       sparseSigmaLarge = Matrix:::readMM(sparseSigmaFile)
+      #cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
+       if(sparseSigmaSampleIDFile != ""){
+         if(!file.exists(sparseSigmaSampleIDFile)){
+           stop("ERROR! sparseSigmaSampleIDFile ", sparseSigmaSampleIDFile, " does not exsit\n")
+         }else{
+           sparseSigmaSampleID = data.frame(data.table:::fread(sparseSigmaSampleIDFile, header=F, stringsAsFactors=FALSE))
+           colnames(sparseSigmaSampleID) = c("sampleID")
+           sparseSigmaSampleID$IndexSigma = seq(1,nrow(sparseSigmaSampleID), by=1)
+           sampleInModel = NULL
+    	   sampleInModel$IID = obj.glmm.null$sampleID
+           sampleInModel = data.frame(sampleInModel)
+           sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
+           cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
+	   mergeID = merge(sampleInModel, sparseSigmaSampleID, by.x="IID", by.y = "sampleID")
 	
 
-          mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
-          indexIDofSigma=mergeID$IndexSigma
-          sparseSigma = sparseSigmaLarge[indexIDofSigma, indexIDofSigma]
-	  rm(sparseSigmaLarge)
+           mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
+           indexIDofSigma=mergeID$IndexSigma
+	   cat("Subset sparse GRM to be ", indexIDofSigma," by ", indexIDofSigma, "\n")
+           sparseSigma = sparseSigmaLarge[indexIDofSigma, indexIDofSigma]
+	   rm(sparseSigmaLarge)
         }
       }#end of if(sparseSigmaSampleIDFile != "")       
 
-     }  
+    }  
 
-    }else{
-      sparseSigma = Matrix:::readMM(sparseSigmaOutFile)
-    }
+  }else{ #if(sparseSigmaOutFileFlag){
+    cat("sparse GRM has been specified\n")
+    cat("read in sparse GRM from ",sparseSigmaOutFile,"\n")
+    sparseSigma = Matrix:::readMM(sparseSigmaOutFile)
+  }
 	
   if(qrsparseSigmaOutFileFlag){
     if(qr_sparse){  
@@ -1225,94 +1295,95 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
     }
   }
 
-} #end of if(IsSparseKin)
+  }#end of if(IsSparseKin)
 
 
   Nnomissing = length(mu)
   varRatioTable = NULL
 
-Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
+  Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
 
 
-for(k in 1:length(listOfMarkersForVarRatio)){
-  if(length(listOfMarkersForVarRatio[[k]]) == 0){
-    cateVarRatioIndexVec[k] = 0
-    cat("no marker is found in the MAC category ", k, "\n")
-  }
-  if(cateVarRatioIndexVec[k] == 1){
+  for(k in 1:length(listOfMarkersForVarRatio)){
+    #if(length(listOfMarkersForVarRatio[[k]]) == 0){
+    #  cateVarRatioIndexVec[k] = 0
+    #  cat("no marker is found in the MAC category ", k, "\n")
+    #}
+    if(cateVarRatioIndexVec[k] == 1){
 
-  numMarkers0 = numMarkers
-  OUTtotal = NULL
-  OUT = NULL
-  indexInMarkerList = 1
-  numTestedMarker = 0
-  ratioCV = ratioCVcutoff + 0.1
-while(ratioCV > ratioCVcutoff){  
-  while(numTestedMarker < numMarkers0){
-    i = listOfMarkersForVarRatio[[k]][indexInMarkerList]
-    cat("i is ", i, "\n")
-    G0 = Get_OneSNP_Geno(i-1)
-    cat("G0", G0[1:10], "\n")
-    AC = sum(G0)
-#    if (AC <= 20 | AC >= (2*Nnomissing - 20)){
-#    if (AC <= 20 | AC >= (2*Nnomissing - 20) | CHR < 1 | CHR > 22){
-    CHR = bimPlink[i,1]
-    if (CHR < 1 | CHR > 22){
-      indexInMarkerList = indexInMarkerList + 1
-    }else{
-      AF = AC/(2*Nnomissing)
-      G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted 
-      g = G/sqrt(AC)
-      q = innerProduct(g,y)
+      numMarkers0 = numMarkers
+      OUTtotal = NULL
+      OUT = NULL
+      indexInMarkerList = 1
+      numTestedMarker = 0
+      ratioCV = ratioCVcutoff + 0.1
+
+      while(ratioCV > ratioCVcutoff){  
+        while(numTestedMarker < numMarkers0){
+          i = listOfMarkersForVarRatio[[k]][indexInMarkerList]
+          cat(i, "th marker\n")
+          G0 = Get_OneSNP_Geno(i-1)
+          cat("G0", G0[1:10], "\n")
+          AC = sum(G0)
+          CHR = bimPlink[i,1]
+         if (CHR < 1 | CHR > 22){
+           indexInMarkerList = indexInMarkerList + 1
+         }else{
+          AF = AC/(2*Nnomissing)
+          G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted 
+          g = G/sqrt(AC)
+          q = innerProduct(g,y)
  #     print(g[1:20])
  #     print(y[1:20])
  #     print(q)
-      if(!obj.glmm.null$LOCO){          
-        Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
-        Sigma_iX = Sigma_iX_noLOCO
-      }else if(!(obj.glmm.null$LOCOResult[[CHR]]$isLOCO)){
-         eta = obj.glmm.null$linear.predictors
-         mu = obj.glmm.null$fitted.values
-         mu.eta = family$mu.eta(eta)
-         sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
-         W = sqrtW^2
-         Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
-         Sigma_iX = Sigma_iX_noLOCO
-      }else{
-         eta = obj.glmm.null$LOCOResult[[CHR]]$linear.predictors
-         mu = obj.glmm.null$LOCOResult[[CHR]]$fitted.values
-         mu.eta = family$mu.eta(eta)
-         sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
-         W = sqrtW^2
-         startIndex = chromosomeStartIndexVec[CHR]
-         endIndex = chromosomeEndIndexVec[CHR]
-         setStartEndIndex(startIndex, endIndex)
-         Sigma_iG = getSigma_G_LOCO(W, tauVecNew, G, maxiterPCG, tolPCG)
-         Sigma_iX = getSigma_X_LOCO(W, tauVecNew, X1, maxiterPCG, tolPCG)
-      }
+          if(!obj.glmm.null$LOCO){          
+            Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
+            Sigma_iX = Sigma_iX_noLOCO
+          }else if(!(obj.glmm.null$LOCOResult[[CHR]]$isLOCO)){
+             eta = obj.glmm.null$linear.predictors
+             mu = obj.glmm.null$fitted.values
+             mu.eta = family$mu.eta(eta)
+             sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
+             W = sqrtW^2
+             Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
+             Sigma_iX = Sigma_iX_noLOCO
+          }else{
+             eta = obj.glmm.null$LOCOResult[[CHR]]$linear.predictors
+             mu = obj.glmm.null$LOCOResult[[CHR]]$fitted.values
+             mu.eta = family$mu.eta(eta)
+             sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
+             W = sqrtW^2
+             startIndex = chromosomeStartIndexVec[CHR]
+             endIndex = chromosomeEndIndexVec[CHR]
+             setStartEndIndex(startIndex, endIndex)
+             Sigma_iG = getSigma_G_LOCO(W, tauVecNew, G, maxiterPCG, tolPCG)
+             Sigma_iX = getSigma_X_LOCO(W, tauVecNew, X1, maxiterPCG, tolPCG)
+          }
 
-      var1a = t(G)%*%Sigma_iG - t(G)%*%Sigma_iX%*%(solve(t(X1)%*%Sigma_iX))%*%t(X1)%*%Sigma_iG
+          var1a = t(G)%*%Sigma_iG - t(G)%*%Sigma_iX%*%(solve(t(X1)%*%Sigma_iX))%*%t(X1)%*%Sigma_iG
       ###var1 = g'Pg, var2 = g'g
 
       #cat("Sigma_iG: \n")
       #print(Sigma_iG/AC)	
 
-      var1 = var1a/AC
-      m1 = innerProduct(mu,g)
-      if(IsSparseKin){
-	t1 = proc.time()
-	cat("t1\n")
-	if(!pcg_sparse){
-        qrinvSigma = Matrix:::solve(qrsparseSigma, g)
-	t2 = proc.time()
-	cat("t2-t1\n")
-    	print(t2-t1)
-        var2_a = t(g) %*% qrinvSigma
-	}else{
-	cat("t1again\n")
+          var1 = var1a/AC
+          m1 = innerProduct(mu,g)
+
+
+          if(IsSparseKin){
+	    t1 = proc.time()
+	    cat("t1\n")
+	    if(!pcg_sparse){
+               qrinvSigma = Matrix:::solve(qrsparseSigma, g)
+	       t2 = proc.time()
+	       cat("t2-t1\n")
+    	       print(t2-t1)
+               var2_a = t(g) %*% qrinvSigma
+	    }else{
+	     cat("t1again\n")
 #	pcginvSigma = getPCG1ofSparseSigmaAndVector(sparseSigma, g)
 #	pcginvSigma = pcgSparse(sparseSigma, g)
-	pcginvSigma = pcg(sparseSigma, g)
+	     pcginvSigma = pcg(sparseSigma, g)
 	#print(class(sparseSigma))
 	#print(dim(pcginvSigma))
 	#print(class(pcginvSigma))
@@ -1320,64 +1391,66 @@ while(ratioCV > ratioCVcutoff){
 	#a1<-methods:::as(sparseSigma, "dsTMatrix")
 #	pcginvSigma = pcg(sparseSigma, g)
 	#pcginvSigma = pcg(a1, g)
-	t2 = proc.time()
-        cat("t2-t1\n")
-	print(t2-t1)
-	var2_a = t(g) %*% pcginvSigma
-	}
-	var2 = var2_a[1,1]
+	     t2 = proc.time()
+             cat("t2-t1\n")
+	     print(t2-t1)
+	     var2_a = t(g) %*% pcginvSigma
+	   }
+	     var2 = var2_a[1,1]
 	#cat("qrinvSigma: \n")
 	#print(qrinvSigma)
-      }else{
-        var2 = innerProduct(g, g)
-      }
-      Tv1 = (q-m1)/tauVecNew[1]
-      p.value = pchisq(Tv1^2/var1, lower.tail = FALSE, df=1)
-      p.value.NA = pchisq(Tv1^2/var2, lower.tail = FALSE, df=1)
-      OUT = rbind(OUT, c(i, p.value, p.value.NA, var1, var2, Tv1, Nnomissing, AC, AF))
+        }else{
+          var2 = innerProduct(g, g)
+        }
 
-      indexInMarkerList = indexInMarkerList + 1
-      numTestedMarker = numTestedMarker + 1
+        Tv1 = (q-m1)/tauVecNew[1]
+        p.value = pchisq(Tv1^2/var1, lower.tail = FALSE, df=1)
+        p.value.NA = pchisq(Tv1^2/var2, lower.tail = FALSE, df=1)
+        OUT = rbind(OUT, c(i, p.value, p.value.NA, var1, var2, Tv1, Nnomissing, AC, AF))
+
+        indexInMarkerList = indexInMarkerList + 1
+        numTestedMarker = numTestedMarker + 1
       	
 	
-      if(numTestedMarker %% 10 == 0 | numTestedMarker == numMarkers | indexInMarkerList-1 == length(listOfMarkersForVarRatio[[k]]) ){
-        OUT = as.data.frame(OUT)
-	print("OK")
-        OUTtotal = rbind(OUTtotal, OUT)
-	print("OK1")
-        write.table(OUT, testOut, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
-        OUT = NULL
+        if(numTestedMarker %% 10 == 0 | numTestedMarker == numMarkers | indexInMarkerList-1 == length(listOfMarkersForVarRatio[[k]]) ){
+          OUT = as.data.frame(OUT)
+	  print("OK")
+          OUTtotal = rbind(OUTtotal, OUT)
+	  print("OK1")
+          write.table(OUT, testOut, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
+          OUT = NULL
+        }
       }
+
+      if(indexInMarkerList-1 == length(listOfMarkersForVarRatio[[k]])){
+        numTestedMarker = numMarkers0
+      }
+    }#end of while(numTestedMarker < numMarkers)
+
+    print("OK2")
+    #OUTtotal = as.data.frame(OUTtotal)
+    #colnames(OUTtotal) = resultHeader
+    OUT1 = OUTtotal
+    OUT1 = as.data.frame(OUT1)
+    colnames(OUT1) = resultHeader
+    ratioVec = as.numeric(OUT1$var1)/as.numeric(OUT1$var2)
+    ratioCV = calCV(ratioVec)
+
+    if(ratioCV > ratioCVcutoff){
+      cat("CV for variance ratio estimate using ", numMarkers0, " markers is ", ratioCV, " > ", ratioCVcutoff, "\n")
+      numMarkers0 = numMarkers0 + 10
+      cat("try ", numMarkers0, " markers\n")
+    }else{
+      cat("CV for variance ratio estimate using ", numMarkers0, " markers is ", ratioCV, " < ", ratioCVcutoff, "\n")
     }
 
     if(indexInMarkerList-1 == length(listOfMarkersForVarRatio[[k]])){
-      numTestedMarker = numMarkers0
-    }
-  } #end of while(numTestedMarker < numMarkers)
-  print("OK2")
-  #OUTtotal = as.data.frame(OUTtotal)
-  #colnames(OUTtotal) = resultHeader
-  OUT1 = OUTtotal
-  OUT1 = as.data.frame(OUT1)
-  colnames(OUT1) = resultHeader
-  ratioVec = as.numeric(OUT1$var1)/as.numeric(OUT1$var2)
-  ratioCV = calCV(ratioVec)
-
-  if(ratioCV > ratioCVcutoff){
-    cat("CV for variance ratio estimate using ", numMarkers0, " markers is ", ratioCV, " > ", ratioCVcutoff, "\n")
-    numMarkers0 = numMarkers0 + 10
-    cat("try ", numMarkers0, " markers\n")
-  }else{
-    cat("CV for variance ratio estimate using ", numMarkers0, " markers is ", ratioCV, " < ", ratioCVcutoff, "\n")
-  }
-
-  if(indexInMarkerList-1 == length(listOfMarkersForVarRatio[[k]])){
       ratioCV = ratioCVcutoff
       cat("no more markers are available in the MAC category ", k, "\n")
       print(indexInMarkerList-1)	
     }
 
-} #end of while(ratioCV > ratioCVcutoff)
+  }#end of while(ratioCV > ratioCVcutoff)
 
   #OUTtotal = as.data.frame(OUTtotal)
   #colnames(OUTtotal) = resultHeader
@@ -1391,18 +1464,18 @@ while(ratioCV > ratioCVcutoff){
   print(varRatio)
   print(varRatioTable)
 
-}else{# if(cateVarRatioVec[k] == 1)
-  varRatioTable = rbind(varRatioTable, c(1))
-}
+  }else{# if(cateVarRatioVec[k] == 1)
+    varRatioTable = rbind(varRatioTable, c(1))
+  }
 
 } #for(k in 1:length(listOfMarkersForVarRatio)){
 
 
-print(varRatioTable)
-print(varRatioOutFile)
-write.table(varRatioTable, varRatioOutFile, quote=F, col.names=F, row.names=F)
-data = read.table(varRatioOutFile, header=F)
-print(data)
+  print(varRatioTable)
+  print(varRatioOutFile)
+  write.table(varRatioTable, varRatioOutFile, quote=F, col.names=F, row.names=F)
+  data = read.table(varRatioOutFile, header=F)
+  print(data)
 
 }
 
