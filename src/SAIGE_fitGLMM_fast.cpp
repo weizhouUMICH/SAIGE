@@ -2844,7 +2844,8 @@ Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tau
                 if((geno.kinValueVecFinal[j]) >= relatednessCutoff){
         //      std::cout << "kinValueVec[j]: " << kinValueVec[j] << std::endl;
 			//kinValueVec_orig.push_back((geno.kinValueVecFinal)[j]); //for test	
-                        (geno.kinValueVecFinal)[j] = tauVec(1)*(geno.kinValueVecFinal)[j];
+                        //(geno.kinValueVecFinal)[j] = tauVec(1)*(geno.kinValueVecFinal)[j];
+                        (geno.kinValueVecFinal)[j] = tauVec(1)*(geno.kinValueVecFinal)[j] + tauVec(0)/wVec;
  				 a1 = (geno.indiceVec)[j].first + 1;
 				 a2 = (geno.indiceVec)[j].second + 1;
 				 iIndexVec2.push_back(a1);
