@@ -252,7 +252,7 @@ public:
 		float invStd = invstdvVec[SNPIdx];
 
 		arma::fvec stdGenoLookUpArr(3);
-		setStdGenoLookUpArr(freq,invStd,stdGenoLookUpArr);
+		setStdGenoLookUpArr(freq, invStd, stdGenoLookUpArr);
 
 		//setStdGenoLookUpArr(freq, invStd);
 		//std::cout << "stdGenoLookUpArr[0]: " << stdGenoLookUpArr[0] << std::endl;
@@ -268,7 +268,7 @@ public:
     			geno1 = geno1 >> 1;
     			int a = geno1 & 1 ;
     			//(*out)[ind] = ((2-(a+b)) - 2*freq)* invStd;;
-    			(*out)[ind] = stdGenoLookUpArr[2-(a+b)];
+    			(*out)[ind] = stdGenoLookUpArr(2-(a+b));
 			ind++;
     			geno1 = geno1 >> 1;
     			
@@ -297,14 +297,14 @@ public:
 			for(size_t i=0; i< M; i++){
 				Get_OneSNP_StdGeno(i, temp);
 
-				//if(i == 0){
-				//	cout << "setgeno mark7 " << i <<  endl;
-				//	for(int j=0; j<10; ++j)
-				//	{
-                		//		cout << (*temp)[j] << ' ';
-                		//	}
-                		//	cout << endl;
-				//}
+				if(i == 0){
+					cout << "setgeno mark7 " << i <<  endl;
+					for(int j=0; j<10; ++j)
+					{
+                				cout << (*temp)[j] << ' ';
+                			}
+                			cout << endl;
+				}
 				m_DiagStd = m_DiagStd + (*temp) % (*temp);
 			}
 		
@@ -1266,9 +1266,12 @@ void findIndiceRelatedSample(){
 //    xout(i,1) = xout(i,0);
 //  }
 
+/*
   for(int i=0; i < Ntotal; i++){
     (geno.indiceVec).push_back( std::pair<int, int>(i, i) );
   }
+*/
+
 //  return(xout);
 }
 
@@ -2105,6 +2108,9 @@ Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  a
   	int Nnomissing = geno.getNnomissing();
   	arma::fvec Sigma_iY1;
   	Sigma_iY1 = getPCG1ofSigmaAndVector(wVec, tauVec, Yvec, maxiterPCG, tolPCG);
+  for(int j = 0; j < 10; j++){
+                std::cout << "Sigma_iY1(j): " << Sigma_iY1(j) << std::endl;
+        }
 
   	int colNumX = Xmat.n_cols;
   	arma::fmat Sigma_iX1(Nnomissing,colNumX);
@@ -2174,6 +2180,11 @@ Rcpp::List getAIScore_q_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVe
         int Nnomissing = geno.getNnomissing();
         arma::fvec Sigma_iY1;
         Sigma_iY1 = getPCG1ofSigmaAndVector_LOCO(wVec, tauVec, Yvec, maxiterPCG, tolPCG);
+
+	for(int j = 0; j < 10; j++){
+                std::cout << "Sigma_iY1(j): " << Sigma_iY1(j) << std::endl;
+        }
+
 
         int colNumX = Xmat.n_cols;
         arma::fmat Sigma_iX1(Nnomissing,colNumX);
@@ -2847,15 +2858,23 @@ Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tau
         //                }
 
 	//		if(iMat(j,0) == iMat(j,1)){
+
+/*
+
 			if(a1 == a2){
 				//(geno.kinValueVecFinal)[j] = (geno.kinValueVecFinal)[j] + tauVec(0)/(wVec(iMat(j,0)));
 				(geno.kinValueVecFinal)[j] = (geno.kinValueVecFinal)[j] + tauVec(0)/(wVec(a1-1));
 			}
 
+*/
+
+
                         kinValueVec2.push_back((geno.kinValueVecFinal)[j]);
                 }
 
         }
+
+
 
 	std::cout << "kinValueVec2.size(): " << kinValueVec2.size() << std::endl;
 	//return Rcpp::List::create(Named("iIndex") = iIndexVec2, Named("jIndex") = jIndexVec2, Named("kinValue") = kinValueVec2,  Named("kinValue_orig") = kinValueVec_orig);	

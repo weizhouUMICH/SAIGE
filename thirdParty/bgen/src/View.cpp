@@ -226,7 +226,6 @@ namespace genfile {
 			m_state = e_ReadyForVariant ;
 		}
 
-	
 		// Utility function to read and uncompress variant genotype probability data
 		// without further processing.
 		std::vector< byte_t > const& View::read_and_uncompress_genotype_data_block() {
@@ -236,14 +235,7 @@ namespace genfile {
 			m_state = e_ReadyForVariant ;
 			genfile::bgen::uncompress_probability_data( m_context, m_buffer1, &m_buffer2 ) ;
 			++m_variant_i ;
-//			std::cout << "m_variant_i: " << m_variant_i << std::endl;
 			return m_buffer2 ;
 		}
-
-
-
-
-
-	
 	}
 }

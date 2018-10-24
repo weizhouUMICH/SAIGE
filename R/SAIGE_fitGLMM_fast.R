@@ -1733,12 +1733,19 @@ createSparseKinParallel = function(nblocks, ncore, relatednessCutoff, W, tauVecN
 #  cat(indexVec)
   #sparseKinList = refineKin(indexVec-1, relatednessCutoff, W, tauVecNew)
   sparseKinList = refineKin(relatednessCutoff, W, tauVecNew)
+  Nval = length(W)
+	
+  sparseKinList$iIndex = c(sparseKinList$iIndex, seq(1:Nval))
+  sparseKinList$jIndex = c(sparseKinList$jIndex, seq(1:Nval))
+  diagKin = getDiagOfSigma(W, tauVecNew)
+  sparseKinList$kinValue = c(sparseKinList$kinValue, diagKin)
+  rm(diagKin)
+
   #sparseKinList = refineKin(indexVec, relatednessCutoff, W, tauVecNew)
   #GRMvec = refineKinPar(indexVec, relatednessCutoff = relatednessCutoff, W = W, tauVecNew = tauVecNew, nblocks = nblocks, verbose = TRUE, ncore= nblocks) 
   #sparseKinList = shortenList(indexVec-1, GRMvec, relatednessCutoff, W, tauVecNew)
  tp2 = proc.time()
   cat("tp2 - tp1: ", tp2-tp1, "\n")
-
   return(sparseKinList)
 }
 

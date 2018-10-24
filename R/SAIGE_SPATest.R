@@ -307,6 +307,7 @@ SPAGMMATtest = function(dosageFile = "",
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
       Gx_cond = getGenoOfGene_vcf(conditionlist, minInfo)
     }else if(dosageFileType == "bgen"){
+      SetSampleIdx(sampleIndex, N)
       Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist)
     }else{
       cat("WARNING: conditional analysis can only work for dosageFileType vcf, sav or bgen\n")
@@ -540,7 +541,7 @@ if(!isGroupTest){
     }
 
     if(rangestoExcludeFile != ""){
-      rangesExclude = data.table:::fread(rangestoExcludeFile, header=F)
+      rangesExclude = data.table:::fread(rangestoExcludeFile, header=F, colClasses = c("character", "numeric", "numeric"))
       ranges_to_exclude = data.frame(rangesExclude)
       colnames(ranges_to_exclude) = c("chromosome","start","end")  
     }else{
@@ -548,7 +549,7 @@ if(!isGroupTest){
     }
 
     if(rangestoIncludeFile != ""){
-      rangesInclude = data.table:::fread(rangestoIncludeFile, header=F)
+      rangesInclude = data.table:::fread(rangestoIncludeFile, header=F, colClasses = c("character", "numeric", "numeric"))
       ranges_to_include = data.frame(rangesInclude)
       colnames(ranges_to_include) = c("chromosome","start","end")
     }else{
@@ -814,11 +815,12 @@ if(FALSE){
       }else{
         geneID = strsplit(marker_group_line, split="\t")[[1]][1]
         if(dosageFileType == "vcf"){
-	  cat("DEBUG::\n")
-	  print(marker_group_line)
           Gx = getGenoOfGene_vcf(marker_group_line, minInfo)
         }else if(dosageFileType == "bgen"){
+	  cat("DEBUG::\n")
+	  print(marker_group_line)
           Gx = getGenoOfGene_bgen(bgenFile,bgenFileIndex, marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)
+	  cat("DEBUG2:\n")
         }
 
         G0 = Gx$dosages

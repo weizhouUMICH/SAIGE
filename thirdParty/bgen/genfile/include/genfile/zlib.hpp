@@ -11,8 +11,7 @@
 #include <stdint.h>
 #include <cassert>
 #include <zlib.h>
-//#include "3rd_party/zstd-1.1.0/lib/zstd.h"
-#include "lib/zstd.h"
+#include "zstd.h"
 #include "genfile/types.hpp"
 
 namespace genfile {

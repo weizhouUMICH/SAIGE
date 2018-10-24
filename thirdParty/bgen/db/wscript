@@ -1,7 +1,10 @@
+import os.path
+
 def build( bld ):
+	sources = bld.path.ant_glob( 'src/*.cpp' )
 	bld.stlib(
 		target = 'db',
-		source = bld.path.ant_glob( 'src/*.cpp' ),
+		source = sources,
 		includes='./include',
 		cxxflags = [],
 		use = 'boost sqlite3',

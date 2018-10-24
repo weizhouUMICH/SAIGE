@@ -119,7 +119,8 @@ namespace genfile {
 		db::Connection::UniquePtr SqliteIndexQuery::open_connection( std::string const& filename ) const {
 			db::Connection::UniquePtr result ;
 			try {
-				result = db::Connection::create( filename, "r" ) ;
+				result = db::Connection::create( "file:" + filename + "?nolock=1", "r" ) ;
+				//result = db::Connection::create( filename, "r" ) ;
 			} catch( db::ConnectionError const& e ) {
 				throw std::invalid_argument( "Could not open the index file \"" + filename + "\"" ) ;
 			}

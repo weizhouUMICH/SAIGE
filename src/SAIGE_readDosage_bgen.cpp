@@ -158,8 +158,11 @@ int setgenoTest_bgenDosage(std::string & filename,
 
 
      if(isQuery){
+	std::cout << "TEST " << ids_to_include.size() << std::endl;
         genoToTest_bgenDosage = View::create( filename ) ;
+	std::cout << "TEST 1 OK" << std::endl;
 	IndexQuery::UniquePtr query = IndexQuery::create( index_filename ) ;
+	std::cout << "TEST2 " << ids_to_include.size() << std::endl;
 
 	std::cout << "ranges_to_include.nrow() " << ranges_to_include.nrow() << std::endl;
 	std::cout << "ranges_to_exclude.nrow() " << ranges_to_exclude.nrow() << std::endl;
@@ -327,6 +330,7 @@ Rcpp::List getDosage_inner_bgen_withquery(){
                 Named("chromosome") = chromosome,
                 Named("position") = position,
                 Named("rsid") = rsid,
+                Named("SNPID") = SNPID,
         //        Named("number_of_alleles") = number_of_allele,
                 Named("allele0") = alleles[0],
                 Named("allele1") = alleles[1],
@@ -447,6 +451,7 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
 	sum_eij_sub += eij;
       }
 
+    //std::cout << "i: " <<  i << std::endl;
     }
 
 
@@ -544,6 +549,7 @@ Rcpp::List getDosage_inner_bgen_withquery_new(){
                 Named("chromosome") = chromosome,
                 Named("position") = position,
                 Named("rsid") = rsid,
+                Named("SNPID") = SNPID,
         //        Named("number_of_alleles") = number_of_allele,
                 Named("allele0") = alleles[0],
                 Named("allele1") = alleles[1],
@@ -640,6 +646,7 @@ Rcpp::List getDosage_inner_bgen_noquery(){
                 Named("chromosome") = chromosome,
                 Named("position") = position,
                 Named("rsid") = RSID,
+		Named("SNPID") = SNPID,
         //        Named("number_of_alleles") = number_of_allele,
                 Named("allele0") = first_allele,
                 Named("allele1") = second_allele,
