@@ -29,6 +29,10 @@ getSubMarkerNum <- function() {
     .Call('_SAIGE_getSubMarkerNum', PACKAGE = 'SAIGE')
 }
 
+getNnomissingOut <- function() {
+    .Call('_SAIGE_getNnomissingOut', PACKAGE = 'SAIGE')
+}
+
 Get_MultiMarkersBySample_StdGeno_Mat <- function() {
     invisible(.Call('_SAIGE_Get_MultiMarkersBySample_StdGeno_Mat', PACKAGE = 'SAIGE'))
 }
@@ -233,8 +237,8 @@ innerProduct <- function(x, y) {
     .Call('_SAIGE_innerProduct', PACKAGE = 'SAIGE', x, y)
 }
 
-refineKin <- function(relatednessCutoff, wVec, tauVec) {
-    .Call('_SAIGE_refineKin', PACKAGE = 'SAIGE', relatednessCutoff, wVec, tauVec)
+refineKin <- function(relatednessCutoff) {
+    .Call('_SAIGE_refineKin', PACKAGE = 'SAIGE', relatednessCutoff)
 }
 
 shortenList <- function(iMat, kinValueVecTemp, relatednessCutoff, wVec, tauVec) {

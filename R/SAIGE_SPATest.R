@@ -27,7 +27,7 @@ options(stringsAsFactors=F, digits=4)
 #' @param sampleFile character. Path to the file that contains one column for IDs of samples in the dosage, vcf, sav, or bgen file with NO header
 #' @param GMMATmodelFile character. Path to the input file containing the glmm model, which is output from previous step. Will be used by load()
 #' @param varianceRatioFile character. Path to the input file containing the variance ratio, which is output from the previous step
-#' @param Cutoff by default = 2 (SPA test would be used when p value < 0.05 under the normal approximation)
+#' @param SPAcutoff by default = 2 (SPA test would be used when p value < 0.05 under the normal approximation)
 #' @param IsSparse logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE 
 #' @param numLinesOutput numeric. Output results for how many marker each time.    
 #' @param SAIGEOutputFile character. Path to the output file containing the SPAGMMAT test results
@@ -63,7 +63,7 @@ SPAGMMATtest = function(dosageFile = "",
         	 minInfo = 0,
                  GMMATmodelFile = "", 
                  varianceRatioFile = "", 
-                 Cutoff=2, 
+                 SPAcutoff=2, 
                  SAIGEOutputFile = "",
 		 numLinesOutput = 10000, 
 		 IsSparse=TRUE,
@@ -95,23 +95,6 @@ SPAGMMATtest = function(dosageFile = "",
   }
 
 
- ####check and read files
- #sparseSigmaFile
-# cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
-#  if(sparseSigmaFile == ""){
-#    sparseSigma = NULL
-#  }else{
-#    cat("sparse kinship matrix is going to be used\n")
-#    if(!file.exists(sparseSigmaFile)){
-#      stop("ERROR! sparseSigmaFile ", sparseSigmaFile, " does not exsit\n")
-#    }else{
-#      sparseSigma = Matrix:::readMM(sparseSigmaFile)
-# cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
-#    }
-#  }
-
-
-  #output file
   if(file.exists(SAIGEOutputFile)){file.remove(SAIGEOutputFile)}
 
   if(!file.exists(SAIGEOutputFile)){
@@ -152,7 +135,8 @@ SPAGMMATtest = function(dosageFile = "",
   }else{
     varRatioData = data.frame(data.table:::fread(varianceRatioFile, header=F, stringsAsFactors=FALSE))
     if(nrow(varRatioData) == 1){
-      ratioVec = rep(varRatioData[1,1],6)
+      #ratioVec = rep(varRatioData[1,1],6)
+      ratioVec = varRatioData[1,1]
     }else{
       ratioVec = varRatioData[,1]
     }
@@ -341,8 +325,10 @@ if(traitType == "binary"){
     write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
   }
 
-  if(Cutoff < 10^-2){
+  if(SPAcutoff < 10^-2){
     Cutoff=10^-2
+  }else{
+    Cutoff = SPAcutoff
   }
 
   y = obj.glm.null$y
@@ -449,8 +435,12 @@ if(isCondition){
     if(AF > 0.5){
       MAF = 1-AF
       MAC = 2*N - MAC
+      #G0_minor = 2-G0
     }
-    varRatio = getvarRatio(MAC, ratioVec)
+    #varRatio = getvarRatio(MAC, ratioVec)
+
+    #getVarRatio = function(G, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec){
+    varRatio = getVarRatio(G0, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
 
     rowHeader = paste0("condMarker",i)
 
@@ -481,9 +471,10 @@ if(isCondition){
   covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
 
    
-  MACvec_indVec_cond = getCateVarRatio_indVec(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
+  #MACvec_indVec_cond = getCateVarRatio_indVec(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
+  #GratioMatrix_cond = getGratioMatrix(MACvec_indVec_cond, ratioVec)
+  GratioMatrix_cond = getVarRatio(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
 
-  GratioMatrix_cond = getGratioMatrix(MACvec_indVec_cond, ratioVec)
 
  print("covMsub")
  print(covMsub)
@@ -641,7 +632,8 @@ if(MAF >= testMinMAF & markerInfo >= minInfo){
    numPassMarker = numPassMarker + 1
 
 
-    varRatio = getvarRatio(MAC, ratioVec)
+    varRatio = getVarRatio(G0, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
+    #varRatio = getvarRatio(MAC, ratioVec)
 
     if(indChromCheck){
       CHR = as.character(CHR)
@@ -699,8 +691,11 @@ if(FALSE){
       print(Gcorr)
 }
 
-      MACvec_indVec_Gall = getCateVarRatio_indVec(Gall, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
-      GratioMatrixall = getGratioMatrix(MACvec_indVec_Gall, ratioVec)
+      #MACvec_indVec_Gall = getCateVarRatio_indVec(Gall, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
+      #GratioMatrixall = getGratioMatrix(MACvec_indVec_Gall, ratioVec)
+
+
+	GratioMatrixall = getVarRatio(Gall, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)	
 	
 
       if(AF > 0.5){
@@ -853,7 +848,8 @@ if(FALSE){
 			AC = sum(G0_single)
 			AF = AC/(2*length(G0_single))
 			MAC = min(AC, 2*length(G0_single)-AC)
-			varRatio = getvarRatio(MAC, ratioVec)
+			varRatio = getVarRatio(G0_single, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
+			#varRatio = getvarRatio(MAC, ratioVec)
 			varRatio = varRatio * singleGClambda			
 		      	out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma)
 			OUT_single = rbind(OUT_single, c((Gx$markerIDs)[nc], AC, (Gx$markerAFs)[nc], N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
@@ -1363,9 +1359,6 @@ scoreTest_SAIGE_quantitativeTrait_sparseSigma=function(G0, obj.noK, AC, AF, y, m
 if(maf < 0.05){
 #  cat("HERE2a\n")
     idx_no0<-which(G0>0)
-    #cat("length(idx_no0): ", length(idx_no0), "\n")
-    #cat("maf: ", maf, "\n")
-#    g1<-G0[idx_no0]/sqrt(AC2)
     g1<-G0[idx_no0]
     A1<-obj.noK$XVX_inv_XV[idx_no0,]
     X1<-obj.noK$X1[idx_no0,]
@@ -1428,7 +1421,6 @@ if(!is.null(sparseSigma)){
 #  print(solve(sparseSigma))
   var2 = as.matrix(t(g) %*% pcginvSigma) 
 #  cat("var2 is ", var2, "\n")
-
   var1 = var2 * varRatio 
 
 }
@@ -1499,8 +1491,6 @@ if(var1 < 1*10^-5){
   }else{
     out1 = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2)
   }
-
-
   return(out1)
 }
 

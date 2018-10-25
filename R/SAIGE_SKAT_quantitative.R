@@ -1483,4 +1483,56 @@ getCateVarRatio_indVec = function(G, cateVarRatioMinMACVecExclude, cateVarRatioM
         return(MACvec_indVec)
 }
 
+###
+getVarRatio = function(G, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec){
+  if(length(ratioVec) == 1 & ncol(as.matrix(G)) == 1){
+    return(ratioVec[1])
+  }else{
+
+        if(ncol(G) > 1){
+                MACvector = colSums(G)
+
+        }else{
+                MACvector = NULL
+                MACvector = c(MACvector, sum(as.vector(G[,1])) )
+        }
+
+        MACvector[which(MACvector > nrow(G))] = 2*nrow(G) - MACvector[which(MACvector > nrow(G))]
+
+        #cat("MACvector: ", MACvector, "\n")
+        #print(length(MACvector))
+        MACvec_indVec = rep(0, length(MACvector))
+        #cat("here1 MACvec_indVec: ", MACvec_indVec, "\n")
+        #cat("cateVarRatioMinMACVecExclude: ", cateVarRatioMinMACVecExclude, "\n")
+        #cat("cateVarRatioMaxMACVecInclude: ", cateVarRatioMaxMACVecInclude, "\n")
+        numCate = length(cateVarRatioMinMACVecExclude)
+#       cat("numCate: ", numCate, "\n")
+#       cat("MACvector: ", MACvector, "\n")
+        for(i in 1:(numCate-1)){
+                MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
+                if(length(MACvecIndex) > 0){
+                        MACvec_indVec[MACvecIndex] = i
+                }
+
+        }
+#       cat("here2 MACvec_indVec: ", MACvec_indVec, "\n")
+#       cat("here2 length(cateVarRatioMaxMACVecInclude): ", length(cateVarRatioMaxMACVecInclude), "\n")
+
+        if(length(cateVarRatioMaxMACVecInclude) == (numCate-1)){
+                MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[numCate])
+        }else{
+                MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[numCate] & MACvector <= cateVarRatioMaxMACVecInclude[numCate])
+        }
+
+        if(length(MACvecIndex) > 0){
+                MACvec_indVec[MACvecIndex] = numCate
+        }
+#       cat("here3 MACvec_indVec: ", MACvec_indVec, "\n")
+
+
+	GratioMat = getGratioMatrix(MACvec_indVec, ratioVec)
+        #return(MACvec_indVec)
+        return(GratioMat)
+  }
+}
 

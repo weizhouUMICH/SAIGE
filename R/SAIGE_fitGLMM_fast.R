@@ -549,23 +549,17 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
 #' @param tauInit vector of numbers. e.g. c(1,1), Unitial values for tau. For binary traits, the first element will be always be set to 1. If the tauInit is not specified, the second element will be 0.5 for binary traits.  
 #' @param LOCO logical. Whether to apply the leave-one-chromosome-out (LOCO) option. 
 #' @param traceCVcutoff numeric. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun. By default, 0.0025
-#' @param ratioCVcutoff numeric. The threshold for coefficient of variantion (CV) for the variance ratio estimate. If ratioCV > ratioCVcutoff. numMarkers will be increased by 10. 
+#' @param ratioCVcutoff numeric. The threshold for coefficient of variantion (CV) for the variance ratio estimate. If ratioCV > ratioCVcutoff. numMarkers will be increased by 10. By default, 0.001 
 #' @param outputPrefix character. Path to the output files with prefix.
 #' @param IsSparseKin logical. Whether to exploit the sparsity of GRM to estimate the variance ratio. By default, TRUE
 #' @param sparseSigmaFile character. Path to the pre-calculated sparse GRM file. If not specified and  IsSparseKin=TRUE, sparse GRM will be computed
 #' @param sparseSigmaSampleIDFile character. Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to the order of samples in the sparse GRM. 
-#' @param numRandomMarkerforSparseKin integer. number of randomly selected markers (MAF >= 1%) to be used to identify related samples for sparse GRM
-#' @param 
-#' @param isCateVarianceRatio logical. Whether to estimate variance ratio based on different MAC categories. If yes, six categories will be used MAC = 1, 2, 3, 4, 5, >5. Currently, if isCateVarianceRatio=TRUE, then LOCO=FALSE 
-#' @param IsSparseKin logical. Whether to exploit the sparsity of GRM to estimate the variance ratio. By default, TRUE
-#' @param numRandomMarkerforSparseKin integer (>0). Number of markers to be used for first estimating the relatedness between each sample pair if IsSparseKin is TRUE. By default, 500
+#' @param numRandomMarkerforSparseKin integer. number of randomly selected markers (MAF >= 1%) to be used to identify related samples for sparse GRM. By default, 500
+#' @param isCateVarianceRatio logical. Whether to estimate variance ratio based on different MAC categories. If yes, variance ratio will be estiamted for multiple MAC categories corresponding to cateVarRatioMinMACVecExclude and cateVarRatioMaxMACVecInclude. Currently, if isCateVarianceRatio=TRUE, then LOCO=FALSE. By default=FALSE 
 #' @param relatednessCutoff float. The threshold to treat two samples as unrelated if IsSparseKin is TRUE. By default, 0.125
 #' @param cateVarRatioIndexVec vector of integer 0 or 1. The length of cateVarRatioIndexVec is the number of MAC categories for variance ratio estimation. 1 indicates variance ratio in the MAC category is to be estimated, otherwise 0. By default, c(1,1,1,1,1,1)
 #' @param cateVarRatioMinMACVecExclude vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. By default, c(0.5,1.5,2.5,3.5,4.5,5.5)
 #' @param cateVarRatioMaxMACVecInclude vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. By default, c(1.5,2.5,3.5,4.5,5.5)
-#' @param qr_sparse logical. Whether use qr to inverse sparse GRM. By default, FALSE
-#' @param Cholesky_sparse logical. Whether use Cholesky to inverse sparse GRM. By default, FALSE
-#' @param pcg_sparse logical. Whether use pcg to inverse sparse GRM. By default, TRUE
 #' @param isCovariateTransform logical. Whether use qr transformation on non-genetic covariates. By default, TRUE
 #' @param isDiagofKinSetAsOne logical. Whether to set the diagnal elements in GRM to be 1. By default, FALSE
 #' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio values, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
@@ -601,9 +595,6 @@ fitNULLGLMM = function(plinkFile = "",
 		cateVarRatioIndexVec = c(1,1,1,1,1,1),
 		cateVarRatioMinMACVecExclude = c(0.5,1.5,2.5,3.5,4.5,5.5),
 		cateVarRatioMaxMACVecInclude = c(1.5,2.5,3.5,4.5,5.5),
-		qr_sparse = FALSE,
-		Cholesky_sparse = FALSE,
-		pcg_sparse = TRUE,
 		isCovariateTransform = TRUE,
 		isDiagofKinSetAsOne = FALSE){
 
@@ -816,10 +807,7 @@ fitNULLGLMM = function(plinkFile = "",
                                                     sparseSigmaSampleIDFile = sparseSigmaSampleIDFile,
                                                     numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
                                                     relatednessCutoff = relatednessCutoff,
-                                                    nThreads = nThreads,
-                                                    qr_sparse = qr_sparse,
-                                                    Cholesky_sparse = Cholesky_sparse,
-                                                    pcg_sparse = pcg_sparse)
+                                                    nThreads = nThreads)
     closeGenoFile_plink()
 
   }else if(traitType == "quantitative"){
@@ -866,7 +854,7 @@ fitNULLGLMM = function(plinkFile = "",
     scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait(obj.glmm.null = modglmm,
                                                     obj.glm.null = fit0,
                                                     obj.noK = obj.noK,
-                                                    Cutoff = Cutoff,
+                                                    Cutoff = SPAcutoff,
                                                     maxiterPCG = maxiterPCG,
                                                     tolPCG = tolPCG,
                                                     numMarkers = numMarkers,
@@ -883,11 +871,7 @@ fitNULLGLMM = function(plinkFile = "",
                 				    sparseSigmaSampleIDFile = sparseSigmaSampleIDFile,	
 						    numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
 						    relatednessCutoff = relatednessCutoff,
-						    nThreads = nThreads,
-						    qr_sparse = qr_sparse,
-                				    Cholesky_sparse = Cholesky_sparse,
-                				    pcg_sparse = pcg_sparse
-)
+						    nThreads = nThreads)
     closeGenoFile_plink()
   }
 }
@@ -914,10 +898,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
                                                     sparseSigmaSampleIDFile,
                                                     numRandomMarkerforSparseKin,
                                                     relatednessCutoff,
-                                                    nThreads,
-                                                    qr_sparse,
-                                                    Cholesky_sparse,
-                                                    pcg_sparse){
+                                                    nThreads){
 
 
   if(file.exists(testOut)){file.remove(testOut)}
@@ -1014,144 +995,18 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
   }# if(!isCateVarianceRatio){
 
   freqVec = getAlleleFreqVec()
-  sparseSigmaOutFileFlag = FALSE
-  qrsparseSigmaOutFileFlag = FALSE
   #####sparse Kin
 
   if(IsSparseKin){
-    cat("sparse GRM will be used\n")
-
-    qrsparseSigmaOutFile = paste0(varRatioOutFile, ".qr.sparseSigma.rda")
-    sparseSigmaOutFile = paste0(varRatioOutFile, ".sparseSigma.mtx")
-    sparseSigmaOutFile_orig = paste0(varRatioOutFile, ".sparseSigma_orig.mtx")
-
-    if(pcg_sparse & (!file.exists(sparseSigmaOutFile))){
-      sparseSigmaOutFileFlag = TRUE
-    }
-
-    if(!(pcg_sparse)){
-      if(!file.exists(qrsparseSigmaOutFile)){
-        qrsparseSigmaOutFileFlag = TRUE
-        if(!file.exists(sparseSigmaOutFile)){
-          sparseSigmaOutFileFlag = TRUE
-        }
-      }
-    }
-
-    if(sparseSigmaOutFileFlag){
-      if(sparseSigmaFile == ""){
-
-
-        MAFindex = which(freqVec >= 0.01 & freqVec <= 0.99)
-        cat(numRandomMarkerforSparseKin, "genetic markers are randomly selected to decide which samples are related\n")
-        if(length(MAFindex) < numRandomMarkerforSparseKin){
-          stop("ERROR! not enough genetic markers with MAC >= 1% to detect which samples are related\n","Try include at least ", numRandomMarkerforSparseKin, " genetic markers with MAC >= 1% in the plink file\n")
-        }
-
-        markerIndexforSparseM = sample(MAFindex, size = numRandomMarkerforSparseKin, replace=FALSE)
-
-#      sparseSigmaOutFile_orig_markerIndex = paste0(sparseSigmaOutFile_orig, "_markerIndex.txt")
-#      write.table(markerIndexforSparseM, sparseSigmaOutFile_orig_markerIndex, col.names=F, row.names=F, quote=F)
-
-        cat("Start detecting related samples for the sparse GRM\n")
-        ta = proc.time()
-        setSubMarkerIndex(markerIndexforSparseM -1)
-        tb = proc.time()
-        cat("tb-ta\n")
-        print(tb-ta)
-
-
-        cat("Start creating sparse GRM\n")
-        ta = proc.time()
-    #sparseMList = createSparseKin(markerIndexforSparseM -1, relatednessCutoff, W, tauVecNew)
-        sparseMList = createSparseKinParallel(nblocks = nThreads, ncore = nThreads, relatednessCutoff, W, tauVecNew)
-#    sparseSigma = createSparseKin(markerIndexforSparseM -1, relatednessCutoff, W, tauVecNew)
-#    a = sparse_row_idx_mult_v2(sparseSigma)
-#    cat("a: ", a, "\n")
-        tb = proc.time()
-        cat("tb-ta\n")
-        print(tb-ta)
-
-
-
-        cat("length(sparseMList$iIndex): ", length(sparseMList$iIndex), "\n")
-        print(sparseMList$iIndex[1:102])
-        cat("length(sparseMList$jIndex): ", length(sparseMList$jIndex), "\n")
-        print(sparseMList$jIndex[1:102])
-        cat("length(sparseMList$kinValue): ", length(sparseMList$kinValue), "\n")
-        print(sparseMList$kinValue[1:102])
-        sparseSigma = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE)
-#      sparseSigma_orig = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue_orig), symmetric = TRUE)
-#    sparseSigma = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE)
-        cat("nrow(sparseSigma): ", nrow(sparseSigma), "\n")
-        cat("ncol(sparseSigma): ", ncol(sparseSigma), "\n")
-        cat("ncol(sparseSigma): ", sum(sparseSigma != 0), "\n")
-
-        tc = proc.time()
-        cat("tc-tb\n")
-        print(tc-tb)
-
-        sparseSigmaOutFile = paste0(varRatioOutFile, ".sparseSigma.mtx")
-        cat("write sparse GRM to ", sparseSigmaOutFile ,"\n")
-        #cat("OK2", "\n")
-#      Matrix:::writeMM(sparseSigma_orig, sparseSigmaOutFile_orig)
-        Matrix:::writeMM(sparseSigma, sparseSigmaOutFile)
-        td = proc.time()
-        cat("td-tc\n")
-        print(td-tc)
-        #cat("OK3", "\n")
-     }else{ # if(sparseSigmaFile=="")
-
-       cat("sparse GRM has been specified\n")
-       cat("read in sparse GRM from ",sparseSigmaFile,"\n")
-
-       sparseSigmaLarge = Matrix:::readMM(sparseSigmaFile)
-      #cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
-       if(sparseSigmaSampleIDFile != ""){
-         if(!file.exists(sparseSigmaSampleIDFile)){
-           stop("ERROR! sparseSigmaSampleIDFile ", sparseSigmaSampleIDFile, " does not exsit\n")
-         }else{
-           sparseSigmaSampleID = data.frame(data.table:::fread(sparseSigmaSampleIDFile, header=F, stringsAsFactors=FALSE))
-           colnames(sparseSigmaSampleID) = c("sampleID")
-           sparseSigmaSampleID$IndexSigma = seq(1,nrow(sparseSigmaSampleID), by=1)
-           sampleInModel = NULL
-           sampleInModel$IID = obj.glmm.null$sampleID
-           sampleInModel = data.frame(sampleInModel)
-           sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
-           cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
-           mergeID = merge(sampleInModel, sparseSigmaSampleID, by.x="IID", by.y = "sampleID")
-
-
-           mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
-           indexIDofSigma=mergeID$IndexSigma
-           cat("Subset sparse GRM to be ", indexIDofSigma," by ", indexIDofSigma, "\n")
-           sparseSigma = sparseSigmaLarge[indexIDofSigma, indexIDofSigma]
-           rm(sparseSigmaLarge)
-        }
-      }#end of if(sparseSigmaSampleIDFile != "")
-
-    }
-
-  }else{ #if(sparseSigmaOutFileFlag){
-    cat("sparse GRM has been specified\n")
-    cat("read in sparse GRM from ",sparseSigmaOutFile,"\n")
-    sparseSigma = Matrix:::readMM(sparseSigmaOutFile)
+    sparseSigma = getSparseGRM(outputPrefix=varRatioOutFile,
+                sparseSigmaFile=sparseSigmaFile,
+                sparseSigmaSampleIDFile=sparseSigmaSampleIDFile,
+                numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
+                relatednessCutoff = relatednessCutoff,
+                W=W, tauVecNew=tauVecNew)
   }
 
-  if(qrsparseSigmaOutFileFlag){
-    if(qr_sparse){
-      qrsparseSigma = Matrix:::qr(sparseSigma)
-    }else if(Cholesky_sparse){
-      qrsparseSigma = Matrix::Cholesky(sparseSigma)
-    }
-    save(qrsparseSigma, file = qrsparseSigmaOutFile)
-  }else{
-    if(!(pcg_sparse)){
-      load(qrsparseSigmaOutFile)
-    }
-  }
 
-  }#end of if(IsSparseKin)
 
 
   Nnomissing = length(mu)
@@ -1235,29 +1090,14 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
           if(IsSparseKin){
             t1 = proc.time()
             cat("t1\n")
-            if(!pcg_sparse){
-               qrinvSigma = Matrix:::solve(qrsparseSigma, g)
-               t2 = proc.time()
-               cat("t2-t1\n")
-               print(t2-t1)
-               var2_a = t(g) %*% qrinvSigma
-            }else{
              cat("t1again\n")
 #       pcginvSigma = getPCG1ofSparseSigmaAndVector(sparseSigma, g)
 #       pcginvSigma = pcgSparse(sparseSigma, g)
              pcginvSigma = pcg(sparseSigma, g)
-        #print(class(sparseSigma))
-        #print(dim(pcginvSigma))
-        #print(class(pcginvSigma))
-        #require(Matrix)
-        #a1<-methods:::as(sparseSigma, "dsTMatrix")
-#       pcginvSigma = pcg(sparseSigma, g)
-        #pcginvSigma = pcg(a1, g)
              t2 = proc.time()
              cat("t2-t1\n")
              print(t2-t1)
              var2_a = t(g) %*% pcginvSigma
-           }
              var2 = var2_a[1,1]
         #cat("qrinvSigma: \n")
         #print(qrinvSigma)
@@ -1265,7 +1105,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
           var2 = innerProduct(mu*(1-mu), g*g)
         }
 
-      qtilde = (q-m1)/sqrt(var1) * sqrt(var2) + m1
+      var2q = innerProduct(mu*(1-mu), g*g)
+      qtilde = (q-m1)/sqrt(var1) * sqrt(var2q) + m1
 
       if(length(NAset)/length(G) < 0.5){
         out1 = SPAtest:::Saddle_Prob(q=qtilde, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
@@ -1370,10 +1211,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                                                     sparseSigmaSampleIDFile,
 						    numRandomMarkerforSparseKin,
                                                     relatednessCutoff,
-						    nThreads, 	
-						    qr_sparse,
-                                                    Cholesky_sparse,
-                                                    pcg_sparse){
+						    nThreads){	
 
 
   if(file.exists(testOut)){file.remove(testOut)}
@@ -1468,144 +1306,17 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 
   freqVec = getAlleleFreqVec()
 
-  sparseSigmaOutFileFlag = FALSE
-  qrsparseSigmaOutFileFlag = FALSE
   #####sparse Kin
 
   if(IsSparseKin){
-    cat("sparse GRM will be used\n")
-
-    qrsparseSigmaOutFile = paste0(varRatioOutFile, ".qr.sparseSigma.rda")
-    sparseSigmaOutFile = paste0(varRatioOutFile, ".sparseSigma.mtx")
-    sparseSigmaOutFile_orig = paste0(varRatioOutFile, ".sparseSigma_orig.mtx")
-
-    if(pcg_sparse & (!file.exists(sparseSigmaOutFile))){
-      sparseSigmaOutFileFlag = TRUE
-    }
-
-    if(!(pcg_sparse)){
-      if(!file.exists(qrsparseSigmaOutFile)){
-        qrsparseSigmaOutFileFlag = TRUE
-        if(!file.exists(sparseSigmaOutFile)){
-          sparseSigmaOutFileFlag = TRUE
-        }
-      }
-    }
-
-    if(sparseSigmaOutFileFlag){
-      if(sparseSigmaFile == ""){
-
-
-        MAFindex = which(freqVec >= 0.01 & freqVec <= 0.99)
-        cat(numRandomMarkerforSparseKin, "genetic markers are randomly selected to decide which samples are related\n")
-	if(length(MAFindex) < numRandomMarkerforSparseKin){
-          stop("ERROR! not enough genetic markers with MAC >= 1% to detect which samples are related\n","Try include at least ", numRandomMarkerforSparseKin, " genetic markers with MAC >= 1% in the plink file\n")
-        }
-
-        markerIndexforSparseM = sample(MAFindex, size = numRandomMarkerforSparseKin, replace=FALSE)
-       
-#      sparseSigmaOutFile_orig_markerIndex = paste0(sparseSigmaOutFile_orig, "_markerIndex.txt")
-#      write.table(markerIndexforSparseM, sparseSigmaOutFile_orig_markerIndex, col.names=F, row.names=F, quote=F)		
-
-	cat("Start detecting related samples for the sparse GRM\n")
-        ta = proc.time()
-        setSubMarkerIndex(markerIndexforSparseM -1)
-	tb = proc.time()
-        cat("tb-ta\n")
-	print(tb-ta)
-
-
-        cat("Start creating sparse GRM\n")
-        ta = proc.time()
-    #sparseMList = createSparseKin(markerIndexforSparseM -1, relatednessCutoff, W, tauVecNew)
-        sparseMList = createSparseKinParallel(nblocks = nThreads, ncore = nThreads, relatednessCutoff, W, tauVecNew)
-#    sparseSigma = createSparseKin(markerIndexforSparseM -1, relatednessCutoff, W, tauVecNew)
-#    a = sparse_row_idx_mult_v2(sparseSigma)
-#    cat("a: ", a, "\n")	
-        tb = proc.time()
-        cat("tb-ta\n")
-        print(tb-ta)
-
-
-
-        cat("length(sparseMList$iIndex): ", length(sparseMList$iIndex), "\n")
-        print(sparseMList$iIndex[1:102])	 
-        cat("length(sparseMList$jIndex): ", length(sparseMList$jIndex), "\n")
-        print(sparseMList$jIndex[1:102])	 
-        cat("length(sparseMList$kinValue): ", length(sparseMList$kinValue), "\n")
-        print(sparseMList$kinValue[1:102])	 
-        sparseSigma = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE)  
-#      sparseSigma_orig = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue_orig), symmetric = TRUE)  
-#    sparseSigma = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE) 
-        cat("nrow(sparseSigma): ", nrow(sparseSigma), "\n")	
-        cat("ncol(sparseSigma): ", ncol(sparseSigma), "\n")	
-        cat("ncol(sparseSigma): ", sum(sparseSigma != 0), "\n")	
-
-        tc = proc.time()
-        cat("tc-tb\n")
-        print(tc-tb)
-
-        sparseSigmaOutFile = paste0(varRatioOutFile, ".sparseSigma.mtx")
-        cat("write sparse GRM to ", sparseSigmaOutFile ,"\n")
-        #cat("OK2", "\n")
-#      Matrix:::writeMM(sparseSigma_orig, sparseSigmaOutFile_orig)
-        Matrix:::writeMM(sparseSigma, sparseSigmaOutFile)
-        td = proc.time()
-	cat("td-tc\n")
-	print(td-tc)
-        #cat("OK3", "\n")
-     }else{ # if(sparseSigmaFile=="")
-
-       cat("sparse GRM has been specified\n")
-       cat("read in sparse GRM from ",sparseSigmaFile,"\n")
-
-       sparseSigmaLarge = Matrix:::readMM(sparseSigmaFile)
-      #cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
-       if(sparseSigmaSampleIDFile != ""){
-         if(!file.exists(sparseSigmaSampleIDFile)){
-           stop("ERROR! sparseSigmaSampleIDFile ", sparseSigmaSampleIDFile, " does not exsit\n")
-         }else{
-           sparseSigmaSampleID = data.frame(data.table:::fread(sparseSigmaSampleIDFile, header=F, stringsAsFactors=FALSE))
-           colnames(sparseSigmaSampleID) = c("sampleID")
-           sparseSigmaSampleID$IndexSigma = seq(1,nrow(sparseSigmaSampleID), by=1)
-           sampleInModel = NULL
-    	   sampleInModel$IID = obj.glmm.null$sampleID
-           sampleInModel = data.frame(sampleInModel)
-           sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
-           cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
-	   mergeID = merge(sampleInModel, sparseSigmaSampleID, by.x="IID", by.y = "sampleID")
-	
-
-           mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
-           indexIDofSigma=mergeID$IndexSigma
-	   cat("Subset sparse GRM to be ", indexIDofSigma," by ", indexIDofSigma, "\n")
-           sparseSigma = sparseSigmaLarge[indexIDofSigma, indexIDofSigma]
-	   rm(sparseSigmaLarge)
-        }
-      }#end of if(sparseSigmaSampleIDFile != "")       
-
-    }  
-
-  }else{ #if(sparseSigmaOutFileFlag){
-    cat("sparse GRM has been specified\n")
-    cat("read in sparse GRM from ",sparseSigmaOutFile,"\n")
-    sparseSigma = Matrix:::readMM(sparseSigmaOutFile)
-  }
-	
-  if(qrsparseSigmaOutFileFlag){
-    if(qr_sparse){  
-      qrsparseSigma = Matrix:::qr(sparseSigma)
-    }else if(Cholesky_sparse){   
-      qrsparseSigma = Matrix::Cholesky(sparseSigma)
-    }
-    save(qrsparseSigma, file = qrsparseSigmaOutFile)
-  }else{
-    if(!(pcg_sparse)){
-      load(qrsparseSigmaOutFile)
-    }
+    sparseSigma = getSparseGRM(outputPrefix=varRatioOutFile,
+                sparseSigmaFile=sparseSigmaFile,
+                sparseSigmaSampleIDFile=sparseSigmaSampleIDFile,
+                numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
+                relatednessCutoff = relatednessCutoff,
+                W=W, tauVecNew=tauVecNew)
   }
 
-  }#end of if(IsSparseKin)
 
 
   Nnomissing = length(mu)
@@ -1683,14 +1394,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
           if(IsSparseKin){
 	    t1 = proc.time()
 	    cat("t1\n")
-	    if(!pcg_sparse){
-               qrinvSigma = Matrix:::solve(qrsparseSigma, g)
-	       t2 = proc.time()
-	       cat("t2-t1\n")
-    	       print(t2-t1)
-               var2_a = t(g) %*% qrinvSigma
-	    }else{
-	     cat("t1again\n")
 #	pcginvSigma = getPCG1ofSparseSigmaAndVector(sparseSigma, g)
 #	pcginvSigma = pcgSparse(sparseSigma, g)
 	     pcginvSigma = pcg(sparseSigma, g)
@@ -1705,13 +1408,12 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
              cat("t2-t1\n")
 	     print(t2-t1)
 	     var2_a = t(g) %*% pcginvSigma
-	   }
 	     var2 = var2_a[1,1]
 	#cat("qrinvSigma: \n")
 	#print(qrinvSigma)
-        }else{
-          var2 = innerProduct(g, g)
-        }
+          }else{
+             var2 = innerProduct(g, g)
+          }
 
         Tv1 = (q-m1)/tauVecNew[1]
         p.value = pchisq(Tv1^2/var1, lower.tail = FALSE, df=1)
@@ -2113,7 +1815,7 @@ refineKinPar = function(relatednessCutoff, W, tauVecNew, nblocks = 10, verbose =
 
 
 #createSparseKinParallel = function(markerIndexVec, nblocks, ncore, relatednessCutoff, W, tauVecNew){
-createSparseKinParallel = function(nblocks, ncore, relatednessCutoff, W, tauVecNew){
+createSparseKinParallel = function(nblocks, ncore, relatednessCutoff){
   #get MAT
   #MAT = Get_MultiMarkersBySample_StdGeno_Mat(markerIndexVec)  
   #MAT = Get_MultiMarkersBySample_StdGeno_Mat()  
@@ -2133,14 +1835,18 @@ createSparseKinParallel = function(nblocks, ncore, relatednessCutoff, W, tauVecN
   cat("tp1 - tp0: ", tp1-tp0, "\n")
 #  cat(indexVec)
   #sparseKinList = refineKin(indexVec-1, relatednessCutoff, W, tauVecNew)
-  sparseKinList = refineKin(relatednessCutoff, W, tauVecNew)
-  Nval = length(W)
+  sparseKinList = refineKin(relatednessCutoff)
+
+#  sparseKinList$kinValue = sparseKinList$kinValue * tauVecNew[2]
+
+  Nval = getNnomissingOut()
 	
   sparseKinList$iIndex = c(sparseKinList$iIndex, seq(1:Nval))
   sparseKinList$jIndex = c(sparseKinList$jIndex, seq(1:Nval))
-  diagKin = getDiagOfSigma(W, tauVecNew)
+#  diagKin = getDiagOfSigma(W, tauVecNew)
+  diagKin = rep(1, Nval)
   sparseKinList$kinValue = c(sparseKinList$kinValue, diagKin)
-  rm(diagKin)
+#  rm(diagKin)
 
   #sparseKinList = refineKin(indexVec, relatednessCutoff, W, tauVecNew)
   #GRMvec = refineKinPar(indexVec, relatednessCutoff = relatednessCutoff, W = W, tauVecNew = tauVecNew, nblocks = nblocks, verbose = TRUE, ncore= nblocks) 
@@ -2148,5 +1854,106 @@ createSparseKinParallel = function(nblocks, ncore, relatednessCutoff, W, tauVecN
  tp2 = proc.time()
   cat("tp2 - tp1: ", tp2-tp1, "\n")
   return(sparseKinList)
+}
+
+
+
+getSparseGRM = function(outputPrefix="",
+                sparseSigmaFile="",
+                sparseSigmaSampleIDFile="",
+                numRandomMarkerforSparseKin = 500,
+                relatednessCutoff = 0.125,
+                W, tauVecNew){
+
+  if(sparseSigmaFile == ""){
+    cat("sparse GRM will be used\n")
+    sparseGRMFile = paste0(outputPrefix, ".sparseGRM.mtx")
+    freqVec = getAlleleFreqVec()
+    MAFindex = which(freqVec >= 0.01 & freqVec <= 0.99)
+    cat(numRandomMarkerforSparseKin, "genetic markers are randomly selected to decide which samples are related\n")
+    if(length(MAFindex) < numRandomMarkerforSparseKin){
+      stop("ERROR! not enough genetic markers with MAC >= 1% to detect which samples are related\n","Try include at least ", numRandomMarkerforSparseKin, " genetic markers with MAC >= 1% in the plink file\n")
+    }
+
+    markerIndexforSparseM = sample(MAFindex, size = numRandomMarkerforSparseKin, replace=FALSE)
+
+    cat("Start detecting related samples for the sparse GRM\n")
+    ta = proc.time()
+    setSubMarkerIndex(markerIndexforSparseM -1)
+    tb = proc.time()
+    cat("tb-ta\n")
+    print(tb-ta)
+
+
+    cat("Start creating sparse GRM\n")
+    ta = proc.time()
+    sparseMList = createSparseKinParallel(nblocks = nThreads, ncore = nThreads, relatednessCutoff)
+    tb = proc.time()
+    cat("tb-ta\n")
+    print(tb-ta)
+
+
+
+    cat("length(sparseMList$iIndex): ", length(sparseMList$iIndex), "\n")
+    print(sparseMList$iIndex[1:102])
+    cat("length(sparseMList$jIndex): ", length(sparseMList$jIndex), "\n")
+    print(sparseMList$jIndex[1:102])
+    cat("length(sparseMList$kinValue): ", length(sparseMList$kinValue), "\n")
+    print(sparseMList$kinValue[1:102])
+    sparseSigma = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE)
+    cat("nrow(sparseSigma): ", nrow(sparseSigma), "\n")
+    cat("ncol(sparseSigma): ", ncol(sparseSigma), "\n")
+    cat("ncol(sparseSigma): ", sum(sparseSigma != 0), "\n")
+
+    tc = proc.time()
+    cat("tc-tb\n")
+    print(tc-tb)
+
+    cat("write sparse GRM to ", sparseGRMFile ,"\n")
+    Matrix:::writeMM(sparseSigma, sparseGRMFile)
+    td = proc.time()
+    cat("td-tc\n")
+    print(td-tc)
+    #cat("OK3", "\n")
+  }else{ # if(sparseSigmaFile=="")
+
+       cat("sparse GRM has been specified\n")
+       cat("read in sparse GRM from ",sparseSigmaFile,"\n")
+
+    sparseSigmaLarge = Matrix:::readMM(sparseSigmaFile)
+    #cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
+    if(sparseSigmaSampleIDFile != ""){
+      if(!file.exists(sparseSigmaSampleIDFile)){
+        stop("ERROR! sparseSigmaSampleIDFile ", sparseSigmaSampleIDFile, " does not exsit\n")
+      }else{
+        sparseSigmaSampleID = data.frame(data.table:::fread(sparseSigmaSampleIDFile, header=F, stringsAsFactors=FALSE))
+        colnames(sparseSigmaSampleID) = c("sampleID")
+        sparseSigmaSampleID$IndexSigma = seq(1,nrow(sparseSigmaSampleID), by=1)
+        sampleInModel = NULL
+        sampleInModel$IID = obj.glmm.null$sampleID
+        sampleInModel = data.frame(sampleInModel)
+        sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
+        cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
+        mergeID = merge(sampleInModel, sparseSigmaSampleID, by.x="IID", by.y = "sampleID")
+        mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
+        indexIDofSigma=mergeID$IndexSigma
+        cat("Subset sparse GRM to be ", indexIDofSigma," by ", indexIDofSigma, "\n")
+        sparseSigma = sparseSigmaLarge[indexIDofSigma, indexIDofSigma]
+        rm(sparseSigmaLarge)
+      }
+    }else{#end of if(sparseSigmaSampleIDFile != "")
+      stop("ERROR! sparseSigmaSampleIDFile is not specified\n")
+    }
+
+  cat("sparse GRM has been specified\n")
+  cat("read in sparse GRM from ",sparseSigmaOutFile,"\n")
+  sparseSigma = Matrix:::readMM(sparseSigmaOutFile)
+ }
+
+  Nval = length(W)
+
+  sparseSigma = sparseSigma * tauVecNew[2]
+  diag(sparseSigma) = getDiagOfSigma(W, tauVecNew)
+  return(sparseSigma)
 }
 
