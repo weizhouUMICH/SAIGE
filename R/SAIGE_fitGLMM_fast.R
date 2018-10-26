@@ -1865,9 +1865,9 @@ getSparseGRM = function(outputPrefix="",
                 relatednessCutoff = 0.125,
                 W, tauVecNew){
 
+  cat("sparse GRM will be used\n")
+  sparseGRMFile = paste0(outputPrefix, ".sparseGRM.mtx")
   if(sparseSigmaFile == ""){
-    cat("sparse GRM will be used\n")
-    sparseGRMFile = paste0(outputPrefix, ".sparseGRM.mtx")
     freqVec = getAlleleFreqVec()
     MAFindex = which(freqVec >= 0.01 & freqVec <= 0.99)
     cat(numRandomMarkerforSparseKin, "genetic markers are randomly selected to decide which samples are related\n")
@@ -1909,11 +1909,11 @@ getSparseGRM = function(outputPrefix="",
     cat("tc-tb\n")
     print(tc-tb)
 
-    cat("write sparse GRM to ", sparseGRMFile ,"\n")
-    Matrix:::writeMM(sparseSigma, sparseGRMFile)
-    td = proc.time()
-    cat("td-tc\n")
-    print(td-tc)
+#    cat("write sparse GRM to ", sparseGRMFile ,"\n")
+#    Matrix:::writeMM(sparseSigma, sparseGRMFile)
+#    td = proc.time()
+#    cat("td-tc\n")
+#    print(td-tc)
     #cat("OK3", "\n")
   }else{ # if(sparseSigmaFile=="")
 
@@ -1954,6 +1954,14 @@ getSparseGRM = function(outputPrefix="",
 
   sparseSigma = sparseSigma * tauVecNew[2]
   diag(sparseSigma) = getDiagOfSigma(W, tauVecNew)
+
+  cat("write sparse GRM to ", sparseGRMFile ,"\n")
+  Matrix:::writeMM(sparseSigma, sparseGRMFile)
+#    td = proc.time()
+#    cat("td-tc\n")
+#    print(td-tc)
+
+
   return(sparseSigma)
 }
 

@@ -1488,7 +1488,9 @@ getVarRatio = function(G, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInc
   if(length(ratioVec) == 1 & ncol(as.matrix(G)) == 1){
     return(ratioVec[1])
   }else{
-
+	if(length(ratioVec) == 1){
+	  ratioVec = c(ratioVec, rep(ratioVec[1], ncol(as.matrix(G))))
+	}
         if(ncol(G) > 1){
                 MACvector = colSums(G)
 

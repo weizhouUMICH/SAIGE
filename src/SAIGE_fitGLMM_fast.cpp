@@ -818,8 +818,10 @@ void initKinValueVecFinal(int ni){
         std::fill(geno.kinValueVecFinal.begin(), geno.kinValueVecFinal.end(), 0);
 };
 
-
-
+// [[Rcpp::export]]
+int getNnomissingOut(){
+	return(geno.getNnomissing());
+}
 
 
 
@@ -2760,7 +2762,7 @@ double innerProduct(NumericVector x, NumericVector y) {
 //Rcpp::List refineKin(arma::imat &iMat, float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){
 
 // [[Rcpp::export]]
-Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){
+Rcpp::List refineKin(float relatednessCutoff){
         std::vector<unsigned int>     iIndexVec2;
         std::vector<unsigned int>     jIndexVec2;
 //	std::vector<float>     kinValueVec;
@@ -2845,29 +2847,12 @@ Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tau
         //      std::cout << "kinValueVec[j]: " << kinValueVec[j] << std::endl;
 			//kinValueVec_orig.push_back((geno.kinValueVecFinal)[j]); //for test	
                         //(geno.kinValueVecFinal)[j] = tauVec(1)*(geno.kinValueVecFinal)[j];
-                        (geno.kinValueVecFinal)[j] = tauVec(1)*(geno.kinValueVecFinal)[j] + tauVec(0)/wVec;
+                        //(geno.kinValueVecFinal)[j] = tauVec(1)*(geno.kinValueVecFinal)[j];
  				 a1 = (geno.indiceVec)[j].first + 1;
 				 a2 = (geno.indiceVec)[j].second + 1;
 				 iIndexVec2.push_back(a1);
 				 jIndexVec2.push_back(a2);
-                       //iIndexVec2.push_back(iMat(j,0)+1);
-                        //iIndexVec2.push_back(iIndexVec[j]+1);
-                       // jIndexVec2.push_back(iMat(j,1)+1);
-                        //jIndexVec2.push_back(jIndexVec[j]+1);
-        //                if(iIndexVec[j] == jIndexVec[j]){
-        //                        kinValueVec[j] = kinValueVec[j] + tauVec(0)/(wVec(iIndexVec[j]));
-        //                }
 
-	//		if(iMat(j,0) == iMat(j,1)){
-
-/*
-
-			if(a1 == a2){
-				//(geno.kinValueVecFinal)[j] = (geno.kinValueVecFinal)[j] + tauVec(0)/(wVec(iMat(j,0)));
-				(geno.kinValueVecFinal)[j] = (geno.kinValueVecFinal)[j] + tauVec(0)/(wVec(a1-1));
-			}
-
-*/
 
 
                         kinValueVec2.push_back((geno.kinValueVecFinal)[j]);

@@ -1,18 +1,32 @@
 #step 1: fit the NULL GLMM
+
+
+#For single-variant association tests. Not use sparse GRM and not use categorical variance ratios
 Rscript step1_fitNULLGLMM.R \
 	--plinkFile=./input/plinkforGRM_1000samples_10kMarkers \
 	--phenoFile=./input/pheno_1000samples.txt \
 	--phenoCol=y \
 	--covarColList=x1,x2 \
 	--sampleIDColinphenoFile=IID \
-	--traitType=quantitative \
-	--outputPrefix=./output/example \
+	--traitType=quantitative	\
+	--invNormalize=TRUE	\
+	--outputPrefix=./output/exampletest \
 	--nThreads=4 \
-	--LOCO=FALSE \
-	--IsSparseKin=TRUE	\
-	--isCateVarianceRatio=FALSE
+	--LOCO=FALSE
+
+Rscript step1_fitNULLGLMM.R \
+        --plinkFile=./input/plinkforGRM_1000samples_10kMarkers \
+        --phenoFile=./input/pheno_1000samples.txt \
+        --phenoCol=y \
+        --covarColList=x1,x2 \
+        --sampleIDColinphenoFile=IID \
+        --traitType=binary        \
+        --outputPrefix=./output/example_binarytest \
+        --nThreads=4 \
+        --LOCO=FALSE
 
 
+#conditional analysis in step 1
 Rscript step1_fitNULLGLMM.R \
         --plinkFile=./input/plinkforGRM_1000samples_10kMarkers \
         --phenoFile=./input/pheno_1000samples.txt_withdosages.txt \
@@ -24,6 +38,55 @@ Rscript step1_fitNULLGLMM.R \
         --nThreads=4 \
         --LOCO=FALSE
 
+#conditional analysis in step 2
+#        --vcfFile=./input/genotype_10markers.vcf.gz \
+ #       --vcfFileIndex=./input/genotype_10markers.vcf.gz.tbi \
+#       --savFile=/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/extdata/input/dosage_10markers.sav      \
+#        --savFileIndex=./input/dosage_10markers.sav.s1r \
+
+
+Rscript step2_SPAtests.R \
+	--vcfFile=./input/genotype_10markers.vcf.gz \
+        --vcfFileIndex=./input/genotype_10markers.vcf.gz.tbi \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output/example_binarytest.rda \
+        --varianceRatioFile=./output/example_binarytest.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binarytest.SAIGE.vcf.genotype.txt_cond \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --condition=1:4_1/2
+
+
+
+#old package
+Rscript step1_fitNULLGLMM_0.29.4.R.3.5.1.R	\
+	--plinkFile=./input/plinkforGRM_1000samples_10kMarkers \
+        --phenoFile=./input/pheno_1000samples.txt \
+        --phenoCol=y \
+        --covarColList=x1,x2 \
+        --sampleIDColinphenoFile=IID \
+        --traitType=quantitative\
+        --outputPrefix=./output/exampletest_0.29.4.R.3.5.1 \
+        --nThreads=4 \
+        --LOCO=FALSE
+
+#old package, conditional analysis in step 1
+Rscript step1_fitNULLGLMM_0.29.4.R.3.5.1.R      \
+        --plinkFile=./input/plinkforGRM_1000samples_10kMarkers \
+        --phenoFile=./input/pheno_1000samples.txt_withdosages.txt \
+        --phenoCol=y \
+        --covarColList=x1,x2,a1 \
+        --sampleIDColinphenoFile=IID \
+        --traitType=binary\
+        --outputPrefix=./output/exampletest_0.29.4.R.3.5.1_cond \
+        --nThreads=4 \
+        --LOCO=FALSE
+
+	
 
 Rscript step2_SPAtests.R \
         --vcfFile=./input/dosage_10markers.vcf.gz \

@@ -78,6 +78,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getNnomissingOut
+int getNnomissingOut();
+RcppExport SEXP _SAIGE_getNnomissingOut() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getNnomissingOut());
+    return rcpp_result_gen;
+END_RCPP
+}
 // Get_MultiMarkersBySample_StdGeno_Mat
 void Get_MultiMarkersBySample_StdGeno_Mat();
 RcppExport SEXP _SAIGE_Get_MultiMarkersBySample_StdGeno_Mat() {
@@ -748,15 +758,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // refineKin
-Rcpp::List refineKin(float relatednessCutoff, arma::fvec& wVec, arma::fvec& tauVec);
-RcppExport SEXP _SAIGE_refineKin(SEXP relatednessCutoffSEXP, SEXP wVecSEXP, SEXP tauVecSEXP) {
+Rcpp::List refineKin(float relatednessCutoff);
+RcppExport SEXP _SAIGE_refineKin(SEXP relatednessCutoffSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< float >::type relatednessCutoff(relatednessCutoffSEXP);
-    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
-    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
-    rcpp_result_gen = Rcpp::wrap(refineKin(relatednessCutoff, wVec, tauVec));
+    rcpp_result_gen = Rcpp::wrap(refineKin(relatednessCutoff));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1128,6 +1136,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getMACVec", (DL_FUNC) &_SAIGE_getMACVec, 0},
     {"_SAIGE_getSubMarkerIndex", (DL_FUNC) &_SAIGE_getSubMarkerIndex, 0},
     {"_SAIGE_getSubMarkerNum", (DL_FUNC) &_SAIGE_getSubMarkerNum, 0},
+    {"_SAIGE_getNnomissingOut", (DL_FUNC) &_SAIGE_getNnomissingOut, 0},
     {"_SAIGE_Get_MultiMarkersBySample_StdGeno_Mat", (DL_FUNC) &_SAIGE_Get_MultiMarkersBySample_StdGeno_Mat, 0},
     {"_SAIGE_Get_MultiMarkersBySample_StdGeno", (DL_FUNC) &_SAIGE_Get_MultiMarkersBySample_StdGeno, 2},
     {"_SAIGE_parallelCrossProd", (DL_FUNC) &_SAIGE_parallelCrossProd, 1},
@@ -1179,7 +1188,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_setSubMarkerIndex", (DL_FUNC) &_SAIGE_setSubMarkerIndex, 1},
     {"_SAIGE_setRelatednessCutoff", (DL_FUNC) &_SAIGE_setRelatednessCutoff, 1},
     {"_SAIGE_innerProduct", (DL_FUNC) &_SAIGE_innerProduct, 2},
-    {"_SAIGE_refineKin", (DL_FUNC) &_SAIGE_refineKin, 3},
+    {"_SAIGE_refineKin", (DL_FUNC) &_SAIGE_refineKin, 1},
     {"_SAIGE_shortenList", (DL_FUNC) &_SAIGE_shortenList, 5},
     {"_SAIGE_testTime", (DL_FUNC) &_SAIGE_testTime, 2},
     {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 6},
