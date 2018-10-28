@@ -423,7 +423,7 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     mu.eta = family$mu.eta(eta)
     Y = eta - offset + (y - mu)/mu.eta
     sqrtW = mu.eta/sqrt(family$variance(mu))
-
+if(FALSE){
     cat("abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)\n")
     print(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol))	
     cat("tau: ", tau,"\n")
@@ -435,6 +435,8 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 
     print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
     print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol)
+}
+
     if(tau[2] == 0) break
     if(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
     if(max(tau) > tol^(-2)) {
