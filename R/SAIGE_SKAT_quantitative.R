@@ -1101,7 +1101,7 @@ SAIGE_SKAT_withRatioVec_oldAugust13  = function(G1, obj, ratioVec, G2_cond = NUL
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
 SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta=c(1,25), weights=NULL, impute.method="fixed"
-, r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1){
+, r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1, mu2 = NULL){
 	
         #check the input genotype G1
         obj.noK = obj$obj.noK
@@ -1200,15 +1200,15 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                         if(!is.null(sparseSigma)){
 #                               cat("first\n")
                                 #G1_tilde_Ps_G1_tilde = t(G1_tilde)%*% solve(sparseSigma) %*% G1_tilde
-                                G1_tilde_Ps_G1_tilde = getcovM(G1_tilde, G1_tilde, sparseSigma)
+                                G1_tilde_Ps_G1_tilde = getcovM(G1_tilde, G1_tilde, sparseSigma, mu2 = mu2)
                                 if(!is.null(G2_cond)){
 #                               cat("second\n")
                 #               G1_tilde_Ps_G1_tilde = getcovM(Z_tilde, Z_tilde, sparseSigma)
-                                G2_tilde_Ps_G2_tilde = getcovM(G2_cond_tilde, G2_cond_tilde, sparseSigma)
+                                G2_tilde_Ps_G2_tilde = getcovM(G2_cond_tilde, G2_cond_tilde, sparseSigma, mu2 = mu2)
 #                               cat("second2\n")
-                                G1_tilde_Ps_G2_tilde = getcovM(G1_tilde, G2_cond_tilde, sparseSigma)
+                                G1_tilde_Ps_G2_tilde = getcovM(G1_tilde, G2_cond_tilde, sparseSigma, mu2 = mu2)
 #                               cat("second3\n")
-                                G2_tilde_Ps_G1_tilde = getcovM(G2_cond_tilde, G1_tilde, sparseSigma)
+                                G2_tilde_Ps_G1_tilde = getcovM(G2_cond_tilde, G1_tilde, sparseSigma, mu2 = mu2)
 #                               cat("second4\n")
 
                 #               G2_tilde_Ps_G2_tilde = t(G2_cond_tilde)%*% solve(sparseSigma) %*% G2_cond_tilde
@@ -1387,7 +1387,7 @@ getGratioMatrix_old = function(G, ratioVec){
 }
 
 
-getcovM = function(G1, G2, sparseSigma){
+getcovM = function(G1, G2, sparseSigma, mu2 = NULL){
 
   if(!is.null(sparseSigma)){
    pcginvSigma = NULL
@@ -1397,7 +1397,10 @@ getcovM = function(G1, G2, sparseSigma){
    }
    covM = as.matrix(t(G1) %*% pcginvSigma)
   }else{
-    covM = as.matrix(t(G1) %*% G2)
+      if(!is.null(mu2)){
+        G2 = G2 * mu2
+      }
+      covM = as.matrix(t(G1) %*% G2)
   }
    return(covM)
 }

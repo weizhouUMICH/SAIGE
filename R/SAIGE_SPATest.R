@@ -482,7 +482,12 @@ SPAGMMATtest = function(dosageFile = "",
       #G0_tilde = G0 - (obj.noK$XVX_inv_XV)%*%G0
       #dosage_cond_tilde = cbind(G0_tilde, dosage_cond_tilde)
   covM = matrix(0,nrow=Mcond+1, ncol = Mcond+1)
-  covMsub = getcovM(dosage_cond_tilde, dosage_cond_tilde, sparseSigma)
+
+  if(traitType == "quantitative"){
+    covMsub = getcovM(dosage_cond_tilde, dosage_cond_tilde, sparseSigma)
+  }else if(traitType == "binary"){
+    covMsub = getcovM(dosage_cond_tilde, dosage_cond_tilde, sparseSigma, mu2 = mu2.a)
+  }
   covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
 
    
@@ -720,7 +725,8 @@ if(FALSE){
 
 
 	   GratioMatrixall = getVarRatio(Gall, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)	
-           	
+           cat("GratioMatrixall\n")
+           print(GratioMatrixall)    	
 
            if(AF > 0.5){
              G0_v2 = 2 - G0
@@ -734,7 +740,17 @@ if(FALSE){
       #print(dim(G0_tilde))
       #print(dim(dosage_cond_tilde))	
       #covM[1,2:ncol(covM)] = (t(mu.a*(1-mu.a)*G0_tilde)) %*% dosage_cond_tilde			
+           #covMTEST = getcovM(G0_tilde, G0_tilde, sparseSigma)			
+           #cat("covMTESTTESTTEST\n")
+           #cat("covMTEST: ", covMTEST, "\n")
+	   #cat("sum(G0_tilde): ", sum(G0_tilde),"\n")
+
+           if(traitType == "quantitative"){  
            covM[1,2:ncol(covM)] = getcovM(G0_tilde, dosage_cond_tilde, sparseSigma)			
+           }else if(traitType == "binary"){
+             covM[1,2:ncol(covM)] = getcovM(G0_tilde, dosage_cond_tilde, sparseSigma, mu2 = mu2.a)
+           }
+
            G1tilde_P_G2tilde = covM[1,c(2:ncol(covM))]*(GratioMatrixall[1,c(2:ncol(covM))])
 
          }else{ #end of if(isCondition)
@@ -755,7 +771,7 @@ if(FALSE){
     	   }else{
       	     AFCase = sum(G0[y1Index])/(2*NCase)
       	     AFCtrl = sum(G0[y0Index])/(2*NCtrl)
-             OUT = rbind(OUT, c(rowHeader, N,unlist(out1), AFCase, AFCtrl))
+             OUT = rbind(OUT, c(rowHeader, N, unlist(out1), AFCase, AFCtrl))
       	     #OUT = rbind(OUT, c(scoreTest_SAIGE_binaryTrait(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader),AFCase, AFCtrl))	
            }
          }else if(traitType == "quantitative"){
@@ -1501,7 +1517,9 @@ if(isCondition){
 
   #var1_c = var1 - (covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
   var1_c = var1 - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
-
+  cat("var1: ", var1, "\n")
+  cat("var1_c: ", var1_c, "\n")
+  cat("G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde): ", G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde), "\n")
 #(covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
 
 }
@@ -1561,13 +1579,15 @@ scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse,
   ##########################
   ## Added by SLEE 09/06/2017
   Run1=TRUE
+
+if(!isCondition){
   if(IsSparse==TRUE){
     if(MAF < 0.05){
        out.score<-Score_Test_Sparse(obj.noK, G0, mu.a, mu2.a, varRatio );
      }else{
        out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio );
      }
-     if(out.score["pval.noadj"] > 1){
+     if(out.score["pval.noadj"] > 0.05){
        if(AF > 0.5){
          out.score$BETA = (-1)*out.score$BETA
          out.score$Tstat = (-1)*out.score$Tstat
@@ -1579,7 +1599,7 @@ scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse,
        #outVec = c(rowHeader, N, unlist(out.score))
        print("OKKK0")
 #       print(out.score)
-       outVec = list(BETA = out.score$BETA, SE = out.score$SE, Tstat = out.score$Tstat, p.value = out.score$pval.noadj, var1 = out.score$var1, var2 = out.score$var2)
+       outVec = list(BETA = out.score$BETA, SE = out.score$SE, Tstat = out.score$Tstat, p.value = out.score$pval.noadj, p.value.NA = out.score$pval.noadj, Is.converge = NA, var1 = out.score$var1, var2 = out.score$var2)
        #NSparse=NSparse+1
        #print("OKKK4")
        #print(outVec)	
@@ -1588,11 +1608,14 @@ scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse,
      }
   }
 
+}
+
   if(Run1){
     G0 = matrix(G0, ncol = 1)
     XVG0 = eigenMapMatMult(obj.noK$XV, G0)
     G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G is X adjusted
-    g = G/sqrt(AC2)
+    #g = G/sqrt(AC2)
+    g = G
     NAset = which(G0==0)
 #    out1 = scoreTest_SPAGMMAT_binaryTrait(g, AC2, NAset, y, mu.a, varRatio, Cutoff = Cutoff)
 #    if(AF > 0.5){
@@ -1605,9 +1628,10 @@ scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse,
     print(out1)
 
     if(isCondition){
-     outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], var1 = out1["var1"], var2 = out1["var2"], BETA_c = out1["BETA_c"], SE_c = out1["SE_c"], Tstat_c = out1["Tstat_c"], p.value.c = out1["p.value.c"], var1_c = out1["var1_c"])
+     outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], p.value.NA = out1["p.value.NA"], Is.converge=out1["Is.converge"], var1 = out1["var1"], var2 = out1["var2"], Tstat_c = out1["Tstat_c"], p.value.c = out1["p.value.c"], var1_c = out1["var1_c"], BETA_c = out1["BETA_c"], SE_c = out1["SE_c"]) 
+
     }else{
-     outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], var1 = out1["var1"], var2 = out1["var2"])	
+     outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], p.value.NA = out1["p.value.NA"], Is.converge=out1["Is.converge"], var1 = out1["var1"], var2 = out1["var2"])	
      #outVec = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2)
    }
 
@@ -1645,13 +1669,16 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
     T2stat = OUT_cond[,2]
     G1tilde_P_G2tilde = matrix(G1tilde_P_G2tilde,nrow=1)
     Tstat_c = Tstat - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% T2stat
-    var1_c = var1*AC - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
+    var1_c = var1 - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
 
 
     cat("var1_c: ", var1_c, "\n")
     cat("var1: ", var1, "\n")
     cat("AC: ", AC, "\n")
     cat("AC_true: ", AC_true, "\n")
+    cat("G1tilde_P_G2tilde: ", G1tilde_P_G2tilde, "\n")
+    cat("G2tilde_P_G2tilde_inv: ", G2tilde_P_G2tilde_inv, "\n")
+    cat("G1tilde_P_G2tilde: ", G1tilde_P_G2tilde, "\n")
     cat("G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde): ", G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde), "\n")
   }
 
@@ -1664,7 +1691,6 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
   }
 
   qtilde = Tstat/sqrt(var1) * sqrt(var2) + m1
-
 
   if(length(NAset)/length(g) < 0.5){
     out1 = SPAtest:::Saddle_Prob(q=qtilde, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
@@ -1686,15 +1712,23 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
   out1$Tstat = Tstat
 
   if(isCondition){
-    qtilde_c = Tstat_c/sqrt(var1_c) * sqrt(var2) + m1
-    if(length(NAset)/length(g) < 0.5){
-      out1_c = SPAtest:::Saddle_Prob(q=qtilde_c, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
+    if(var1_c < 1*10^-5){
+      out1 = c(out1, var1_c = var1_c,BETA_c = NA, SE_c = NA, Tstat_c = Tstat_c, p.value.c = 1, p.value.NA.c = 1)	
     }else{
-      out1_c = SPAtest:::Saddle_Prob_fast(q=qtilde_c,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="p")
-    }
+
+      qtilde_c = Tstat_c/sqrt(var1_c) * sqrt(var2) + m1
+      if(length(NAset)/length(g) < 0.5){
+        out1_c = SPAtest:::Saddle_Prob(q=qtilde_c, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
+      }else{
+        out1_c = SPAtest:::Saddle_Prob_fast(q=qtilde_c,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="p")
+      }
     logOR_c = (Tstat_c/var1_c)/sqrt(AC)
     SE_c = abs(logOR_c/qnorm(out1_c$p.value/2))	
     out1 = c(out1, var1_c = var1_c,BETA_c = logOR_c, SE_c = SE_c, Tstat_c = Tstat_c, p.value.c = out1_c$p.value, p.value.NA.c = out1_c$p.value.NA) 
+    }
+
+
+
   }
 
   return(out1)
