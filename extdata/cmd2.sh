@@ -10,7 +10,6 @@ Rscript step1_fitNULLGLMM.R     \
         --nThreads=4 \
         --LOCO=FALSE
 
-
 Rscript step2_SPAtests.R \
         --vcfFile=./input/genotype_10markers.vcf.gz \
         --vcfFileIndex=./input/genotype_10markers.vcf.gz.tbi \

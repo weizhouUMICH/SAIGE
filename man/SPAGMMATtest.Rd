@@ -12,7 +12,7 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
   savFileIndex = "", sampleFile = "", idstoExcludeFile = "",
   idstoIncludeFile = "", rangestoExcludeFile = "",
   rangestoIncludeFile = "", chrom = "", start = 1, end = 2.5e+08,
-  minMAC = 0.5, minMAF = 0, maxMAFforGroupTest = 1, minInfo = 0,
+  minMAC = 0.5, minMAF = 0, maxMAFforGroupTest = 0.5, minInfo = 0,
   GMMATmodelFile = "", varianceRatioFile = "", SPAcutoff = 2,
   SAIGEOutputFile = "", numLinesOutput = 10000, IsSparse = TRUE,
   IsOutputAFinCaseCtrl = FALSE, LOCO = FALSE, condition = "",
@@ -58,7 +58,7 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{rangestoIncludeFile}{character. Path to the file containing genome regions to be included from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header}
 
-\item{chrom}{character. string for the chromosome to include from vcf file. Required for vcf file. If LOCO is specified, providing chrom will save computation cost}
+\item{chrom}{character. string for the chromosome to include from vcf file. Required for vcf file. Note: the string needs to exactly match the chromoosme string in the vcf/sav file. For example, "1" does not match "chr1". If LOCO is specified, providing chrom will save computation cost}
 
 \item{start}{numeric. start genome position to include from vcf file.}
 
@@ -68,7 +68,7 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{minMAF}{numeric. Minimum minor allele frequency of markers to test. By default 0. The higher threshold between minMAC and minMAF will be used}
 
-\item{maxMAFforGroupTest}{numeric. Maximum minor allele frequency of markers to test in group test. By default 1.}
+\item{maxMAFforGroupTest}{numeric. Maximum minor allele frequency of markers to test in group test. By default 0.5.}
 
 \item{minInfo}{numeric. Minimum imputation info of markers to test (in bgen file)}
 
@@ -88,9 +88,27 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{LOCO}{logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE}
 
-\item{sparseSigmaFile}{character. Path to the file containing the sparseSigma from step 1. The suffix of this file is ".mtx"}
+\item{condition}{character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for vcf/sav input.}
 
-\item{condition.}{For conditional analysis. Genetic marker ids (chr:pos_ref/alt) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for vcf/sav input.}
+\item{sparseSigmaFile}{character. Path to the file containing the sparseSigma from step 1. The suffix of this file is ".mtx".}
+
+\item{groupFile}{character. Path to the file containing the group information for gene-based tests. Each line is for one gene/set of variants. The first element is for gene/set name. The rest of the line is for variant ids included in this gene/set. For vcf/sav, the genetic marker ids are in the format chr:pos_ref/alt. For begen, the genetic marker ids should match the ids in the bgen file. Each element in the line is seperated by tab.}
+
+\item{kernel}{character. For gene-based test. By default, "linear.weighted". More options can be seen in the SKAT library}
+
+\item{method}{character. method for gene-based test p-values. By default, "optimal.adj". More options can be seen in the SKAT library}
+
+\item{weights.beta}{vector of numeric. parameters for the beta distribution to weight genetic markers in gene-based tests. By default, "c(1,25)". More options can be seen in the SKAT library}
+
+\item{r.corr}{numeric. bewteen 0 and 1. parameters for gene-based tests.  By default, 0.  More options can be seen in the SKAT library}
+
+\item{IsSingleVarinGroupTest}{logical. Whether to perform single-variant assoc tests for genetic markers included in the gene-based tests. By default, FALSE}
+
+\item{cateVarRatioMinMACVecExclude}{vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. By default, c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5). If groupFile="", only one variance ratio corresponding to MAC >= 20 is used}
+
+\item{cateVarRatioMaxMACVecInclude}{vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. By default, c(1.5,2.5,3.5,4.5,5.5,10.5,20.5). If groupFile="", only one variance ratio corresponding to MAC >= 20 is used}
+
+\item{singleGClambda}{numeric. GC lambda values that can be used to adjust the gene-based tests results. This value is usually estimated based on the single-variant assoc test results.}
 }
 \value{
 SAIGEOutputFile

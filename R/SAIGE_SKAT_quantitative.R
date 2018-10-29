@@ -1337,7 +1337,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 getGratioMatrix = function(MACvec_indVec, ratioVec){
 
 	numCate = length(ratioVec)
-        cat("MACvec_indVec: ", MACvec_indVec, "\n")
+        #cat("MACvec_indVec: ", MACvec_indVec, "\n")
 
         indMatrix = contr.sum(numCate, contrasts = FALSE)
 
@@ -1491,6 +1491,7 @@ getVarRatio = function(G, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInc
   if(length(ratioVec) == 1 & ncol(as.matrix(G)) == 1){
     return(ratioVec[1])
   }else{
+	G = as.matrix(G)
 	if(length(ratioVec) == 1){
 	  ratioVec = c(ratioVec, rep(ratioVec[1], ncol(as.matrix(G))))
 	}

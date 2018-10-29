@@ -372,8 +372,8 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 #  print(re$Sigma_iX[1:20,])
 #  cat("PY\n")
 #  print(re$PY)
-  cat("Trace\n")
-  print(re$Trace)
+#  cat("Trace\n")
+#  print(re$Trace)
 #  cat("YPAPY:\n")
 #  print(re$YPAPY)
 #  cat("YPA0PY:\n")
@@ -556,12 +556,12 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
 #' @param IsSparseKin logical. Whether to exploit the sparsity of GRM to estimate the variance ratio. By default, TRUE
 #' @param sparseSigmaFile character. Path to the pre-calculated sparse GRM file. If not specified and  IsSparseKin=TRUE, sparse GRM will be computed
 #' @param sparseSigmaSampleIDFile character. Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to the order of samples in the sparse GRM. 
-#' @param numRandomMarkerforSparseKin integer. number of randomly selected markers (MAF >= 1%) to be used to identify related samples for sparse GRM. By default, 500
+#' @param numRandomMarkerforSparseKin integer. number of randomly selected markers (MAF >= 0.01) to be used to identify related samples for sparse GRM. By default, 500
 #' @param isCateVarianceRatio logical. Whether to estimate variance ratio based on different MAC categories. If yes, variance ratio will be estiamted for multiple MAC categories corresponding to cateVarRatioMinMACVecExclude and cateVarRatioMaxMACVecInclude. Currently, if isCateVarianceRatio=TRUE, then LOCO=FALSE. By default=FALSE 
 #' @param relatednessCutoff float. The threshold to treat two samples as unrelated if IsSparseKin is TRUE. By default, 0.125
-#' @param cateVarRatioIndexVec vector of integer 0 or 1. The length of cateVarRatioIndexVec is the number of MAC categories for variance ratio estimation. 1 indicates variance ratio in the MAC category is to be estimated, otherwise 0. By default, c(1,1,1,1,1,1)
-#' @param cateVarRatioMinMACVecExclude vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. By default, c(0.5,1.5,2.5,3.5,4.5,5.5)
-#' @param cateVarRatioMaxMACVecInclude vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. By default, c(1.5,2.5,3.5,4.5,5.5)
+#' @param cateVarRatioIndexVec vector of integer 0 or 1. The length of cateVarRatioIndexVec is the number of MAC categories for variance ratio estimation. 1 indicates variance ratio in the MAC category is to be estimated, otherwise 0. By default, NULL. If NULL, variance ratios corresponding to all specified MAC categories will be estimated. This argument is only activated when isCateVarianceRatio=TRUE
+#' @param cateVarRatioMinMACVecExclude vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. By default, c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5). This argument is only activated when isCateVarianceRatio=TRUE
+#' @param cateVarRatioMaxMACVecInclude vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. By default, c(1.5,2.5,3.5,4.5,5.5,10.5,20.5). This argument is only activated when isCateVarianceRatio=TRUE
 #' @param isCovariateTransform logical. Whether use qr transformation on non-genetic covariates. By default, TRUE
 #' @param isDiagofKinSetAsOne logical. Whether to set the diagnal elements in GRM to be 1. By default, FALSE
 #' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio values, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
@@ -594,9 +594,9 @@ fitNULLGLMM = function(plinkFile = "",
 		numRandomMarkerforSparseKin = 500,
 		relatednessCutoff = 0.125, 
 		isCateVarianceRatio = FALSE,
-		cateVarRatioIndexVec = c(1,1,1,1,1,1),
-		cateVarRatioMinMACVecExclude = c(0.5,1.5,2.5,3.5,4.5,5.5),
-		cateVarRatioMaxMACVecInclude = c(1.5,2.5,3.5,4.5,5.5),
+		cateVarRatioIndexVec = NULL,
+		cateVarRatioMinMACVecExclude = c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5),
+		cateVarRatioMaxMACVecInclude = c(1.5,2.5,3.5,4.5,5.5,10.5,20.5),
 		isCovariateTransform = TRUE,
 		isDiagofKinSetAsOne = FALSE){
 
@@ -946,10 +946,11 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
     cat("Only one variance ratio will be estimated using randomly selected markers with MAC >= 20\n")
     MACindex = which(MACvector >= 20)
     listOfMarkersForVarRatio[[1]] = sample(MACindex, size = length(MACindex), replace = FALSE)
-
+    cateVarRatioIndexVec=c(1)
   }else{
     cat("Categorical variance ratios will be estimated\n")
 
+    if(is.null(cateVarRatioIndexVec)){cateVarRatioIndexVec = rep(1, length(cateVarRatioMinMACVecExclude))}
     numCate = length(cateVarRatioIndexVec)
     for(i in 1:(numCate-1)){
        #print("i 1:(numCate-1)")
@@ -1005,6 +1006,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
                 sparseSigmaSampleIDFile=sparseSigmaSampleIDFile,
                 numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
                 relatednessCutoff = relatednessCutoff,
+		obj.glmm.null = obj.glmm.null,
                 W=W, tauVecNew=tauVecNew)
   }
 
@@ -1256,10 +1258,10 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
     cat("Only one variance ratio will be estimated using randomly selected markers with MAC >= 20\n")
     MACindex = which(MACvector >= 20)
     listOfMarkersForVarRatio[[1]] = sample(MACindex, size = length(MACindex), replace = FALSE)
-
+    cateVarRatioIndexVec=c(1)
   }else{
     cat("Categorical variance ratios will be estimated\n")
-
+    if(is.null(cateVarRatioIndexVec)){cateVarRatioIndexVec = rep(1, length(cateVarRatioMinMACVecExclude))}
     numCate = length(cateVarRatioIndexVec)
     for(i in 1:(numCate-1)){
        #print("i 1:(numCate-1)")
@@ -1316,6 +1318,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                 sparseSigmaSampleIDFile=sparseSigmaSampleIDFile,
                 numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
                 relatednessCutoff = relatednessCutoff,
+		obj.glmm.null = obj.glmm.null,
                 W=W, tauVecNew=tauVecNew)
   }
 
@@ -1865,6 +1868,7 @@ getSparseGRM = function(outputPrefix="",
                 sparseSigmaSampleIDFile="",
                 numRandomMarkerforSparseKin = 500,
                 relatednessCutoff = 0.125,
+		obj.glmm.null,
                 W, tauVecNew){
 
   cat("sparse GRM will be used\n")
@@ -1939,7 +1943,7 @@ getSparseGRM = function(outputPrefix="",
         mergeID = merge(sampleInModel, sparseSigmaSampleID, by.x="IID", by.y = "sampleID")
         mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
         indexIDofSigma=mergeID$IndexSigma
-        cat("Subset sparse GRM to be ", indexIDofSigma," by ", indexIDofSigma, "\n")
+        #cat("Subset sparse GRM to be ", indexIDofSigma," by ", indexIDofSigma, "\n")
         sparseSigma = sparseSigmaLarge[indexIDofSigma, indexIDofSigma]
         rm(sparseSigmaLarge)
       }
@@ -1947,9 +1951,9 @@ getSparseGRM = function(outputPrefix="",
       stop("ERROR! sparseSigmaSampleIDFile is not specified\n")
     }
 
-  cat("sparse GRM has been specified\n")
-  cat("read in sparse GRM from ",sparseSigmaOutFile,"\n")
-  sparseSigma = Matrix:::readMM(sparseSigmaOutFile)
+  #cat("sparse GRM has been specified\n")
+  #cat("read in sparse GRM from ",sparseSigmaOutFile,"\n")
+  #sparseSigma = Matrix:::readMM(sparseSigmaOutFile)
  }
 
   Nval = length(W)

@@ -3,7 +3,7 @@ options(stringsAsFactors=F)
 ## load R libraries
 #library(SAIGE)
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.2.mmSKAT.debugged.R-3.5.1.test2_subsetSparseSigma_speedup_test2")
-library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.2.3")
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.3.2")
 
 require(optparse) #install.packages("optparse")
 
@@ -44,9 +44,9 @@ option_list <- list(
   make_option("--LOCO", type="logical", default=FALSE,
     help="Whether to apply the leave-one-chromosome-out (LOCO) approach. By default, FALSE. This option has not been extensively tested."),
   make_option("--traceCVcutoff", type="numeric", default=0.0025,
-    help="The threshold for coefficient of variation (CV) for the trace estimator. Number of runs for trace estimation will be increased until the CV is below the threshold. By default 1. suggested: 0.0025. This option has not been extensively tested."),
+    help="The threshold for coefficient of variation (CV) for the trace estimator. Number of runs for trace estimation will be increased until the CV is below the threshold. By default 0.0025."),
   make_option("--ratioCVcutoff", type="numeric", default=0.001,
-    help="The threshold for coefficient of variation (CV) for estimating the variance ratio. The number of randomly selected markers will be increased until the CV is below the threshold. By default 1. suggested 0.001. This option has not been extensively tested."),
+    help="The threshold for coefficient of variation (CV) for estimating the variance ratio. The number of randomly selected markers will be increased until the CV is below the threshold. By default 0.001. "),
   make_option("--outputPrefix", type="character", default="~/",
     help="path and prefix to the output files [default='~/']"),
   make_option("--IsSparseKin", type="logical", default=FALSE,
@@ -61,12 +61,10 @@ option_list <- list(
     help="Whether to estimate variance ratio based on different MAC categories. If yes, variance ratio will be estiamted for multiple MAC categories corresponding to cateVarRatioMinMACVecExclude and cateVarRatioMaxMACVecInclude. Currently, if isCateVarianceRatio=TRUE, then LOCO=FALSE [default=FALSE]"),
   make_option("--relatednessCutoff", type="numeric", default=0.125,
     help="The threshold to treat two samples as unrelated if IsSparseKin is TRUE [default=0.125]"),
-  make_option("--cateVarRatioIndexVec", type="character", default="1,1,1,1,1,1",
-    help="vector of integer 0 or 1. The length of cateVarRatioIndexVec is the number of MAC categories for variance ratio estimation. 1 indicates variance ratio in the MAC category is to be estimated, otherwise 0. [default='1,1,1,1,1,1']"),
-  make_option("--cateVarRatioMinMACVecExclude",type="character", default="0.5,1.5,2.5,3.5,4.5,5.5",
-    help="vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. [default='0.5,1.5,2.5,3.5,4.5,5.5']"),
-  make_option("--cateVarRatioMaxMACVecInclude",type="character", default="1.5,2.5,3.5,4.5,5.5",
-    help="vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. [default='1.5,2.5,3.5,4.5,5.5']"),    
+  make_option("--cateVarRatioMinMACVecExclude",type="character", default="0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5",
+    help="vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. [default='0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5']"),
+  make_option("--cateVarRatioMaxMACVecInclude",type="character", default="1.5,2.5,3.5,4.5,5.5,10.5,20.5",
+    help="vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. [default='1.5,2.5,3.5,4.5,5.5,10.5,20.5']"),    
   make_option("--isCovariateTransform", type="logical", default=TRUE,
     help="Whether use qr transformation on non-genetic covariates [default='TRUE']."),
   make_option("--isDiagofKinSetAsOne", type="logical", default=FALSE,
@@ -83,7 +81,6 @@ print(opt)
 
 covars <- strsplit(opt$covarColList,",")[[1]]
 tauInit <- as.numeric(strsplit(opt$tauInit, ",")[[1]])
-cateVarRatioIndexVec <- as.numeric(strsplit(opt$cateVarRatioIndexVec,",")[[1]])
 cateVarRatioMinMACVecExclude <- as.numeric(strsplit(opt$cateVarRatioMinMACVecExclude,",")[[1]])
 cateVarRatioMaxMACVecInclude <- as.numeric(strsplit(opt$cateVarRatioMaxMACVecInclude,",")[[1]])
 
@@ -119,7 +116,6 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
             numRandomMarkerforSparseKin = opt$numRandomMarkerforSparseKin,
             relatednessCutoff = opt$relatednessCutoff,
             isCateVarianceRatio = opt$isCateVarianceRatio,
-            cateVarRatioIndexVec = cateVarRatioIndexVec,
             cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
             cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
             isCovariateTransform = opt$isCovariateTransform,

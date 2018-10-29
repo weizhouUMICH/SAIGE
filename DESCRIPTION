@@ -14,4 +14,5 @@ LinkingTo: Rcpp, RcppArmadillo, RcppParallel, data.table, SPAtest,
 SystemRequirements: GNU make
 RoxygenNote: 6.1.0
 NeedsCompilation: yes
+Encoding: UTF-8
 Packaged: 2017-11-29 05:44:37 UTC; zhowei

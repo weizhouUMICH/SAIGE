@@ -249,6 +249,26 @@ testTime <- function(i, m_bVec) {
     .Call('_SAIGE_testTime', PACKAGE = 'SAIGE', i, m_bVec)
 }
 
+SetSampleIdx_forGenetest_vcfDosage <- function(sample_idx, Ntest) {
+    invisible(.Call('_SAIGE_SetSampleIdx_forGenetest_vcfDosage', PACKAGE = 'SAIGE', sample_idx, Ntest))
+}
+
+setMAFcutoffs <- function(minVal, maxVal) {
+    invisible(.Call('_SAIGE_setMAFcutoffs', PACKAGE = 'SAIGE', minVal, maxVal))
+}
+
+setvcfDosageMatrix <- function(vcfFileName, vcfFileIndex, vcfField) {
+    .Call('_SAIGE_setvcfDosageMatrix', PACKAGE = 'SAIGE', vcfFileName, vcfFileIndex, vcfField)
+}
+
+getGenoOfGene_vcf <- function(marker_group_line, minInfo) {
+    .Call('_SAIGE_getGenoOfGene_vcf', PACKAGE = 'SAIGE', marker_group_line, minInfo)
+}
+
+closevcfDosageFile <- function() {
+    invisible(.Call('_SAIGE_closevcfDosageFile', PACKAGE = 'SAIGE'))
+}
+
 setgenoTest_bgenDosage <- function(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude) {
     .Call('_SAIGE_setgenoTest_bgenDosage', PACKAGE = 'SAIGE', filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude)
 }
@@ -339,26 +359,6 @@ getGenoOfnthVar_vcfDosage <- function(mth) {
 
 closetestGenoFile_vcfDosage <- function() {
     invisible(.Call('_SAIGE_closetestGenoFile_vcfDosage', PACKAGE = 'SAIGE'))
-}
-
-SetSampleIdx_forGenetest_vcfDosage <- function(sample_idx, Ntest) {
-    invisible(.Call('_SAIGE_SetSampleIdx_forGenetest_vcfDosage', PACKAGE = 'SAIGE', sample_idx, Ntest))
-}
-
-setMAFcutoffs <- function(minVal, maxVal) {
-    invisible(.Call('_SAIGE_setMAFcutoffs', PACKAGE = 'SAIGE', minVal, maxVal))
-}
-
-setvcfDosageMatrix <- function(vcfFileName, vcfFileIndex, vcfField) {
-    .Call('_SAIGE_setvcfDosageMatrix', PACKAGE = 'SAIGE', vcfFileName, vcfFileIndex, vcfField)
-}
-
-getGenoOfGene_vcf <- function(marker_group_line, minInfo) {
-    .Call('_SAIGE_getGenoOfGene_vcf', PACKAGE = 'SAIGE', marker_group_line, minInfo)
-}
-
-closevcfDosageFile <- function() {
-    invisible(.Call('_SAIGE_closevcfDosageFile', PACKAGE = 'SAIGE'))
 }
 
 sparse_row_idx_mult_v2 <- function(spA) {

@@ -5,7 +5,7 @@ options(stringsAsFactors=F, digits=3)
 
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.32_merge_single_gene")
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.2.mmSKAT.debugged.R-3.5.1.test")
-library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.2.3")
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.3.2")
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.2.mmSKAT.debugged.R-3.5.1.test2_subsetSparseSigma")
 library(optparse)
 
@@ -58,8 +58,20 @@ option_list <- list(
     help="Whether to apply the leave-one-chromosome-out option. This option has not been extensively tested."),
   make_option("--condition", type="character",default="",
     help="conditioning marker ids"),
+  make_option("--groupFile", type="character", default="",
+    help="path to the output file containing the group file"),
+  make_option("--sparseSigmaFile", type="character", default="",
+    help="path to the output file containing the sparse sigma"),
   make_option("--maxMAFforGroupTest", type="numeric", default=0,
-    help="max MAF for markers tested in group test")
+    help="max MAF for markers tested in group test"),
+  make_option("--minInfo", type="numeric", default=0,
+    help="minimum Info for markers to be tested"),
+  make_option("--cateVarRatioMinMACVecExclude",type="character", default="0.5,1.5,2.5,3.5,4.5,5.5,20.5",
+    help="vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. [default='0.5,1.5,2.5,3.5,4.5,5.5,20.5']"),
+  make_option("--cateVarRatioMaxMACVecInclude",type="character", default="1.5,2.5,3.5,4.5,5.5,20.5",
+    help="vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. [default='1.5,2.5,3.5,4.5,5.5,20.5']"),
+  make_option("--IsSingleVarinGroupTest",type="logical", default=FALSE,
+    help="Whether to perform single-variant assoc tests for genetic markers included in the gene-based tests. By default, FALSE")
 )
 
 parser <- OptionParser(usage="%prog [options]", option_list=option_list)
@@ -69,8 +81,12 @@ opt <- args$options
 print(opt)
 
 #try(if(length(which(opt == "")) > 0) stop("Missing arguments"))
-
+set.seed(1)
 dosageFilecolnames <- strsplit(opt$dosageFilecolnamesSkip,",")[[1]]
+cateVarRatioMinMACVecExclude <- as.numeric(strsplit(opt$cateVarRatioMinMACVecExclude,",")[[1]])
+cateVarRatioMaxMACVecInclude <- as.numeric(strsplit(opt$cateVarRatioMaxMACVecInclude,",")[[1]])
+print(cateVarRatioMinMACVecExclude)
+print(cateVarRatioMaxMACVecInclude)
 
 SPAGMMATtest(dosageFile=opt$dosageFile,
              dosageFileNrowSkip=opt$dosageFileNrowSkip,
@@ -97,8 +113,12 @@ SPAGMMATtest(dosageFile=opt$dosageFile,
 	     LOCO = opt$LOCO,
 	     condition = opt$condition,
 	     maxMAFforGroupTest = opt$maxMAFforGroupTest,
-        cateVarRatioMinMACVecExclude=c(11.5),
-        cateVarRatioMaxMACVecInclude=c() 
+             cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude,
+             cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,
+	     groupFile = opt$groupFile,
+             sparseSigmaFile = opt$sparseSigmaFile,
+	     minInfo = opt$minInfo,
+	     IsSingleVarinGroupTest=opt$IsSingleVarinGroupTest 
 )
 
 

@@ -44,6 +44,19 @@ The following R pakages need to be installed for running SAIGE:
 Source code for all versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl/AADFqdssvOBjbWZch6Q9zYNaa?dl=0
 
 # Log for fixing bugs
+* 0.35.2.3 (this version works with the conditonal analysis and gene-based tests)
+
+* 0.29.4.2 (this version works with R-3.5.1)
+
+* 0.29.4 (this version works with R-3.4.4) update SAIGE as a bug for reading vcf and sav files was fixed in the savvy library
+
+* 0.29.3.2 this version works with R-3.5.1
+
+* 0.29.3: update SAIGE step 1 to use the updated R libary SPAtest 3.0.0
+
+* 0.29.2: update SAIGE to use the updated R library SPAtest 3.0.0
+
+
 * 0.29:
 ```
 1. The colSums() error when there is no covariate has been fixed. 

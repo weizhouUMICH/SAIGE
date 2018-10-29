@@ -14,10 +14,9 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
   IsSparseKin = FALSE, sparseSigmaFile = "",
   sparseSigmaSampleIDFile = "", numRandomMarkerforSparseKin = 500,
   relatednessCutoff = 0.125, isCateVarianceRatio = FALSE,
-  cateVarRatioIndexVec = c(1, 1, 1, 1, 1, 1),
-  cateVarRatioMinMACVecExclude = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5),
-  cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5),
-  qr_sparse = FALSE, Cholesky_sparse = FALSE, pcg_sparse = TRUE,
+  cateVarRatioIndexVec = NULL, cateVarRatioMinMACVecExclude = c(0.5,
+  1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
+  cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
   isCovariateTransform = TRUE, isDiagofKinSetAsOne = FALSE)
 }
 \arguments{
@@ -61,7 +60,7 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
 
 \item{traceCVcutoff}{numeric. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun. By default, 0.0025}
 
-\item{ratioCVcutoff}{numeric. The threshold for coefficient of variantion (CV) for the variance ratio estimate. If ratioCV > ratioCVcutoff. numMarkers will be increased by 10.}
+\item{ratioCVcutoff}{numeric. The threshold for coefficient of variantion (CV) for the variance ratio estimate. If ratioCV > ratioCVcutoff. numMarkers will be increased by 10. By default, 0.001}
 
 \item{outputPrefix}{character. Path to the output files with prefix.}
 
@@ -71,31 +70,21 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
 
 \item{sparseSigmaSampleIDFile}{character. Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to the order of samples in the sparse GRM.}
 
-\item{numRandomMarkerforSparseKin}{integer. number of randomly selected markers (MAF >= 1%) to be used to identify related samples for sparse GRM}
+\item{numRandomMarkerforSparseKin}{integer. number of randomly selected markers (MAF >= 0.01) to be used to identify related samples for sparse GRM. By default, 500}
 
 \item{relatednessCutoff}{float. The threshold to treat two samples as unrelated if IsSparseKin is TRUE. By default, 0.125}
 
-\item{isCateVarianceRatio}{logical. Whether to estimate variance ratio based on different MAC categories. If yes, six categories will be used MAC = 1, 2, 3, 4, 5, >5. Currently, if isCateVarianceRatio=TRUE, then LOCO=FALSE}
+\item{isCateVarianceRatio}{logical. Whether to estimate variance ratio based on different MAC categories. If yes, variance ratio will be estiamted for multiple MAC categories corresponding to cateVarRatioMinMACVecExclude and cateVarRatioMaxMACVecInclude. Currently, if isCateVarianceRatio=TRUE, then LOCO=FALSE. By default=FALSE}
 
-\item{cateVarRatioIndexVec}{vector of integer 0 or 1. The length of cateVarRatioIndexVec is the number of MAC categories for variance ratio estimation. 1 indicates variance ratio in the MAC category is to be estimated, otherwise 0. By default, c(1,1,1,1,1,1)}
+\item{cateVarRatioIndexVec}{vector of integer 0 or 1. The length of cateVarRatioIndexVec is the number of MAC categories for variance ratio estimation. 1 indicates variance ratio in the MAC category is to be estimated, otherwise 0. By default, NULL. If NULL, variance ratios corresponding to all specified MAC categories will be estimated. This argument is only activated when isCateVarianceRatio=TRUE}
 
-\item{cateVarRatioMinMACVecExclude}{vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. By default, c(0.5,1.5,2.5,3.5,4.5,5.5)}
+\item{cateVarRatioMinMACVecExclude}{vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. By default, c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5). This argument is only activated when isCateVarianceRatio=TRUE}
 
-\item{cateVarRatioMaxMACVecInclude}{vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. By default, c(1.5,2.5,3.5,4.5,5.5)}
-
-\item{qr_sparse}{logical. Whether use qr to inverse sparse GRM. By default, FALSE}
-
-\item{Cholesky_sparse}{logical. Whether use Cholesky to inverse sparse GRM. By default, FALSE}
-
-\item{pcg_sparse}{logical. Whether use pcg to inverse sparse GRM. By default, TRUE}
+\item{cateVarRatioMaxMACVecInclude}{vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. By default, c(1.5,2.5,3.5,4.5,5.5,10.5,20.5). This argument is only activated when isCateVarianceRatio=TRUE}
 
 \item{isCovariateTransform}{logical. Whether use qr transformation on non-genetic covariates. By default, TRUE}
 
 \item{isDiagofKinSetAsOne}{logical. Whether to set the diagnal elements in GRM to be 1. By default, FALSE}
-
-\item{IsSparseKin}{logical. Whether to exploit the sparsity of GRM to estimate the variance ratio. By default, TRUE}
-
-\item{numRandomMarkerforSparseKin}{integer (>0). Number of markers to be used for first estimating the relatedness between each sample pair if IsSparseKin is TRUE. By default, 500}
 }
 \value{
 a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio values, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
