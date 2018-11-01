@@ -1102,7 +1102,7 @@ SAIGE_SKAT_withRatioVec_oldAugust13  = function(G1, obj, ratioVec, G2_cond = NUL
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
 SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta=c(1,25), weights=NULL, impute.method="fixed"
 , r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1, mu2 = NULL){
-	
+	xt <- proc.time()	
         #check the input genotype G1
         obj.noK = obj$obj.noK
         m = ncol(G1)
@@ -1200,7 +1200,15 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                         if(!is.null(sparseSigma)){
 #                               cat("first\n")
                                 #G1_tilde_Ps_G1_tilde = t(G1_tilde)%*% solve(sparseSigma) %*% G1_tilde
+				at <- proc.time()
+				print(at-xt)
+                                print("at-xt")
                                 G1_tilde_Ps_G1_tilde = getcovM(G1_tilde, G1_tilde, sparseSigma, mu2 = mu2)
+				bt <- proc.time()
+				print(bt-at)
+				print("bt-at")
+
+
                                 if(!is.null(G2_cond)){
 #                               cat("second\n")
                 #               G1_tilde_Ps_G1_tilde = getcovM(Z_tilde, Z_tilde, sparseSigma)
@@ -1226,9 +1234,11 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                 Phi_cond = as.matrix(Phi_cond)
                         }
 #                       print("OKKKKKK")
+			ct <- proc.time()
                         Phi = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m])
+                        dt = proc.time()
                         cat("dim(Phi)", dim(Phi), "\n")
-
+			cat("time: ", at, " ", bt, " ", ct, " ", dt, "\n")
                         }else{
                                 G1_tilde_G1_tilde = t(G1_tilde) %*% G1_tilde
 
