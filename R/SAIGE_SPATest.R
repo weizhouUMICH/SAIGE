@@ -891,7 +891,8 @@ if(FALSE){
        while ( TRUE ) {
          marker_group_line = readLines(gf, n = 1)
          if(length(marker_group_line) == 0 ){
-	   stop("ERROR! the group line contains no marker\n")
+	   break	
+	   #cat("ERROR! the group line contains no marker\n")
          }else{
            geneID = strsplit(marker_group_line, split="\t")[[1]][1]
            if(dosageFileType == "vcf"){
