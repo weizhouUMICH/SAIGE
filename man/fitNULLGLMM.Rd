@@ -11,13 +11,13 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
   SPAcutoff = 2, numMarkers = 30, skipModelFitting = FALSE,
   memoryChunk = 2, tauInit = c(0, 0), LOCO = FALSE,
   traceCVcutoff = 0.0025, ratioCVcutoff = 0.001, outputPrefix = "",
-  IsSparseKin = FALSE, sparseSigmaFile = "",
-  sparseSigmaSampleIDFile = "", numRandomMarkerforSparseKin = 500,
-  relatednessCutoff = 0.125, isCateVarianceRatio = FALSE,
-  cateVarRatioIndexVec = NULL, cateVarRatioMinMACVecExclude = c(0.5,
-  1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
-  cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
-  isCovariateTransform = TRUE, isDiagofKinSetAsOne = FALSE)
+  outputPrefix_varRatio = NULL, IsSparseKin = FALSE,
+  sparseGRMFile = NULL, sparseGRMSampleIDFile = NULL,
+  numRandomMarkerforSparseKin = 500, relatednessCutoff = 0.125,
+  isCateVarianceRatio = FALSE, cateVarRatioIndexVec = NULL,
+  cateVarRatioMinMACVecExclude = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 10.5,
+  20.5), cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5,
+  20.5), isCovariateTransform = TRUE, isDiagofKinSetAsOne = FALSE)
 }
 \arguments{
 \item{plinkFile}{character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM). Genetic markers are also randomly selected from the plink file to estimate the variance ratios}
@@ -64,11 +64,13 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
 
 \item{outputPrefix}{character. Path to the output files with prefix.}
 
+\item{outputPrefix_varRatio}{character. Path to the output variance ratio file with prefix. variace ratios will be output to outputPrefix_varRatio.varianceRatio.txt. If outputPrefix_varRatio is not specified, outputPrefix_varRatio will be the same as the outputPrefix}
+
 \item{IsSparseKin}{logical. Whether to exploit the sparsity of GRM to estimate the variance ratio. By default, TRUE}
 
-\item{sparseSigmaFile}{character. Path to the pre-calculated sparse GRM file. If not specified and  IsSparseKin=TRUE, sparse GRM will be computed}
+\item{sparseGRMFile}{character. Path to the pre-calculated sparse GRM file. If not specified and  IsSparseKin=TRUE, sparse GRM will be computed}
 
-\item{sparseSigmaSampleIDFile}{character. Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to the order of samples in the sparse GRM.}
+\item{sparseGRMSampleIDFile}{character. Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to the order of samples in the sparse GRM.}
 
 \item{numRandomMarkerforSparseKin}{integer. number of randomly selected markers (MAF >= 0.01) to be used to identify related samples for sparse GRM. By default, 500}
 

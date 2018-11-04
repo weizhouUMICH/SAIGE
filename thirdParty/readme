@@ -1,1 +1,4 @@
-statgen/savvy@5cf549634d535c07f08af4e52de67ecbf960d78e
+#to get the savvy library instead of the symlinks
+
+export CFLAGS="-fPIC"; export CXXFLAGS="-fPIC"; cget install -f requirements.txt
+ 

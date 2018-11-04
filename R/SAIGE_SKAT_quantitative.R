@@ -1207,8 +1207,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 				bt <- proc.time()
 				print(bt-at)
 				print("bt-at")
-
-
                                 if(!is.null(G2_cond)){
 #                               cat("second\n")
                 #               G1_tilde_Ps_G1_tilde = getcovM(Z_tilde, Z_tilde, sparseSigma)
@@ -1218,26 +1216,31 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 #                               cat("second3\n")
                                 G2_tilde_Ps_G1_tilde = getcovM(G2_cond_tilde, G1_tilde, sparseSigma, mu2 = mu2)
 #                               cat("second4\n")
-
                 #               G2_tilde_Ps_G2_tilde = t(G2_cond_tilde)%*% solve(sparseSigma) %*% G2_cond_tilde
                 #               G1_tilde_Ps_G2_tilde = t(G1_tilde)%*% solve(sparseSigma) %*% G2_cond_tilde
                 #               G2_tilde_Ps_G1_tilde = t(G2_cond_tilde)%*% solve(sparseSigma) %*% G1_tilde
+				#cat("G2_tilde_Ps_G2_tilde: ", G2_tilde_Ps_G2_tilde, "\n")
+				#cat("G1_tilde_Ps_G2_tilde: ", G1_tilde_Ps_G2_tilde, "\n")
+
 
                                 G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv = (G1_tilde_Ps_G2_tilde*(GratioMatrixall[1:m,c((m+1):(m+m_cond))]))%*%(solve(G2_tilde_Ps_G2_tilde*(GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))])))
 #                               cat("second5\n")
 
-                                Score_cond = Score - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% T2
+				#cat("G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv: ", G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv, "\n")
 
+                                Score_cond = Score - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% T2
+				#cat("Score_cond: , ", Score_cond, "\n")
                 #               cat("GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))]: ", GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))], "\n")
                 #               Phi_cond = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m]) - (G1_tilde_Ps_G2_tilde*(GratioMatrixall[1:m,c((m+1):(m+m_cond))]))%*%(solve(G2_tilde_Ps_G2_tilde*(GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))]))) %*% (G2_tilde_Ps_G1_tilde * (GratioMatrixall[c((m+1):(m+m_cond)), 1:m])
                                 Phi_cond = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m]) - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% (G2_tilde_Ps_G1_tilde * (GratioMatrixall[c((m+1):(m+m_cond)), 1:m]))
                                 Phi_cond = as.matrix(Phi_cond)
-                        }
+				#cat("Phi_cond, ", Phi_cond, "\n")
+                        	}
 #                       print("OKKKKKK")
 			ct <- proc.time()
                         Phi = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m])
                         dt = proc.time()
-                        cat("dim(Phi)", dim(Phi), "\n")
+                        #cat("dim(Phi)", dim(Phi), "\n")
 			cat("time: ", at, " ", bt, " ", ct, " ", dt, "\n")
                         }else{
                                 G1_tilde_G1_tilde = t(G1_tilde) %*% G1_tilde
@@ -1258,8 +1261,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                 }
 
                                 Phi = G1_tilde_G1_tilde*(GratioMatrixall[1:m,1:m])
-				print(Phi)
-				cat("dim(Phi)", dim(Phi), "\n")	
+				#print(Phi)
+				#cat("dim(Phi)", dim(Phi), "\n")	
 
                         }
 
@@ -1280,11 +1283,11 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
                 #Perform the SKAT test
                 if(!is.null(G2_cond)){
-                        #if(sum(diag(Phi_cond) < 10^-5) > 0){
-                        #       re_cond = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
-                        #}else{
+                        if(sum(diag(Phi_cond) < 10^-5) > 0){
+                               re_cond = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
+                        }else{
                         re_cond = SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL)
-                        #}
+                        }
                 }
 
 #               print("HERE SKAT:::Met_SKAT_Get_Pvalue")
