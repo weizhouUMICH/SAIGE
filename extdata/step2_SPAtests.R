@@ -1,4 +1,4 @@
-options(stringsAsFactors=F, digits=3)
+options(stringsAsFactors=F, digits=3, warn=1)
 #library(SAIGE)
 
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.31.conditional.bug.fixed")
@@ -61,15 +61,15 @@ option_list <- list(
   make_option("--groupFile", type="character", default="",
     help="path to the output file containing the group file"),
   make_option("--sparseSigmaFile", type="character", default="",
-    help="path to the output file containing the sparse sigma"),
+    help="path to the output file containing the sparse Sigma"),
   make_option("--maxMAFforGroupTest", type="numeric", default=0,
     help="max MAF for markers tested in group test"),
   make_option("--minInfo", type="numeric", default=0,
     help="minimum Info for markers to be tested"),
-  make_option("--cateVarRatioMinMACVecExclude",type="character", default="0.5,1.5,2.5,3.5,4.5,5.5,20.5",
-    help="vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. [default='0.5,1.5,2.5,3.5,4.5,5.5,20.5']"),
-  make_option("--cateVarRatioMaxMACVecInclude",type="character", default="1.5,2.5,3.5,4.5,5.5,20.5",
-    help="vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. [default='1.5,2.5,3.5,4.5,5.5,20.5']"),
+  make_option("--cateVarRatioMinMACVecExclude",type="character", default="0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5",
+    help="vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. [default='0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5']"),
+  make_option("--cateVarRatioMaxMACVecInclude",type="character", default="1.5,2.5,3.5,4.5,5.5,10.5,20.5",
+    help="vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. [default='1.5,2.5,3.5,4.5,5.5,10.5,20.5']"),
   make_option("--IsSingleVarinGroupTest",type="logical", default=FALSE,
     help="Whether to perform single-variant assoc tests for genetic markers included in the gene-based tests. By default, FALSE")
 )
