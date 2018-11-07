@@ -943,6 +943,19 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
   Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
   y = obj.glm.null$y
   ##randomize the marker orders to be tested
+
+    #####sparse Kin
+
+  if(IsSparseKin){
+    sparseSigma = getSparseSigma(outputPrefix=varRatioOutFile,
+                sparseGRMFile=sparseGRMFile,
+                sparseGRMSampleIDFile=sparseGRMSampleIDFile,
+                numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
+                relatednessCutoff = relatednessCutoff,
+                obj.glmm.null = obj.glmm.null,
+                W=W, tauVecNew=tauVecNew)
+  }
+
   mMarkers = gettotalMarker()
 #  listOfMarkersForVarRatio = sample(c(1:mMarkers), size = mMarkers, replace = FALSE)
   listOfMarkersForVarRatio = list()
@@ -1012,18 +1025,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
   }# if(!isCateVarianceRatio){
 
   freqVec = getAlleleFreqVec()
-  #####sparse Kin
-
-  if(IsSparseKin){
-    sparseSigma = getSparseSigma(outputPrefix=varRatioOutFile,
-                sparseGRMFile=sparseGRMFile,
-                sparseGRMSampleIDFile=sparseGRMSampleIDFile,
-                numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
-                relatednessCutoff = relatednessCutoff,
-		obj.glmm.null = obj.glmm.null,
-                W=W, tauVecNew=tauVecNew)
-  }
-
 
 
 
@@ -1261,6 +1262,19 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   X1 = obj.noK$X1
   y = obj.glm.null$y
 
+    #####sparse Kin
+
+  if(IsSparseKin){
+    sparseSigma = getSparseSigma(outputPrefix=varRatioOutFile,
+                sparseGRMFile=sparseGRMFile,
+                sparseGRMSampleIDFile=sparseGRMSampleIDFile,
+                numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
+                relatednessCutoff = relatednessCutoff,
+                obj.glmm.null = obj.glmm.null,
+                W=W, tauVecNew=tauVecNew)
+  }
+
+
   ##randomize the marker orders to be tested
   mMarkers = gettotalMarker()
 
@@ -1323,19 +1337,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   }
 
   freqVec = getAlleleFreqVec()
-
-  #####sparse Kin
-
-  if(IsSparseKin){
-    sparseSigma = getSparseSigma(outputPrefix=varRatioOutFile,
-                sparseGRMFile=sparseGRMFile,
-                sparseGRMSampleIDFile=sparseGRMSampleIDFile,
-                numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
-                relatednessCutoff = relatednessCutoff,
-		obj.glmm.null = obj.glmm.null,
-                W=W, tauVecNew=tauVecNew)
-  }
-
 
 
   Nnomissing = length(mu)
@@ -1966,7 +1967,7 @@ getSparseSigma = function(outputPrefix="",
   #cat("read in sparse GRM from ",sparseSigmaOutFile,"\n")
   #sparseSigma = Matrix:::readMM(sparseSigmaOutFile)
  }
-  sparseGRMFile = paste0(outputPrefix, ".sparseGRM.mtx")
+  sparseGRMFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff, ".sparseGRM.mtx")
   cat("write sparse GRM to ", sparseGRMFile ,"\n")
   Matrix:::writeMM(sparseGRM, sparseGRMFile)
   Nval = length(W)
@@ -1975,7 +1976,7 @@ getSparseSigma = function(outputPrefix="",
   sparseSigma = sparseGRM * tauVecNew[2]
   diag(sparseSigma) = getDiagOfSigma(W, tauVecNew)
 
-  sparseSigmaFile = paste0(outputPrefix, ".sparseSigma.mtx")
+  sparseSigmaFile = paste0(outputPrefix, "_relatednessCutoff_",relatednessCutoff, ".sparseSigma.mtx")
   cat("write sparse Sigma to ", sparseSigmaFile ,"\n")
   Matrix:::writeMM(sparseSigma, sparseSigmaFile)
 
