@@ -570,7 +570,7 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
 #' @param IsSparseKin logical. Whether to exploit the sparsity of GRM to estimate the variance ratio. By default, TRUE
 #' @param sparseGRMFile character. Path to the pre-calculated sparse GRM file. If not specified and  IsSparseKin=TRUE, sparse GRM will be computed
 #' @param sparseGRMSampleIDFile character. Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to the order of samples in the sparse GRM. 
-#' @param numRandomMarkerforSparseKin integer. number of randomly selected markers (MAF >= 0.01) to be used to identify related samples for sparse GRM. By default, 500
+#' @param numRandomMarkerforSparseKin integer. number of randomly selected markers (MAF >= 0.01) to be used to identify related samples for sparse GRM. By default, 1000
 #' @param isCateVarianceRatio logical. Whether to estimate variance ratio based on different MAC categories. If yes, variance ratio will be estiamted for multiple MAC categories corresponding to cateVarRatioMinMACVecExclude and cateVarRatioMaxMACVecInclude. Currently, if isCateVarianceRatio=TRUE, then LOCO=FALSE. By default=FALSE 
 #' @param relatednessCutoff float. The threshold to treat two samples as unrelated if IsSparseKin is TRUE. By default, 0.125
 #' @param cateVarRatioIndexVec vector of integer 0 or 1. The length of cateVarRatioIndexVec is the number of MAC categories for variance ratio estimation. 1 indicates variance ratio in the MAC category is to be estimated, otherwise 0. By default, NULL. If NULL, variance ratios corresponding to all specified MAC categories will be estimated. This argument is only activated when isCateVarianceRatio=TRUE
@@ -606,7 +606,7 @@ fitNULLGLMM = function(plinkFile = "",
 		IsSparseKin = FALSE,
 		sparseGRMFile=NULL,
                 sparseGRMSampleIDFile=NULL,
-		numRandomMarkerforSparseKin = 500,
+		numRandomMarkerforSparseKin = 1000,
 		relatednessCutoff = 0.125, 
 		isCateVarianceRatio = FALSE,
 		cateVarRatioIndexVec = NULL,

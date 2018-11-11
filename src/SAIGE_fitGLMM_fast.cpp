@@ -1203,7 +1203,7 @@ struct indicesRelatedSamples : public RcppParallel::Worker {
                         j = Ntotal - j - 1;
       }
       //std::cout << "i,j,k debug: " << i << " " << j << " " << k << std::endl;  
-      float kinValueTemp = arma::dot((geno.stdGenoMultiMarkersMat).col(i), (geno.stdGenoMultiMarkersMat.col)(j));
+      float kinValueTemp = arma::dot((geno.stdGenoMultiMarkersMat).col(i), (geno.stdGenoMultiMarkersMat).col(j));
       kinValueTemp = kinValueTemp/m_M_Submarker;
       if(kinValueTemp >=  geno.relatednessCutoff) {
         output.push_back( std::pair<int, int>(i, j) );
@@ -2800,6 +2800,7 @@ Rcpp::List refineKin(float relatednessCutoff){
         //size_t ni = iIndexVec.size();
         //size_t ni = iMat.n_rows;
         size_t ni = geno.indiceVec.size();
+	std::cout << "ni: " << ni << std::endl;
  
 	initKinValueVecFinal(ni);
 
@@ -2855,7 +2856,6 @@ Rcpp::List refineKin(float relatednessCutoff){
 
 
 
-	std::cout << "ni: " << ni << std::endl;
        // for(size_t j=0; j < 100; j++){
        //         std::cout << "iIndexVec[j]: " << iIndexVec[j] << std::endl;
        //         std::cout << "jIndexVec[j]: " << jIndexVec[j] << std::endl;
@@ -2878,8 +2878,6 @@ Rcpp::List refineKin(float relatednessCutoff){
 				 a2 = (geno.indiceVec)[j].second + 1;
 				 iIndexVec2.push_back(a1);
 				 jIndexVec2.push_back(a2);
-
-
 
                         kinValueVec2.push_back((geno.kinValueVecFinal)[j]);
                 }
@@ -2951,8 +2949,6 @@ arma::fvec testTime(int i, arma::fcolvec & m_bVec){
 
 
 // [[Rcpp::export]]
-void Rcpp_subtractMat_elwise(NumericMatrix & X, NumericMatrix & Y){
-  unsigned int ncol = X.ncol();
   unsigned int nrow = X.nrow();
   int counter = 0;
   for (unsigned int j=0; j<ncol; j++) {
@@ -2962,3 +2958,5 @@ void Rcpp_subtractMat_elwise(NumericMatrix & X, NumericMatrix & Y){
   }
 //  return X;
 }
+G/[[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>

@@ -2,7 +2,7 @@
 #'
 #' @param plinkFile character. Path to plink file to be used for calculating the sparse GRM
 #' @param outputPrefix character. Path to the output files with prefix
-#' @param numRandomMarkerforSparseKin integer. number of randomly selected markers (MAF >= 0.01) to be used to identify related samples for sparse GRM. By default, 500
+#' @param numRandomMarkerforSparseKin integer. number of randomly selected markers (MAF >= 0.01) to be used to identify related samples for sparse GRM. By default, 1000
 #' @param relatednessCutoff float. The threshold to treat two samples as unrelated if IsSparseKin is TRUE. By default, 0.125
 #' @param memoryChunk integer or float. The size (Gb) for each memory chunk. By default, 2
 #' @param isDiagofKinSetAsOne  logical. Whether to set the diagnal elements in GRM to be 1. By default, FALSE
@@ -11,7 +11,7 @@
 #' @export
 createSparseGRM = function(plinkFile = "", 
 		outputPrefix="",
-                numRandomMarkerforSparseKin = 500,
+                numRandomMarkerforSparseKin = 1000,
                 relatednessCutoff = 0.125,
 		memoryChunk = 2,
 	        isDiagofKinSetAsOne = FALSE,

@@ -45,6 +45,8 @@ The following R pakages need to be installed for running SAIGE:
 Source code for all versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl/AADFqdssvOBjbWZch6Q9zYNaa?dl=0
 
 # Log for fixing bugs
+* 0.35.5 (fix a bug for updating predicted values in the model fit for binary traits. Added a function to create a sparse GRM only for a data set)
+
 * 0.35.3 (this is a clean version for single-variance assoc tests, gene-based tests, and conditional analysis)
 
 * 0.35.2.3 (this version works with the conditonal analysis and gene-based tests)

@@ -49,6 +49,18 @@ Rscript step2_SPAtests.R \
 
 
 #For gene-based test
+#step 0: create a sparse GRM for a data set. This sparse GRM only needs to be created once for each data set, e.g. a biobank,  and can be used for all different phenotypes as long as all tested samples are in the sparse GRM. 
+Rscript createSparseGRM.R	\
+	--plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+	--nThreads=4  \
+	--outputPrefix=./sparseGRM	\
+	--numRandomMarkerforSparseKin=1000	\
+	--relatednessCutoff=0.125
+
+
+
+
+
 
 #step 1: fit the NULL glmm
 #step 1 model result from the single-variant assoc test can be re-used, except that for gene-based tests, variance ratios for multiple MAC categories and a sparse GRM need to be used. If IsSparseKin=TRUE and no sparseSigmaFile and sparseSigmaSampleIDFile are specified, a sparse GRM will be created based on the relatednessCutoff. sparseSigmaFile and sparseSigmaSampleIDFile can be used to specify a pre-calcuated sparse GRM and the sample ids for the sparse GRM. Tested samples would be a subset of samples in the pre-calcuated GRM. 
