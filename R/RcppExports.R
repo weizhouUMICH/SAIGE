@@ -249,6 +249,10 @@ testTime <- function(i, m_bVec) {
     .Call('_SAIGE_testTime', PACKAGE = 'SAIGE', i, m_bVec)
 }
 
+Rcpp_subtractMat_elwise <- function(X, Y) {
+    invisible(.Call('_SAIGE_Rcpp_subtractMat_elwise', PACKAGE = 'SAIGE', X, Y))
+}
+
 SetSampleIdx_forGenetest_vcfDosage <- function(sample_idx, Ntest) {
     invisible(.Call('_SAIGE_SetSampleIdx_forGenetest_vcfDosage', PACKAGE = 'SAIGE', sample_idx, Ntest))
 }

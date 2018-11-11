@@ -21,7 +21,11 @@ savvy::indexed_reader marker_file;
 //std::size_t sample_size = marker_file.samples().size();
 std::size_t sample_size;
 std::vector<float> group_matrix;
-std::vector< float > dosagesforOneMarker;
+std::vector<float > dosagesforOneMarker;
+std::vector<int > jIndexforOneMarker;
+std::vector<int > iIndexforOneMarker;
+std::vector<int > iIndexVec;
+std::vector<int > jIndexVec;
 
 std::vector<int> genetest_sample_idx_vcfDosage;
 int genetest_samplesize_vcfDosage;
@@ -83,9 +87,9 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
   if (it != end){
     //group_matrix.resize(it.sites().size() * sample_size);
     //group_matrix.reserve(it.sites().size() * genetest_samplesize_vcfDosage);
-    std::size_t missing_cnt = 0;
+    int missing_cnt = 0;
     std::vector< int > indexforMissing;
-    std::size_t cnt = 0;
+    int cnt = 0;
     float AC = 0;
     std::vector<std::string> markerIDs;
     std::vector<float> markerAFs;
@@ -99,7 +103,9 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
       missing_cnt = 0;
       indexforMissing.clear();
       dosagesforOneMarker.clear();
-      dosagesforOneMarker.resize(genetest_samplesize_vcfDosage);
+      iIndexforOneMarker.clear();
+      jIndexforOneMarker.clear();
+//      dosagesforOneMarker.resize(genetest_samplesize_vcfDosage);
 
 
 //  std::cout << "here3!" << std::endl; 
@@ -129,9 +135,15 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
 	      //if(i < 1000){
 	      //std::cout << "*dose_it " << *dose_it << std::endl;	
 	      //std::cout << "i " << i << std::endl;	
-	    //}	
-            dosagesforOneMarker[genetest_sample_idx_vcfDosage[i]] = *dose_it;
+	    //}
+		if(*dose_it > 0){	
+			dosagesforOneMarker.push_back(*dose_it);
+			jIndexforOneMarker.push_back(cnt+1);
+			iIndexforOneMarker.push_back(genetest_sample_idx_vcfDosage[i]+1);
+            		//dosagesforOneMarker[genetest_sample_idx_vcfDosage[i]] = *dose_it;
             AC = AC + *dose_it;
+	    }	
+
           }
         } 
       //group_matrix[cnt * sample_size + dose_it.offset()] = *dose_it;
@@ -150,22 +162,29 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
 	  std::cout << "missing_cnt > 0!" << std::endl;
           float imputeDosage = 2*AF;
           for (unsigned int i = 0; i < indexforMissing.size(); i++){
-            dosagesforOneMarker[indexforMissing[i]] = imputeDosage;
+		dosagesforOneMarker.push_back(imputeDosage);
+		jIndexforOneMarker.push_back(cnt+1);
+		iIndexforOneMarker.push_back(indexforMissing[i]+1);
+            //dosagesforOneMarker[indexforMissing[i]] = imputeDosage;
           }
        }
         group_matrix.insert(std::end(group_matrix), std::begin(dosagesforOneMarker), std::end(dosagesforOneMarker));
+        iIndexVec.insert(std::end(iIndexVec), std::begin(iIndexforOneMarker), std::end(iIndexforOneMarker));
+        jIndexVec.insert(std::end(jIndexVec), std::begin(jIndexforOneMarker), std::end(jIndexforOneMarker));
         cnt = cnt + 1;
         markerIDs.push_back(marker_id);
         markerAFs.push_back(AF);
         //std::cout << "MAF: " << MAF << " minMAF: " << minMAF << " maxMAF: " << maxMAF << std::endl;
 	//std::cout << "marker_id: " << marker_id << std::endl;
       }
-    }  
+    } //for ( ; it != end; ++it)  
     //group_matrix.resize(sample_size * cnt);
     result["dosages"] = group_matrix;
     result["markerIDs"] = markerIDs;
     result["markerAFs"] = markerAFs;
     result["cnt"] = cnt;
+    result["iIndex"] = iIndexVec;
+    result["jIndex"] = jIndexVec;
   }else{
     //if there is it === end
     result["cnt"] = 0;

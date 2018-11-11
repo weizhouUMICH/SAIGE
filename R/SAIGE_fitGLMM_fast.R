@@ -171,7 +171,8 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     if(verbose) cat("\nIteration ", i, tau, ":\n")
     alpha0 = re.coef$alpha
     tau0 = tau
-      cat("tau0_v1: ", tau0, "\n")
+    cat("tau0_v1: ", tau0, "\n")
+    eta0 = eta
 
     # use Get_Coef before getAIScore        
     re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
@@ -290,6 +291,18 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   }
 
   re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne)})
+
+  #test time
+#  for(a in 1:100){
+#  time1 = proc.time()
+#  Get_OneSNP_StdGeno(a-1)
+#  time2 = proc.time()
+#  timediff = time2 - time1
+#  print(timediff)
+#  }
+#  break
+
+  #test time
 
   if(verbose){
     print("Genotype reading is done")

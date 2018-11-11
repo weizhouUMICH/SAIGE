@@ -795,6 +795,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Rcpp_subtractMat_elwise
+void Rcpp_subtractMat_elwise(NumericMatrix& X, NumericMatrix& Y);
+RcppExport SEXP _SAIGE_Rcpp_subtractMat_elwise(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix& >::type Y(YSEXP);
+    Rcpp_subtractMat_elwise(X, Y);
+    return R_NilValue;
+END_RCPP
+}
 // SetSampleIdx_forGenetest_vcfDosage
 void SetSampleIdx_forGenetest_vcfDosage(std::vector<int> sample_idx, int Ntest);
 RcppExport SEXP _SAIGE_SetSampleIdx_forGenetest_vcfDosage(SEXP sample_idxSEXP, SEXP NtestSEXP) {
@@ -1191,6 +1202,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_refineKin", (DL_FUNC) &_SAIGE_refineKin, 1},
     {"_SAIGE_shortenList", (DL_FUNC) &_SAIGE_shortenList, 5},
     {"_SAIGE_testTime", (DL_FUNC) &_SAIGE_testTime, 2},
+    {"_SAIGE_Rcpp_subtractMat_elwise", (DL_FUNC) &_SAIGE_Rcpp_subtractMat_elwise, 2},
     {"_SAIGE_SetSampleIdx_forGenetest_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_forGenetest_vcfDosage, 2},
     {"_SAIGE_setMAFcutoffs", (DL_FUNC) &_SAIGE_setMAFcutoffs, 2},
     {"_SAIGE_setvcfDosageMatrix", (DL_FUNC) &_SAIGE_setvcfDosageMatrix, 3},

@@ -1,3 +1,14 @@
+#' Construct a sparse GRM for a given data set 
+#'
+#' @param plinkFile character. Path to plink file to be used for calculating the sparse GRM
+#' @param outputPrefix character. Path to the output files with prefix
+#' @param numRandomMarkerforSparseKin integer. number of randomly selected markers (MAF >= 0.01) to be used to identify related samples for sparse GRM. By default, 500
+#' @param relatednessCutoff float. The threshold to treat two samples as unrelated if IsSparseKin is TRUE. By default, 0.125
+#' @param memoryChunk integer or float. The size (Gb) for each memory chunk. By default, 2
+#' @param isDiagofKinSetAsOne  logical. Whether to set the diagnal elements in GRM to be 1. By default, FALSE
+#' @param nThreads integer. Number of threads to be used. By default, 1 
+#' @return a file ended with sampleIDs.txt that contains sample IDs for the sparse GRM and a file ended with .sparseGRM.mtx that contains the sparse GRM 
+#' @export
 createSparseGRM = function(plinkFile = "", 
 		outputPrefix="",
                 numRandomMarkerforSparseKin = 500,
