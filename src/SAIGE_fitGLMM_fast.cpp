@@ -1579,8 +1579,8 @@ double get_cpu_time(){
 // [[Rcpp::export]]
 arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::fvec& bVec, int maxiterPCG, float tolPCG){
 	           //  Start Timers
-    double wall0 = get_wall_time();
-    double cpu0  = get_cpu_time();
+//    double wall0 = get_wall_time();
+//    double cpu0  = get_cpu_time();
 
 //	 std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 	//cout << "HELLO: "  << endl;
@@ -1687,11 +1687,11 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
   	}
   	cout << "iter from getPCG1ofSigmaAndVector " << iter << endl;
 
-        double wall1 = get_wall_time();
-    double cpu1  = get_cpu_time();
+//        double wall1 = get_wall_time();
+//    double cpu1  = get_cpu_time();
 
-    cout << "Wall Time = " << wall1 - wall0 << endl;
-    cout << "CPU Time  = " << cpu1  - cpu0  << endl;
+//    cout << "Wall Time = " << wall1 - wall0 << endl;
+//    cout << "CPU Time  = " << cpu1  - cpu0  << endl;
 	
 //	std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
 //        std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() <<std::endl;
@@ -2947,16 +2947,3 @@ arma::fvec testTime(int i, arma::fcolvec & m_bVec){
 	return(mvec);
 }
 
-
-// [[Rcpp::export]]
-  unsigned int nrow = X.nrow();
-  int counter = 0;
-  for (unsigned int j=0; j<ncol; j++) {
-    for (unsigned int i=0; i<nrow; i++)  {
-      Y[i,j] = X[i,j] - Y[i,j];
-    }
-  }
-//  return X;
-}
-G/[[Rcpp::depends(RcppArmadillo)]]
-#include <RcppArmadillo.h>
