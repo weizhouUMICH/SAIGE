@@ -344,6 +344,7 @@ SPAGMMATtest = function(dosageFile = "",
         mu.a<-as.vector(mu)
       }
       obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))      
+      
     }else{
       cat("LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
       indChromCheck = TRUE
@@ -437,7 +438,9 @@ SPAGMMATtest = function(dosageFile = "",
     y0Index.sub = which(y.sub == 0)
     NCtrl.sub = length(y0Index.sub)
     mu.a.sub = mu.a[missingind]
-    mu2.a.sub = mu2.a[missingind]
+    if(traitType == "binary"){
+      mu2.a.sub = mu2.a[missingind]
+    }
     obj.noK.sub$X1 = obj.noK.sub$X1[missingind,]
     #print(obj.noK.sub$X1)	
     obj.noK.sub$XXVX_inv = obj.noK.sub$XXVX_inv[missingind,]
@@ -490,9 +493,9 @@ SPAGMMATtest = function(dosageFile = "",
 	  if(Nmiss > 0){
 	     mu.sub = mu[missingind]	
              mu.a.sub = mu.a[missingind]
-	     mu2.a.sub<-mu.a.sub *(1-mu.a.sub)
+	     #mu2.a.sub<-mu.a.sub *(1-mu.a.sub)
 	     #obj.noK.sub = obj.noK	
-	     obj.noK.sub$XVX = t(obj.noK.sub$X1) %*% (obj.noK.sub$X1 * mu2.a.sub)
+	     obj.noK.sub$XVX = t(obj.noK.sub$X1) %*% (obj.noK.sub$X1)
              obj.noK.sub$S_a = colSums(obj.noK.sub$X1 * (y.sub - mu.a.sub))
           }
 	}
