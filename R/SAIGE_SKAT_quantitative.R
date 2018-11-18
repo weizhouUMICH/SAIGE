@@ -445,6 +445,8 @@ if(traitType == "quantitative"){
 	#  saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null, ratioVec)
 #	 cat("colSums(Gmat): ", colSums(Gmat), "\n")
 	 #saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null, ratioVec, Z_cond=dosage_cond, Z_cond_es=OUT_cond[,1], max_maf = maxMAF, sparseSigma = sparseSigma, method = "optimal.adj")
+	#print(Gmat[1:20,1:4])
+	#print(colMeans(Gmat))
 	 saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null, ratioVec, G2_cond=dosage_cond, G2_cond_es=OUT_cond[,1], max_maf = maxMAF, sparseSigma = sparseSigma, method = "optimal.adj")
 		
 
@@ -912,6 +914,9 @@ SAIGE_SKAT_withRatioVec_oldAugust13  = function(G1, obj, ratioVec, G2_cond = NUL
         n = nrow(G1)
 	cat("m =", m, "\n") 
 	#cat(colSums(G1),"\n")
+	
+
+
 
         id_include<-1:n
         # Added by SLEE 4/24/2017
@@ -952,7 +957,7 @@ SAIGE_SKAT_withRatioVec_oldAugust13  = function(G1, obj, ratioVec, G2_cond = NUL
         	markerNumbyMAC = c(sum(MACvec_indVec == 1), sum(MACvec_indVec == 2), sum(MACvec_indVec == 3), sum(MACvec_indVec == 4), sum(MACvec_indVec == 5), sum(MACvec_indVec == 6))
 
 
-	#         If G1 is sparse, change it to the sparse matrix
+#	         If G1 is sparse, change it to the sparse matrix
         	if(mean(G1) < 0.1){
                   G1 = as(G1, "sparseMatrix")
         	}
@@ -1107,19 +1112,13 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
         obj.noK = obj$obj.noK
         m = ncol(G1)
         n = nrow(G1)
-
-
-	if(mean(G1) < 0.1){
-	       	G1 = as(G1, "sparseMatrix")
-         }
-
-
 	MAF = colMeans(G1)/2
 
 	cat("m =", m, "\n")
+	#print(MAF)
         #cat(colSums(G1),"\n")
-	print("gc1")
-        gc(verbose = T)
+	#print("gc1")
+        #gc(verbose = T)
         id_include<-1:n
         # Added by SLEE 4/24/2017
         out.method<-SKAT:::SKAT_Check_Method(method,r.corr, n=n, m=m)
@@ -1133,8 +1132,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 #	print(missing_cutoff)
 #	print(max_maf)
 #	print(estimate_MAF)
-	 print("gc2")
-        gc(verbose = T)
+	# print("gc2")
+        #gc(verbose = T)
 
 
 #        out.z<-SKAT:::SKAT_MAIN_Check_Z(G1, n, id_include, SetID, weights, weights.beta, impute.method, is_check_genotype, is_dosage, missing_cutoff, max_maf=1, estimate_MAF=estimate_MAF)
@@ -1144,8 +1143,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 	}
 
 #	rm(G1)	
-	print("gc3")
-        gc(verbose = T)
+	#print("gc3")
+        #gc(verbose = T)
 
 #        if(out.z$return ==1){
 #                out.z$param$n.marker<-m
@@ -1161,7 +1160,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 #        gc(verbose = T)
 
 
-        cat("m", m, "\n")
+#        cat("m", m, "\n")
         #if more than 1 marker is left, continue the test
         if(m  >  0){
 		#         If G1 is sparse, change it to the sparse matrix
@@ -1179,21 +1178,21 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                         Zall = G1
                 }
 
-		print("gc3c")
-        gc(verbose = T)
+#		print("gc3c")
+#        gc(verbose = T)
 
 
 
 		MACvec_indVec_Zall = getCateVarRatio_indVec(Zall, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
 
-		 print("gc4")
-        gc(verbose = T)
+#		 print("gc4")
+#        gc(verbose = T)
 
 
 		rm(Zall)
 
-		 print("gc5")
-        gc(verbose = T)
+#		 print("gc5")
+#        gc(verbose = T)
 
 		GratioMatrixall = getGratioMatrix(MACvec_indVec_Zall, ratioVec)
 		#print(GratioMatrixall)
@@ -1206,8 +1205,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 			MACvec_indVec = MACvec_indVec_Zall
 		}
 
-		 print("gc6")
-        gc(verbose = T)
+#		 print("gc6")
+#        gc(verbose = T)
 
 
                 ##summaize the number of markers falling in each MAC category
@@ -1216,8 +1215,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 			markerNumbyMAC = c(markerNumbyMAC, sum(MACvec_indVec == i))
 		}
 
-		print("gc6a")
-        gc(verbose = T)
+#		print("gc6a")
+#        gc(verbose = T)
 
 #        #         If G1 is sparse, change it to the sparse matrix
 #                if(mean(G1) < 0.1){
@@ -1229,38 +1228,38 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                         #Z_tilde = t(t(Z_tilde) * (weights))
                 }
 
-		print("gc6b")
-        	gc(verbose = T)
+#		print("gc6b")
+#        	gc(verbose = T)
 
 
-                cat("dim(G1)", dim(G1), "\n")
-                cat("dim(obj.noK$XV)", dim(obj.noK$XV), "\n")
-                cat("dim(obj.noK$XXVX_inv)", dim(obj.noK$XXVX_inv), "\n")
-		print(object.size(G1))
-		print(object.size(obj.noK$XV))
-		print(object.size(obj.noK$XXVX_inv))	
+#                cat("dim(G1)", dim(G1), "\n")
+#                cat("dim(obj.noK$XV)", dim(obj.noK$XV), "\n")
+#                cat("dim(obj.noK$XXVX_inv)", dim(obj.noK$XXVX_inv), "\n")
+#		print(object.size(G1))
+#		print(object.size(obj.noK$XV))
+#		print(object.size(obj.noK$XXVX_inv))	
 
-		G1_tilde = obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G1)
-                #G1_tilde = G1  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G1)
+		#G1_tilde = obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G1)
+                G1_tilde = G1  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G1)
 		#G1_tilde = G1 - G1temp
 
-		Rcpp_subtractMat_elwise(G1_tilde, G1)
+		#Rcpp_subtractMat_elwise(G1_tilde, G1)
 
 
-	        gc()	
-		print("gc6c")
-        	gc(verbose = T)
+#	        gc()	
+#		print("gc6c")
+#        	gc(verbose = T)
 
                 Score = as.vector(t(G1) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
-                cat("dim(Score)", length(Score), "\n")
-		print(object.size(G1_tilde))	
-		print(object.size(G1))	
-		print(object.size(obj.noK))	
-		print(object.size(Score))
+#                cat("dim(Score)", length(Score), "\n")
+#		print(object.size(G1_tilde))	
+#		print(object.size(G1))	
+#		print(object.size(obj.noK))	
+#		print(object.size(Score))
 
-		rm(G1)
-	         print("gc7")
-        gc(verbose = T)
+#		rm(G1)
+#	         print("gc7")
+#        gc(verbose = T)
 
                 #compute Score test statistics after conditionining
                 if(!is.null(G2_cond)){
@@ -1277,13 +1276,13 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                         if(!is.null(sparseSigma)){
 #                               cat("first\n")
                                 #G1_tilde_Ps_G1_tilde = t(G1_tilde)%*% solve(sparseSigma) %*% G1_tilde
-				at <- proc.time()
-				print(at-xt)
-                                print("at-xt")
+#				at <- proc.time()
+#				print(at-xt)
+#                                print("at-xt")
                                 G1_tilde_Ps_G1_tilde = getcovM(G1_tilde, G1_tilde, sparseSigma, mu2 = mu2)
-				bt <- proc.time()
-				print(bt-at)
-				print("bt-at")
+#				bt <- proc.time()
+#				print(bt-at)
+#				print("bt-at")
                                 if(!is.null(G2_cond)){
 #                               cat("second\n")
                 #               G1_tilde_Ps_G1_tilde = getcovM(Z_tilde, Z_tilde, sparseSigma)
@@ -1319,7 +1318,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                         Phi = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m])
                         dt = proc.time()
                         #cat("dim(Phi)", dim(Phi), "\n")
-			cat("time: ", at, " ", bt, " ", ct, " ", dt, "\n")
+#			cat("time: ", at, " ", bt, " ", ct, " ", dt, "\n")
                         }else{
                                 G1_tilde_G1_tilde = t(G1_tilde) %*% G1_tilde
 
@@ -1394,8 +1393,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                 }else{
                         re$p.value.cond = NA
                 }
-		 print("gc8")
-        gc(verbose = T)
+#		 print("gc8")
+#        gc(verbose = T)
  #       print(re)
 
          }else{

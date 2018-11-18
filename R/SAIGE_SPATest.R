@@ -91,7 +91,7 @@ SPAGMMATtest = function(dosageFile = "",
 
   # if group file is specified, the region-based test will be performed, otherwise, the single-variant assoc test will be performed. 
 
-  gc(full=T, verbose=T)
+#  gc(full=T, verbose=T)
 
   if(groupFile == ""){
     isGroupTest = FALSE
@@ -127,12 +127,12 @@ SPAGMMATtest = function(dosageFile = "",
     sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
     cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
     #print(sampleInModel$IID[1:10])
-    print("HERERERE")
+#    print("HERERERE")
   #  gc(full=T, verbose=T)
     obj.glm.null = obj.glmm.null$obj.glm.null
     obj.noK = obj.glmm.null$obj.noK   
     traitType = obj.glmm.null$traitType
-    gc(full=T, verbose=T)
+#    gc(full=T, verbose=T)
     if(!LOCO | is.null(obj.glmm.null$LOCO)){
       obj.glmm.null$LOCO = FALSE
       cat("obj.glmm.null$LOCO: ", obj.glmm.null$LOCO, "\n")
@@ -195,7 +195,7 @@ SPAGMMATtest = function(dosageFile = "",
       sampleIndex[is.na(sampleIndex)] = -10  ##with a negative number
       sampleIndex = sampleIndex - 1
 
-  gc(full=T, verbose=T)
+#  gc(full=T, verbose=T)
 
       rm(sampleListinDosage)
       rm(dataMerge)
@@ -279,7 +279,7 @@ SPAGMMATtest = function(dosageFile = "",
   cat("Analysis started at ", startTime, "Seconds\n")
 
 #  if(file.exists(SAIGEOutputFile)){file.remove(SAIGEOutputFile)}
-  gc(verbose=T, full=T)
+#  gc(verbose=T, full=T)
 
   if(!isGroupTest){
     if(dosageFileType == "bgen" | dosageFileType == "vcf"){
@@ -430,7 +430,7 @@ SPAGMMATtest = function(dosageFile = "",
     obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1)
     obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
     indChromCheck = FALSE
-     gc(full=T, verbose=T)
+#     gc(full=T, verbose=T)
 
 
     #cat("obj.glmm.null$LOCO ", obj.glmm.null$LOCO, "\n")
@@ -441,7 +441,7 @@ SPAGMMATtest = function(dosageFile = "",
 
 
 
-	gc(full=T, verbose=T)
+#	gc(full=T, verbose=T)
     }else if(chrom != ""){
       chrom_v2 = as.character(chrom)
       chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
@@ -463,7 +463,7 @@ SPAGMMATtest = function(dosageFile = "",
     stop("ERROR! The type of the trait has to be either binary or quantitative\n")
   }
 
-  gc(verbose=T, full=T)
+#  gc(verbose=T, full=T)
 
 
   if(nrow(varRatioData) == 1){
@@ -522,7 +522,7 @@ SPAGMMATtest = function(dosageFile = "",
     G2tilde_P_G2tilde_inv = NULL
   }
 
-  gc(verbose=T, full=T)
+#  gc(verbose=T, full=T)
 #determine minimum MAF for markers to be tested
   if(minMAC == 0){
     minMAC = 0.5
@@ -759,7 +759,7 @@ SPAGMMATtest = function(dosageFile = "",
      } ####end of while(isVariant)
 
    }else{ #end if(!isGroupTest){
-	 gc(verbose=T, full=T)	
+#	 gc(verbose=T, full=T)	
    #########Group Test
    
      OUT_single = NULL
@@ -822,7 +822,7 @@ SPAGMMATtest = function(dosageFile = "",
        }
 
        write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
-	gc(verbose=T, full=T)	
+#	gc(verbose=T, full=T)	
 
        gf = file(groupFile, "r")
        while ( TRUE ) {
@@ -842,25 +842,34 @@ SPAGMMATtest = function(dosageFile = "",
 	     cat("genetic variants with ", testMinMAF, "<= MAF <= ", maxMAFforGroupTest, "are included for gene-based tests\n") 
              Gx = getGenoOfGene_bgen(bgenFile,bgenFileIndex, marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)
            }
-	   print(object.size(Gx))	
-
+#	   print(object.size(Gx))	
+	   #print(length(Gx$dosages))
            #G0 = Gx$dosages
            cntMarker = Gx$cnt
            cat("cntMarker: ", cntMarker, "\n")
            if(cntMarker > 0){
              #Gmat = matrix(Gx$dosages, byrow=F, ncol = cntMarker)
 	     #Gx$dosages = NULL	
-		Gmat = Matrix:::sparseMatrix(i = as.vector(Gx$iIndex), j = as.vector(Gx$jIndex), x = as.vector(Gx$dosages), symmetric = FALSE, dims = c(N, cntMarker))
 
-	   cat("object.size(obj.glmm.null): ", object.size(obj.glmm.null), "\n")	
-	   gc(verbose=T, full=T)	
+		if(dosageFileType == "vcf"){
+			Gmat = Matrix:::sparseMatrix(i = as.vector(Gx$iIndex), j = as.vector(Gx$jIndex), x = as.vector(Gx$dosages), symmetric = FALSE, dims = c(N, cntMarker))
+		}else{
+			Gmat = matrix(Gx$dosages, byrow=F, ncol = cntMarker)
+			Gmat = as(Gmat, "sparseMatrix")	
+		}
+		#print(colSums(Gmat))
+		#cat("colSums(Gmat)\n")
+		#print(colSums(Gmat))
+
+#	   cat("object.size(obj.glmm.null): ", object.size(obj.glmm.null), "\n")	
+#	   gc(verbose=T, full=T)	
 	
-	   Rprof(tf <- "/net/hunt/disk2/zhowei/project/SAIGE/debug/Wenjian/Nov4/rprof.log", memory.profiling=TRUE)
+#	   Rprof(tf <- "/net/hunt/disk2/zhowei/project/SAIGE/debug/Wenjian/Nov4/rprof.log", memory.profiling=TRUE)
              saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=dosage_cond, G2_cond_es=OUT_cond[,1], kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, singleGClambda = singleGClambda)
-	     gc(verbose=T, full=T)	
-	     Rprof(NULL)
-	     print(summaryRprof(tf))
-		break
+#	     gc(verbose=T, full=T)	
+#	     Rprof(NULL)
+#	     print(summaryRprof(tf))
+#		break
 
              cat("saigeskatTest$p.value: ", saigeskatTest$p.value, "\n")
 
@@ -875,13 +884,13 @@ SPAGMMATtest = function(dosageFile = "",
 		 varRatio_single = varRatio * singleGClambda			
 
 	 	 if(traitType == "quantitative"){
-		Rprof(tf <- "/net/hunt/disk2/zhowei/project/SAIGE/debug/Wenjian/Nov4/rprof_single.log", memory.profiling=TRUE)	
+#		Rprof(tf <- "/net/hunt/disk2/zhowei/project/SAIGE/debug/Wenjian/Nov4/rprof_single.log", memory.profiling=TRUE)	
 		   out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma)
 		   if(singleGClambda != 1){
 		     out1b = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.noK, AC, AF, y, mu, varRatio_single, tauVec, sparseSigma=sparseSigma)  
 		   }
-		Rprof(NULL)
-print(summaryRprof(tf))
+#		Rprof(NULL)
+#print(summaryRprof(tf))
 
   		  }else if(traitType == "binary"){
   		    out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma)
@@ -987,7 +996,7 @@ print(summaryRprof(tf))
   
 }#if(groupTest)
 
-gc(verbose=T, reset = TRUE, full=T)
+#gc(verbose=T, reset = TRUE, full=T)
 #close the dosage file after tests
   if(dosageFileType == "plain"){
     closetestGenoFile_plainDosage()  
