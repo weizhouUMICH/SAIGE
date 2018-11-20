@@ -329,9 +329,8 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 
   X1 = SPAtest:::ScoreTest_wSaddleApprox_Get_X1(X)
 
-
-  #print("X")
-  #print(X)
+#  print("X")
+#  print(X)
   alpha = fit0$coef
   if(verbose) {
     cat("Fixed-effect coefficients:\n")
@@ -415,7 +414,6 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 
     if(verbose) cat("\nIteration ", i, ":\n")
     alpha0 = alpha
-
     tau0 = tau
 #    cat("tau0: ", tau0,"\n")
     fit = fitglmmaiRPCG_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
