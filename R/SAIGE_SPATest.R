@@ -865,7 +865,7 @@ SPAGMMATtest = function(dosageFile = "",
 #	   gc(verbose=T, full=T)	
 	
 #	   Rprof(tf <- "/net/hunt/disk2/zhowei/project/SAIGE/debug/Wenjian/Nov4/rprof.log", memory.profiling=TRUE)
-             saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=dosage_cond, G2_cond_es=OUT_cond[,1], kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, singleGClambda = singleGClambda)
+             saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=dosage_cond, G2_cond_es=OUT_cond[,1], kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu2 = mu2.a)
 #	     gc(verbose=T, full=T)	
 #	     Rprof(NULL)
 #	     print(summaryRprof(tf))
