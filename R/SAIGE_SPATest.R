@@ -91,8 +91,6 @@ SPAGMMATtest = function(dosageFile = "",
 
   # if group file is specified, the region-based test will be performed, otherwise, the single-variant assoc test will be performed. 
 
-#  gc(full=T, verbose=T)
-
   if(groupFile == ""){
     isGroupTest = FALSE
     cat("single-variant association test will be performed\n")
@@ -195,7 +193,6 @@ SPAGMMATtest = function(dosageFile = "",
       sampleIndex[is.na(sampleIndex)] = -10  ##with a negative number
       sampleIndex = sampleIndex - 1
 
-#  gc(full=T, verbose=T)
 
       rm(sampleListinDosage)
       rm(dataMerge)
@@ -323,9 +320,18 @@ SPAGMMATtest = function(dosageFile = "",
       isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
       Gx_cond = getGenoOfGene_vcf(conditionlist, minInfo)
+    print("HERE")
+    #print(Gx_cond)	
+    dosage_cond = Matrix:::sparseMatrix(i = as.vector(Gx_cond$iIndex), j = as.vector(Gx_cond$jIndex), x = as.vector(Gx_cond$dosages), symmetric = FALSE, dims = c(N, Gx_cond$cnt))
+    #print(dim(Gx_cond))	
+      #Gmat = matrix(Gx$dosages, byrow=F, ncol = cntMarker)
+      #Gmat = as(Gmat, "sparseMatrix")
+
     }else if(dosageFileType == "bgen"){
       SetSampleIdx(sampleIndex, N)
       Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist)
+      dosage_cond = matrix(Gx_cond$dosages, byrow=F, ncol = Gx_cond$cnt)	
+      dosage_cond = as(dosage_cond, "sparseMatrix") 
     }else{
       stop("ERROR: conditional analysis can only work for dosageFileType vcf, sav or bgen\n")
     }
@@ -335,9 +341,10 @@ SPAGMMATtest = function(dosageFile = "",
     #G0 = Gx_cond$dosages
     cntMarker = Gx_cond$cnt
 
-    if(cntMarker > 0){
-      dosage_cond = matrix(Gx_cond$dosages, byrow=F, ncol = cntMarker)
-    }else{    #if(cntMarker > 0){
+    if(cntMarker == 0){
+        
+      #dosage_cond = matrix(Gx_cond$dosages, byrow=F, ncol = cntMarker)
+    #}else{    #if(cntMarker > 0){
       cat("WARNING: conditioning markers are not found in the provided dosage file \n")
       #print(dim(dosage_cond))
       isCondition = FALSE
@@ -349,9 +356,8 @@ SPAGMMATtest = function(dosageFile = "",
   }
 
 
+
   ########Binary traits####################
-
-
   if(traitType == "binary"){
     cat("It is a binary trait\n")
     if(!isGroupTest){
@@ -415,6 +421,7 @@ SPAGMMATtest = function(dosageFile = "",
 
   }else if(traitType == "quantitative"){
     cat("It is a quantitative trait\n")
+    mu2.a = NULL
     if(!isGroupTest){
       if(!isCondition){
         resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
@@ -430,7 +437,6 @@ SPAGMMATtest = function(dosageFile = "",
     obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1)
     obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
     indChromCheck = FALSE
-#     gc(full=T, verbose=T)
 
 
     #cat("obj.glmm.null$LOCO ", obj.glmm.null$LOCO, "\n")
@@ -439,9 +445,6 @@ SPAGMMATtest = function(dosageFile = "",
       mu.a<-as.vector(mu)
       obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
 
-
-
-#	gc(full=T, verbose=T)
     }else if(chrom != ""){
       chrom_v2 = as.character(chrom)
       chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
@@ -463,7 +466,6 @@ SPAGMMATtest = function(dosageFile = "",
     stop("ERROR! The type of the trait has to be either binary or quantitative\n")
   }
 
-#  gc(verbose=T, full=T)
 
 
   if(nrow(varRatioData) == 1){
@@ -494,7 +496,9 @@ SPAGMMATtest = function(dosageFile = "",
 	OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
 
       }else if(traitType == "quantitative"){
+	print("TEST")
         out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma)
+	print("TEST2")
         OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
       }
    
@@ -502,16 +506,14 @@ SPAGMMATtest = function(dosageFile = "",
 
     } # end of for(i in 1:ncol(dosage_cond)){
 
+   #getCovM_nopcg<-function(G1, G2, XV, XXVX_inv, sparseSigma=NULL, mu2 = NULL){
 
-    dosage_cond_tilde<-dosage_cond  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% dosage_cond)
-    Mcond = ncol(dosage_cond_tilde)
+    #dosage_cond_tilde<-dosage_cond  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% dosage_cond)
+    Mcond = ncol(dosage_cond)
     covM = matrix(0,nrow=Mcond+1, ncol = Mcond+1)
 
-    if(traitType == "quantitative"){
-      covMsub = getcovM(dosage_cond_tilde, dosage_cond_tilde, sparseSigma)
-    }else if(traitType == "binary"){
-      covMsub = getcovM(dosage_cond_tilde, dosage_cond_tilde, sparseSigma, mu2 = mu2.a)
-    }
+    covMsub = getCovM_nopcg(G1 = dosage_cond, G2 = dosage_cond, obj.noK$XV, obj.noK$XXVX_inv, sparseSigma=sparseSigma, mu2 = mu2.a)	
+    print("TEST3")
     covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
 
     GratioMatrix_cond = getVarRatio(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
@@ -705,13 +707,22 @@ SPAGMMATtest = function(dosageFile = "",
            }else{
              G0_v2 = G0
            }
-           G0_tilde = G0_v2 - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0_v2)
+           #G0_tilde = G0_v2 - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0_v2)
 
-           if(traitType == "quantitative"){  
-             covM[1,2:ncol(covM)] = getcovM(G0_tilde, dosage_cond_tilde, sparseSigma)			
-           }else if(traitType == "binary"){
-             covM[1,2:ncol(covM)] = getcovM(G0_tilde, dosage_cond_tilde, sparseSigma, mu2 = mu2.a)
-           }
+           #if(traitType == "quantitative"){  
+           #  covM[1,2:ncol(covM)] = getcovM(G0_tilde, dosage_cond_tilde, sparseSigma)			
+           #}else if(traitType == "binary"){
+           #  covM[1,2:ncol(covM)] = getcovM(G0_tilde, dosage_cond_tilde, sparseSigma, mu2 = mu2.a)
+           #}
+	   G0_v2 = matrix(G0_v2, ncol=1)
+
+	   covM[1,2:ncol(covM)] = getCovM_nopcg(G1 = G0_v2, G2 = dosage_cond, obj.noK$XV, obj.noK$XXVX_inv, sparseSigma=sparseSigma, mu2 = mu2.a)
+	   
+
+
+	   print("covM")
+	   print(covM)
+
 
            G1tilde_P_G2tilde = covM[1,c(2:ncol(covM))]*(GratioMatrixall[1,c(2:ncol(covM))])
 
@@ -852,6 +863,8 @@ SPAGMMATtest = function(dosageFile = "",
 	     #Gx$dosages = NULL	
 
 		if(dosageFileType == "vcf"){
+			#print(Gx$jIndex)
+			#print(Gx$iIndex)
 			Gmat = Matrix:::sparseMatrix(i = as.vector(Gx$iIndex), j = as.vector(Gx$jIndex), x = as.vector(Gx$dosages), symmetric = FALSE, dims = c(N, cntMarker))
 		}else{
 			Gmat = matrix(Gx$dosages, byrow=F, ncol = cntMarker)
@@ -1463,7 +1476,7 @@ if(maf < 0.05){
     }
     S<- S1+S2
     Tstat = S/tauVec[1]
-  }else{
+}else{
 #    cat("HERE2b\n")
     XVG0 = eigenMapMatMult(obj.noK$XV, G0)
     G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
@@ -1474,17 +1487,13 @@ if(maf < 0.05){
     var2 = innerProduct(g, g)
     var1 = var2 * varRatio
     Tstat = (q-m1)/tauVec[1]
-  }
+}
 
 if(!is.null(sparseSigma)){
   XVG0 = eigenMapMatMult(obj.noK$XV, G0)
   g = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
-#  print(G0)
-#  print(g)
-  pcginvSigma<-pcg(sparseSigma, g)
-#  print(pcginvSigma)
-#  pcginvSigma = solve(sparseSigma) %*% g
-#  print(solve(sparseSigma))
+  #pcginvSigma<-pcg(sparseSigma, g)
+  pcginvSigma<-solve(sparseSigma, g, sparse=T)
   var2 = as.matrix(t(g) %*% pcginvSigma) 
 #  cat("var2 is ", var2, "\n")
   var1 = var2 * varRatio 
@@ -1496,26 +1505,21 @@ if(isCondition){
 
   T2stat = OUT_cond[,2]
   #m_all = nrow(GratioMatrixall)
-
-
-#  G1tilde_P_G2tilde = (covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)]))
-#  G2tilde_P_G2tilde_inv = solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)]))
-
  
-#  cat("Tstat: ", Tstat, "\n")
+  cat("Tstat: ", Tstat, "\n")
   G1tilde_P_G2tilde = matrix(G1tilde_P_G2tilde,nrow=1)
   #Tstat_c = Tstat - covM[1,c(2:m_all)] %*% (solve(covM[c(2:m_all),c(2:m_all)])) %*% T2stat
   Tstat_c = Tstat - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% T2stat
 #  cat("G1tilde_P_G2tilde: ", G1tilde_P_G2tilde, "\n")
 #  print(dim(G1tilde_P_G2tilde))
 #  print(dim(G2tilde_P_G2tilde_inv))
-#  cat("G2tilde_P_G2tilde_inv: ", G2tilde_P_G2tilde_inv, "\n")
+  cat("G2tilde_P_G2tilde_inv: ", G2tilde_P_G2tilde_inv, "\n")
 #  cat("T2stat: ", T2stat, "\n")
 
   #var1_c = var1 - (covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
   var1_c = var1 - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
 #  cat("var1: ", var1, "\n")
-#  cat("var1_c: ", var1_c, "\n")
+  cat("var1_c: ", var1_c, "\n")
 #  cat("G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde): ", G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde), "\n")
 #(covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
 
@@ -1649,7 +1653,8 @@ if(!isCondition){
 
 
 scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
-        #g = G/sqrt(AC)
+
+  #g = G/sqrt(AC)
   q = innerProduct(g, y)
   m1 = innerProduct(g, mu)
   Tstat = q-m1
@@ -1657,7 +1662,8 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
   var1 = var2 * varRatio
 
   if(!is.null(sparseSigma)){
-    pcginvSigma<-pcg(sparseSigma, g)
+    #pcginvSigma<-pcg(sparseSigma, g)
+    pcginvSigma<-solve(sparseSigma, g, sparse=T)
     var2b = as.matrix(t(g) %*% pcginvSigma)
     var1 = var2b * varRatio
   }
@@ -1730,37 +1736,4 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
 
   return(out1)
 }
-
-########test memory usage#########
-###https://stackoverflow.com/questions/1358003/tricks-to-manage-the-available-memory-in-an-r-session
-
-.ls.objects <- function (pos = 1, pattern, order.by,
-                        decreasing=FALSE, head=FALSE, n=5) {
-    napply <- function(names, fn) sapply(names, function(x)
-                                         fn(get(x, pos = pos)))
-    names <- ls(pos = pos, pattern = pattern)
-    obj.class <- napply(names, function(x) as.character(class(x))[1])
-    obj.mode <- napply(names, mode)
-    obj.type <- ifelse(is.na(obj.class), obj.mode, obj.class)
-    obj.prettysize <- napply(names, function(x) {
-                           format(utils::object.size(x), units = "auto") })
-    obj.size <- napply(names, object.size)
-    obj.dim <- t(napply(names, function(x)
-                        as.numeric(dim(x))[1:2]))
-    vec <- is.na(obj.dim)[, 1] & (obj.type != "function")
-    obj.dim[vec, 1] <- napply(names, length)[vec]
-    out <- data.frame(obj.type, obj.size, obj.prettysize, obj.dim)
-    names(out) <- c("Type", "Size", "PrettySize", "Length/Rows", "Columns")
-    if (!missing(order.by))
-        out <- out[order(out[[order.by]], decreasing=decreasing), ]
-    if (head)
-        out <- head(out, n)
-    out
-}
-
-# shorthand
-lsos <- function(..., n=10000) {
-    .ls.objects(..., order.by="Size", decreasing=TRUE, head=TRUE, n=n)
-}
-
 

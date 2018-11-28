@@ -46,7 +46,20 @@ Rscript step2_SPAtests.R \
         --IsOutputAFinCaseCtrl=TRUE     \
 	--condition=1:4_1/2	
 
-
+Rscript step2_SPAtests_old.R \
+        --vcfFile=./input/genotype_10markers.vcf.gz \
+        --vcfFileIndex=./input/genotype_10markers.vcf.gz.tbi \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype_conditional_old.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --condition=1:4_1/2
 
 #For gene-based test
 #step 0: create a sparse GRM for a data set. This sparse GRM only needs to be created once for each data set, e.g. a biobank,  and can be used for all different phenotypes as long as all tested samples are in the sparse GRM. 
@@ -310,7 +323,7 @@ Rscript step2_SPAtests.R \
         --SAIGEOutputFile=./output/example_quantitative.SAIGE.gene.txt \
         --numLinesOutput=1 \
         --groupFile=./input/groupFile_geneBasedtest.txt    \
-        --sparseSigmaFile=./output/example_quantitative_cate.varianceRatio.txt.sparseSigma.mtx       \
+        --sparseSigmaFile=./output/example_quantitative_cate.varianceRatio.txt_relatednessCutoff_0.125.sparseSigma.mtx       \
         --IsOutputAFinCaseCtrl=TRUE     \
         --IsSingleVarinGroupTest=TRUE	
 
@@ -330,7 +343,7 @@ Rscript step2_SPAtests.R \
 	--SAIGEOutputFile=./output/example_quantitative.SAIGE.gene_conditional.txt \
         --numLinesOutput=1 \
         --groupFile=./input/groupFile_geneBasedtest.txt    \
-        --sparseSigmaFile=./output/example_quantitative_cate.varianceRatio.txt.sparseSigma.mtx       \
+        --sparseSigmaFile=./output/example_quantitative_cate.varianceRatio.txt_relatednessCutoff_0.125.sparseSigma.mtx       \
         --IsOutputAFinCaseCtrl=TRUE     \
         --IsSingleVarinGroupTest=TRUE   \
 	--condition=chr1:32302_A/C 

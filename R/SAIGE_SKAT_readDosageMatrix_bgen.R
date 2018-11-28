@@ -37,7 +37,7 @@ getGenoOfGene_bgen = function(bgenFile,bgenFileIndex,marker_group_line, minMAF=0
     result$markerAFs = markerAFs
     result$cnt = cnt
     print("results")	
-     print(result$markerIDs)
+    print(result$markerIDs)
    print(result$markerAFs)	
   }else{
     result$cnt = 0
