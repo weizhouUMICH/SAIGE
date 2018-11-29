@@ -1582,77 +1582,36 @@ double get_cpu_time(){
 
 
 
-
-
-
-// http://gallery.rcpp.org/articles/as-and-wrap-for-sparse-matrices/
-namespace Rcpp {
-
-     // converts an SEXP object from R which was created as a sparse
-     // matrix via the Matrix package) into an Armadillo sp_mat matrix
-     //
-     // NB: called as_() here as a similar method is already in the
-     //     RcppArmadillo sources
-     //
-
-     // The following as_() only applies to dgCMatrix.
-     // For other types of sparse matrix conversion,
-     // you might want to check the source code of RcppArmadillo.
-     template <typename T> arma::SpMat<T> as_(SEXP sx) {
-
-       // Rcpp representation of template type
-       const int RTYPE = Rcpp::traits::r_sexptype_traits<T>::rtype;
-
-       // instantiate S4 object with the sparse matrix passed in
-       S4 mat(sx);
-       IntegerVector dims = mat.slot("Dim");
-       IntegerVector i = mat.slot("i");
-       IntegerVector p = mat.slot("p");
-       Vector<RTYPE> x = mat.slot("x");
-
-       // create sp_mat object of appropriate size
-       arma::SpMat<T> res(dims[0], dims[1]);
-
-       // In order to access the internal arrays of the SpMat class
-       res.sync();
-
-       // Making space for the elements
-       res.mem_resize(static_cast<unsigned>(x.size()));
-
-       // Copying elements
-       std::copy(i.begin(), i.end(), arma::access::rwp(res.row_indices));
-       std::copy(p.begin(), p.end(), arma::access::rwp(res.col_ptrs));
-       std::copy(x.begin(), x.end(), arma::access::rwp(res.values));
-
-       return res;
-     }
-
- }
-
-arma::SpMat<float> * sparseGRMinCPtr(2,2);
+arma::SpMat<float> sparseGRMinC(2,2);
 
 // [[Rcpp::export]]
 void floatSparseMatrix(arma::SpMat<float> & m) {
     //Rcpp::Rcout << m << std::endl;  // use the i/o code from Armadillo
-       const int RTYPE = Rcpp::traits::r_sexptype_traits<float>::rtype;	
+       //const int RTYPE = Rcpp::traits::r_sexptype_traits<float>::rtype;	
        //Rcpp::S4 mat(m);
       // Rcpp::IntegerVector dims = mat.slot("Dim");
-       m.sync();
-       Rcpp::Vector<RTYPE> x(m.values, m.values + m.n_nonzero ) ;
-       Rcpp::IntegerVector i(m.row_indices, m.row_indices + m.n_nonzero);
-       Rcpp::IntegerVector p(m.col_ptrs, m.col_ptrs + m.n_cols+1 ) ;
+        m.sync();
+	std::cout << "OKKKKKKKK" << std::endl;
+	std::cout << m.n_rows << std::endl;
+	std::cout << m.n_cols << std::endl;
+	std::cout << "OKKKKKKKK" << std::endl;
+       //Rcpp::Vector<RTYPE> x(m.values, m.values + m.n_nonzero ) ;
+       //Rcpp::IntegerVector i(m.row_indices, m.row_indices + m.n_nonzero);
+       //Rcpp::IntegerVector p(m.col_ptrs, m.col_ptrs + m.n_cols+1 ) ;
 
 
 
  	(sparseGRMinC).set_size(m.n_rows, m.n_cols );
 	(sparseGRMinC).sync();
 	// Making space for the elements
-       (sparseGRMinC).mem_resize(static_cast<unsigned>(x.size()));
+       (sparseGRMinC).mem_resize(static_cast<unsigned>(m.size()));
 
        // Copying elements
-       std::copy(i.begin(), i.end(), arma::access::rwp((sparseGRMinC).row_indices));
-       std::copy(p.begin(), p.end(), arma::access::rwp((sparseGRMinC).col_ptrs));
-       std::copy(x.begin(), x.end(), arma::access::rwp((sparseGRMinC).values));	
+       //std::copy(i.begin(), i.end(), arma::access::rwp((sparseGRMinC).row_indices));
+       //std::copy(p.begin(), p.end(), arma::access::rwp((sparseGRMinC).col_ptrs));
+       //std::copy(x.begin(), x.end(), arma::access::rwp((sparseGRMinC).values));	
+
+	sparseGRMinC = m;
 
 	std::cout << "sparseGRMinC.n_rows: " << sparseGRMinC.n_rows << std::endl;
 	std::cout << "sparseGRMinC.n_cols: " << sparseGRMinC.n_cols << std::endl;
