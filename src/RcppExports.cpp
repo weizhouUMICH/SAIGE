@@ -7,16 +7,60 @@
 
 using namespace Rcpp;
 
-// eigenMapMatMult
-SEXP eigenMapMatMult(const Eigen::Map<Eigen::MatrixXd>& A, Eigen::Map<Eigen::MatrixXd>& B);
-RcppExport SEXP _SAIGE_eigenMapMatMult(SEXP ASEXP, SEXP BSEXP) {
+// SetSampleIdx_forGenetest_vcfDosage
+void SetSampleIdx_forGenetest_vcfDosage(std::vector<int> sample_idx, int Ntest);
+RcppExport SEXP _SAIGE_SetSampleIdx_forGenetest_vcfDosage(SEXP sample_idxSEXP, SEXP NtestSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<int> >::type sample_idx(sample_idxSEXP);
+    Rcpp::traits::input_parameter< int >::type Ntest(NtestSEXP);
+    SetSampleIdx_forGenetest_vcfDosage(sample_idx, Ntest);
+    return R_NilValue;
+END_RCPP
+}
+// setMAFcutoffs
+void setMAFcutoffs(float minVal, float maxVal);
+RcppExport SEXP _SAIGE_setMAFcutoffs(SEXP minValSEXP, SEXP maxValSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type minVal(minValSEXP);
+    Rcpp::traits::input_parameter< float >::type maxVal(maxValSEXP);
+    setMAFcutoffs(minVal, maxVal);
+    return R_NilValue;
+END_RCPP
+}
+// setvcfDosageMatrix
+bool setvcfDosageMatrix(const std::string& vcfFileName, const std::string& vcfFileIndex, const std::string& vcfField);
+RcppExport SEXP _SAIGE_setvcfDosageMatrix(SEXP vcfFileNameSEXP, SEXP vcfFileIndexSEXP, SEXP vcfFieldSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type A(ASEXP);
-    Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd>& >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(eigenMapMatMult(A, B));
+    Rcpp::traits::input_parameter< const std::string& >::type vcfFileName(vcfFileNameSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type vcfFileIndex(vcfFileIndexSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type vcfField(vcfFieldSEXP);
+    rcpp_result_gen = Rcpp::wrap(setvcfDosageMatrix(vcfFileName, vcfFileIndex, vcfField));
     return rcpp_result_gen;
+END_RCPP
+}
+// getGenoOfGene_vcf
+Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo);
+RcppExport SEXP _SAIGE_getGenoOfGene_vcf(SEXP marker_group_lineSEXP, SEXP minInfoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type marker_group_line(marker_group_lineSEXP);
+    Rcpp::traits::input_parameter< float >::type minInfo(minInfoSEXP);
+    rcpp_result_gen = Rcpp::wrap(getGenoOfGene_vcf(marker_group_line, minInfo));
+    return rcpp_result_gen;
+END_RCPP
+}
+// closevcfDosageFile
+void closevcfDosageFile();
+RcppExport SEXP _SAIGE_closevcfDosageFile() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    closevcfDosageFile();
+    return R_NilValue;
 END_RCPP
 }
 // closeGenoFile_plink
@@ -299,9 +343,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// floatSparseMatrix
+void floatSparseMatrix(arma::SpMat<float>& m);
+RcppExport SEXP _SAIGE_floatSparseMatrix(SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::SpMat<float>& >::type m(mSEXP);
+    floatSparseMatrix(m);
+    return R_NilValue;
+END_RCPP
+}
 // getPCG1ofSigmaAndVector
-arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& bVec, int maxiterPCG, float tolPCG);
-RcppExport SEXP _SAIGE_getPCG1ofSigmaAndVector(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP bVecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& bVec, int maxiterPCG, float tolPCG, bool isUsePrecondM);
+RcppExport SEXP _SAIGE_getPCG1ofSigmaAndVector(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP bVecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP, SEXP isUsePrecondMSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -310,7 +364,23 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::fvec& >::type bVec(bVecSEXP);
     Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
     Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
-    rcpp_result_gen = Rcpp::wrap(getPCG1ofSigmaAndVector(wVec, tauVec, bVec, maxiterPCG, tolPCG));
+    Rcpp::traits::input_parameter< bool >::type isUsePrecondM(isUsePrecondMSEXP);
+    rcpp_result_gen = Rcpp::wrap(getPCG1ofSigmaAndVector(wVec, tauVec, bVec, maxiterPCG, tolPCG, isUsePrecondM));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getPCG1ofSigmaAndVector_old
+arma::fvec getPCG1ofSigmaAndVector_old(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& bVec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getPCG1ofSigmaAndVector_old(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP bVecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type bVec(bVecSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
+    Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
+    rcpp_result_gen = Rcpp::wrap(getPCG1ofSigmaAndVector_old(wVec, tauVec, bVec, maxiterPCG, tolPCG));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -795,62 +865,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// SetSampleIdx_forGenetest_vcfDosage
-void SetSampleIdx_forGenetest_vcfDosage(std::vector<int> sample_idx, int Ntest);
-RcppExport SEXP _SAIGE_SetSampleIdx_forGenetest_vcfDosage(SEXP sample_idxSEXP, SEXP NtestSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<int> >::type sample_idx(sample_idxSEXP);
-    Rcpp::traits::input_parameter< int >::type Ntest(NtestSEXP);
-    SetSampleIdx_forGenetest_vcfDosage(sample_idx, Ntest);
-    return R_NilValue;
-END_RCPP
-}
-// setMAFcutoffs
-void setMAFcutoffs(float minVal, float maxVal);
-RcppExport SEXP _SAIGE_setMAFcutoffs(SEXP minValSEXP, SEXP maxValSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< float >::type minVal(minValSEXP);
-    Rcpp::traits::input_parameter< float >::type maxVal(maxValSEXP);
-    setMAFcutoffs(minVal, maxVal);
-    return R_NilValue;
-END_RCPP
-}
-// setvcfDosageMatrix
-bool setvcfDosageMatrix(const std::string& vcfFileName, const std::string& vcfFileIndex, const std::string& vcfField);
-RcppExport SEXP _SAIGE_setvcfDosageMatrix(SEXP vcfFileNameSEXP, SEXP vcfFileIndexSEXP, SEXP vcfFieldSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::string& >::type vcfFileName(vcfFileNameSEXP);
-    Rcpp::traits::input_parameter< const std::string& >::type vcfFileIndex(vcfFileIndexSEXP);
-    Rcpp::traits::input_parameter< const std::string& >::type vcfField(vcfFieldSEXP);
-    rcpp_result_gen = Rcpp::wrap(setvcfDosageMatrix(vcfFileName, vcfFileIndex, vcfField));
-    return rcpp_result_gen;
-END_RCPP
-}
-// getGenoOfGene_vcf
-Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo);
-RcppExport SEXP _SAIGE_getGenoOfGene_vcf(SEXP marker_group_lineSEXP, SEXP minInfoSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type marker_group_line(marker_group_lineSEXP);
-    Rcpp::traits::input_parameter< float >::type minInfo(minInfoSEXP);
-    rcpp_result_gen = Rcpp::wrap(getGenoOfGene_vcf(marker_group_line, minInfo));
-    return rcpp_result_gen;
-END_RCPP
-}
-// closevcfDosageFile
-void closevcfDosageFile();
-RcppExport SEXP _SAIGE_closevcfDosageFile() {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    closevcfDosageFile();
-    return R_NilValue;
-END_RCPP
-}
 // setgenoTest_bgenDosage
 int setgenoTest_bgenDosage(std::string& filename, std::string& index_filename, Rcpp::DataFrame& ranges_to_include, Rcpp::DataFrame& ranges_to_exclude, std::vector< std::string > const& ids_to_include, std::vector< std::string > const& ids_to_exclude);
 RcppExport SEXP _SAIGE_setgenoTest_bgenDosage(SEXP filenameSEXP, SEXP index_filenameSEXP, SEXP ranges_to_includeSEXP, SEXP ranges_to_excludeSEXP, SEXP ids_to_includeSEXP, SEXP ids_to_excludeSEXP) {
@@ -1104,6 +1118,18 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// eigenMapMatMult
+SEXP eigenMapMatMult(const Eigen::Map<Eigen::MatrixXd>& A, Eigen::Map<Eigen::MatrixXd>& B);
+RcppExport SEXP _SAIGE_eigenMapMatMult(SEXP ASEXP, SEXP BSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type A(ASEXP);
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd>& >::type B(BSEXP);
+    rcpp_result_gen = Rcpp::wrap(eigenMapMatMult(A, B));
+    return rcpp_result_gen;
+END_RCPP
+}
 // sparse_row_idx_mult_v2
 int sparse_row_idx_mult_v2(arma::sp_fmat& spA);
 RcppExport SEXP _SAIGE_sparse_row_idx_mult_v2(SEXP spASEXP) {
@@ -1129,7 +1155,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_SAIGE_eigenMapMatMult", (DL_FUNC) &_SAIGE_eigenMapMatMult, 2},
+    {"_SAIGE_SetSampleIdx_forGenetest_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_forGenetest_vcfDosage, 2},
+    {"_SAIGE_setMAFcutoffs", (DL_FUNC) &_SAIGE_setMAFcutoffs, 2},
+    {"_SAIGE_setvcfDosageMatrix", (DL_FUNC) &_SAIGE_setvcfDosageMatrix, 3},
+    {"_SAIGE_getGenoOfGene_vcf", (DL_FUNC) &_SAIGE_getGenoOfGene_vcf, 2},
+    {"_SAIGE_closevcfDosageFile", (DL_FUNC) &_SAIGE_closevcfDosageFile, 0},
     {"_SAIGE_closeGenoFile_plink", (DL_FUNC) &_SAIGE_closeGenoFile_plink, 0},
     {"_SAIGE_gettotalMarker", (DL_FUNC) &_SAIGE_gettotalMarker, 0},
     {"_SAIGE_getAlleleFreqVec", (DL_FUNC) &_SAIGE_getAlleleFreqVec, 0},
@@ -1156,7 +1186,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getDiagOfSigma_LOCO", (DL_FUNC) &_SAIGE_getDiagOfSigma_LOCO, 2},
     {"_SAIGE_getCrossprod", (DL_FUNC) &_SAIGE_getCrossprod, 3},
     {"_SAIGE_getCrossprod_LOCO", (DL_FUNC) &_SAIGE_getCrossprod_LOCO, 3},
-    {"_SAIGE_getPCG1ofSigmaAndVector", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector, 5},
+    {"_SAIGE_floatSparseMatrix", (DL_FUNC) &_SAIGE_floatSparseMatrix, 1},
+    {"_SAIGE_getPCG1ofSigmaAndVector", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector, 6},
+    {"_SAIGE_getPCG1ofSigmaAndVector_old", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_old, 5},
     {"_SAIGE_getPCG1ofSigmaAndVector_LOCO", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_LOCO, 5},
     {"_SAIGE_set_seed", (DL_FUNC) &_SAIGE_set_seed, 1},
     {"_SAIGE_nb", (DL_FUNC) &_SAIGE_nb, 1},
@@ -1191,11 +1223,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_refineKin", (DL_FUNC) &_SAIGE_refineKin, 1},
     {"_SAIGE_shortenList", (DL_FUNC) &_SAIGE_shortenList, 5},
     {"_SAIGE_testTime", (DL_FUNC) &_SAIGE_testTime, 2},
-    {"_SAIGE_SetSampleIdx_forGenetest_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_forGenetest_vcfDosage, 2},
-    {"_SAIGE_setMAFcutoffs", (DL_FUNC) &_SAIGE_setMAFcutoffs, 2},
-    {"_SAIGE_setvcfDosageMatrix", (DL_FUNC) &_SAIGE_setvcfDosageMatrix, 3},
-    {"_SAIGE_getGenoOfGene_vcf", (DL_FUNC) &_SAIGE_getGenoOfGene_vcf, 2},
-    {"_SAIGE_closevcfDosageFile", (DL_FUNC) &_SAIGE_closevcfDosageFile, 0},
     {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 6},
     {"_SAIGE_getDosage_inner_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery, 0},
     {"_SAIGE_getDosage_inner_bgen_withquery_new", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery_new, 0},
@@ -1219,6 +1246,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getGenoOfnthVar_vcfDosage_pre", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage_pre, 0},
     {"_SAIGE_getGenoOfnthVar_vcfDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage, 1},
     {"_SAIGE_closetestGenoFile_vcfDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_vcfDosage, 0},
+    {"_SAIGE_eigenMapMatMult", (DL_FUNC) &_SAIGE_eigenMapMatMult, 2},
     {"_SAIGE_sparse_row_idx_mult_v2", (DL_FUNC) &_SAIGE_sparse_row_idx_mult_v2, 1},
     {"_SAIGE_sparse_row_idx_mult", (DL_FUNC) &_SAIGE_sparse_row_idx_mult, 2},
     {NULL, NULL, 0}

@@ -811,7 +811,8 @@ fitNULLGLMM = function(plinkFile = "",
       load(modelOut)
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
-
+        sparseGRMLarge = Matrix:::readMM(sparseGRMFile)
+  floatSparseMatrix(sparseGRMLarge)	
     }
     cat("Start estimating variance ratios\n")
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,

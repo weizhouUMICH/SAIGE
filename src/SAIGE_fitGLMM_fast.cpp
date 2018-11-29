@@ -59,6 +59,10 @@ public:
 
 	bool setKinDiagtoOne;
 
+//	arma::SpMat<float> sparseGRMinC(2,2);
+	
+
+
         //std::vector<float> stdGenoVec;
 	//for LOCO
 	//bool LOCO = false;
@@ -108,6 +112,8 @@ public:
 		sKinLookUpArr[2][2] = a2*a2;
 
 	}
+
+
 
 
         void setBit(unsigned char & ch, int ii, int aVal, int bVal){
@@ -1574,10 +1580,245 @@ double get_cpu_time(){
     return (double)clock() / CLOCKS_PER_SEC;
 }
 
+
+
+
+
+
+// http://gallery.rcpp.org/articles/as-and-wrap-for-sparse-matrices/
+namespace Rcpp {
+
+     // converts an SEXP object from R which was created as a sparse
+     // matrix via the Matrix package) into an Armadillo sp_mat matrix
+     //
+     // NB: called as_() here as a similar method is already in the
+     //     RcppArmadillo sources
+     //
+
+     // The following as_() only applies to dgCMatrix.
+     // For other types of sparse matrix conversion,
+     // you might want to check the source code of RcppArmadillo.
+     template <typename T> arma::SpMat<T> as_(SEXP sx) {
+
+       // Rcpp representation of template type
+       const int RTYPE = Rcpp::traits::r_sexptype_traits<T>::rtype;
+
+       // instantiate S4 object with the sparse matrix passed in
+       S4 mat(sx);
+       IntegerVector dims = mat.slot("Dim");
+       IntegerVector i = mat.slot("i");
+       IntegerVector p = mat.slot("p");
+       Vector<RTYPE> x = mat.slot("x");
+
+       // create sp_mat object of appropriate size
+       arma::SpMat<T> res(dims[0], dims[1]);
+
+       // In order to access the internal arrays of the SpMat class
+       res.sync();
+
+       // Making space for the elements
+       res.mem_resize(static_cast<unsigned>(x.size()));
+
+       // Copying elements
+       std::copy(i.begin(), i.end(), arma::access::rwp(res.row_indices));
+       std::copy(p.begin(), p.end(), arma::access::rwp(res.col_ptrs));
+       std::copy(x.begin(), x.end(), arma::access::rwp(res.values));
+
+       return res;
+     }
+
+ }
+
+arma::SpMat<float> * sparseGRMinCPtr(2,2);
+
+// [[Rcpp::export]]
+void floatSparseMatrix(arma::SpMat<float> & m) {
+    //Rcpp::Rcout << m << std::endl;  // use the i/o code from Armadillo
+       const int RTYPE = Rcpp::traits::r_sexptype_traits<float>::rtype;	
+       //Rcpp::S4 mat(m);
+      // Rcpp::IntegerVector dims = mat.slot("Dim");
+       m.sync();
+       Rcpp::Vector<RTYPE> x(m.values, m.values + m.n_nonzero ) ;
+       Rcpp::IntegerVector i(m.row_indices, m.row_indices + m.n_nonzero);
+       Rcpp::IntegerVector p(m.col_ptrs, m.col_ptrs + m.n_cols+1 ) ;
+
+
+
+ 	(sparseGRMinC).set_size(m.n_rows, m.n_cols );
+	(sparseGRMinC).sync();
+	// Making space for the elements
+       (sparseGRMinC).mem_resize(static_cast<unsigned>(x.size()));
+
+       // Copying elements
+       std::copy(i.begin(), i.end(), arma::access::rwp((sparseGRMinC).row_indices));
+       std::copy(p.begin(), p.end(), arma::access::rwp((sparseGRMinC).col_ptrs));
+       std::copy(x.begin(), x.end(), arma::access::rwp((sparseGRMinC).values));	
+
+	std::cout << "sparseGRMinC.n_rows: " << sparseGRMinC.n_rows << std::endl;
+	std::cout << "sparseGRMinC.n_cols: " << sparseGRMinC.n_cols << std::endl;
+	std::cout << "sparseGRMinC.n_nonzero: " << sparseGRMinC.n_nonzero << std::endl;
+
+}
+
+
+
+//Modified on 11-28-2018 to allow for a preconditioner for CG (the sparse Sigma)                                                                                                                                                                       //Sigma = tau[1] * diag(1/W) + tau[2] * kins
+//This function needs the function getDiagOfSigma and function getCrossprod
+// [[Rcpp::export]]
+arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::fvec& bVec, int maxiterPCG, float tolPCG, bool isUsePrecondM = false){
+                   //  Start Timers
+//    double wall0 = get_wall_time();
+//    double cpu0  = get_cpu_time();
+        arma::fvec rVec = bVec;
+        //cout << "HELLOa: "  << endl;
+        arma::fvec r1Vec;
+        //cout << "HELLOb: "  << endl;
+        int Nnomissing = geno.getNnomissing();
+        //cout << "HELL1: "  << endl;
+
+        arma::fvec crossProdVec(Nnomissing);
+        //cout << "HELL2: "  << endl;
+
+	//arma::SpMat<float> precondM = sparseGRMinC;
+	arma::fvec zVec(Nnomissing);
+	arma::fvec minvVec(Nnomissing);
+
+        if (!isUsePrecondM){
+                minvVec = 1/getDiagOfSigma(wVec, tauVec);
+                zVec = minvVec % rVec;
+        }else{
+                sparseGRMinC = (sparseGRMinC) * (tauVec(1));
+                arma::fvec dtVec = (1/wVec) * (tauVec(0));
+                (sparseGRMinC).diag() = (sparseGRMinC).diag() + dtVec;
+                zVec = arma::spsolve(sparseGRMinC, rVec) ;
+        }
+
+//      cout << "HELL3: "  << endl;
+//      for(int i = 0; i < 10; i++){
+//                cout << "full set minvVec[i]: " << minvVec[i] << endl;
+//        }
+        float sumr2 = sum(rVec % rVec);
+/*
+        if(bVec[0] == 1 && bVec[99] == 1){
+        for(int i = 0; i < 100; i++){
+                cout << "rVec[i]: " << i << " " << rVec[i] << endl;
+                cout << "minvVec[i]: " << i << " " << minvVec[i] << endl;
+                cout << "wVec[i]: " << i << " " << wVec[i] << endl;
+        }
+        }
+*/
+        arma::fvec z1Vec(Nnomissing);
+        arma::fvec pVec = zVec;
+        /*
+        if(bVec[0] == 1 && bVec[2] == 1){
+        for(int i = 0; i < 10; i++){
+                cout << "pVec[i]: " << i << " " << pVec[i] << endl;
+        }
+        }
+*/
+        arma::fvec xVec(Nnomissing);
+        xVec.zeros();
+
+        int iter = 0;
+        while (sumr2 > tolPCG && iter < maxiterPCG) {
+                iter = iter + 1;
+                arma::fcolvec ApVec = getCrossprod(pVec, wVec, tauVec);
+                arma::fvec preA = (rVec.t() * zVec)/(pVec.t() * ApVec);
+
+                float a = preA(0);
+
+/*           if(bVec[0] == 1 && bVec[2] == 1){
+                        cout << "bVec[0] == 1 && bVec[2] == 1: " << endl;
+                        for(int i = 0; i < 10; i++){
+
+                                cout << "ApVec[i]: " << i << " " << ApVec[i] << endl;
+                                cout << "pVec[i]: " << i << " " << pVec[i] << endl;
+                                cout << "zVec[i]: " << i << " " << zVec[i] << endl;
+                                cout << "rVec[i]: " << i << " " << rVec[i] << endl;
+                        }
+                    }
+*/
+
+                xVec = xVec + a * pVec;
+/*
+                if(bVec[0] == 1 && bVec[2] == 1){
+                        for(int i = 0; i < 10; i++){
+                                cout << "xVec[i]: " << i << " " << xVec[i] << endl;
+                        }
+                }
+
+*/
+
+
+                r1Vec = rVec - a * ApVec;
+/*
+                if(bVec[0] == 1 && bVec[2] == 1){
+                        cout << "a: " << a  << endl;
+                        for(int i = 0; i < 10; i++){
+                                cout << "ApVec[i]: " << i << " " << ApVec[i] << endl;
+                                cout << "rVec[i]: " << i << " " << rVec[i] << endl;
+                                cout << "r1Vec[i]: " << i << " " << r1Vec[i] << endl;
+                        }
+                }
+*/
+//                z1Vec = minvVec % r1Vec;
+
+        if (!isUsePrecondM){
+                z1Vec = minvVec % r1Vec;
+        }else{
+                z1Vec = arma::spsolve(sparseGRMinC, r1Vec) ;
+        }
+
+
+
+
+                arma::fvec Prebet = (z1Vec.t() * r1Vec)/(zVec.t() * rVec);
+                float bet = Prebet(0);
+                pVec = z1Vec+ bet*pVec;
+                zVec = z1Vec;
+                rVec = r1Vec;
+
+                sumr2 = sum(rVec % rVec);
+/*
+                if(bVec[0] == 1 && bVec[2] == 1){
+                        std::cout << "sumr2: " << sumr2 << std::endl;
+                        std::cout << "tolPCG: " << tolPCG << std::endl;
+                }
+*/
+        }
+
+        if (iter >= maxiterPCG){
+                cout << "pcg did not converge. You may increase maxiter number." << endl;
+
+        }
+        cout << "iter from getPCG1ofSigmaAndVector " << iter << endl;
+
+//        double wall1 = get_wall_time();
+//    double cpu1  = get_cpu_time();
+
+//    cout << "Wall Time = " << wall1 - wall0 << endl;
+//    cout << "CPU Time  = " << cpu1  - cpu0  << endl;
+
+//      std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
+//        std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() <<std::endl;
+        return(xVec);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 //Sigma = tau[1] * diag(1/W) + tau[2] * kins 
 //This function needs the function getDiagOfSigma and function getCrossprod
 // [[Rcpp::export]]
-arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::fvec& bVec, int maxiterPCG, float tolPCG){
+arma::fvec getPCG1ofSigmaAndVector_old(arma::fvec& wVec,  arma::fvec& tauVec, arma::fvec& bVec, int maxiterPCG, float tolPCG){
 	           //  Start Timers
 //    double wall0 = get_wall_time();
 //    double cpu0  = get_cpu_time();
