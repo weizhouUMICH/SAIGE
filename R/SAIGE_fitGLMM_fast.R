@@ -811,8 +811,44 @@ fitNULLGLMM = function(plinkFile = "",
       load(modelOut)
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
-        sparseGRMLarge = Matrix:::readMM(sparseGRMFile)
-  floatSparseMatrix(sparseGRMLarge)	
+      set.seed(98765)
+n <- 5e3
+# 5000 x 5000 matrices, 99% sparse
+a <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
+b <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
+
+d=a %*% b
+print("print d")
+print(dim(d))
+
+m1 <- mult_sp_sp_to_sp(a, b)
+print("print m1")
+print(dim(m1))
+
+m2 = gen_sp(a)
+print("print m2")
+print(dim(m2))
+
+sparseGRMtest = Matrix:::readMM(sparseGRMFile)
+
+m3 = gen_sp_v2(a)
+print("print m3")
+print(dim(m3))
+
+m4 = gen_sp_v2(sparseGRMtest)
+print("print m4")
+print(dim(m4))
+A = summary(m4)
+
+locationMatinR = rbind(A$i-1, A$j-1)
+valueVecinR = A$x
+setupSparseGRM(length(A$x), locationMatinR, valueVecinR)
+B = gen_sp_GRM()
+print("print B")
+print(dim(B))
+
+x = gen_spsolve_v3()
+print(x[1:30])
     }
     cat("Start estimating variance ratios\n")
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,

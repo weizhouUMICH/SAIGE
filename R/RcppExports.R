@@ -125,16 +125,8 @@ getCrossprod_LOCO <- function(bVec, wVec, tauVec) {
     .Call('_SAIGE_getCrossprod_LOCO', PACKAGE = 'SAIGE', bVec, wVec, tauVec)
 }
 
-floatSparseMatrix <- function(m) {
-    invisible(.Call('_SAIGE_floatSparseMatrix', PACKAGE = 'SAIGE', m))
-}
-
-getPCG1ofSigmaAndVector <- function(wVec, tauVec, bVec, maxiterPCG, tolPCG, isUsePrecondM = FALSE) {
-    .Call('_SAIGE_getPCG1ofSigmaAndVector', PACKAGE = 'SAIGE', wVec, tauVec, bVec, maxiterPCG, tolPCG, isUsePrecondM)
-}
-
-getPCG1ofSigmaAndVector_old <- function(wVec, tauVec, bVec, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getPCG1ofSigmaAndVector_old', PACKAGE = 'SAIGE', wVec, tauVec, bVec, maxiterPCG, tolPCG)
+getPCG1ofSigmaAndVector <- function(wVec, tauVec, bVec, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getPCG1ofSigmaAndVector', PACKAGE = 'SAIGE', wVec, tauVec, bVec, maxiterPCG, tolPCG)
 }
 
 getPCG1ofSigmaAndVector_LOCO <- function(wVec, tauVec, bVec, maxiterPCG, tolPCG) {
@@ -273,6 +265,26 @@ testTime <- function(i, m_bVec) {
     .Call('_SAIGE_testTime', PACKAGE = 'SAIGE', i, m_bVec)
 }
 
+gen_sp_v2 <- function(a) {
+    .Call('_SAIGE_gen_sp_v2', PACKAGE = 'SAIGE', a)
+}
+
+gen_spsolve_v2 <- function(a) {
+    .Call('_SAIGE_gen_spsolve_v2', PACKAGE = 'SAIGE', a)
+}
+
+setupSparseGRM <- function(r, locationMatinR, valueVecinR) {
+    invisible(.Call('_SAIGE_setupSparseGRM', PACKAGE = 'SAIGE', r, locationMatinR, valueVecinR))
+}
+
+gen_sp_GRM <- function() {
+    .Call('_SAIGE_gen_sp_GRM', PACKAGE = 'SAIGE')
+}
+
+gen_spsolve_v3 <- function() {
+    .Call('_SAIGE_gen_spsolve_v3', PACKAGE = 'SAIGE')
+}
+
 setgenoTest_bgenDosage <- function(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude) {
     .Call('_SAIGE_setgenoTest_bgenDosage', PACKAGE = 'SAIGE', filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude)
 }
@@ -369,11 +381,19 @@ eigenMapMatMult <- function(A, B) {
     .Call('_SAIGE_eigenMapMatMult', PACKAGE = 'SAIGE', A, B)
 }
 
-sparse_row_idx_mult_v2 <- function(spA) {
-    .Call('_SAIGE_sparse_row_idx_mult_v2', PACKAGE = 'SAIGE', spA)
+mult_sp_sp_to_sp <- function(a, b) {
+    .Call('_SAIGE_mult_sp_sp_to_sp', PACKAGE = 'SAIGE', a, b)
 }
 
-sparse_row_idx_mult <- function(spA, spB) {
-    .Call('_SAIGE_sparse_row_idx_mult', PACKAGE = 'SAIGE', spA, spB)
+mult_sp_den_to_sp <- function(a, b) {
+    .Call('_SAIGE_mult_sp_den_to_sp', PACKAGE = 'SAIGE', a, b)
+}
+
+mult_den_sp_to_sp <- function(a, b) {
+    .Call('_SAIGE_mult_den_sp_to_sp', PACKAGE = 'SAIGE', a, b)
+}
+
+gen_sp <- function(a) {
+    .Call('_SAIGE_gen_sp', PACKAGE = 'SAIGE', a)
 }
 
