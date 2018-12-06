@@ -540,6 +540,13 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
 }
 
 
+solveSpMatrixUsingArma = function(sparseGRMtest){
+  m4 = gen_sp_v2(sparseGRMtest)
+  return(m4)
+}
+
+
+
 #' Fit the null logistic/linear mixed model and estimate the variance ratios by randomly selected variants 
 #'
 #' @param plinkFile character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM). Genetic markers are also randomly selected from the plink file to estimate the variance ratios
@@ -611,8 +618,49 @@ fitNULLGLMM = function(plinkFile = "",
 		cateVarRatioMinMACVecExclude = c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5),
 		cateVarRatioMaxMACVecInclude = c(1.5,2.5,3.5,4.5,5.5,10.5,20.5),
 		isCovariateTransform = TRUE,
-		isDiagofKinSetAsOne = FALSE){
+		isDiagofKinSetAsOne = FALSE,
+		useSparseSigmaConditionerforPCG = FALSE){
 
+
+  if(useSparseSigmaConditionerforPCG){
+    cat("sparse sigma will be used as the conditioner for PCG\n")
+    if(!file.exists(sparseGRMFile)){
+      stop("sparseGRMFile ", sparseGRMFile, " does not exist!")
+    }
+  }
+
+
+#set.seed(98765)
+#n <- 4e4
+# 5000 x 5000 matrices, 99% sparse
+#a <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
+#b <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
+#ytestvec = rnorm(n)
+#grm = Matrix::readMM(sparseGRMFile)
+#grm = Matrix::readMM("/net/hunt/disk2/zhowei/project/SAIGE_SKAT/realdata/UKB/step1/output/UKB_whiteBritish_Days_per_week_walked_10min_largeGRM.varianceRatio.txt_relatednessCutoff_0.125.sparseGRM.mtx")
+#n = dim(grm)[1]
+#print(n)
+#ytestvec = rnorm(n)
+#print("atime0")
+#atime = system.time({APCG = pcg(grm, ytestvec)})
+#print("atime")
+#print(atime)
+#btime = system.time({BPCG = gen_spsolve_inR(grm, ytestvec)})
+#print("btime")
+#print(btime)
+#cat("sum((APCG-BPCG)^2)\n")
+#print(APCG[1:100])
+#print(BPCG[1:100])
+#print(sum((APCG-BPCG)^2))
+
+#print(atime)
+#print(btime)
+
+#tauVec=c(0.5,0.5)
+#wVec =  rnorm(n)
+
+#ctime = system.time({gen_spsolve_v4(wVec,  tauVec, ytestvec)})
+#print(ctime)
 
   
   if(nThreads > 1){
@@ -775,6 +823,23 @@ fitNULLGLMM = function(plinkFile = "",
 #  cat("colnames(data.new) is ", colnames(data.new), "\n")
 #  cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
 
+    if(useSparseSigmaConditionerforPCG){
+        cat("sparse sigma will be used as the conditioner for PCG\n")
+	sparseGRMtest = getsubGRM(sparseGRMFile, sparseGRMSampleIDFile, dataMerge_sort$IID)
+        m4 = gen_sp_v2(sparseGRMtest)
+        print("print m4")
+        print(dim(m4))
+        A = summary(m4)
+        locationMatinR = rbind(A$i-1, A$j-1)
+        valueVecinR = A$x
+        setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
+        setisUsePrecondM(TRUE);
+	rm(sparseGRMtest)
+    }
+
+
+
+
 
   if(traitType == "binary"){
     cat(phenoCol, " is a binary trait\n")
@@ -798,6 +863,16 @@ fitNULLGLMM = function(plinkFile = "",
       t_begin = proc.time()
       print(t_begin)
 
+      #set up the sparse GRM to speed up the PCG
+     # sparseGRMtest = Matrix:::readMM(sparseGRMFile)
+     # m4 = gen_sp_v2(sparseGRMtest)
+     # print("print m4")
+     # print(dim(m4))
+     # A = summary(m4)
+     # locationMatinR = rbind(A$i-1, A$j-1)
+     # valueVecinR = A$x
+     # setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
+
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
       save(modglmm, file = modelOut)
 
@@ -811,44 +886,86 @@ fitNULLGLMM = function(plinkFile = "",
       load(modelOut)
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
-      set.seed(98765)
-n <- 5e3
+
+
+#if(FALSE){
+
+#      set.seed(98765)
+#n <- 4e4
 # 5000 x 5000 matrices, 99% sparse
-a <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
-b <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
+#a <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
+#b <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
+#ytestvec = rnorm(n)
 
-d=a %*% b
-print("print d")
-print(dim(d))
+#atime = system.time({APCG = pcg(a, ytestvec)})
+#btime = system.time({BPCG = gen_spsolve_inR(a, ytestvec)})
+#cat("sum((APCG-BPCG)^2)\n")
+#print(sum((APCG-BPCG)^2))
+#print(atime)
+#print(btime)
 
-m1 <- mult_sp_sp_to_sp(a, b)
-print("print m1")
-print(dim(m1))
+#d=a %*% b
+#print("print d")
+#print(dim(d))
 
-m2 = gen_sp(a)
-print("print m2")
-print(dim(m2))
+#m1 <- mult_sp_sp_to_sp(a, b)
+#print("print m1")
+#print(dim(m1))
 
-sparseGRMtest = Matrix:::readMM(sparseGRMFile)
+#m2 = gen_sp(a)
+#print("print m2")
+#print(dim(m2))
 
-m3 = gen_sp_v2(a)
-print("print m3")
-print(dim(m3))
+#sparseGRMtest = Matrix:::readMM(sparseGRMFile)
 
-m4 = gen_sp_v2(sparseGRMtest)
-print("print m4")
-print(dim(m4))
-A = summary(m4)
+#m3 = gen_sp_v2(a)
+#print("print m3")
+#print(dim(m3))
 
-locationMatinR = rbind(A$i-1, A$j-1)
-valueVecinR = A$x
-setupSparseGRM(length(A$x), locationMatinR, valueVecinR)
-B = gen_sp_GRM()
-print("print B")
-print(dim(B))
+#m4 = gen_sp_v2(sparseGRMtest)
+#print("print m4")
+#print(dim(m4))
+#A = summary(m4)
 
-x = gen_spsolve_v3()
-print(x[1:30])
+#locationMatinR = rbind(A$i-1, A$j-1)
+#valueVecinR = A$x
+#setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
+
+
+
+#B = gen_sp_GRM()
+#print("print B")
+#print(dim(B))
+#cat("sum((B-m4)^2)\n")
+#print(sum((B-m4)^2))
+
+#ytestvec = rnorm(dim(m4)[1])
+#x = gen_spsolve_v3(ytestvec)
+#print(x[1:30])
+#z = pcg(m4, ytestvec)
+#cat("sum((x-z)^2)\n")
+#print(sum((x-z)^2))
+
+#ytestvec = rnorm(dim(m4)[1])
+#timeWoConv = system.time({x = gen_spsolve_v3(ytestvec)})
+#print(x[1:30])
+#z = pcg(m4, ytestvec)
+#cat("sum((x-z)^2)\n")
+#print(sum((x-z)^2))
+
+#timeWithConv = system.time({x2 = gen_spsolve_v4(ytestvec)})
+#print("timeWoConv")
+#print(timeWoConv)
+
+#print("timeWithConv")
+#print(timeWithConv)
+#cat("sum(x-x2)^2 ", sum(x-x2)^2, "\n")
+
+#}
+
+
+
+
     }
     cat("Start estimating variance ratios\n")
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,
@@ -2037,4 +2154,49 @@ getSparseSigma = function(outputPrefix="",
 
   return(sparseSigma)
 }
+
+
+
+getsubGRM = function(sparseGRMFile=NULL,
+                sparseGRMSampleIDFile="",
+                modelID=NULL){
+
+  cat("extract sparse GRM to speed up PCG\n")
+#  sparseGRMFile = paste0(outputPrefix, ".sparseGRM.mtx")
+  sparseGRMLarge = Matrix:::readMM(sparseGRMFile)
+    #cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
+ if(!file.exists(sparseGRMSampleIDFile)){
+        stop("ERROR! sparseSigmaSampleIDFile ", sparseGRMSampleIDFile, " does not exsit\n")
+ }else{
+        sparseGRMSampleID = data.frame(data.table:::fread(sparseGRMSampleIDFile, header=F, stringsAsFactors=FALSE))
+        colnames(sparseGRMSampleID) = c("sampleID")
+        sparseGRMSampleID$IndexGRM = seq(1,nrow(sparseGRMSampleID), by=1)
+	if(nrow(sparseGRMSampleID) != dim(sparseGRMLarge)[1] | nrow(sparseGRMSampleID) != dim(sparseGRMLarge)[2]){
+		stop("ERROR! number of samples in the sparse GRM is not the same to the number of sample IDs in the specified sparseGRMSampleIDFile ", sparseGRMSampleIDFile, "\n")
+	}else{
+
+        sampleInModel = NULL
+        sampleInModel$IID = modelID
+        sampleInModel = data.frame(sampleInModel)
+        sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
+        cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
+        mergeID = merge(sampleInModel, sparseGRMSampleID, by.x="IID", by.y = "sampleID")
+        if(nrow(sampleInModel) > nrow(mergeID)){
+            stop("ERROR: ", nrow(sampleInModel) - nrow(mergeID), "samples used for model fitting are not in the specified GRM\n")
+
+
+        }else{
+
+        mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
+        indexIDofGRM=mergeID$IndexGRM
+        #cat("Subset sparse GRM to be ", indexIDofSigma," by ", indexIDofSigma, "\n")
+        sparseGRM = sparseGRMLarge[indexIDofGRM, indexIDofGRM]
+        rm(sparseGRMLarge)
+        return(sparseGRM)
+        }
+    }
+
+  }
+}
+
 

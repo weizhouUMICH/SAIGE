@@ -125,8 +125,36 @@ getCrossprod_LOCO <- function(bVec, wVec, tauVec) {
     .Call('_SAIGE_getCrossprod_LOCO', PACKAGE = 'SAIGE', bVec, wVec, tauVec)
 }
 
+setupSparseGRM <- function(r, locationMatinR, valueVecinR) {
+    invisible(.Call('_SAIGE_setupSparseGRM', PACKAGE = 'SAIGE', r, locationMatinR, valueVecinR))
+}
+
+gen_sp_GRM <- function() {
+    .Call('_SAIGE_gen_sp_GRM', PACKAGE = 'SAIGE')
+}
+
+gen_sp_Sigma <- function(wVec, tauVec) {
+    .Call('_SAIGE_gen_sp_Sigma', PACKAGE = 'SAIGE', wVec, tauVec)
+}
+
+gen_spsolve_v3 <- function(yvec) {
+    .Call('_SAIGE_gen_spsolve_v3', PACKAGE = 'SAIGE', yvec)
+}
+
+gen_spsolve_v4 <- function(wVec, tauVec, yvec) {
+    .Call('_SAIGE_gen_spsolve_v4', PACKAGE = 'SAIGE', wVec, tauVec, yvec)
+}
+
+setisUsePrecondM <- function(isUseSparseSigmaforPCG) {
+    invisible(.Call('_SAIGE_setisUsePrecondM', PACKAGE = 'SAIGE', isUseSparseSigmaforPCG))
+}
+
 getPCG1ofSigmaAndVector <- function(wVec, tauVec, bVec, maxiterPCG, tolPCG) {
     .Call('_SAIGE_getPCG1ofSigmaAndVector', PACKAGE = 'SAIGE', wVec, tauVec, bVec, maxiterPCG, tolPCG)
+}
+
+getPCG1ofSigmaAndVector_old <- function(wVec, tauVec, bVec, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getPCG1ofSigmaAndVector_old', PACKAGE = 'SAIGE', wVec, tauVec, bVec, maxiterPCG, tolPCG)
 }
 
 getPCG1ofSigmaAndVector_LOCO <- function(wVec, tauVec, bVec, maxiterPCG, tolPCG) {
@@ -273,16 +301,8 @@ gen_spsolve_v2 <- function(a) {
     .Call('_SAIGE_gen_spsolve_v2', PACKAGE = 'SAIGE', a)
 }
 
-setupSparseGRM <- function(r, locationMatinR, valueVecinR) {
-    invisible(.Call('_SAIGE_setupSparseGRM', PACKAGE = 'SAIGE', r, locationMatinR, valueVecinR))
-}
-
-gen_sp_GRM <- function() {
-    .Call('_SAIGE_gen_sp_GRM', PACKAGE = 'SAIGE')
-}
-
-gen_spsolve_v3 <- function() {
-    .Call('_SAIGE_gen_spsolve_v3', PACKAGE = 'SAIGE')
+gen_spsolve_inR <- function(a, y) {
+    .Call('_SAIGE_gen_spsolve_inR', PACKAGE = 'SAIGE', a, y)
 }
 
 setgenoTest_bgenDosage <- function(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude) {

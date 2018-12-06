@@ -73,7 +73,9 @@ option_list <- list(
   make_option("--isCovariateTransform", type="logical", default=TRUE,
     help="Whether use qr transformation on non-genetic covariates [default='TRUE']."),
   make_option("--isDiagofKinSetAsOne", type="logical", default=FALSE,
-    help="Whether to set the diagnal elements in GRM to be 1 [default='FALSE'].")
+    help="Whether to set the diagnal elements in GRM to be 1 [default='FALSE']."),
+  make_option("--useSparseSigmaConditionerforPCG", type="logical", default=FALSE,
+    help="Whether to sparse GRM to speed up the PCG [default='FALSE'].")
 )
 
 
@@ -125,4 +127,5 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
             cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
             cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
             isCovariateTransform = opt$isCovariateTransform,
-            isDiagofKinSetAsOne = opt$isDiagofKinSetAsOne)	
+            isDiagofKinSetAsOne = opt$isDiagofKinSetAsOne,
+	    useSparseSigmaConditionerforPCG = opt$useSparseSigmaConditionerforPCG)	
