@@ -64,7 +64,8 @@ SPAGMMATtest = function(dosageFile = "",
 		 numLinesOutput = 10000, 
 		 IsSparse=TRUE,
 		 IsOutputAFinCaseCtrl=FALSE,
-		 LOCO=FALSE){
+		 LOCO=FALSE,
+                 verbose=FALSE){
 
 
   #check and read files
@@ -451,10 +452,12 @@ SPAGMMATtest = function(dosageFile = "",
     } #end of the if(MAF >= bgenMinMaf & markerInfo >= bgenMinInfo)
       #if(mth %% 100000 == 0 | mth == Mtest){
     if(mth %% numLinesOutput == 0 | !isVariant){
-      ptm <- proc.time()
-      print(ptm)
-      print(mth)
-      cat("numPassMarker: ", numPassMarker, "\n")
+      if(verbose == TRUE){
+        ptm <- proc.time()
+        print(ptm)
+        print(mth)
+        cat("numPassMarker: ", numPassMarker, "\n")
+      }
       OUT = as.data.frame(OUT)
       write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
       OUT = NULL
