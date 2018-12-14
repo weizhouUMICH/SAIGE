@@ -1,8 +1,8 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
-library(SAIGE)
-
+#library(SAIGE)
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-PCGprecond")
 
 require(optparse) #install.packages("optparse")
 

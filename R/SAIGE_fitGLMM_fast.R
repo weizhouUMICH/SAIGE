@@ -1,4 +1,3 @@
-# Functon to get working vector and fixed & random coefficients
 # Run iterations to get converged alpha and eta
 Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG,maxiter, verbose=FALSE){
   tol.coef = 0.1
@@ -822,8 +821,9 @@ fitNULLGLMM = function(plinkFile = "",
 #  colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
 #  cat("colnames(data.new) is ", colnames(data.new), "\n")
 #  cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
-
+#if(FALSE){
     if(useSparseSigmaConditionerforPCG){
+        setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
         cat("sparse sigma will be used as the conditioner for PCG\n")
 	sparseGRMtest = getsubGRM(sparseGRMFile, sparseGRMSampleIDFile, dataMerge_sort$IID)
         m4 = gen_sp_v2(sparseGRMtest)
@@ -832,11 +832,18 @@ fitNULLGLMM = function(plinkFile = "",
         A = summary(m4)
         locationMatinR = rbind(A$i-1, A$j-1)
         valueVecinR = A$x
+
+
+	indexDiagSub = which(locationMatinR[1,] == locationMatinR[2,])
+	indexDiag = locationMatinR[1,][indexDiagSub]+1
+	valueVecinR[indexDiagSub] = (get_DiagofKin())[indexDiag]
+
         setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
         setisUsePrecondM(TRUE);
 	rm(sparseGRMtest)
     }
 
+#}
 
 
 
@@ -2031,7 +2038,8 @@ createSparseKinParallel = function(nblocks, ncore, relatednessCutoff){
   sparseKinList$iIndex = c(sparseKinList$iIndex, seq(1:Nval))
   sparseKinList$jIndex = c(sparseKinList$jIndex, seq(1:Nval))
 #  diagKin = getDiagOfSigma(W, tauVecNew)
-  diagKin = rep(1, Nval)
+#  diagKin = rep(1, Nval)
+  diagKin = get_DiagofKin()
   sparseKinList$kinValue = c(sparseKinList$kinValue, diagKin)
 #  rm(diagKin)
 

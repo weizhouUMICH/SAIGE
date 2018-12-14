@@ -1461,6 +1461,7 @@ arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
   
   	if(!(geno.setKinDiagtoOne)){ 
 	  diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno()) /M + tauVec(0)/wVec;
+
 	}else{
 	  diagVec = tauVec(1) + tauVec(0)/wVec;
 	}
@@ -1468,7 +1469,7 @@ arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
 	//std::cout << "M " << M << std::endl;
 	//std::cout << "tauVec(0) " << tauVec(0) << std::endl;
 	//std::cout << "tauVec(1) " << tauVec(1) << std::endl;
-        //for(unsigned int i=0; i< Nnomissing; i++){
+       // for(unsigned int i=0; i< Nnomissing; i++){
 	//	std::cout << "(*geno.Get_Diagof_StdGeno()) /M: " << (*geno.Get_Diagof_StdGeno()) /M << std::endl;
 	//}
 
@@ -1605,7 +1606,10 @@ void setupSparseGRM(int r, arma::umat & locationMatinR, arma::vec & valueVecinR)
     std::cout << valueVec.n_elem << " valueVec.n_elem " << std::endl;
     for(size_t i=0; i< 10; i++){
         std::cout << valueVec(i) << std::endl;
+        std::cout << locationMat(0,i) << std::endl;
+        std::cout << locationMat(1,i) << std::endl;
     }
+    
     //arma::vec y = arma::linspace<arma::vec>(0, 5, r);
     //arma::sp_fmat A = sprandu<sp_fmat>(100, 200, 0.1);
     //arma::sp_mat result1 = result * A;
@@ -1667,40 +1671,40 @@ arma::vec gen_spsolve_v3(arma::vec & yvec){
 // [[Rcpp::export]]
 arma::fvec gen_spsolve_v4(arma::fvec& wVec,  arma::fvec& tauVec, arma::fvec & yvec){
 
-    double wall0in = get_wall_time();
- double cpu0in  = get_cpu_time();
+//    double wall0in = get_wall_time();
+// double cpu0in  = get_cpu_time();
 
     arma::vec yvec2 = arma::conv_to<arma::vec>::from(yvec);
-double wall1in = get_wall_time();
- double cpu1in  = get_cpu_time();
- cout << "Wall Time in gen_spsolve_v4 = " << wall1in - wall0in << endl;
- cout << "CPU Time  in gen_spsolve_v4 = " << cpu1in - cpu0in  << endl;
+//double wall1in = get_wall_time();
+// double cpu1in  = get_cpu_time();
+// cout << "Wall Time in gen_spsolve_v4 = " << wall1in - wall0in << endl;
+// cout << "CPU Time  in gen_spsolve_v4 = " << cpu1in - cpu0in  << endl;
 
     arma::sp_mat result = gen_sp_Sigma(wVec, tauVec);
 
-double wall2in = get_wall_time();
- double cpu2in  = get_cpu_time();
- cout << "Wall Time in gen_spsolve_v4 = " << wall2in - wall1in << endl;
- cout << "CPU Time  in gen_spsolve_v4 = " << cpu2in - cpu1in  << endl;
+//double wall2in = get_wall_time();
+// double cpu2in  = get_cpu_time();
+// cout << "Wall Time in gen_spsolve_v4 = " << wall2in - wall1in << endl;
+// cout << "CPU Time  in gen_spsolve_v4 = " << cpu2in - cpu1in  << endl;
 
-    std::cout << "yvec.n_elem: " << yvec.n_elem << std::endl;
-    std::cout << "yvec2.n_elem: " << yvec2.n_elem << std::endl;
-    std::cout << "result.n_rows: " << result.n_rows << std::endl;
-    std::cout << "result.n_cols: " << result.n_cols << std::endl;
+//    std::cout << "yvec.n_elem: " << yvec.n_elem << std::endl;
+//    std::cout << "yvec2.n_elem: " << yvec2.n_elem << std::endl;
+//    std::cout << "result.n_rows: " << result.n_rows << std::endl;
+//    std::cout << "result.n_cols: " << result.n_cols << std::endl;
     arma::vec x = arma::spsolve(result, yvec2);
 
-double wall3in = get_wall_time();
- double cpu3in  = get_cpu_time();
- cout << "Wall Time in gen_spsolve_v4 = " << wall3in - wall2in << endl;
- cout << "CPU Time  in gen_spsolve_v4 = " << cpu3in - cpu2in  << endl;
+//double wall3in = get_wall_time();
+// double cpu3in  = get_cpu_time();
+// cout << "Wall Time in gen_spsolve_v4 = " << wall3in - wall2in << endl;
+// cout << "CPU Time  in gen_spsolve_v4 = " << cpu3in - cpu2in  << endl;
 
 
     arma::fvec z = arma::conv_to<arma::fvec>::from(x);
 
-double wall4in = get_wall_time();
- double cpu4in  = get_cpu_time();
- cout << "Wall Time in gen_spsolve_v4 = " << wall4in - wall3in << endl;
- cout << "CPU Time  in gen_spsolve_v4 = " << cpu4in - cpu3in  << endl;
+//double wall4in = get_wall_time();
+// double cpu4in  = get_cpu_time();
+// cout << "Wall Time in gen_spsolve_v4 = " << wall4in - wall3in << endl;
+// cout << "CPU Time  in gen_spsolve_v4 = " << cpu4in - cpu3in  << endl;
 
 
     return z;
@@ -1739,8 +1743,8 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
      double wall1 = get_wall_time();
        double cpu1  = get_cpu_time();
 
-    cout << "Wall Time = " << wall1 - wall0 << endl;
-    cout << "CPU Time  = " << cpu1  - cpu0  << endl;
+    cout << "Wall Time 1= " << wall1 - wall0 << endl;
+    cout << "CPU Time 1 = " << cpu1  - cpu0  << endl;
         if (!isUsePrecondM){
                 minvVec = 1/getDiagOfSigma(wVec, tauVec);
                 zVec = minvVec % rVec;
@@ -1761,8 +1765,8 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
         }
  double wall2 = get_wall_time();
  double cpu2  = get_cpu_time();
- cout << "Wall Time = " << wall2 - wall1 << endl;
- cout << "CPU Time  = " << cpu2  - cpu1  << endl;
+ cout << "Wall Time 2 = " << wall2 - wall1 << endl;
+ cout << "CPU Time 2 = " << cpu2  - cpu1  << endl;
 
 
 //      cout << "HELL3: "  << endl;
@@ -1845,10 +1849,10 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
                 //z1Vec = arma::spsolve(sparseGRMinC, r1Vec) ;
         }
 
- double wall3b = get_wall_time();
+       double wall3b = get_wall_time();
        double cpu3b  = get_cpu_time();
- cout << "Wall Time = " << wall3b - wall3a << endl;
- cout << "CPU Time  = " << cpu3b  - cpu3a  << endl;
+ cout << "Wall Time 3b = " << wall3b - wall3a << endl;
+ cout << "CPU Time 3b = " << cpu3b  - cpu3a  << endl;
 
 
                 arma::fvec Prebet = (z1Vec.t() * r1Vec)/(zVec.t() * rVec);
@@ -1858,6 +1862,8 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
                 rVec = r1Vec;
 
                 sumr2 = sum(rVec % rVec);
+                        std::cout << "sumr2: " << sumr2 << std::endl;
+                        std::cout << "tolPCG: " << tolPCG << std::endl;
 /*
                 if(bVec[0] == 1 && bVec[2] == 1){
                         std::cout << "sumr2: " << sumr2 << std::endl;
@@ -3295,4 +3301,17 @@ arma::vec gen_spsolve_inR(const arma::sp_mat& a, arma::vec & y) {
     return x;
 }
 
+// [[Rcpp::export]]
+arma::fvec get_DiagofKin(){
+    int M = geno.getM();
+    int Nnomissing = geno.getNnomissing();
 
+    arma::fvec x(Nnomissing);
+
+    if(!(geno.setKinDiagtoOne)){
+           x  = (*geno.Get_Diagof_StdGeno()) /M; 
+    }else{
+	   x  = arma::ones<arma::fvec>(Nnomissing);	
+    }	
+    return(x);
+}

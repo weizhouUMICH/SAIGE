@@ -81,6 +81,5 @@ createSparseGRM = function(plinkFile = "",
   sparseGRMFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff, ".sparseGRM.mtx")
   cat("write sparse GRM to ", sparseGRMFile ,"\n")
   Matrix:::writeMM(sparseGRM, sparseGRMFile)
-
-  return(sparseGRM)
+  return(1)
 }

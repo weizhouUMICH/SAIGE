@@ -305,6 +305,10 @@ gen_spsolve_inR <- function(a, y) {
     .Call('_SAIGE_gen_spsolve_inR', PACKAGE = 'SAIGE', a, y)
 }
 
+get_DiagofKin <- function() {
+    .Call('_SAIGE_get_DiagofKin', PACKAGE = 'SAIGE')
+}
+
 setgenoTest_bgenDosage <- function(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude) {
     .Call('_SAIGE_setgenoTest_bgenDosage', PACKAGE = 'SAIGE', filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude)
 }
