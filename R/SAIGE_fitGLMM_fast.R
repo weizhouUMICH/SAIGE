@@ -2142,7 +2142,7 @@ getSparseSigma = function(outputPrefix="",
   #cat("read in sparse GRM from ",sparseSigmaOutFile,"\n")
   #sparseSigma = Matrix:::readMM(sparseSigmaOutFile)
  }
-  sparseGRMFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff, ".sparseGRM.mtx")
+  sparseGRMFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff, "_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseGRM.mtx")
   cat("write sparse GRM to ", sparseGRMFile ,"\n")
   Matrix:::writeMM(sparseGRM, sparseGRMFile)
   Nval = length(W)
@@ -2151,7 +2151,8 @@ getSparseSigma = function(outputPrefix="",
   sparseSigma = sparseGRM * tauVecNew[2]
   diag(sparseSigma) = getDiagOfSigma(W, tauVecNew)
 
-  sparseSigmaFile = paste0(outputPrefix, "_relatednessCutoff_",relatednessCutoff, ".sparseSigma.mtx")
+  sparseSigmaFile = paste0(outputPrefix, "_relatednessCutoff_",relatednessCutoff, "_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseSigma.mtx")
+
   cat("write sparse Sigma to ", sparseSigmaFile ,"\n")
   Matrix:::writeMM(sparseSigma, sparseSigmaFile)
 

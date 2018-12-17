@@ -1493,11 +1493,12 @@ if(maf < 0.05){
 
 if(!is.null(sparseSigma)){
   XVG0 = eigenMapMatMult(obj.noK$XV, G0)
+  print(which(G0!=0))
   g = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
   #pcginvSigma<-pcg(sparseSigma, g)
   pcginvSigma<-solve(sparseSigma, g, sparse=T)
   var2 = as.matrix(t(g) %*% pcginvSigma) 
-#  cat("var2 is ", var2, "\n")
+  cat("var2 is ", var2, "\n")
   var1 = var2 * varRatio 
 
 }

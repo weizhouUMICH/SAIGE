@@ -28,8 +28,8 @@ createSparseGRM = function(plinkFile = "",
   famFile = paste0(plinkFile, ".fam")
   fam = data.frame(data.table:::fread(famFile, header=F, stringsAsFactors=FALSE))
   sparseGRMSampleID = fam[,2]
+  sparseGRMSampleIDFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff,"_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt")
 
-  sparseGRMSampleIDFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff, ".sparseGRM.mtx.sampleIDs.txt")
   cat("write sample IDs for the sparse GRM to ", sparseGRMSampleIDFile ,"\n")
   write.table(sparseGRMSampleID, sparseGRMSampleIDFile, quote=F, col.names=F, row.names=F)
 
@@ -78,7 +78,9 @@ createSparseGRM = function(plinkFile = "",
     cat("tc-tb\n")
     print(tc-tb)
 
-  sparseGRMFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff, ".sparseGRM.mtx")
+
+    sparseGRMFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff, "_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseGRM.mtx")
+
   cat("write sparse GRM to ", sparseGRMFile ,"\n")
   Matrix:::writeMM(sparseGRM, sparseGRMFile)
   return(1)
