@@ -351,6 +351,8 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     Y = eta - offset + (y - mu)/mu.eta
     sqrtW = mu.eta/sqrt(family$variance(mu))
 
+    if(tau[2] <= 0) break
+	
     if(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
     if(max(tau) > tol^(-2)) {
       warning("Large variance estimate observed in the iterations, model not converged...", call. = FALSE)
