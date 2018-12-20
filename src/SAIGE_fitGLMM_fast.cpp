@@ -1507,7 +1507,7 @@ Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  a
 
   	AI(0,0) =  dot(A0PY, PA0PY);
 
-  	cout << "A1(0,0) " << AI(0,0)  << endl;
+  	//cout << "A1(0,0) " << AI(0,0)  << endl;
   	arma::fvec PAPY_1 = getPCG1ofSigmaAndVector(wVec, tauVec, APY, maxiterPCG, tolPCG);
   	arma::fvec PAPY = PAPY_1 - Sigma_iX1 * (cov1 * (Sigma_iX1t * PAPY_1));
   	AI(1,1) = dot(APY, PAPY);
@@ -1516,10 +1516,10 @@ Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  a
 
   	AI(1,0) = AI(0,1);
 
-  	cout << "AI " << AI << endl;
-  	cout << "Trace " << Trace << endl;
-  	cout << "YPAPY " << YPAPY << endl;
-  	cout << "cov " << cov1 << endl;
+  	//cout << "AI " << AI << endl;
+  	//cout << "Trace " << Trace << endl;
+  	//cout << "YPAPY " << YPAPY << endl;
+  	//cout << "cov " << cov1 << endl;
 
   	return Rcpp::List::create(Named("YPAPY") = YPAPY, Named("Trace") = Trace,Named("Sigma_iY") = Sigma_iY1, Named("Sigma_iX") = Sigma_iX1, Named("PY") = PY1, Named("AI") = AI, Named("cov") = cov1,  Named("YPA0PY") = YPA0PY);
 }
@@ -1554,7 +1554,7 @@ Rcpp::List getAIScore_q_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVe
 
         arma::fmat cov1 = inv_sympd(Xmatt * Sigma_iX1);
 
-        cout << "cov " << cov1 << endl;
+        //cout << "cov " << cov1 << endl;
 
 
 	return Rcpp::List::create(Named("cov") = cov1, Named("Sigma_iX") = Sigma_iX1, Named("Sigma_iY") = Sigma_iY1);
@@ -1628,14 +1628,14 @@ Rcpp::List fitglmmaiRPCG_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,
   	float step = 1.0;
 
 
-  	cout << "tau2 " << tauVec(0) << " " << tauVec(1) << endl;
+  	//cout << "tau2 " << tauVec(0) << " " << tauVec(1) << endl;
   	while (tauVec(0) < 0.0 || tauVec(1)  < 0.0){ //for Quantitative
-     		cout << "tauVec Here: " << tauVec << endl;
+     		//cout << "tauVec Here: " << tauVec << endl;
     		step = step*0.5;
     		tauVec = tau0 + step * Dtau; //for Quantitative
-    		cout << "tau_4: " << tauVec << endl;
+    		//cout << "tau_4: " << tauVec << endl;
     		tauVec.elem( find(zeroVec % (tauVec < tol)) ).zeros(); //for Quantitative Copied from GMMAT
-    		cout << "tau_5: " << tauVec << endl;
+    		//cout << "tau_5: " << tauVec << endl;
  	}
 
 
