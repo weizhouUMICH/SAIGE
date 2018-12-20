@@ -1,2 +1,5 @@
 /archived
 ./cget
+thirdParty/cget
+src/*.o
+src/*.so
