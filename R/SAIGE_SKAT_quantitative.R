@@ -76,6 +76,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
 			G1_tilde_Ps_G1_tilde = getCovM_nopcg(G1=G1, G2=G1, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
 
+			#check if variance for any marker is negative, remove the variant
                         if(!is.null(G2_cond)){
                                 G2_tilde_Ps_G2_tilde = getCovM_nopcg(G1=G2_cond, G2=G2_cond, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
                                 G1_tilde_Ps_G2_tilde = getCovM_nopcg(G1=G1, G2=G2_cond, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
@@ -105,6 +106,30 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                 } #end of else if(is.null(obj$P)){
 
 
+		#check if variance for each marker is negative, remove the variant
+		indexNeg = which(diag(as.matrix(Phi)) <= 0) 
+		print(Phi)
+		print(diag(as.matrix(Phi)))
+		print(indexNeg)
+
+		if(length(indexNeg) > 0){
+			Phi = Phi[-indexNeg, -indexNeg]
+			Score = Score[-indexNeg]
+			if(!is.null(G2_cond)){
+				Phi_cond = Phi_cond[-indexNeg, -indexNeg]
+				Score_cond = Score_cond[-indexNeg]
+			}
+			MACvec_indVec = MACvec_indVec[-indexNeg]
+			m = m - length(indexNeg)
+			markerNumbyMAC = NULL
+                	for(i in 1:length(cateVarRatioMinMACVecExclude)){
+                        	markerNumbyMAC = c(markerNumbyMAC, sum(MACvec_indVec == i))
+                	}
+			cat("WARNING: ", indexNeg, " th marker(s) are excluded because of negative variance\n")		
+		}
+
+		if(length(Score) > 0){
+
                 #Perform the SKAT test
                 if(!is.null(G2_cond)){
                         if(sum(diag(Phi_cond) < 10^-5) > 0){
@@ -117,7 +142,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 		cat("Phi is ", Phi, "\n")
 		cat("Score is ", Score, "\n")
 
-
+		
 		if(singleGClambda == 1){
                   Phi = Phi * singleGClambda
 		  Phi = as.matrix(Phi)
@@ -153,13 +178,20 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                         re$p.value.cond = NA
                 }
 
+	   }else{ #if(length(Score) > 0){
+		 #else: no marker is left for test, m = 0
+                re = list(p.value = NA, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, p.value.cond=NA)
+                #markerNumbyMAC = c(0,0,0,0,0,0)
+                markerNumbyMAC = rep(0, length(cateVarRatioMinMACVecExclude))
+		m = 0	
+	   }	
          }else{
 
                 #else: no marker is left for test, m = 0
                 re = list(p.value = NA, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, p.value.cond=NA)
                 #markerNumbyMAC = c(0,0,0,0,0,0)
                 markerNumbyMAC = rep(0, length(cateVarRatioMinMACVecExclude))
-
+		
         }
 
         re$IsMeta=TRUE
