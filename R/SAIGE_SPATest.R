@@ -885,8 +885,15 @@ SPAGMMATtest = function(dosageFile = "",
 #	     Rprof(NULL)
 #	     print(summaryRprof(tf))
 #		break
-
+	    if(length(saigeskatTest$indexNeg) > 0){	
+	    	Gmat = Gmat[,-saigeskatTest$indexNeg]
+		Gmat = as.matrix(Gmat)
+		Gx$markerIDs = Gx$markerIDs[-saigeskatTest$indexNeg]
+		Gx$markerAFs = Gx$markerAFs[-saigeskatTest$indexNeg]
+	    }	
              cat("saigeskatTest$p.value: ", saigeskatTest$p.value, "\n")
+
+	if(length(Gx$markerIDs > 0)){
 
 	     if(IsSingleVarinGroupTest){
 	       for(nc in 1:ncol(Gmat)){
@@ -924,7 +931,7 @@ SPAGMMATtest = function(dosageFile = "",
 		  }
  		}
 	      }
-	    
+	    }# if(length(Gx$markerIDs > 0)){
 
 	    if(isCondition){
 	       
@@ -1498,7 +1505,7 @@ if(!is.null(sparseSigma)){
   #pcginvSigma<-pcg(sparseSigma, g)
   pcginvSigma<-solve(sparseSigma, g, sparse=T)
   var2 = as.matrix(t(g) %*% pcginvSigma) 
-  cat("var2 is ", var2, "\n")
+  #cat("var2 is ", var2, "\n")
   var1 = var2 * varRatio 
 
 }

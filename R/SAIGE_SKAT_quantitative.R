@@ -24,6 +24,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 		weights <- SKAT:::Beta.Weights(MAF, weights.beta)
 	}
 
+	indexNeg = NULL
         #if more than 1 marker is left, continue the test
         if(m  >  0){
 
@@ -197,6 +198,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
         re$IsMeta=TRUE
         re$markerNumbyMAC = markerNumbyMAC
 	re$m = m
+	re$indexNeg = indexNeg
         print(re)
         return(re)
 
