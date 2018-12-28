@@ -3321,6 +3321,54 @@ arma::fvec get_DiagofKin(){
 
 
 
+//The code below is modified from http://gallery.rcpp.org/articles/parallel-inner-product/
+struct stdgenoVectorScalorProduct : public Worker
+{
+   // source vectors
+   arma::fvec & m_bout;
+   float  y;
+   //unsigned int m_N;
+   int jthMarker;
+
+   // constructors
+   stdgenoVectorScalorProduct(const int jth, const float y, arma::fvec & prodVec)
+      : jthMarker(jth), y(y), m_bout(prodVec) {
+        //m_N = geno.getNnomissing();
+//      m_bout.zeros(m_N);
+
+  }
+
+
+   // process just the elements of the range I've been asked to
+
+        void operator()(std::size_t begin, std::size_t end) {
+                arma::fvec vec;
+                geno.Get_OneSNP_StdGeno(jthMarker, &vec);
+                for(unsigned int i = begin; i < end; i++){
+                        m_bout[i] = m_bout[i]+vec[i] * y;
+                }
+        }
+
+
+
+};
+
+
+// [[Rcpp::export]]
+void getstdgenoVectorScalorProduct(int jth, float y, arma::fvec & prodVec) {
+
+
+   stdgenoVectorScalorProduct stdgenoVectorScalorProduct(jth, y, prodVec);
+
+   unsigned int m_N = geno.getNnomissing();
+
+   parallelFor(0, m_N, stdgenoVectorScalorProduct);
+
+   // return the computed product
+}
+
+
+
 
 
 struct getP_mailman : public Worker
