@@ -290,7 +290,15 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   }
 
   re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne)})
-
+  bVec = seq(1,length(fit0$y))
+  cat("start: \n")
+  t1 = system.time({testmm = getCrossprodMatAndKin_mailman(bVec)})
+  cat("testmm: ", testmm, "\n")
+  print(t1)
+  t2 = system.time({testmm2 = getCrossprodMatAndKin(bVec)})
+  cat("testmm2: ", testmm2, "\n")
+  print(t2)	
+  break	
   #test time
 #  for(a in 1:100){
 #  time1 = proc.time()

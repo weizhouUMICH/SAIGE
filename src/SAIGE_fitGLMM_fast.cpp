@@ -39,7 +39,7 @@ public:
   	size_t M;
   	size_t N;
 	size_t Nnomissing;
-  	vector<float>	invstdvVec;
+  	arma::fvec	invstdvVec;
 	vector<int>	ptrsubSampleInGeno;
 	
   	arma::fvec 	alleleFreqVec;
@@ -497,6 +497,7 @@ public:
 
 		cout << "setgeno mark1" << endl;
 		alleleFreqVec.zeros(M);
+		invstdvVec.zeros(M);
 		MACVec.zeros(M);
         	float freq, Std, invStd;
         	std::vector<int> indexNA;
@@ -594,7 +595,7 @@ public:
 
 			}
 			
-//			cout << "setgeno mark4" << endl;
+			//cout << "setgeno mark4" << endl;
 
 			freq = float(sum(m_OneSNP_Geno))/(2*Nnomissing);
       			Std = std::sqrt(2*freq*(1-freq));
@@ -612,17 +613,17 @@ public:
 			}
 
 
-      			invstdvVec.push_back(invStd);
+      			invstdvVec[i] = invStd;
 			m_OneSNP_Geno.clear();
 
     		}//end for(int i = 0; i < M; i++){
 
         	test_bedfile.close();
-		//cout << "setgeno mark5" << endl;
+		cout << "setgeno mark5" << endl;
 //		printAlleleFreqVec();
 		//printGenoVec();
    		//Get_Diagof_StdGeno();
-		//cout << "setgeno mark6" << endl;
+		cout << "setgeno mark6" << endl;
   	}//End Function
  
 
@@ -3315,3 +3316,456 @@ arma::fvec get_DiagofKin(){
     }	
     return(x);
 }
+
+
+
+
+
+
+
+struct getP_mailman : public Worker
+{
+        // source vectors
+        unsigned int ithMarker;
+	unsigned int powVal;
+	arma::ivec ithGeno;
+        // destination vector
+        arma::ivec Psubvec;
+
+
+        // constructors
+        getP_mailman(unsigned int ith, unsigned int mmchunksize)
+                : ithMarker(ith){
+		ithGeno = Get_OneSNP_Geno(ith);			
+		//unsigned int k  = pow(3, mmchunksize);
+		unsigned m_N = geno.getNnomissing();
+		Psubvec.zeros(m_N);
+		unsigned int powNumber = mmchunksize - 1 - ith % mmchunksize; 		
+		powVal = pow(3, powNumber);
+        }
+
+
+	// take the square root of the range of elements requested
+     void operator()(std::size_t begin, std::size_t end) {
+
+	for(unsigned int j = begin; j < end; j++){
+		Psubvec[j] = ithGeno[j] * powVal;
+        }		 
+     }
+
+};
+
+
+int computePindex(arma::ivec &ithGeno){
+	int a = ithGeno.n_elem;
+	int q = 0;
+	int baseNum;
+	for(unsigned int i = 0; i < a; i++){
+		baseNum = pow(3, a - i - 1);
+		q = q + ithGeno[i] * baseNum;
+	}
+	return(q);
+}
+
+
+struct getP_mailman_NbyM : public Worker
+{
+        // source vectors
+        unsigned int jthChunk;
+        unsigned int mmchunksize;
+        //arma::ivec ithGeno;
+        // destination vector
+        arma::ivec Psubvec;
+
+
+        // constructors
+        getP_mailman_NbyM(unsigned int jthChunk,unsigned int mmchunksize)
+                : jthChunk(jthChunk), mmchunksize(mmchunksize){
+                //ithGeno = Get_OneSNP_Geno(ith);
+                //unsigned int k  = pow(3, mmchunksize);
+                unsigned m_M = geno.getM();
+                Psubvec.zeros(m_M);
+                //powNumber = mmchunksize - 1 - ith % mmchunksize;
+        }
+
+
+        // take the square root of the range of elements requested
+     void operator()(std::size_t begin, std::size_t end) {
+	arma::ivec ithGeno;	
+	arma::ivec ithGenosub;
+	unsigned int jthIndvStart = jthChunk * mmchunksize;
+	unsigned int jthIndvEnd = (jthChunk+1) * mmchunksize - 1;
+	arma::uvec indvIndex = arma::linspace<arma::uvec>(jthIndvStart, jthIndvEnd);
+        for(unsigned int i = begin; i < end; i++){
+		ithGeno = Get_OneSNP_Geno(i);		
+		ithGenosub = ithGeno.elem(indvIndex);
+		Psubvec[i] = computePindex(ithGenosub);
+        }
+     }
+
+};
+
+
+
+// // [[Rcpp::export]]
+//arma::ivec parallelmmGetP(unsigned int ith, unsigned int mmchunksize) {
+  
+//  	int M = geno.getM();
+//	int N = geno.getNnomissing();	
+//  	Pvec.zeros(N);
+
+//  	getP_mailman getP_mailman(ith, mmchunksize);
+  
+//  	parallelFor(0, N, getP_mailman);
+ 	
+//  	return getP_mailman.Psubvec;
+//}
+
+
+// [[Rcpp::export]]
+void sumPz(arma::fvec & Pbvec, arma::fvec & Ubvec, unsigned int mmchunksize){
+
+        for (int i = 0; i < Pbvec.n_elem; i++){
+                std::cout << "i: " << i << " " << Pbvec[i] << std::endl;
+        }
+
+        unsigned int d = Pbvec.n_elem;;
+        Ubvec.zeros(mmchunksize);
+        unsigned int i = 0;
+        arma::fvec z0;
+        arma::fvec z1;
+        arma::fvec z2;
+        z0.zeros(d/3);
+        z1.zeros(d/3);
+        z2.zeros(d/3);
+
+        while(i < mmchunksize){
+                d = d / 3;
+//              std::cout << "d: " << d << std::endl;
+                z0.resize(d);
+                z1.resize(d);
+                z2.resize(d);
+
+//              arma::uvec indexvec = arma::linspace<arma::uvec>(0, d-1);
+                z0 = Pbvec.subvec(0, d-1);
+/*
+                 for (int j = 0; j < z0.n_elem; j++){
+                std::cout << "j: " << j << " " << z0[j] << std::endl;
+        }
+*/
+                //indexvec = arma::linspace<arma::uvec>(d, 2*d-1);
+                //z1 = Pbvec.elem(indexvec);
+                z1 = Pbvec.subvec(d, 2*d-1);
+                //indexvec = arma::linspace<arma::uvec>(2*d, 3*d-1);
+                //z2 = Pbvec.elem(indexvec);
+                z2 = Pbvec.subvec(2*d, 3*d-1);
+
+                Pbvec.resize(d);
+                Pbvec = z0 + z1 + z2;
+                Ubvec[i] = sum(z1) + 2*sum(z2);
+                i = i + 1;
+              std::cout << "i: " << i << std::endl;
+              std::cout << "Ubvec[i]: " << Ubvec[i] << std::endl;
+
+        }
+}
+
+
+
+// [[Rcpp::export]]
+void mmGetPb_MbyN(unsigned int cthchunk, unsigned int mmchunksize, arma::fvec & bvec, arma::fvec & Pbvec, arma::fvec & kinbvec) {
+	std::cout << "OKKK" << std::endl;
+        int M = geno.getM();
+        int N = geno.getNnomissing();
+	int k = pow(3,mmchunksize);
+        arma::ivec Pvec;
+	Pvec.zeros(N);
+	Pbvec.zeros(k);
+	arma::ivec ithGeno;
+	ithGeno.ones(N);
+	unsigned int Ptemp;
+	Ptemp = 1;
+	int indL = cthchunk*mmchunksize;
+	int indH = (cthchunk+1)*mmchunksize - 1;
+	unsigned int j0 = 0;
+	//arma::fmat stdGenoMat(mmchunksize, N);
+	float ithfreq; 
+	float ithinvstd; 
+	arma::fvec chunkfreq = geno.alleleFreqVec.subvec(indL, indH);
+	arma::fvec chunkinvstd = geno.invstdvVec.subvec(indL, indH); 
+	arma::fvec chunkbvec = bvec.subvec(indL, indH); 
+
+	for (int i = indH; i >= indL; i--){
+		ithGeno = Get_OneSNP_Geno(i);
+		cout << "Ptemp: " << Ptemp << endl;
+		//ithfreq = geno.alleleFreqVec(i);
+		//ithinvstd = geno.invstdvVec(i);
+		Pvec = Pvec + Ptemp * ithGeno; 
+		Ptemp = Ptemp * 3;
+		//stdGenoMat.row(j) = ithGeno*ithinvstd - 2*ithfreq*ithinvstd;
+		//j0 = j0 + 1;
+
+                //unsigned int k  = pow(3, mmchunksize);
+                //unsigned m_N = geno.getNnomissing();
+                //Psubvec.zeros(m_N);
+                //unsigned int powNumber = mmchunksize - 1 - ith % mmchunksize;
+
+	
+	//	getP_mailman getP_mailman(i, mmchunksize);
+	//	parallelFor(0, N, getP_mailman);
+	//	Pvec = Pvec + getP_mailman.Psubvec;
+	//	getP_mailman.Psubvec.clear();
+  	}
+	
+
+	for (int i = 0; i < N; i++){	
+//		std::cout << "i: " << i << " " << Pvec[i] << std::endl;	
+		Pbvec[Pvec[i]] = Pbvec[Pvec[i]] + bvec[i];
+//		std::cout << "Pbvec[Pvec[i]] " << Pbvec[Pvec[i]] << std::endl;
+	}
+
+	arma::fvec Gbvectemp;
+	sumPz(Pbvec, Gbvectemp, mmchunksize);
+	arma::fvec crossKinVec;
+	arma::fvec GbvecInvStd = Gbvectemp % chunkinvstd;
+        arma::fvec secondTerm = 2*chunkfreq % chunkinvstd * sum(chunkbvec);
+        crossKinVec  = GbvecInvStd - secondTerm;
+
+	//getstdgenoVectorScalorProduct(j, crossKinVec[j], kinbvec);
+	j0 = 0;
+	arma::fvec stdvec;
+	for (int i = indL; i <= indH; i++){
+		geno.Get_OneSNP_StdGeno(i, &stdvec);
+                kinbvec = kinbvec + crossKinVec[j0]*(stdvec);
+		j0 = j0 + 1;
+	}
+
+//	for (int i = 0; i < k; i++){
+//                std::cout << "Pbvec[i]: " << i << " " << Pbvec[i] << std::endl;
+//        }
+
+        //return Pbvec;
+}
+
+// [[Rcpp::export]]
+void mmGetPb_NbyM(unsigned int cthchunk, unsigned int mmchunksize, arma::fvec & bvec, arma::fvec & Pbvec) {
+
+        int M = geno.getM();
+        int N = geno.getNnomissing();
+        int k = pow(3,mmchunksize);
+        arma::ivec Pvec;
+        Pvec.zeros(M);
+        Pbvec.zeros(k);
+	getP_mailman_NbyM getP_mailman_NbyM(cthchunk,mmchunksize);
+	parallelFor(0, M, getP_mailman_NbyM);
+	Pvec = getP_mailman_NbyM.Psubvec;
+	for (int i = 0; i < M; i++){
+		Pbvec[Pvec[i]] = Pbvec[Pvec[i]] + bvec[i];
+	}
+}
+
+
+
+// [[Rcpp::export]]
+void muliplyMailman(arma::fvec & bvec, arma::fvec & Gbvec, arma::fvec & kinbvec){
+	int M = geno.getM();
+        int N = geno.getNnomissing();
+
+        Gbvec.zeros(M);
+	std::cout << "Gbvec.n_elem " << Gbvec.n_elem << std::endl;
+        unsigned int mmchunksize = ceil(log(N)/log(3));
+	std::cout << "mmchunksize " << mmchunksize << std::endl;
+
+        int numchunk = M / mmchunksize; 
+	std::cout << "numchunk " << numchunk << std::endl;
+        int reschunk = M % mmchunksize;
+	std::cout << "reschunk " << reschunk << std::endl;
+	//unsigned int indL;
+	//unsigned int indH;
+	//mmGetPb(unsigned int cthchunk, unsigned int mmchunksize, arma::fvec & bvec, arma::fvec & Pbvec)
+	arma::fvec Pbvec;
+	//arma::fvec Gbvectemp;	
+
+
+	
+	//for (unsigned int j = 0; j < 1; j++){
+	for (unsigned int j = 0; j < numchunk; j++){
+//		std::cout << "j: " << j << std::endl;
+		//Pbvec.zeros(M);
+		//indL = j*mmchunksize;
+		//indH = (j+1)*mmchunksize-1;
+//		if(j == 0){
+		double wall0ain = get_wall_time();
+ 		double cpu0ain  = get_cpu_time();
+//		}
+//		mmGetPb_MbyN(j, mmchunksize, bvec, Pbvec);
+
+//		if(j == 0){
+
+		mmGetPb_MbyN(j, mmchunksize, bvec, Pbvec, kinbvec);
+
+
+
+	double wall1ain = get_wall_time();
+ double cpu1ain  = get_cpu_time();
+ cout << "Wall Time in mmGetPb_MbyN = " << wall1ain - wall0ain << endl;
+ cout << "CPU Time  in mmGetPb_MbyN = " << cpu1ain - cpu0ain  << endl;
+
+
+//}
+
+//		sumPz(Pbvec, Gbvectemp, mmchunksize);
+
+//if(j == 0){
+cout << "ith chunk " << j << endl;
+//}
+		//getstdgenoVectorScalorProduct(int jth, float y, arma::fvec & prodVec)
+
+//		Gbvec.subvec(j*mmchunksize, (j+1)*mmchunksize-1) = Gbvectemp;
+  	}
+
+        if(reschunk > 0){
+			arma::fvec vec;
+		//arma::uvec indexvec = arma::linspace<arma::uvec>(M-reschunk, M-1);
+		for (unsigned int j = M-reschunk; j < M; j++){
+     		           geno.Get_OneSNP_StdGeno(j, &vec);
+			kinbvec = kinbvec + arma::dot(vec, bvec) * vec;
+		}	
+        }
+
+	kinbvec = kinbvec / M;
+}
+
+
+// [[Rcpp::export]]
+void muliplyMailman_NbyM(arma::fvec & bvec, arma::fvec & tGbvec){
+        int M = geno.getM();
+        int N = geno.getNnomissing();
+
+        tGbvec.zeros(N);
+
+        unsigned int mmchunksize = ceil(log(M)/log(3));
+
+        int numchunk = N / mmchunksize;
+        int reschunk = N % mmchunksize;
+        unsigned int indL;
+        unsigned int indH;
+        //mmGetPb(unsigned int cthchunk, unsigned int mmchunksize, arma::fvec & bvec, arma::fvec & Pbvec)
+        arma::fvec Pbvec;
+        Pbvec.zeros(M);
+	arma::fvec tGbvectemp;
+
+        for (unsigned int j = 0; j < numchunk; j++){
+                indL = j*mmchunksize;
+                indH = (j+1)*mmchunksize-1;
+		mmGetPb_NbyM(j, mmchunksize, bvec, Pbvec);
+           	sumPz(Pbvec, tGbvectemp, mmchunksize);
+                tGbvec.subvec(j*mmchunksize, (j+1)*mmchunksize-1) = tGbvectemp;     
+        }
+
+        if(reschunk > 0){
+		arma::imat A(reschunk,M);
+		A.zeros();
+		arma::ivec Gtemp(N);
+		Gtemp.zeros();
+		arma::ivec Gtemp2(reschunk);
+		Gtemp2.zeros();
+		arma::uvec indexvec = arma::linspace<arma::uvec>(M - reschunk -1, M);
+                for (unsigned int j = 0; j < M; j++){
+			Gtemp = Get_OneSNP_Geno(j);
+			Gtemp2 = Gtemp.elem(indexvec);
+			A.col(j) = Gtemp2;
+                }
+
+		Pbvec.elem(indexvec) = Gtemp2 * (bvec.elem(indexvec));
+        }
+}
+
+// [[Rcpp::export]]
+void freqOverStd(arma::fcolvec& freqOverStdVec){
+	freqOverStdVec = 2 * (geno.alleleFreqVec) % (geno.invstdvVec);
+
+	 int M = geno.getM();
+/*
+	for (unsigned int j = 0; j < M; j++){
+		std::cout << "geno.alleleFreqVec " << j << " " << geno.alleleFreqVec[j] << std::endl; 
+		std::cout << "geno.invstdvVec " << j << " " << geno.invstdvVec[j] << std::endl; 
+		std::cout << "freqOverStdVec " << j << " " << freqOverStdVec[j] << std::endl; 
+               }
+*/
+
+}
+
+
+// [[Rcpp::export]]
+arma::fvec getCrossprodMatAndKin_mailman(arma::fcolvec& bVec){
+	std::cout << "b0: " << std::endl;
+	int M = geno.getM();
+        int N = geno.getNnomissing();
+	arma::fvec Gbvec;
+
+
+	double wall0in = get_wall_time();
+ 	double cpu0in  = get_cpu_time();
+ 	arma::fvec kinbvec;
+        kinbvec.zeros(N);
+
+	muliplyMailman(bVec, Gbvec, kinbvec);
+
+
+double wall1in = get_wall_time();
+ double cpu1in  = get_cpu_time();
+ cout << "Wall Time in muliplyMailman = " << wall1in - wall0in << endl;
+ cout << "CPU Time  in muliplyMailman = " << cpu1in - cpu0in  << endl;
+
+
+
+//	for (unsigned int j = 0; j < M; j++){
+//                std::cout << "Gbvec " << j << " " << Gbvec[j] << std::endl;
+//               }
+/*
+//	std::cout << "b: " << std::endl;
+	arma::fvec freqOverStdVec;
+//	std::cout << "a: " << std::endl;
+	freqOverStd(freqOverStdVec);
+//	std::cout << "c: " << std::endl;
+	arma::fvec crossKinVec;
+	arma::fvec GbvecInvStd = Gbvec % (geno.invstdvVec);
+	arma::fvec secondTerm = freqOverStdVec * sum(bVec);
+	crossKinVec  = GbvecInvStd - secondTerm;
+
+double wall2in = get_wall_time();
+ double cpu2in  = get_cpu_time();
+ cout << "Wall Time in Gtb = " << wall2in - wall1in << endl;
+ cout << "CPU Time  in Gtb = " << cpu2in - cpu1in  << endl;
+
+
+	 for (unsigned int j = 0; j < M; j++){
+                std::cout << "GbvecInvStd " << j << " " << GbvecInvStd[j] << std::endl;
+                std::cout << "secondTerm " << j << " " << secondTerm[j] << std::endl;
+		std::cout << "crossKinVec " << j << " " << crossKinVec[j] << std::endl;
+               }
+*/
+/*	
+	arma::fvec kinbvec;
+	kinbvec.zeros(N);
+
+	for (unsigned int j = 0; j < M; j++){
+		getstdgenoVectorScalorProduct(j, crossKinVec[j], kinbvec);
+	}
+
+
+double wall3in = get_wall_time();
+ double cpu3in  = get_cpu_time();
+ cout << "Wall Time in getstdgenoVectorScalorProduct = " << wall3in - wall2in << endl;
+ cout << "CPU Time  in getstdgenoVectorScalorProduct = " << cpu3in - cpu2in  << endl;
+
+
+
+	kinbvec = kinbvec / M;
+*/	
+        return(kinbvec);
+
+}
+
+
