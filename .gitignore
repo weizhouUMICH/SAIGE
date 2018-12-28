@@ -1,7 +1,7 @@
 /archived
 /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/extdata/input/makeQuantiPheno.R
 /extdata
-src/RcppExports.cpp
-src/*.o
-src/*.so
+/src/RcppExports.cpp
+/src/*.o
+/src/*.so
 
