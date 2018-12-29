@@ -2450,38 +2450,21 @@ arma::fvec GetTrace_q(arma::fmat Sigma_iX, arma::fmat& Xmat, arma::fvec& wVec, a
   	return(traVec);
 }
 
+//Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec, int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff){
+
+
 //This function needs the function getPCG1ofSigmaAndVector and function getCrossprod and GetTrace
 // [[Rcpp::export]]
-Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec, int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff){
+Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec,
+arma::fvec& Sigma_iY, arma::fmat & Sigma_iX, arma::fmat & cov,
+int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff){
 
-  	int Nnomissing = geno.getNnomissing();
-  	arma::fvec Sigma_iY1;
-  	Sigma_iY1 = getPCG1ofSigmaAndVector(wVec, tauVec, Yvec, maxiterPCG, tolPCG);
-//  for(int j = 0; j < 10; j++){
-//                std::cout << "Sigma_iY1(j): " << Sigma_iY1(j) << std::endl;
-//        }
 
-  	int colNumX = Xmat.n_cols;
-  	arma::fmat Sigma_iX1(Nnomissing,colNumX);
-  	arma::fvec XmatVecTemp;
-
- 	for(int i = 0; i < colNumX; i++){
-    		XmatVecTemp = Xmat.col(i);
-    		Sigma_iX1.col(i) = getPCG1ofSigmaAndVector(wVec, tauVec, XmatVecTemp, maxiterPCG, tolPCG);
-//	if(i == 0){
-//		for(int j = 0; j < 10; j++){
-//			std::cout << "Xmat(j,i): " << Xmat(j,i) << std::endl;
-//			std::cout << "Sigma_iX1(j,0): " << Sigma_iX1(j,0) << std::endl;
-//		}
-//	}	
-
-  	}
-
-  	arma::fmat Sigma_iX1t = Sigma_iX1.t();
+  	arma::fmat Sigma_iXt = Sigma_iX.t();
   	arma::fmat Xmatt = Xmat.t();
 
-  	arma::fmat cov1 = inv_sympd(Xmatt * Sigma_iX1);
-  	arma::fvec PY1 = Sigma_iY1 - Sigma_iX1 * (cov1 * (Sigma_iX1t * Yvec));
+  	arma::fmat cov1 = inv_sympd(Xmatt * Sigma_iX);
+  	arma::fvec PY1 = Sigma_iY - Sigma_iX * (cov * (Sigma_iXt * Yvec));
   	arma::fvec APY = getCrossprodMatAndKin(PY1);
 
   	float YPAPY = dot(PY1, APY);
@@ -2492,17 +2475,17 @@ Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  a
   	float YPA0PY = dot(PY1, A0PY); ////Quantitative
 
 
-  	arma::fvec Trace = GetTrace_q(Sigma_iX1, Xmat, wVec, tauVec, cov1, nrun, maxiterPCG, tolPCG, traceCVcutoff);
+  	arma::fvec Trace = GetTrace_q(Sigma_iX, Xmat, wVec, tauVec, cov, nrun, maxiterPCG, tolPCG, traceCVcutoff);
 
   	arma::fmat AI(2,2);
   	arma::fvec PA0PY_1 = getPCG1ofSigmaAndVector(wVec, tauVec, A0PY, maxiterPCG, tolPCG);
-  	arma::fvec PA0PY = PA0PY_1 - Sigma_iX1 * (cov1 * (Sigma_iX1t * PA0PY_1));
+  	arma::fvec PA0PY = PA0PY_1 - Sigma_iX * (cov * (Sigma_iXt * PA0PY_1));
 
   	AI(0,0) =  dot(A0PY, PA0PY);
 
   	//cout << "A1(0,0) " << AI(0,0)  << endl;
   	arma::fvec PAPY_1 = getPCG1ofSigmaAndVector(wVec, tauVec, APY, maxiterPCG, tolPCG);
-  	arma::fvec PAPY = PAPY_1 - Sigma_iX1 * (cov1 * (Sigma_iX1t * PAPY_1));
+  	arma::fvec PAPY = PAPY_1 - Sigma_iX * (cov * (Sigma_iXt * PAPY_1));
   	AI(1,1) = dot(APY, PAPY);
 
   	AI(0,1) = dot(A0PY, PAPY);
@@ -2513,8 +2496,8 @@ Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  a
   	//cout << "Trace " << Trace << endl;
   	//cout << "YPAPY " << YPAPY << endl;
   	//cout << "cov " << cov1 << endl;
+	return Rcpp::List::create(Named("YPAPY") = YPAPY, Named("YPA0PY") = YPA0PY,Named("Trace") = Trace,Named("PY") = PY1,Named("AI") = AI);
 
-  	return Rcpp::List::create(Named("YPAPY") = YPAPY, Named("Trace") = Trace,Named("Sigma_iY") = Sigma_iY1, Named("Sigma_iX") = Sigma_iX1, Named("PY") = PY1, Named("AI") = AI, Named("cov") = cov1,  Named("YPA0PY") = YPA0PY);
 }
 
 
@@ -2580,24 +2563,19 @@ Rcpp::List fitglmmaiRPCG_q_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& 
 
 
 
+//Rcpp::List fitglmmaiRPCG_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec, int nrun, int maxiterPCG, float tolPCG, float tol, float traceCVcutoff){
 
 
 
 //This function needs the function getPCG1ofSigmaAndVector and function getCrossprod, getAIScore_q
 // [[Rcpp::export]]
-Rcpp::List fitglmmaiRPCG_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,  arma::fvec& tauVec, int nrun, int maxiterPCG, float tolPCG, float tol, float traceCVcutoff){
+Rcpp::List fitglmmaiRPCG_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec &wVec,  arma::fvec &tauVec,
+arma::fvec& Sigma_iY, arma::fmat & Sigma_iX, arma::fmat & cov,
+int nrun, int maxiterPCG, float tolPCG, float tol, float traceCVcutoff){
 
   	arma::uvec zeroVec = (tauVec < tol); //for Quantitative, GMMAT
-  	Rcpp::List re = getAIScore_q(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, traceCVcutoff);
+	Rcpp::List re = getAIScore_q(Yvec, Xmat,wVec,  tauVec, Sigma_iY, Sigma_iX, cov, nrun, maxiterPCG, tolPCG, traceCVcutoff);
 
-  	arma::fmat cov = re["cov"];
-  	arma::fmat Sigma_iX = re["Sigma_iX"];
-	//std::cout << "Sigma_iX: " << Sigma_iX << std::endl;
- 	arma::fmat Sigma_iXt = Sigma_iX.t();
-
-  	arma::fvec alpha1 = cov * (Sigma_iXt * Yvec);
-  	arma::fvec Sigma_iY = re["Sigma_iY"];
-  	arma::fvec eta1 = Yvec - tauVec(0) * (Sigma_iY - Sigma_iX * alpha1) / wVec;
   	float YPAPY = re["YPAPY"];
   	float YPA0PY = re["YPA0PY"]; //for Quantitative
   	arma::fvec Trace = re["Trace"]; //for Quantitative
@@ -2640,7 +2618,9 @@ Rcpp::List fitglmmaiRPCG_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,
 
 
   	tauVec.elem( find(tauVec < tol) ).zeros();
-  	return List::create(Named("tau") = tauVec, Named("cov") = cov, Named("alpha") = alpha1, Named("eta") = eta1);
+	return List::create(Named("tau") = tauVec);
+
+  	//return List::create(Named("tau") = tauVec, Named("cov") = cov, Named("alpha") = alpha1, Named("eta") = eta1);
 }
 
 

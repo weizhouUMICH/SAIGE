@@ -319,6 +319,8 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 #  print("X")
 #  print(X)
   alpha = fit0$coef
+  alpha0 = alpha
+  eta0 = eta
   if(verbose) {
     cat("Fixed-effect coefficients:\n")
     print(alpha)
@@ -362,8 +364,9 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   #a = getCrossprodMatAndKin(bvtest)
   #print(a)
 
+  re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
 
-  re = getAIScore_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG, traceCVcutoff)
+  re = getAIScore_q(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG,tolPCG = tolPCG, traceCVcutoff = traceCVcutoff)
 #  cat(names(re))
 #  cat("X\n")
 #  print(X)
@@ -402,25 +405,34 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     if(verbose) cat("\nIteration ", i, ":\n")
     alpha0 = alpha
     tau0 = tau
+    eta0 = eta
 #    cat("tau0: ", tau0,"\n")
-    fit = fitglmmaiRPCG_q(Y, X, W, tau, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
+
+    re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)	
+    fit = fitglmmaiRPCG_q(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG, tolPCG, tol = tol, traceCVcutoff = traceCVcutoff)
+
 #    cat("tau0_after_fit: ", tau0,"\n")
 #    print(fit)
     tau = as.numeric(fit$tau)
-    cov = as.matrix(fit$cov)
+    cov = re.coef$cov
+    alpha = re.coef$alpha
+    eta = re.coef$eta
+
     cat("cov: ", cov, "\n")
-    alpha = as.numeric(fit$alpha)
-    eta = as.numeric(fit$eta) + offset
+
     if(verbose) {
       cat("Variance component estimates:\n")
       print(tau)
       cat("Fixed-effect coefficients:\n")
       print(alpha)
     }
-    mu = family$linkinv(eta)
-    mu.eta = family$mu.eta(eta)
-    Y = eta - offset + (y - mu)/mu.eta
-    sqrtW = mu.eta/sqrt(family$variance(mu))
+    Y = re.coef$Y
+    mu = re.coef$mu
+
+    #mu = family$linkinv(eta)
+    #mu.eta = family$mu.eta(eta)
+    #Y = eta - offset + (y - mu)/mu.eta
+    #sqrtW = mu.eta/sqrt(family$variance(mu))
 if(FALSE){
     cat("abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)\n")
     print(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol))	
@@ -436,7 +448,9 @@ if(FALSE){
 }
 
     if(tau[2] == 0) break
-    if(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
+    if(max(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
+
+#    if(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
     if(max(tau) > tol^(-2)) {
       warning("Large variance estimate observed in the iterations, model not converged...", call. = FALSE)
       i = maxiter
@@ -444,11 +458,17 @@ if(FALSE){
     }
   }
 
+   if(verbose) cat("\nFinal " ,tau, ":\n")
+
+  re.coef = Get_Coef(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
+  cov = re.coef$cov
+  alpha = re.coef$alpha
+  eta = re.coef$eta
+  Y = re.coef$Y
+  mu = re.coef$mu
+
   converged = ifelse(i < maxiter, TRUE, FALSE)
   res = y - mu
-  Sigma_iy = getSigma_G(W, tau, res, maxiterPCG, tolPCG)
-  Sigma_iX = getSigma_X(W, tau, X1, maxiterPCG, tolPCG)
-  #cat("Sigma_iX: ", Sigma_iX, "\n")
 
   if(isCovariateTransform){
     coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
@@ -471,15 +491,15 @@ if(FALSE){
       endIndex = chromosomeEndIndexVec[j]
       if(!is.na(startIndex) && !is.na(endIndex)){
         setStartEndIndex(startIndex, endIndex)
+	re.coef_LOCO = Get_Coef_LOCO(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
 
-        re.coef_LOCO=fitglmmaiRPCG_q_LOCO(Y, X, W, tau, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
+        #re.coef_LOCO=fitglmmaiRPCG_q_LOCO(Y, X, W, tau, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
+	cov = re.coef_LOCO$cov
+        alpha = re.coef_LOCO$alpha
+        eta = re.coef_LOCO$eta
+        Y = re.coef_LOCO$Y
+        mu = re.coef_LOCO$mu
 
-	cov = as.matrix(re.coef_LOCO$cov)
-    	alpha = as.numeric(re.coef_LOCO$alpha)
-    	eta = as.numeric(re.coef_LOCO$eta) + offset
-    	mu = family$linkinv(eta)
-    	mu.eta = family$mu.eta(eta)
-    	Y = eta - offset + (y - mu)/mu.eta
         res = y - mu
         if(isCovariateTransform){
         coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
