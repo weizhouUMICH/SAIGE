@@ -4,4 +4,5 @@
 /src/RcppExports.cpp
 /src/*.o
 /src/*.so
-./src/innerProd.cpp
+/src/innerProd.cpp
+./thirdParty
