@@ -1633,18 +1633,23 @@ arma::sp_mat gen_sp_GRM() {
 // [[Rcpp::export]]
 arma::sp_mat gen_sp_Sigma(arma::fvec& wVec,  arma::fvec& tauVec){
    arma::fvec dtVec = (1/wVec) * (tauVec(0));
-
+//   dtVec.print();
    arma::vec valueVecNew = valueVec * tauVec(1);
 
    int nnonzero = valueVec.n_elem;
    for(size_t i=0; i< nnonzero; i++){
      if(locationMat(0,i) == locationMat(1,i)){
+//       std::cout << "i: " << i << " " << valueVecNew(i) << std::endl;
        valueVecNew(i) = valueVecNew(i) + dtVec(locationMat(0,i));
+//       std::cout << "i: " << i << " " << valueVecNew(i) << std::endl;
      }
    }
 
     // sparse x sparse -> sparse
     arma::sp_mat result(locationMat, valueVecNew, dimNum, dimNum);
+//    std::cout << "result.n_rows " << result.n_rows << std::endl;
+//    std::cout << "result.n_cols " << result.n_cols << std::endl;
+    //result.print();
     //arma::sp_fmat A = sprandu<sp_fmat>(100, 200, 0.1);
     //arma::sp_mat result1 = result * A;
     return result;
@@ -1722,6 +1727,7 @@ void setisUsePrecondM(bool isUseSparseSigmaforPCG){
 	isUsePrecondM = isUseSparseSigmaforPCG;
 }
 
+// [[Rcpp::export]]
 void setisUseSparseSigmaforInitTau(bool isUseSparseSigmaforInitTau0){
 	isUseSparseSigmaforInitTau = isUseSparseSigmaforInitTau0;
 }
@@ -1739,8 +1745,8 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
         xVec.zeros();
 
 if(isUseSparseSigmaforInitTau){
-	xVec = gen_spsolve_v4(wVec, tauVec, bVec);
 	cout << "use sparse kinship to estimate initial tau " <<  endl;
+	xVec = gen_spsolve_v4(wVec, tauVec, bVec);
 }else{
         arma::fvec rVec = bVec;
         //cout << "HELLOa: "  << endl;
@@ -1759,8 +1765,8 @@ if(isUseSparseSigmaforInitTau){
      double wall1 = get_wall_time();
        double cpu1  = get_cpu_time();
 
-    cout << "Wall Time 1= " << wall1 - wall0 << endl;
-    cout << "CPU Time 1 = " << cpu1  - cpu0  << endl;
+//    cout << "Wall Time 1= " << wall1 - wall0 << endl;
+//    cout << "CPU Time 1 = " << cpu1  - cpu0  << endl;
         if (!isUsePrecondM){
                 minvVec = 1/getDiagOfSigma(wVec, tauVec);
                 zVec = minvVec % rVec;
@@ -1781,8 +1787,8 @@ if(isUseSparseSigmaforInitTau){
         }
  double wall2 = get_wall_time();
  double cpu2  = get_cpu_time();
- cout << "Wall Time 2 = " << wall2 - wall1 << endl;
- cout << "CPU Time 2 = " << cpu2  - cpu1  << endl;
+// cout << "Wall Time 2 = " << wall2 - wall1 << endl;
+// cout << "CPU Time 2 = " << cpu2  - cpu1  << endl;
 
 
 //      cout << "HELL3: "  << endl;
@@ -1855,8 +1861,8 @@ if(isUseSparseSigmaforInitTau){
                 }
 */
 //                z1Vec = minvVec % r1Vec;
- double wall3a = get_wall_time();
-       double cpu3a  = get_cpu_time();
+// double wall3a = get_wall_time();
+//       double cpu3a  = get_cpu_time();
 
         if (!isUsePrecondM){
                 z1Vec = minvVec % r1Vec;
@@ -1865,10 +1871,10 @@ if(isUseSparseSigmaforInitTau){
                 //z1Vec = arma::spsolve(sparseGRMinC, r1Vec) ;
         }
 
-       double wall3b = get_wall_time();
-       double cpu3b  = get_cpu_time();
- cout << "Wall Time 3b = " << wall3b - wall3a << endl;
- cout << "CPU Time 3b = " << cpu3b  - cpu3a  << endl;
+//       double wall3b = get_wall_time();
+//       double cpu3b  = get_cpu_time();
+// cout << "Wall Time 3b = " << wall3b - wall3a << endl;
+// cout << "CPU Time 3b = " << cpu3b  - cpu3a  << endl;
 
 
                 arma::fvec Prebet = (z1Vec.t() * r1Vec)/(zVec.t() * rVec);
@@ -1878,8 +1884,8 @@ if(isUseSparseSigmaforInitTau){
                 rVec = r1Vec;
 
                 sumr2 = sum(rVec % rVec);
-                        std::cout << "sumr2: " << sumr2 << std::endl;
-                        std::cout << "tolPCG: " << tolPCG << std::endl;
+                //        std::cout << "sumr2: " << sumr2 << std::endl;
+                //        std::cout << "tolPCG: " << tolPCG << std::endl;
 /*
                 if(bVec[0] == 1 && bVec[2] == 1){
                         std::cout << "sumr2: " << sumr2 << std::endl;
@@ -3094,12 +3100,12 @@ void setRelatednessCutoff(float a){
 	geno.relatednessCutoff = a;
 }
 
-/*
+
 // [[Rcpp::export]]
 double innerProduct(NumericVector x, NumericVector y) {
    return std::inner_product(x.begin(), x.end(), y.begin(), 0.0);
 }
-*/
+
 
 //Rcpp::List refineKin(std::vector<unsigned int> &iIndexVec, std::vector<unsigned int> & jIndexVec, float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){
 //Rcpp::List refineKin(arma::imat &iMat, float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){

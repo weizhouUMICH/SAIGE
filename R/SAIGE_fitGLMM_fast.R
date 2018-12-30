@@ -479,7 +479,8 @@ if(FALSE){
   #coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
 
 
-  lmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged, sampleID = subPheno$IID, Sigma_iy = Sigma_iy, Sigma_iX = Sigma_iX, obj.noK=obj.noK, obj.glm.null=fit0, traitType="quantitative")
+  #lmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged, sampleID = subPheno$IID, Sigma_iy = Sigma_iy, Sigma_iX = Sigma_iX, obj.noK=obj.noK, obj.glm.null=fit0, traitType="quantitative")
+  lmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged, sampleID = subPheno$IID, obj.noK=obj.noK, obj.glm.null=fit0, traitType="quantitative")
 
   #LOCO: estimate fixed effect coefficients, random effects, and residuals for each chromoosme
   lmmResult$LOCO = LOCO  
@@ -850,12 +851,12 @@ fitNULLGLMM = function(plinkFile = "",
         valueVecinR = A$x
 
 
-	indexDiagSub = which(locationMatinR[1,] == locationMatinR[2,])
-	indexDiag = locationMatinR[1,][indexDiagSub]+1
-	valueVecinR[indexDiagSub] = (get_DiagofKin())[indexDiag]
+	#indexDiagSub = which(locationMatinR[1,] == locationMatinR[2,])
+	#indexDiag = locationMatinR[1,][indexDiagSub]+1
+	#valueVecinR[indexDiagSub] = (get_DiagofKin())[indexDiag]
 
         setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
-        setisUsePrecondM(TRUE);
+ #       setisUsePrecondM(TRUE);
 	rm(sparseGRMtest)
     }
 
