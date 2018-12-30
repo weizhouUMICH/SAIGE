@@ -1713,10 +1713,17 @@ arma::fvec gen_spsolve_v4(arma::fvec& wVec,  arma::fvec& tauVec, arma::fvec & yv
 
 
 bool isUsePrecondM = false;
+bool isUseSparseSigmaforInitTau = false;
+
+
 
 // [[Rcpp::export]]
 void setisUsePrecondM(bool isUseSparseSigmaforPCG){
 	isUsePrecondM = isUseSparseSigmaforPCG;
+}
+
+void setisUseSparseSigmaforInitTau(bool isUseSparseSigmaforInitTau0){
+	isUseSparseSigmaforInitTau = isUseSparseSigmaforInitTau0;
 }
 //Modified on 11-28-2018 to allow for a preconditioner for CG (the sparse Sigma)                                                                                                                                     //Sigma = tau[1] * diag(1/W) + tau[2] * kins
 //This function needs the function getDiagOfSigma and function getCrossprod
@@ -1727,11 +1734,19 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
                    //  Start Timers
     double wall0 = get_wall_time();
     double cpu0  = get_cpu_time();
+	int Nnomissing = geno.getNnomissing();
+	arma::fvec xVec(Nnomissing);
+        xVec.zeros();
+
+if(isUseSparseSigmaforInitTau){
+	xVec = gen_spsolve_v4(wVec, tauVec, bVec);
+	cout << "use sparse kinship to estimate initial tau " <<  endl;
+}else{
         arma::fvec rVec = bVec;
         //cout << "HELLOa: "  << endl;
         arma::fvec r1Vec;
         //cout << "HELLOb: "  << endl;
-        int Nnomissing = geno.getNnomissing();
+        //int Nnomissing = geno.getNnomissing();
         //cout << "HELL1: "  << endl;
 
         arma::fvec crossProdVec(Nnomissing);
@@ -1794,8 +1809,8 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
         }
         }
 */
-        arma::fvec xVec(Nnomissing);
-        xVec.zeros();
+        //arma::fvec xVec(Nnomissing);
+        //xVec.zeros();
 
         int iter = 0;
         while (sumr2 > tolPCG && iter < maxiterPCG) {
@@ -1878,7 +1893,7 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
 
         }
         cout << "iter from getPCG1ofSigmaAndVector " << iter << endl;
-
+} //else if(isUseSparseKinforInitTau){
 //        double wall1 = get_wall_time();
 //    double cpu1  = get_cpu_time();
 
@@ -3079,11 +3094,12 @@ void setRelatednessCutoff(float a){
 	geno.relatednessCutoff = a;
 }
 
+/*
 // [[Rcpp::export]]
 double innerProduct(NumericVector x, NumericVector y) {
    return std::inner_product(x.begin(), x.end(), y.begin(), 0.0);
 }
-
+*/
 
 //Rcpp::List refineKin(std::vector<unsigned int> &iIndexVec, std::vector<unsigned int> & jIndexVec, float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){
 //Rcpp::List refineKin(arma::imat &iMat, float relatednessCutoff, arma::fvec& wVec,  arma::fvec& tauVec){
