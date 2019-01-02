@@ -447,7 +447,7 @@ if(FALSE){
     print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol)
 }
 
-    if(tau[2] == 0) break
+    if(tau[2] == 0 | tau[1] == 0) break
     if(max(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
 
 #    if(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
@@ -841,7 +841,6 @@ fitNULLGLMM = function(plinkFile = "",
 #if(FALSE){
     if(useSparseSigmaConditionerforPCG | useSparseSigmaforInitTau){
         #setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
-        cat("sparse sigma will be used as the conditioner for PCG\n")
 	sparseGRMtest = getsubGRM(sparseGRMFile, sparseGRMSampleIDFile, dataMerge_sort$IID)
         m4 = gen_sp_v2(sparseGRMtest)
         print("print m4")
@@ -861,6 +860,7 @@ fitNULLGLMM = function(plinkFile = "",
     }
 
     if(useSparseSigmaConditionerforPCG){
+      cat("sparse sigma will be used as the conditioner for PCG\n")
       setisUsePrecondM(TRUE);
     }
 	

@@ -1167,12 +1167,63 @@ arma::fvec parallelCrossProd_LOCO(arma::fcolvec & bVec) {
 }
 
 
+arma::umat locationMat;
+arma::vec valueVec;
+int dimNum = 0;
+
+// [[Rcpp::export]]
+void setupSparseGRM(int r, arma::umat & locationMatinR, arma::vec & valueVecinR) {
+    // sparse x sparse -> sparse
+    //arma::sp_mat result(a);
+    //int r = a.n_rows;
+        locationMat.zeros(2,r);
+        valueVec.zeros(r);
+
+    locationMat = locationMatinR;
+    valueVec = valueVecinR;
+    dimNum = r;
+
+    std::cout << locationMat.n_rows << " locationMat.n_rows " << std::endl;
+    std::cout << locationMat.n_cols << " locationMat.n_cols " << std::endl;
+    std::cout << valueVec.n_elem << " valueVec.n_elem " << std::endl;
+    for(size_t i=0; i< 10; i++){
+        std::cout << valueVec(i) << std::endl;
+        std::cout << locationMat(0,i) << std::endl;
+        std::cout << locationMat(1,i) << std::endl;
+    }
+
+    //arma::vec y = arma::linspace<arma::vec>(0, 5, r);
+    //arma::sp_fmat A = sprandu<sp_fmat>(100, 200, 0.1);
+    //arma::sp_mat result1 = result * A;
+    //arma::vec x = arma::spsolve( result, y );
+
+    //return x;
+}
+
+bool isUsePrecondM = false;
+bool isUseSparseSigmaforInitTau = false;
 
 // [[Rcpp::export]]
 arma::fvec getCrossprodMatAndKin(arma::fcolvec& bVec){
-  
-  	arma::fvec crossProdVec = parallelCrossProd(bVec) ;
-  
+       arma::fvec crossProdVec;
+
+if(isUseSparseSigmaforInitTau){
+        cout << "use sparse kinship to estimate initial tau and for getCrossprodMatAndKin" <<  endl;
+	arma::sp_mat result(locationMat, valueVec, dimNum, dimNum);
+	arma::vec x = result * bVec;
+
+
+//double wall3in = get_wall_time();
+// double cpu3in  = get_cpu_time();
+// cout << "Wall Time in gen_spsolve_v4 = " << wall3in - wall2in << endl;
+// cout << "CPU Time  in gen_spsolve_v4 = " << cpu3in - cpu2in  << endl;
+
+
+    crossProdVec = arma::conv_to<arma::fvec>::from(x);
+
+}else{ 
+  	crossProdVec = parallelCrossProd(bVec) ;
+}  
   	return(crossProdVec);
 }
 
@@ -1586,39 +1637,6 @@ double get_cpu_time(){
 }
 
 
-arma::umat locationMat;
-arma::vec valueVec;
-int dimNum = 0;
-
-// [[Rcpp::export]]
-void setupSparseGRM(int r, arma::umat & locationMatinR, arma::vec & valueVecinR) {
-    // sparse x sparse -> sparse
-    //arma::sp_mat result(a);
-    //int r = a.n_rows;
-        locationMat.zeros(2,r);
-        valueVec.zeros(r);
-
-    locationMat = locationMatinR;
-    valueVec = valueVecinR;
-    dimNum = r;
-
-    std::cout << locationMat.n_rows << " locationMat.n_rows " << std::endl;
-    std::cout << locationMat.n_cols << " locationMat.n_cols " << std::endl;
-    std::cout << valueVec.n_elem << " valueVec.n_elem " << std::endl;
-    for(size_t i=0; i< 10; i++){
-        std::cout << valueVec(i) << std::endl;
-        std::cout << locationMat(0,i) << std::endl;
-        std::cout << locationMat(1,i) << std::endl;
-    }
-    
-    //arma::vec y = arma::linspace<arma::vec>(0, 5, r);
-    //arma::sp_fmat A = sprandu<sp_fmat>(100, 200, 0.1);
-    //arma::sp_mat result1 = result * A;
-    //arma::vec x = arma::spsolve( result, y );
-
-    //return x;
-}
-
 
 // [[Rcpp::export]]
 arma::sp_mat gen_sp_GRM() {
@@ -1642,6 +1660,11 @@ arma::sp_mat gen_sp_Sigma(arma::fvec& wVec,  arma::fvec& tauVec){
 //       std::cout << "i: " << i << " " << valueVecNew(i) << std::endl;
        valueVecNew(i) = valueVecNew(i) + dtVec(locationMat(0,i));
 //       std::cout << "i: " << i << " " << valueVecNew(i) << std::endl;
+	if(valueVecNew(i) < 1e-4){
+  			valueVecNew(i) = 1e-4 ;
+  		}
+
+
      }
    }
 
@@ -1717,8 +1740,8 @@ arma::fvec gen_spsolve_v4(arma::fvec& wVec,  arma::fvec& tauVec, arma::fvec & yv
 }
 
 
-bool isUsePrecondM = false;
-bool isUseSparseSigmaforInitTau = false;
+//bool isUsePrecondM = false;
+//bool isUseSparseSigmaforInitTau = false;
 
 
 
