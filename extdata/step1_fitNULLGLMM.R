@@ -5,8 +5,8 @@ options(stringsAsFactors=F)
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.2.mmSKAT.debugged.R-3.5.1.test2_subsetSparseSigma_speedup_test2")
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.3.2")
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.3")
-library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-PCGprecond")
-
+#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-PCGprecond")
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-testDec292018_withsparseSigmaforinitTau_memoryIssue")
 
 require(optparse) #install.packages("optparse")
 
@@ -75,7 +75,9 @@ option_list <- list(
   make_option("--isDiagofKinSetAsOne", type="logical", default=FALSE,
     help="Whether to set the diagnal elements in GRM to be 1 [default='FALSE']."),
   make_option("--useSparseSigmaConditionerforPCG", type="logical", default=FALSE,
-    help="Whether to sparse GRM to speed up the PCG [default='FALSE'].")
+    help="Whether to sparse GRM to speed up the PCG [default='FALSE']."),
+  make_option("--useSparseSigmaforInitTau", type="logical", default=FALSE,
+    help="Whether to use sparse Sigma to estiamte initial tau [default='FALSE'].")	
 )
 
 
@@ -128,4 +130,5 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
             cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
             isCovariateTransform = opt$isCovariateTransform,
             isDiagofKinSetAsOne = opt$isDiagofKinSetAsOne,
-	    useSparseSigmaConditionerforPCG = opt$useSparseSigmaConditionerforPCG)	
+	    useSparseSigmaConditionerforPCG = opt$useSparseSigmaConditionerforPCG,
+		useSparseSigmaforInitTau = opt$useSparseSigmaforInitTau)	
