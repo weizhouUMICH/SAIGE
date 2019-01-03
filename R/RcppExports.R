@@ -149,6 +149,10 @@ setisUsePrecondM <- function(isUseSparseSigmaforPCG) {
     invisible(.Call('_SAIGE_setisUsePrecondM', PACKAGE = 'SAIGE', isUseSparseSigmaforPCG))
 }
 
+setisUseSparseSigmaforInitTau <- function(isUseSparseSigmaforInitTau0) {
+    invisible(.Call('_SAIGE_setisUseSparseSigmaforInitTau', PACKAGE = 'SAIGE', isUseSparseSigmaforInitTau0))
+}
+
 getPCG1ofSigmaAndVector <- function(wVec, tauVec, bVec, maxiterPCG, tolPCG) {
     .Call('_SAIGE_getPCG1ofSigmaAndVector', PACKAGE = 'SAIGE', wVec, tauVec, bVec, maxiterPCG, tolPCG)
 }
@@ -221,8 +225,8 @@ GetTrace_q <- function(Sigma_iX, Xmat, wVec, tauVec, cov1, nrun, maxiterPCG, tol
     .Call('_SAIGE_GetTrace_q', PACKAGE = 'SAIGE', Sigma_iX, Xmat, wVec, tauVec, cov1, nrun, maxiterPCG, tolPCG, traceCVcutoff)
 }
 
-getAIScore_q <- function(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, traceCVcutoff) {
-    .Call('_SAIGE_getAIScore_q', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, traceCVcutoff)
+getAIScore_q <- function(Yvec, Xmat, wVec, tauVec, Sigma_iY, Sigma_iX, cov, nrun, maxiterPCG, tolPCG, traceCVcutoff) {
+    .Call('_SAIGE_getAIScore_q', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, Sigma_iY, Sigma_iX, cov, nrun, maxiterPCG, tolPCG, traceCVcutoff)
 }
 
 getAIScore_q_LOCO <- function(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, traceCVcutoff) {
@@ -233,8 +237,8 @@ fitglmmaiRPCG_q_LOCO <- function(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tol
     .Call('_SAIGE_fitglmmaiRPCG_q_LOCO', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
 }
 
-fitglmmaiRPCG_q <- function(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff) {
-    .Call('_SAIGE_fitglmmaiRPCG_q', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
+fitglmmaiRPCG_q <- function(Yvec, Xmat, wVec, tauVec, Sigma_iY, Sigma_iX, cov, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff) {
+    .Call('_SAIGE_fitglmmaiRPCG_q', PACKAGE = 'SAIGE', Yvec, Xmat, wVec, tauVec, Sigma_iY, Sigma_iX, cov, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
 }
 
 parallelCrossProd_usingSubMarker <- function(bVec) {
@@ -307,6 +311,38 @@ gen_spsolve_inR <- function(a, y) {
 
 get_DiagofKin <- function() {
     .Call('_SAIGE_get_DiagofKin', PACKAGE = 'SAIGE')
+}
+
+getstdgenoVectorScalorProduct <- function(jth, y, prodVec) {
+    invisible(.Call('_SAIGE_getstdgenoVectorScalorProduct', PACKAGE = 'SAIGE', jth, y, prodVec))
+}
+
+sumPz <- function(Pbvec, Ubvec, mmchunksize) {
+    invisible(.Call('_SAIGE_sumPz', PACKAGE = 'SAIGE', Pbvec, Ubvec, mmchunksize))
+}
+
+mmGetPb_MbyN <- function(cthchunk, mmchunksize, bvec, Pbvec, kinbvec) {
+    invisible(.Call('_SAIGE_mmGetPb_MbyN', PACKAGE = 'SAIGE', cthchunk, mmchunksize, bvec, Pbvec, kinbvec))
+}
+
+mmGetPb_NbyM <- function(cthchunk, mmchunksize, bvec, Pbvec) {
+    invisible(.Call('_SAIGE_mmGetPb_NbyM', PACKAGE = 'SAIGE', cthchunk, mmchunksize, bvec, Pbvec))
+}
+
+muliplyMailman <- function(bvec, Gbvec, kinbvec) {
+    invisible(.Call('_SAIGE_muliplyMailman', PACKAGE = 'SAIGE', bvec, Gbvec, kinbvec))
+}
+
+muliplyMailman_NbyM <- function(bvec, tGbvec) {
+    invisible(.Call('_SAIGE_muliplyMailman_NbyM', PACKAGE = 'SAIGE', bvec, tGbvec))
+}
+
+freqOverStd <- function(freqOverStdVec) {
+    invisible(.Call('_SAIGE_freqOverStd', PACKAGE = 'SAIGE', freqOverStdVec))
+}
+
+getCrossprodMatAndKin_mailman <- function(bVec) {
+    .Call('_SAIGE_getCrossprodMatAndKin_mailman', PACKAGE = 'SAIGE', bVec)
 }
 
 setgenoTest_bgenDosage <- function(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude) {
