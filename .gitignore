@@ -6,3 +6,5 @@
 /src/*.so
 /src/innerProd.cpp
 ./thirdParty
+man/SAIGE-package.Rd
+thirdParty/bgen/.waf-1.8.13-4da49748f68a49832130c7ef124357f6/
