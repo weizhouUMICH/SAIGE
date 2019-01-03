@@ -890,12 +890,20 @@ fitNULLGLMM = function(plinkFile = "",
 
 
     if(!skipModelFitting){
+     print("test memory 1")
+     gc(verbose=T)	
      if(useSparseSigmaforInitTau){
+     print("test memory 2")
+     gc(verbose=T)	
        setisUseSparseSigmaforInitTau(TRUE)
        modglmm0<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne)
+	print("test memory 3")
+	gc(verbose=T)
 	tauInit = modglmm0$theta		
-	cat("tauInit estimated using sparse Sigma is ", tauInit, "\n")
-    }
+	cat("tauInit estimated using sparse Sigma is ", tauInit, "\n")	
+	rm(modglmm0)
+	closeGenoFile_plink()	
+      }
     setisUseSparseSigmaforInitTau(FALSE)
 
 
@@ -913,8 +921,11 @@ fitNULLGLMM = function(plinkFile = "",
      # locationMatinR = rbind(A$i-1, A$j-1)
      # valueVecinR = A$x
      # setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
-
+     print("test memory 4")
+     gc(verbose=T)
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
+          print("test memory 5")
+     gc(verbose=T)
       save(modglmm, file = modelOut)
 
       t_end = proc.time()
@@ -1048,7 +1059,10 @@ fitNULLGLMM = function(plinkFile = "",
        modglmm0<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne) 
        tauInit = modglmm0$theta
        cat("tauInit estimated using sparse Sigma is ", tauInit, "\n")
+	 rm(modglmm0)
+        closeGenoFile_plink()
      }
+
      setisUseSparseSigmaforInitTau(FALSE)
 
       cat("Start fitting the NULL GLMM\n")
