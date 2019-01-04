@@ -309,8 +309,8 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   q = 1
   if(sum(tauInit[fixtau == 0]) == 0){
     tau[fixtau == 0] = var(Y)/(q+1)
-    if (abs(var(Y)) < 0.01){
-      cat("WARNING: variance of the phenotype is much smaller than 1. Please consider invNormalize=T\n")
+    if (abs(var(Y)) < 0.1){
+      stop("WARNING: variance of the phenotype is much smaller than 1. Please consider invNormalize=T\n")
     }
   }else{
     tau[fixtau == 0] = tauInit[fixtau == 0]
