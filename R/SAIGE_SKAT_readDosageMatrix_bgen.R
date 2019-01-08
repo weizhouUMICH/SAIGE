@@ -7,7 +7,7 @@ getGenoOfGene_bgen = function(bgenFile,bgenFileIndex,marker_group_line, minMAF=0
   ids_to_include = idslist[-1]	
   print("ids_to_include")
   print(ids_to_include)
-  Mtest = setgenoTest_bgenDosage(bgenFile,bgenFileIndex, ranges_to_exclude = ranges_to_exclude, ranges_to_include = ranges_to_include, ids_to_exclude= ids_to_exclude, ids_to_include=ids_to_include)
+  Mtest = setgenoTest_bgenDosage_v2(bgenFile,bgenFileIndex, ranges_to_exclude = ranges_to_exclude, ranges_to_include = ranges_to_include, ids_to_exclude= ids_to_exclude, ids_to_include=ids_to_include)
   cat("Mtest: ", Mtest, "\n")
   Gvec = NULL
   markerIDs = NULL
@@ -36,9 +36,9 @@ getGenoOfGene_bgen = function(bgenFile,bgenFileIndex,marker_group_line, minMAF=0
     result$markerIDs = markerIDs
     result$markerAFs = markerAFs
     result$cnt = cnt
-    print("results")	
-    print(result$markerIDs)
-   print(result$markerAFs)	
+    #print("results")	
+    #print(result$markerIDs)
+    #print(result$markerAFs)	
   }else{
     result$cnt = 0
   }

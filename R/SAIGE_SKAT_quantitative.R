@@ -109,9 +109,9 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
 		#check if variance for each marker is negative, remove the variant
 		indexNeg = which(diag(as.matrix(Phi)) <= 0) 
-		print(Phi)
-		print(diag(as.matrix(Phi)))
-		print(indexNeg)
+		#print(Phi)
+		#print(diag(as.matrix(Phi)))
+		#print(indexNeg)
 
 		if(length(indexNeg) > 0){
 			Phi = Phi[-indexNeg, -indexNeg]
@@ -140,8 +140,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                         }
                 }
 
-		cat("Phi is ", Phi, "\n")
-		cat("Score is ", Score, "\n")
+		#cat("Phi is ", Phi, "\n")
+		#cat("Score is ", Score, "\n")
 
 		
 		if(singleGClambda == 1){
