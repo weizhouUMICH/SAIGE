@@ -69,6 +69,10 @@ parallelCrossProd_LOCO <- function(bVec) {
     .Call('_SAIGE_parallelCrossProd_LOCO', PACKAGE = 'SAIGE', bVec)
 }
 
+setupSparseGRM <- function(r, locationMatinR, valueVecinR) {
+    invisible(.Call('_SAIGE_setupSparseGRM', PACKAGE = 'SAIGE', r, locationMatinR, valueVecinR))
+}
+
 getCrossprodMatAndKin <- function(bVec) {
     .Call('_SAIGE_getCrossprodMatAndKin', PACKAGE = 'SAIGE', bVec)
 }
@@ -123,10 +127,6 @@ getCrossprod <- function(bVec, wVec, tauVec) {
 
 getCrossprod_LOCO <- function(bVec, wVec, tauVec) {
     .Call('_SAIGE_getCrossprod_LOCO', PACKAGE = 'SAIGE', bVec, wVec, tauVec)
-}
-
-setupSparseGRM <- function(r, locationMatinR, valueVecinR) {
-    invisible(.Call('_SAIGE_setupSparseGRM', PACKAGE = 'SAIGE', r, locationMatinR, valueVecinR))
 }
 
 gen_sp_GRM <- function() {
@@ -383,6 +383,10 @@ SetSampleIdx <- function(sample_idx, Ntest) {
 
 closetestGenoFile_bgenDosage <- function() {
     invisible(.Call('_SAIGE_closetestGenoFile_bgenDosage', PACKAGE = 'SAIGE'))
+}
+
+setgenoTest_bgenDosage_v2 <- function(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude) {
+    .Call('_SAIGE_setgenoTest_bgenDosage_v2', PACKAGE = 'SAIGE', filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude)
 }
 
 setgenoTest_plainDosage <- function(testGenoFile, testGenofileNrowSkip, testGenofileNcolSkip) {

@@ -186,6 +186,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// setupSparseGRM
+void setupSparseGRM(int r, arma::umat& locationMatinR, arma::vec& valueVecinR);
+RcppExport SEXP _SAIGE_setupSparseGRM(SEXP rSEXP, SEXP locationMatinRSEXP, SEXP valueVecinRSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type r(rSEXP);
+    Rcpp::traits::input_parameter< arma::umat& >::type locationMatinR(locationMatinRSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type valueVecinR(valueVecinRSEXP);
+    setupSparseGRM(r, locationMatinR, valueVecinR);
+    return R_NilValue;
+END_RCPP
+}
 // getCrossprodMatAndKin
 arma::fvec getCrossprodMatAndKin(arma::fcolvec& bVec);
 RcppExport SEXP _SAIGE_getCrossprodMatAndKin(SEXP bVecSEXP) {
@@ -341,18 +353,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
     rcpp_result_gen = Rcpp::wrap(getCrossprod_LOCO(bVec, wVec, tauVec));
     return rcpp_result_gen;
-END_RCPP
-}
-// setupSparseGRM
-void setupSparseGRM(int r, arma::umat& locationMatinR, arma::vec& valueVecinR);
-RcppExport SEXP _SAIGE_setupSparseGRM(SEXP rSEXP, SEXP locationMatinRSEXP, SEXP valueVecinRSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type r(rSEXP);
-    Rcpp::traits::input_parameter< arma::umat& >::type locationMatinR(locationMatinRSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type valueVecinR(valueVecinRSEXP);
-    setupSparseGRM(r, locationMatinR, valueVecinR);
-    return R_NilValue;
 END_RCPP
 }
 // gen_sp_GRM
@@ -1184,6 +1184,22 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// setgenoTest_bgenDosage_v2
+int setgenoTest_bgenDosage_v2(std::string& filename, std::string& index_filename, Rcpp::DataFrame& ranges_to_include, Rcpp::DataFrame& ranges_to_exclude, std::vector< std::string > const& ids_to_include, std::vector< std::string > const& ids_to_exclude);
+RcppExport SEXP _SAIGE_setgenoTest_bgenDosage_v2(SEXP filenameSEXP, SEXP index_filenameSEXP, SEXP ranges_to_includeSEXP, SEXP ranges_to_excludeSEXP, SEXP ids_to_includeSEXP, SEXP ids_to_excludeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string& >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< std::string& >::type index_filename(index_filenameSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_include(ranges_to_includeSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_exclude(ranges_to_excludeSEXP);
+    Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_include(ids_to_includeSEXP);
+    Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_exclude(ids_to_excludeSEXP);
+    rcpp_result_gen = Rcpp::wrap(setgenoTest_bgenDosage_v2(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude));
+    return rcpp_result_gen;
+END_RCPP
+}
 // setgenoTest_plainDosage
 int setgenoTest_plainDosage(std::string testGenoFile, int testGenofileNrowSkip, int testGenofileNcolSkip);
 RcppExport SEXP _SAIGE_setgenoTest_plainDosage(SEXP testGenoFileSEXP, SEXP testGenofileNrowSkipSEXP, SEXP testGenofileNcolSkipSEXP) {
@@ -1408,6 +1424,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_parallelCrossProd", (DL_FUNC) &_SAIGE_parallelCrossProd, 1},
     {"_SAIGE_innerProductFun", (DL_FUNC) &_SAIGE_innerProductFun, 2},
     {"_SAIGE_parallelCrossProd_LOCO", (DL_FUNC) &_SAIGE_parallelCrossProd_LOCO, 1},
+    {"_SAIGE_setupSparseGRM", (DL_FUNC) &_SAIGE_setupSparseGRM, 3},
     {"_SAIGE_getCrossprodMatAndKin", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin, 1},
     {"_SAIGE_getCrossprodMatAndKin_LOCO", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin_LOCO, 1},
     {"_SAIGE_printComb", (DL_FUNC) &_SAIGE_printComb, 1},
@@ -1422,7 +1439,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getDiagOfSigma_LOCO", (DL_FUNC) &_SAIGE_getDiagOfSigma_LOCO, 2},
     {"_SAIGE_getCrossprod", (DL_FUNC) &_SAIGE_getCrossprod, 3},
     {"_SAIGE_getCrossprod_LOCO", (DL_FUNC) &_SAIGE_getCrossprod_LOCO, 3},
-    {"_SAIGE_setupSparseGRM", (DL_FUNC) &_SAIGE_setupSparseGRM, 3},
     {"_SAIGE_gen_sp_GRM", (DL_FUNC) &_SAIGE_gen_sp_GRM, 0},
     {"_SAIGE_gen_sp_Sigma", (DL_FUNC) &_SAIGE_gen_sp_Sigma, 2},
     {"_SAIGE_gen_spsolve_v3", (DL_FUNC) &_SAIGE_gen_spsolve_v3, 1},
@@ -1487,6 +1503,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getMarkerInfo", (DL_FUNC) &_SAIGE_getMarkerInfo, 0},
     {"_SAIGE_SetSampleIdx", (DL_FUNC) &_SAIGE_SetSampleIdx, 2},
     {"_SAIGE_closetestGenoFile_bgenDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_bgenDosage, 0},
+    {"_SAIGE_setgenoTest_bgenDosage_v2", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage_v2, 6},
     {"_SAIGE_setgenoTest_plainDosage", (DL_FUNC) &_SAIGE_setgenoTest_plainDosage, 3},
     {"_SAIGE_closetestGenoFile_plainDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_plainDosage, 0},
     {"_SAIGE_getGenoOfnthVar_plainDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_plainDosage, 3},
