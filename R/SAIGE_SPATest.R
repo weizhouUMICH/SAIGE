@@ -320,7 +320,7 @@ SPAGMMATtest = function(dosageFile = "",
       isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
       Gx_cond = getGenoOfGene_vcf(conditionlist, minInfo)
-    print("HERE")
+    #print("HERE")
     #print(Gx_cond)	
     dosage_cond = Matrix:::sparseMatrix(i = as.vector(Gx_cond$iIndex), j = as.vector(Gx_cond$jIndex), x = as.vector(Gx_cond$dosages), symmetric = FALSE, dims = c(N, Gx_cond$cnt))
     #print(dim(Gx_cond))	
@@ -940,6 +940,8 @@ SPAGMMATtest = function(dosageFile = "",
 		if(method=="optimal.adj" & saigeskatTest$m > 0){
 #			print("HERERERERE")
 #			print(saigeskatTest)
+		if(!is.na(saigeskatTest$param)){
+
 		  p.val.vec = saigeskatTest$param$p.val.each
 		  rho.val.vec = saigeskatTest$param$rho
 		  outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
@@ -953,6 +955,12 @@ SPAGMMATtest = function(dosageFile = "",
 		    outVec = c(outVec, 1, 1)
 		  }
 
+		}else{
+			outVec = c(outVec, NA, NA, NA, NA)
+
+		}
+
+
 		}
 
 	    }else{
@@ -965,6 +973,7 @@ SPAGMMATtest = function(dosageFile = "",
 	      }
 	      if(method=="optimal.adj" & saigeskatTest$m > 0){
                 #rho = 1 for burden, 0 for skat
+		if(!is.na(saigeskatTest$param)){
                 p.val.vec = saigeskatTest$param$p.val.each
                 rho.val.vec=saigeskatTest$param$rho
                 outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
@@ -972,6 +981,12 @@ SPAGMMATtest = function(dosageFile = "",
 		  p.val.GCadj.vec = saigeskatTest$GCadjOut$param$p.val.each
 		  rho.val.GCadj.vec = saigeskatTest$GCadjOut$param$rho
 		  outVec = c(outVec, p.val.GCadj.vec[which(rho.val.GCadj.vec == 1)], p.val.GCadj.vec[which(rho.val.GCadj.vec == 0)])
+		}
+		}else{
+			outVec = c(outVec, NA, NA)
+			if(singleGClambda != 1){
+				outVec = c(outVec, NA, NA)
+			}
 		}	
 
               }
@@ -1500,7 +1515,7 @@ if(maf < 0.05){
 
 if(!is.null(sparseSigma)){
   XVG0 = eigenMapMatMult(obj.noK$XV, G0)
-  print(which(G0!=0))
+  #print(which(G0!=0))
   g = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
   #pcginvSigma<-pcg(sparseSigma, g)
   pcginvSigma<-solve(sparseSigma, g, sparse=T)
