@@ -716,3 +716,8 @@ void closetestGenoFile_bgenDosage() //needs further check
   printf("closed the genofile!\n");
 
 }
+
+// [[Rcpp::export]]
+int getSampleSizeinBgen(){
+        return(genoToTest_bgenDosage->number_of_samples());
+}
