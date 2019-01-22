@@ -6,7 +6,9 @@ options(stringsAsFactors=F)
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.3.2")
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.3")
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-PCGprecond")
-library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-testDec292018_withsparseSigmaforinitTau_memoryIssue")
+#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-testDec292018_withsparseSigmaforinitTau_memoryIssue")
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-testDec292018_withsparseSigmaforinitTau_memoryIssue_bgenforGENEBased/")
+
 
 require(optparse) #install.packages("optparse")
 

@@ -129,7 +129,7 @@ Rscript step1_fitNULLGLMM.R     \
 	--outputPrefix_varRatio=./output/example_binary_cate_v2      \
         --nThreads=4 \
         --LOCO=FALSE    \
-        --skipModelFitting=TRUE \
+        --skipModelFitting=FALSE \
         --IsSparseKin=TRUE      \
 	--sparseGRMFile=./output/example_binary_cate.varianceRatio.txt.sparseGRM.mtx	\
 	--sparseGRMSampleIDFile=./output/example_binary.varianceRatio.txt.sparseGRM.mtx.sample	\
@@ -293,7 +293,7 @@ Rscript step1_fitNULLGLMM.R     \
         --sparseGRMSampleIDFile=./output/example_binary.varianceRatio.txt.sparseGRM.mtx.sample  \
         --nThreads=4 \
         --LOCO=FALSE	\
-	--skipModelFitting=TRUE \
+	--skipModelFitting=FALSE \
         --IsSparseKin=TRUE      \
         --isCateVarianceRatio=TRUE
 
