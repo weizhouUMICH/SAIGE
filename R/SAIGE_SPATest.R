@@ -591,6 +591,14 @@ SPAGMMATtest = function(dosageFile = "",
       }
       isQuery = getQueryStatus()
       SetSampleIdx(sampleIndex, N)
+
+	
+      nsamplesinBgen = getSampleSizeinBgen()
+      if((nrow(sampleListinDosage) != nsamplesinBgen){
+	stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the bgen file\n")
+      }		
+
+
     }else if(dosageFileType == "vcf"){
 
       setgenoTest_vcfDosage(vcfFile,vcfFileIndex,vcfField,ids_to_exclude_vcf = idstoExcludeFile, ids_to_include_vcf = idstoIncludeFile, chrom, start, end)
