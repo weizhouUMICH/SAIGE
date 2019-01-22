@@ -634,6 +634,7 @@ SPAGMMATtest = function(dosageFile = "",
         AF = Gx$variants$AF
         Gx$variants$markerInfo = markerInfo
         rowHeader=as.vector(unlist(Gx$variants))
+	#cat("rowHeader: ", rowHeader, "\n")
         if(indChromCheck){
 	  CHR = Gx$variants$chromosome
 	  cat("CHR ", CHR , "\n")	
@@ -738,7 +739,7 @@ SPAGMMATtest = function(dosageFile = "",
 
 
     	   if(!IsOutputAFinCaseCtrl){
-	     OUT = rbind(OUT, unlist(out1))	     
+	     OUT = rbind(OUT, c(rowHeader, N,unlist(out1)))	     
     	   }else{
       	     AFCase = sum(G0[y1Index])/(2*NCase)
       	     AFCtrl = sum(G0[y0Index])/(2*NCtrl)
@@ -934,13 +935,14 @@ SPAGMMATtest = function(dosageFile = "",
 	    }# if(length(Gx$markerIDs > 0)){
 
 	    if(isCondition){
-	       
+	       if(saigeskatTest$m > 0){
 	       outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$p.value.cond, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
 
 		if(method=="optimal.adj" & saigeskatTest$m > 0){
 #			print("HERERERERE")
 #			print(saigeskatTest)
-		if(!is.na(saigeskatTest$param)){
+		if(saigeskatTest$m > 1){
+		if(!is.na(saigeskatTest$param[[1]][1])){
 
 		  p.val.vec = saigeskatTest$param$p.val.each
 		  rho.val.vec = saigeskatTest$param$rho
@@ -959,21 +961,48 @@ SPAGMMATtest = function(dosageFile = "",
 			outVec = c(outVec, NA, NA, NA, NA)
 
 		}
-
-
+	}else{	
+		outVec = c(outVec, NA, NA, NA, NA)
+	}
 		}
 
-	    }else{
+	}else{ #end if(saigeskatTest$m > 0){
+
+		outVec = c(geneID, NA, NA,  saigeskatTest$markerNumbyMAC, NA, NA, NA, NA)
+		if(method=="optimal.adj"){
+			outVec = c(outVec, NA, NA)
+		}
+	}
+
+
+	    }else{ #end of if(isCondition){
 	
 
+		if(saigeskatTest$m > 0){
+
 	      if(singleGClambda == 1){
+
 	        outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
 	      }else{
 	        outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$P_singlGCadj, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
 	      }
+
+	}else{#end of if(saigeskatTest$m > 0){
+		if(singleGClambda == 1){
+
+                outVec = c(geneID, NA, saigeskatTest$markerNumbyMAC, NA, NA) 
+
+              }else{
+                outVec = c(geneID, NA, NA, saigeskatTest$markerNumbyMAC, NA, NA) 
+              }		
+	}	
+
+
 	      if(method=="optimal.adj" & saigeskatTest$m > 0){
                 #rho = 1 for burden, 0 for skat
-		if(!is.na(saigeskatTest$param)){
+	if(saigeskatTest$m > 1){
+
+		if(!is.na(saigeskatTest$param[[1]][1])){
                 p.val.vec = saigeskatTest$param$p.val.each
                 rho.val.vec=saigeskatTest$param$rho
                 outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
@@ -989,7 +1018,24 @@ SPAGMMATtest = function(dosageFile = "",
 			}
 		}	
 
-              }
+            }else{
+		outVec = c(outVec, NA, NA)
+		if(singleGClambda != 1){
+			outVec = c(outVec, NA, NA)
+		}
+	}#else if(saigeskatTest$m > 1)
+
+	} # else if(method=="optimal.adj" & saigeskatTest$m > 0){
+
+	if(method=="optimal.adj" & saigeskatTest$m == 0){
+		outVec = c(outVec, NA, NA)
+                if(singleGClambda != 1){
+                        outVec = c(outVec, NA, NA)
+                }
+	}
+
+
+
 	    }# if(isCondition){
 
 	    OUT = rbind(OUT, outVec)
