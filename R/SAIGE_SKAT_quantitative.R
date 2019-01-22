@@ -108,11 +108,12 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
 
 		#check if variance for each marker is negative, remove the variant
-		indexNeg = which(diag(as.matrix(Phi)) <= 0) 
+		indexNeg = which(diag(as.matrix(Phi)) <= (.Machine$double.xmin)^(1/4)) 
 		#print(Phi)
 		#print(diag(as.matrix(Phi)))
 		#print(indexNeg)
-
+		cat("Phi: ", Phi, "\n")
+		cat("Score: ", Score, "\n")
 		if(length(indexNeg) > 0){
 			Phi = Phi[-indexNeg, -indexNeg]
 			Score = Score[-indexNeg]
@@ -129,15 +130,22 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 			cat("WARNING: ", indexNeg, " th marker(s) are excluded because of negative variance\n")		
 		}
 
-		if(length(Score) > 0){
-
+	if(length(Score) > 0){
+		m_new = length(Score)
                 #Perform the SKAT test
                 if(!is.null(G2_cond)){
-                        if(sum(diag(Phi_cond) < 10^-5) > 0){
-                               re_cond = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
-                        }else{
-	                       re_cond = SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL)
-                        }
+			print(Phi_cond)
+#			cat("Phi_cond ", Phi_cond, "\n")
+			if(m_new == 1){
+                        	if(sum(diag(Phi_cond) < 10^-60) > 0){
+					re_cond = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
+
+                        	}else{
+	                       		re_cond = SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL)
+                        	}
+			}else{# if(m_new == 1){
+				re_cond = SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL)
+			}
                 }
 
 		#cat("Phi is ", Phi, "\n")
@@ -145,33 +153,53 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
 		
 		if(singleGClambda == 1){
-                  Phi = Phi * singleGClambda
-		  Phi = as.matrix(Phi)
-#		  cat("Score ", Score, "\n")
-#                  cat("Phi ", Phi, "\n")	
+                  	Phi = Phi * singleGClambda
+		  	Phi = as.matrix(Phi)
+			if(m_new == 1){
+                 		if(sum(diag(Phi) < 10^-60) > 0){
+                            		re = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
+				}else{	
+                  	    		re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
+				}
+			}else{#if(m_new == 1)
+				re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)		
 
+			}
 
-		  if(sum(diag(Phi) < 10^-5) > 0){	
-			diag(Phi)[which(diag(Phi) < 10^-5)] = 10^-5
-			re = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, p.value.cond=NA			 	)	
-#}
-		  }else{
-                  	re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
-		  }
 
 		}else{
 
-		if(sum(diag(Phi) < 10^-5) > 0){
-                        re = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, p.value.cond=NA, P_singlGCadj=NA, GCadjOut=NA)
-                }else{
+			if(m_new == 1){
+				if(sum(diag(Phi) < 10^-60) > 0){
+					re = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, p.value.cond=NA, P_singlGCadj=NA, GCadjOut=NA)
+				}else{	
+					re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
+				}
+			}else{#if(m_new == 1){
 
-		  re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
-		  Phi = Phi * singleGClambda
-		  Phi = as.matrix(Phi)
-		  re_GCadj = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
-		  re$P_singlGCadj = re_GCadj$p.value
-		  re$GCadjOut = re_GCadj	
+				re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
 			}
+			Phi = Phi * singleGClambda
+			Phi = as.matrix(Phi)
+			if(m_new == 1){	
+				if(sum(diag(Phi) < 10^-60) > 0){
+					re$P_singlGCadj = 1
+					re$GCadjOut = NA							
+				}else{
+					re_GCadj = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)					
+					re$P_singlGCadj = re_GCadj$p.value
+					re$GCadjOut = re_GCadj
+				}
+
+			}else{
+
+		  		re_GCadj = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
+		  		re$P_singlGCadj = re_GCadj$p.value
+		  		re$GCadjOut = re_GCadj	
+
+			}
+
+			#}
 		}
 
                 if(!is.null(G2_cond)){
@@ -180,7 +208,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                 }else{
                         re$p.value.cond = NA
                 }
-
+		m = length(Score)
 	   }else{ #if(length(Score) > 0){
 		 #else: no marker is left for test, m = 0
                 re = list(p.value = NA, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, p.value.cond=NA)
@@ -188,7 +216,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                 markerNumbyMAC = rep(0, length(cateVarRatioMinMACVecExclude))
 		m = 0	
 	   }	
-         }else{
+         }else{ #if(m == 0)
 
                 #else: no marker is left for test, m = 0
                 re = list(p.value = NA, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, p.value.cond=NA)
