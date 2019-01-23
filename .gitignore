@@ -4,3 +4,4 @@ thirdParty/cget
 src/*.o
 src/*.so
 extdata/output/compare
+
