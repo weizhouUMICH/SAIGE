@@ -71,7 +71,6 @@ public:
      //number of samples N = colNum - genofileNcolSkip;
      NSampleTest = colNum - testGenofileNcolSkip; 
      cout << "NSampleTest " << NSampleTest << endl;
-
      //printf("setGenoTestObjGZ2!\n");
      //test_genofile.open(testGenoFile.c_str());
      
@@ -359,4 +358,9 @@ int SetSampleIdx_plainDosage(Rcpp::IntegerVector sample_idx, int Ntest){
         gmtest_samplesize_plainDosage = Ntest;
         gm_sample_idx_plainDosage = sample_idx;
 
+}
+
+// [[Rcpp::export]]
+int getSampleSizeinPlain(){
+        return(genoToTest_plainDosage.NSampleTest);
 }

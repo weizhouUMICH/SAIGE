@@ -211,6 +211,13 @@ SPAGMMATtest = function(dosageFile = "",
     if(Mtest == 0){isVariant = FALSE}
     SetSampleIdx_plainDosage(sampleIndex, N)
 
+    nsamplesinPlain = getSampleSizeinPlain()
+    if(nrow(sampleListinDosage) != nsamplesinPlain){
+        stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the plain dosage file\nPlease check again. Please note that the sample file needs to have no header.")
+    }
+
+
+
   }else if (dosageFileType == "bgen"){
     if(idstoExcludeFile != ""){
       idsExclude = data.table:::fread(idstoExcludeFile, header=F,sep=" ", stringsAsFactors=FALSE, colClasses=c("character"))
