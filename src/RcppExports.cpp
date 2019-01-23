@@ -7,42 +7,6 @@
 
 using namespace Rcpp;
 
-// innerProduct
-double innerProduct(NumericVector x, NumericVector y);
-RcppExport SEXP _SAIGE_innerProduct(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(innerProduct(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// parallelInnerProduct
-double parallelInnerProduct(NumericVector x, NumericVector y);
-RcppExport SEXP _SAIGE_parallelInnerProduct(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(parallelInnerProduct(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// eigenMapMatMult
-SEXP eigenMapMatMult(const Eigen::Map<Eigen::MatrixXd>& A, Eigen::Map<Eigen::MatrixXd>& B);
-RcppExport SEXP _SAIGE_eigenMapMatMult(SEXP ASEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type A(ASEXP);
-    Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd>& >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(eigenMapMatMult(A, B));
-    return rcpp_result_gen;
-END_RCPP
-}
 // closeGenoFile_plink
 void closeGenoFile_plink();
 RcppExport SEXP _SAIGE_closeGenoFile_plink() {
@@ -654,6 +618,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// getSampleSizeinBgen
+int getSampleSizeinBgen();
+RcppExport SEXP _SAIGE_getSampleSizeinBgen() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getSampleSizeinBgen());
+    return rcpp_result_gen;
+END_RCPP
+}
 // setgenoTest_plainDosage
 int setgenoTest_plainDosage(std::string testGenoFile, int testGenofileNrowSkip, int testGenofileNcolSkip);
 RcppExport SEXP _SAIGE_setgenoTest_plainDosage(SEXP testGenoFileSEXP, SEXP testGenofileNrowSkipSEXP, SEXP testGenofileNcolSkipSEXP) {
@@ -800,11 +774,44 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// innerProduct
+double innerProduct(NumericVector x, NumericVector y);
+RcppExport SEXP _SAIGE_innerProduct(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(innerProduct(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// parallelInnerProduct
+double parallelInnerProduct(NumericVector x, NumericVector y);
+RcppExport SEXP _SAIGE_parallelInnerProduct(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(parallelInnerProduct(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// eigenMapMatMult
+SEXP eigenMapMatMult(const Eigen::Map<Eigen::MatrixXd>& A, Eigen::Map<Eigen::MatrixXd>& B);
+RcppExport SEXP _SAIGE_eigenMapMatMult(SEXP ASEXP, SEXP BSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type A(ASEXP);
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd>& >::type B(BSEXP);
+    rcpp_result_gen = Rcpp::wrap(eigenMapMatMult(A, B));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_SAIGE_innerProduct", (DL_FUNC) &_SAIGE_innerProduct, 2},
-    {"_SAIGE_parallelInnerProduct", (DL_FUNC) &_SAIGE_parallelInnerProduct, 2},
-    {"_SAIGE_eigenMapMatMult", (DL_FUNC) &_SAIGE_eigenMapMatMult, 2},
     {"_SAIGE_closeGenoFile_plink", (DL_FUNC) &_SAIGE_closeGenoFile_plink, 0},
     {"_SAIGE_gettotalMarker", (DL_FUNC) &_SAIGE_gettotalMarker, 0},
     {"_SAIGE_getAlleleFreqVec", (DL_FUNC) &_SAIGE_getAlleleFreqVec, 0},
@@ -851,6 +858,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getMarkerInfo", (DL_FUNC) &_SAIGE_getMarkerInfo, 0},
     {"_SAIGE_SetSampleIdx", (DL_FUNC) &_SAIGE_SetSampleIdx, 2},
     {"_SAIGE_closetestGenoFile_bgenDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_bgenDosage, 0},
+    {"_SAIGE_getSampleSizeinBgen", (DL_FUNC) &_SAIGE_getSampleSizeinBgen, 0},
     {"_SAIGE_setgenoTest_plainDosage", (DL_FUNC) &_SAIGE_setgenoTest_plainDosage, 3},
     {"_SAIGE_closetestGenoFile_plainDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_plainDosage, 0},
     {"_SAIGE_getGenoOfnthVar_plainDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_plainDosage, 3},
@@ -864,6 +872,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getGenoOfnthVar_vcfDosage_pre", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage_pre, 0},
     {"_SAIGE_getGenoOfnthVar_vcfDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage, 1},
     {"_SAIGE_closetestGenoFile_vcfDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_vcfDosage, 0},
+    {"_SAIGE_innerProduct", (DL_FUNC) &_SAIGE_innerProduct, 2},
+    {"_SAIGE_parallelInnerProduct", (DL_FUNC) &_SAIGE_parallelInnerProduct, 2},
+    {"_SAIGE_eigenMapMatMult", (DL_FUNC) &_SAIGE_eigenMapMatMult, 2},
     {NULL, NULL, 0}
 };
 

@@ -45,7 +45,7 @@ bool isReadVariantBgen = true;
 //double bgenMinMAF = 0;
 //double bgenMinINFO = 0;
 double markerInfo;
-
+int numSamples;
 
 // ProbSetter is a callback object appropriate for passing to bgen::read_genotype_data_block() or
 // the synonymous method of genfile::bgen::View. See the comment in bgen.hpp above
@@ -210,6 +210,7 @@ int setgenoTest_bgenDosage(std::string & filename,
 	if(query->number_of_variants() > 0){
           genoToTest_bgenDosage->set_query( query ) ;
 	  numMarkers = genoToTest_bgenDosage->number_of_variants() ;
+	  numSamples = genoToTest_bgenDosage->number_of_samples(); 
 	  std::cout << numMarkers << " markers will be analyzed " << std::endl;
           return numMarkers ;
 	}else{
@@ -235,7 +236,7 @@ int setgenoTest_bgenDosage(std::string & filename,
           genfile::bgen::read_header_block( *gm_stream, &gm_context ) ;
 	  
           uint Nbgen = gm_context.number_of_samples;
-          int numSamples = int(Nbgen);
+          numSamples = int(Nbgen);
           std::cout << numSamples << " samples are found in the bgen file" << std::endl;
 	
           // Jump to the first variant data block.
@@ -719,5 +720,5 @@ void closetestGenoFile_bgenDosage() //needs further check
 
 // [[Rcpp::export]]
 int getSampleSizeinBgen(){
-        return(genoToTest_bgenDosage->number_of_samples());
+        return(numSamples);
 }

@@ -247,7 +247,7 @@ SPAGMMATtest = function(dosageFile = "",
     Mtest = setgenoTest_bgenDosage(bgenFile,bgenFileIndex, ranges_to_exclude = ranges_to_exclude, ranges_to_include = ranges_to_include, ids_to_exclude= ids_to_exclude, ids_to_include=ids_to_include)
 
     nsamplesinBgen = getSampleSizeinBgen()	
-    if((nrow(sampleListinDosage) != nsamplesinBgen){
+    if(nrow(sampleListinDosage) != nsamplesinBgen){
         stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the bgen file\n")
     }
 
