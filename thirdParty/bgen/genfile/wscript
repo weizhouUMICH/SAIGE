@@ -1,4 +1,0 @@
-import os.path
-
-def build( bld ):
-	pass

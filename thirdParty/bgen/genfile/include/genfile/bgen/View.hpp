@@ -11,17 +11,9 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <sstream>
+#include <boost/lexical_cast.hpp>
 #include "genfile/bgen/bgen.hpp"
 #include "genfile/bgen/IndexQuery.hpp"
-
-namespace {
-	std::string to_string( std::size_t i ) {
-		std::stringstream s ;
-		s << i ;
-		return s.str() ;
-	}
-}
 
 namespace genfile {
 	namespace bgen {
@@ -48,14 +40,14 @@ namespace genfile {
 			// (If there are no sample IDs in the file, report a dummy identifier).
 			// Setter object must be callable as setter( index of sample, sample identifier ).
 			template< typename Setter >
-			void get_sample_ids( Setter setter ) const {
+			void get_sample_ids( Setter setter ) {
 				if( m_have_sample_ids ) {
 					for( std::size_t i = 0; i < m_context.number_of_samples; ++i ) {
 						setter( m_sample_ids[i] ) ;
 					}
 				} else {
 					for( std::size_t i = 0; i < m_context.number_of_samples; ++i ) {
-						setter( "(anonymous_sample_" + to_string( i+1 ) + ")" ) ;
+						setter( "(unknown_sample_" + boost::lexical_cast< std::string >( i+1 ) + ")" ) ;
 					}
 				}
 			}
@@ -112,6 +104,7 @@ namespace genfile {
 			void ignore_genotype_data_block() ;
 
 		private:
+		//public:
 			// Open the bgen file, read header data and gather metadata.
 			void setup( std::string const& filename ) ;
 
@@ -119,6 +112,8 @@ namespace genfile {
 			// Utility function to read and uncompress variant genotype probability data
 			// without further processing.
 			std::vector< byte_t > const& read_and_uncompress_genotype_data_block() ;
+
+
 
 		private:
 			std::string const m_filename ;
