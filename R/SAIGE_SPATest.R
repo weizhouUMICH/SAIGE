@@ -664,7 +664,7 @@ SPAGMMATtest = function(dosageFile = "",
       }
       
       
-      if(MAF >= testMinMAF & markerInfo >= minInfo){
+      if(MAC > 0 & MAF >= testMinMAF & markerInfo >= minInfo){
         numPassMarker = numPassMarker + 1
         varRatio = getVarRatio(G0, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
         
