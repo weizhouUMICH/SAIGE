@@ -902,15 +902,9 @@ fitNULLGLMM = function(plinkFile = "",
     
     
     if(!skipModelFitting){
-      print("test memory 1")
-      gc(verbose=T)
       if(useSparseSigmaforInitTau){
-        print("test memory 2")
-        gc(verbose=T)
         setisUseSparseSigmaforInitTau(TRUE)
         modglmm0<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne)
-        print("test memory 3")
-        gc(verbose=T)
         tauInit = modglmm0$theta
         cat("tauInit estimated using sparse Sigma is ", tauInit, "\n")
         rm(modglmm0)
@@ -933,11 +927,12 @@ fitNULLGLMM = function(plinkFile = "",
       # locationMatinR = rbind(A$i-1, A$j-1)
       # valueVecinR = A$x
       # setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
-      print("test memory 4")
-      gc(verbose=T)
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
-      print("test memory 5")
-      gc(verbose=T)
+      modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne)
+      # remove hidden environments from the model
+      modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
+      for (x in names(modglmm$obj.glm.null)) {
+        attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
+      }
       save(modglmm, file = modelOut)
       
       t_end = proc.time()
@@ -1081,7 +1076,12 @@ fitNULLGLMM = function(plinkFile = "",
       t_begin = proc.time()
       print(t_begin)
       
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
+      modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne)
+      # remove hidden environments from the model
+      modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
+      for (x in names(modglmm$obj.glm.null)) {
+        attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
+      }
       save(modglmm, file = modelOut)
       
       t_end = proc.time()
