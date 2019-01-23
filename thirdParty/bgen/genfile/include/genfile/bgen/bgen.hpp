@@ -8,7 +8,6 @@
 #define BGEN_REFERENCE_IMPLEMENTATION_HPP
 
 #include <iostream>
-#include <iomanip>
 #include <vector>
 #include <cassert>
 #include <cmath>
@@ -16,9 +15,9 @@
 #include <limits>
 //#include "genfile/snp_data_utils.hpp"
 //#include "genfile/get_set.hpp"
-#include "genfile/zlib.hpp"
-#include "genfile/types.hpp"
-#include "genfile/MissingValue.hpp"
+#include <genfile/zlib.hpp>
+#include <genfile/types.hpp>
+#include <genfile/MissingValue.hpp>
 
 /*
 * This file contains a reference implementation of the BGEN file format
@@ -313,55 +312,16 @@ namespace genfile {
 // IMPLEMENTATION
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-#if (defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN) \
-	|| defined(__LITTLE_ENDIAN) \
-	|| defined(__ARMEL) \
-	|| defined(__THUMBEL__) \
-	|| defined(__AARCH64EL__) \
-	|| defined(_MIPSEL) \
-	|| defined(__MIPSEL) \
-	|| defined(__MIPSEL__) \
-	|| (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)) \
-	|| (defined(__FLOAT_WORD_ORDER__) && (__FLOAT_WORD_ORDER__ == __ORDER_LITTLE_ENDIAN__ ))
-	#define BGEN_BIG_ENDIAN 0
-	#define BGEN_LITTLE_ENDIAN 1
-#elif (defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN) \
-	|| defined(__BIG_ENDIAN) \
-	|| defined(__ARMEB) \
-	|| defined(__THUMBEB__) \
-	|| defined(__AARCH64EB__) \
-	|| defined(_MIPSEB) \
-	|| defined(__MIPSEB) \
-	|| defined(__MIPSEB__) \
-	|| (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)) \
-	|| (defined(__FLOAT_WORD_ORDER__) && (__FLOAT_WORD_ORDER__ == __ORDER_BIG_ENDIAN__ ))
-	#define BGEN_BIG_ENDIAN 1
-	#define BGEN_LITTLE_ENDIAN 0
-#else
-#error "Unable to determine architecture endian-ness"
-#endif
-
-#if !BGEN_LITTLE_ENDIAN
-#error "BGEN support on big endian machines is currently untested.  Please remove this line if you want to try it."
-#endif
-
 namespace genfile {
 	namespace bgen {
 		// Read an integer stored in little-endian format into an integer stored in memory.
 		template< typename IntegerType >
-		inline byte_t const* read_little_endian_integer( byte_t const* buffer, byte_t const* const end, IntegerType* integer_ptr ) {
+		byte_t const* read_little_endian_integer( byte_t const* buffer, byte_t const* const end, IntegerType* integer_ptr ) {
 			assert( end >= buffer + sizeof( IntegerType )) ;
-#if BGEN_LITTLE_ENDIAN
-			*integer_ptr = IntegerType( *reinterpret_cast< IntegerType const* >( buffer )) ;
-			buffer += sizeof( IntegerType ) ;
-#elif BGEN_BIG_ENDIAN
 			*integer_ptr = 0 ;
 			for( std::size_t byte_i = 0; byte_i < sizeof( IntegerType ); ++byte_i ) {
 				(*integer_ptr) |= IntegerType( *reinterpret_cast< byte_t const* >( buffer++ )) << ( 8 * byte_i ) ;
 			}
-#else
-#error "unknown endianness"
-#endif
 			return buffer ;
 		}
 
@@ -677,13 +637,8 @@ namespace genfile {
 				}
 
 				bool set_sample( std::size_t i ) {
-					assert( m_state == eInitialised || m_state == eBaked || m_state == eSampleSet ) ;
+					assert( m_state == eInitialised || m_state == eBaked ) ;
 					assert(( m_sample_i == 0 && i == 0 ) || ( i == m_sample_i + 1 )) ;
-					if( m_state == eSampleSet ) {
-						// last sample had no data, write zeroes
-						m_values[0] = m_values[1] = m_values[2] = 0.0 ;
-						bake( &m_values[0] ) ;
-					}
 					m_sample_i = i ;
 					m_state = eSampleSet ;
 					return true ;
@@ -781,16 +736,13 @@ namespace genfile {
 				call_set_min_max_ploidy( setter, 2ul, 2ul, 2ul, false ) ;
 				double const probability_conversion_factor = impl::get_probability_conversion_factor( context.flags ) ;
 				for ( uint32_t i = 0 ; i < context.number_of_samples ; ++i ) {
-					if( setter.set_sample( i ) ) {
-						setter.set_number_of_entries( ploidy, 3, ePerUnorderedGenotype, eProbability ) ;
-						assert( end >= buffer + 6 ) ;
-						for( std::size_t g = 0; g < 3; ++g ) {
-							uint16_t prob ;
-							buffer = read_little_endian_integer( buffer, end, &prob ) ;
-							setter.set_value( g, impl::convert_from_integer_representation( prob, probability_conversion_factor ) ) ;
-						}
-					} else {
-						buffer += 6 ;
+					setter.set_sample( i ) ;
+					setter.set_number_of_entries( ploidy, 3, ePerUnorderedGenotype, eProbability ) ;
+					assert( end >= buffer + 6 ) ;
+					for( std::size_t g = 0; g < 3; ++g ) {
+						uint16_t prob ;
+						buffer = read_little_endian_integer( buffer, end, &prob ) ;
+						setter.set_value( g, impl::convert_from_integer_representation( prob, probability_conversion_factor ) ) ;
 					}
 				}
 				call_finalise( setter ) ;
@@ -799,143 +751,28 @@ namespace genfile {
 
 		namespace v12{
 			namespace impl {
-				struct BitParser {
-					BitParser(
-						byte_t const* buffer,
-						byte_t const* const end,
-						int const bits
-					):
-						m_buffer( buffer ),
-						m_end( end ),
-						m_bits( bits ),
-						m_bitMask( (uint64_t(0xFFFFFFFFFFFFFFFF) >> ( 64 - bits ))),
-						m_denominator( m_bitMask ),
-						m_shift(0)
-					{
-						assert( bits > 0 && bits <= 32 ) ;
-#if BGEN_BIG_ENDIAN
-						read_little_endian_integer( buffer, end, &m_data ) ;
-#endif
-					}
+				// utility function to fill a 64-bit integer
+				// with bits from the buffer, consuming a specified number of
+				// bits at a time.
+				// arguments are:
+				// buffer, end - the buffer to read from
+				// data - the place to read bits into
+				// size - the current number of bits stored in data
+				// bits - the number of bits required.
+				byte_t const* read_bits_from_buffer(
+					byte_t const* buffer,
+					byte_t const* const end,
+					uint64_t* data,
+					int* size,
+					uint8_t const bits
+				) ;
 
-					// check we can consume n more values
-					bool check( std::size_t n ) const {
-						// We need enough bytes to deal with the current shift value
-						// plus enough to deal with the requested bits.
-						std::size_t const bitsNeeded = n * m_bits + m_shift ;
-						std::size_t const bytesNeededFromBuffer = (bitsNeeded + 7)/8 ;
-						return (m_buffer + bytesNeededFromBuffer) <= m_end ;
-					}
-
-					// consume and return next value
-					double next() {
-#if BGEN_LITTLE_ENDIAN
-						// Machine endianness matches stored endianness so no
-						// reordering of bytes is needed.
-						// We travel through the data 32 bits at a time
-						// Each time we use a shift to get the appropriate bits from
-						// the current 32-bit word.
-						double value = (
-							( *reinterpret_cast< uint64_t const* >( m_buffer ) >> m_shift ) & m_bitMask
-						) / m_denominator ;
-#else // BGEN_BIG_ENDIAN
-						double value = (
-							(m_data >> m_shift) & m_bitMask
-						) / m_denominator ;
-#endif
-						m_shift += m_bits ;
-						if( m_shift > 31 ) {
-							// m_bits is at most 32
-							// so m_shift can now be a maximum of 63.
-							//std::cerr << "m_shift = " << m_shift << ", moving buffer.\n" ;
-							m_buffer += 4 ;
-							m_shift -= 32 ;
-#if BGEN_BIG_ENDIAN
-							// marshal data through a uint64.
-							read_little_endian_integer( buffer, end, &m_data ) ;
-#endif
-						}
-						return value ;
-					}
-
-				private:
-					byte_t const* m_buffer ;
-					byte_t const* const m_end ;
-					int const m_bits ;
-					uint64_t const m_bitMask ;
-					double const m_denominator ;
-					int m_shift ;
-#if BGEN_BIG_ENDIAN
-					uint64_t m_data ;
-#endif
-				} ;
-				
-				// Optimised bit parser implementations
-				template<int bits>
-				struct SpecialisedBitParser ;
-
-				// Specialisation for 8 bit data
-				template<>
-				struct SpecialisedBitParser<8> {
-					SpecialisedBitParser(
-						byte_t const* buffer,
-						byte_t const* const end
-					):
-						m_buffer( buffer ),
-						m_end( end )
-					{}
-
-					// check we can consume n more values
-					bool check( std::size_t n ) const {
-						return (m_buffer + n) <= m_end ;
-					}
-
-					double next() {
-						return double(
-							(*reinterpret_cast< uint8_t const* >( m_buffer++ ))
-						) / 255.0;
-					}
-
-				private:
-					byte_t const* m_buffer ;
-					byte_t const* const m_end ;
-				} ;
-
-				// Specialisation for 16 bit data
-				template<>
-				struct SpecialisedBitParser<16> {
-					SpecialisedBitParser(
-						byte_t const* buffer,
-						byte_t const* const end
-					):
-						m_buffer( buffer ),
-						m_end( end )
-					{}	
-
-					// check we can consume n more values
-					bool check( std::size_t n ) const {
-						return (m_buffer + 2*n) <= m_end ;
-					}
-
-					double next() {
-#if BGEN_LITTLE_ENDIAN
-						double const value = double(
-							*reinterpret_cast< uint16_t const* >( m_buffer )
-						) / 65535.0 ;
-#else // BGEN_BIG_ENDIAN
-						// machine is big-endian, get bytes in right order.
-						uint16_t data = uint16_t(*m_buffer) | uint16_t(*(m_buffer+1)) << 8 ;
-						double const value = double(data) / 65535.0 ;
-#endif
-						m_buffer += 2 ;
-						return value ;
-					}
-
-				private:
-					byte_t const* m_buffer ;
-					byte_t const* const m_end ;
-				} ;
-
+				double parse_bit_representation(
+					uint64_t* data,
+					int* size,
+					int const bits
+				) ;
+					
 				// Round a point on the unit simplex (expressed as n floating-point probabilities)
 				// to a point representable with the given number of bits.
 				// precondition: p points to n doubles between 0 and 1 that sum to 1
@@ -961,7 +798,7 @@ namespace genfile {
 				GenotypeDataBlock() ;
 					
 				GenotypeDataBlock(
-					Context const& context_,
+					Context const& context,
 					byte_t const* buffer,
 					byte_t const* const end
 				) ;
@@ -973,7 +810,6 @@ namespace genfile {
 				) ;
 
 			public:
-				Context const* context ;
 				uint32_t numberOfSamples ;
 				uint16_t numberOfAlleles ;
 				byte_t ploidyExtent[2] ;
@@ -990,7 +826,6 @@ namespace genfile {
 			} ;
 			
 			inline GenotypeDataBlock::GenotypeDataBlock():
-				context(0),
 				numberOfSamples(0),
 				numberOfAlleles(0),
 				ploidy(0),
@@ -1009,40 +844,37 @@ namespace genfile {
 			}
 
 			inline void GenotypeDataBlock::initialise(
-				Context const& context_,
+				Context const& context,
 				byte_t const* buffer,
 				byte_t const* const end
 			) {
 				if( end < buffer + 8 ) {
 					throw BGenError() ;
 				}
-
 				uint32_t N = 0 ;
 				buffer = read_little_endian_integer( buffer, end, &N ) ;
-				if( N != context_.number_of_samples ) {
+				if( N != context.number_of_samples ) {
 					throw BGenError() ;
 				}
 				if( end < buffer + N + 2 ) {
 					throw BGenError() ;
 				}
 
+				numberOfSamples = N ;
 				buffer = read_little_endian_integer( buffer, end, &numberOfAlleles ) ;
 				buffer = read_little_endian_integer( buffer, end, &ploidyExtent[0] ) ;
 				buffer = read_little_endian_integer( buffer, end, &ploidyExtent[1] ) ;
 
 				// Keep a pointer to the ploidy and move buffer past the ploidy information
-				this->context = &context_ ;
-				this->numberOfSamples = N ;
-				this->ploidy = buffer ;
+				ploidy = buffer ;
 				buffer += N ;
 				// Get the phased flag and number of bits
-				this->phased = ((*buffer++) & 0x1 ) ;
-				this->bits = *reinterpret_cast< byte_t const *>( buffer++ ) ;
+				phased = ((*buffer++) & 0x1 ) ;
+				bits = *reinterpret_cast< byte_t const *>( buffer++ ) ;
 				this->buffer = buffer ;
 				this->end = end ;
 			}
 			
-
 			template< typename Setter >
 			void parse_probability_data(
 				byte_t const* buffer,
@@ -1050,176 +882,12 @@ namespace genfile {
 				Context const& context,
 				Setter& setter
 			) {
-				parse_probability_data(
-					GenotypeDataBlock( context, buffer, end ),
-					setter
-				) ;
-			}
-			
-			template< typename Setter >
-			void parse_probability_data(
-				GenotypeDataBlock const& pack,
-				Setter& setter
-			) {
-				Context const& context = *(pack.context) ;
-				// We optimise the most common and simplest-to- parse cases.
-				// These are the case where all samples are diploid, and/or where
-				// the number of bits is a multiple of 8.
-				// This if statement chooses an appropriate implementation.
-				if( pack.ploidyExtent[0] == 2 && pack.ploidyExtent[1] == 2 && pack.numberOfAlleles == 2 ) {
-					switch( pack.bits ) {
-						case 8:
-							parse_probability_data_diploid_biallelic(
-								pack,
-								impl::SpecialisedBitParser<8>( pack.buffer, pack.end ),
-								context,
-								setter
-							) ;
-							break ;
-						case 16:
-							parse_probability_data_diploid_biallelic(
-								pack,
-								impl::SpecialisedBitParser<16>( pack.buffer, pack.end ),
-								context,
-								setter
-							) ;
-							break ;
-						default:
-							parse_probability_data_diploid_biallelic(
-								pack,
-								impl::BitParser( pack.buffer, pack.end, pack.bits ),
-								context,
-								setter
-							) ;
-							break ;
-					}
-				} else {
-					switch( pack.bits ) {
-						case 8:
-							parse_probability_data_general(
-								pack,
-								impl::SpecialisedBitParser<8>( pack.buffer, pack.end ),
-								context,
-								setter
-							) ;
-							break ;
-						case 16:
-							parse_probability_data_general(
-								pack,
-								impl::SpecialisedBitParser<16>( pack.buffer, pack.end ),
-								context,
-								setter
-							) ;
-							break ;
-						default:
-							parse_probability_data_general(
-								pack,
-								impl::BitParser( pack.buffer, pack.end, pack.bits ),
-								context,
-								setter
-							) ;
-							break ;
-					}
-				}
-			}
+				GenotypeDataBlock pack( context, buffer, end ) ;
 
-			template< typename Setter, typename BitParser >
-			void parse_probability_data_diploid_biallelic(
-				GenotypeDataBlock const& pack,
-				BitParser valueConsumer,
-				Context const& context,
-				Setter& setter
-			) {
-				assert( pack.numberOfAlleles == 2 ) ;
-				assert( pack.ploidyExtent[0] == 2 ) ;
-				assert( pack.ploidyExtent[1] == 2 ) ;
-
-				// These values are specific bit combinations and should not be changed.
-				enum SampleStatus { eIgnore = 0, eSetThisSample = 1, eSetAsMissing = 3 } ;
+				int const bits = int( pack.bits ) ;
 				byte_t const* ploidy_p = pack.ploidy ;
-	#if DEBUG_BGEN_FORMAT
-				std::cerr << "parse_probability_data_v12(): numberOfSamples = " << numberOfSamples
-					<< ", phased = " << phased << ".\n" ;
-	#endif
-
-				setter.initialise( pack.numberOfSamples, uint32_t( 2 ) ) ;
-				call_set_min_max_ploidy( setter, uint32_t( 2 ), uint32_t( 2 ), 2, pack.phased ) ;
-				
-				{
-					if( pack.phased ) {
-						for( uint32_t i = 0; i < pack.numberOfSamples; ++i, ++ploidy_p ) {
-							bool const missing = (*ploidy_p & 0x80) ;
-							int const sample_status = (setter.set_sample( i ) * 0x1) + (missing * 0x2);
-
-							if( sample_status & 0x1 ) {
-								setter.set_number_of_entries( 2, 4, ePerPhasedHaplotypePerAllele, eProbability ) ;
-							}
-							
-							
-							if( !valueConsumer.check( 2 )) {
-								throw BGenError() ;
-							}
-							// Consume values and interpret them.
-							for( uint32_t hap = 0; hap < 2; ++hap ) {
-								double const value = valueConsumer.next() ;
-								switch( sample_status ) {
-									case eIgnore: break ;
-									case eSetAsMissing:
-										setter.set_value( 2*hap + 0, genfile::MissingValue() ) ;
-										setter.set_value( 2*hap + 1, genfile::MissingValue() ) ;
-										break ;
-									case eSetThisSample:
-										setter.set_value( 2*hap + 0, value ) ;
-										setter.set_value( 2*hap + 1, 1.0 - value ) ;
-										break ;
-								}
-							}
-						}
-					} else {
-						for( uint32_t i = 0; i < pack.numberOfSamples; ++i, ++ploidy_p ) {
-							bool const missing = (*ploidy_p & 0x80) ;
-							int const sample_status = (setter.set_sample( i ) * 0x1) + (missing * 0x2);
-							
-							if( sample_status & 0x1 ) {
-								setter.set_number_of_entries( 2, 3, ePerUnorderedGenotype, eProbability ) ;
-							}
-							if( !valueConsumer.check( 2 )) {
-								throw BGenError() ;
-							}
-							double const value1 = valueConsumer.next() ;
-							double const value2 = valueConsumer.next() ;
-
-							switch( sample_status ) {
-								case eIgnore: break ;
-								case eSetAsMissing:
-									setter.set_value( 0, genfile::MissingValue() ) ;
-									setter.set_value( 1, genfile::MissingValue() ) ;
-									setter.set_value( 2, genfile::MissingValue() ) ;
-									break ;
-								case eSetThisSample:
-									setter.set_value( 0, value1 ) ;
-									setter.set_value( 1, value2 ) ;
-									// Clamp the value to 0 to avoid small -ve values
-									setter.set_value( 2, std::max( 1.0 - value1 - value2, 0.0 ) ) ;
-									break ;
-							}
-						}
-					}
-				}
-				call_finalise( setter ) ;
-			}
-
-			template< typename Setter, typename BitParser >
-			void parse_probability_data_general(
-				GenotypeDataBlock const& pack,
-				BitParser valueConsumer,
-				Context const& context,
-				Setter& setter
-			) {
-				// These values are specific bit combinations and should not be changed.
-				enum SampleStatus { eIgnore = 0, eSetThisSample = 1, eSetAsMissing = 3 } ;
-				
-				byte_t const* ploidy_p = pack.ploidy ;
+				buffer = pack.buffer ;
+				assert( end == pack.end ) ;
 				
 	#if DEBUG_BGEN_FORMAT
 				std::cerr << "parse_probability_data_v12(): numberOfSamples = " << numberOfSamples
@@ -1229,117 +897,75 @@ namespace genfile {
 	#endif
 
 				setter.initialise( pack.numberOfSamples, uint32_t( pack.numberOfAlleles ) ) ;
-				call_set_min_max_ploidy(
-					setter,
-					uint32_t( pack.ploidyExtent[0] ),
-					uint32_t( pack.ploidyExtent[1] ),
-					pack.numberOfAlleles,
-					pack.phased
-				) ;
+				call_set_min_max_ploidy( setter, uint32_t( pack.ploidyExtent[0] ), uint32_t( pack.ploidyExtent[1] ), pack.numberOfAlleles, pack.phased ) ;
 				
 				{
-					if( pack.phased ) {
-						for( uint32_t i = 0; i < pack.numberOfSamples; ++i, ++ploidy_p ) {
-							uint32_t const ploidy = uint32_t(*ploidy_p & 0x3F) ;
-							bool const missing = (*ploidy_p & 0x80) ;
-							int const sample_status = (setter.set_sample( i ) * 0x1) + (missing * 0x2);
+					uint64_t data = 0 ;
+					int size = 0 ;
+					for( uint32_t i = 0; i < pack.numberOfSamples; ++i, ++ploidy_p ) {
+						uint32_t const ploidy = uint32_t(*ploidy_p & 0x3F) ;
+						bool const missing = (*ploidy_p & 0x80) ;
+						uint32_t const valueCount
+							= pack.phased
+							? (ploidy * pack.numberOfAlleles)
+							: genfile::bgen::impl::n_choose_k( uint32_t( ploidy + pack.numberOfAlleles - 1 ), uint32_t( pack.numberOfAlleles - 1 )) ;
 
-							uint32_t const valueCount = (ploidy * pack.numberOfAlleles) ;
-
-							if( sample_status & 0x1 ) {
-								setter.set_number_of_entries(
-									ploidy,
-									valueCount,
-									ePerPhasedHaplotypePerAllele,
-									eProbability
-								) ;
-							}
-							
-							// Consume values and interpret them.
-							double sum = 0.0 ;
-							uint32_t reportedValueCount = 0 ;
-							if( !valueConsumer.check( ploidy * (pack.numberOfAlleles-1) )) {
-								throw BGenError() ;
-							}
-							for( uint32_t hap = 0; hap < ploidy; ++hap ) {
-								for( uint32_t allele = 0; allele < (pack.numberOfAlleles-1); ++allele ) {
-									double const value = valueConsumer.next() ;
-									switch( sample_status ) {
-										case eIgnore: break ;
-										case eSetAsMissing:
-											setter.set_value( reportedValueCount++, genfile::MissingValue() ) ;
-											break ;
-										case eSetThisSample:
-											setter.set_value( reportedValueCount++, value ) ;
-											sum += value ;
-											break ;
+						uint32_t const storedValueCount = valueCount - ( pack.phased ? ploidy : 1 ) ;
+					
+	#if DEBUG_BGEN_FORMAT > 1
+						std::cerr << "parse_probability_data_v12(): sample " << i
+							<< ", ploidy = " << ploidy
+							<< ", missing = " << missing
+							<< ", valueCount = " << valueCount
+							<< ", storedValueCount = " << storedValueCount
+							<< ", data = " << bgen::impl::to_hex( buffer, end )
+							<< ".\n" ;
+	#endif
+						if( setter.set_sample( i ) ) {
+							setter.set_number_of_entries(
+								ploidy,
+								valueCount,
+								pack.phased ? ePerPhasedHaplotypePerAllele : ePerUnorderedGenotype,
+								eProbability
+							) ;
+							if( missing ) {
+								// Consume dummy zero values, emit missing values.
+								for( uint32_t h = 0; h < storedValueCount; ++h ) {
+									buffer = impl::read_bits_from_buffer( buffer, end, &data, &size, bits ) ;
+									(void) impl::parse_bit_representation( &data, &size, bits ) ;
+								}
+								for( uint32_t h = 0; h < valueCount; ++h ) {
+									setter.set_value( h, genfile::MissingValue() ) ;
+								}
+							} else {
+								// Consume values and interpret them.
+								double sum = 0.0 ;
+								uint32_t reportedValueCount = 0 ;
+								for( uint32_t h = 0; h < storedValueCount; ++h ) {
+									buffer = impl::read_bits_from_buffer( buffer, end, &data, &size, bits ) ;
+									double const value = impl::parse_bit_representation( &data, &size, bits ) ;
+									setter.set_value( reportedValueCount++, value ) ;
+									sum += value ;
+	#if DEBUG_BGEN_FORMAT
+									std::cerr << "parse_probability_data_v12(): i = " << i << ", h = " << h << ", size = " << size << ", bits = " << bits << ", parsed value = " << value
+										<< ", sum = " << sum << ".\n" ;
+	#endif
+								
+									if(
+										( pack.phased && ((h+1) % (pack.numberOfAlleles-1) ) == 0 )
+										|| ((!pack.phased) && (h+1) == storedValueCount )
+									) {
+										assert( sum <= 1.00000001 ) ;
+										setter.set_value( reportedValueCount++, 1.0 - sum ) ;
+										sum = 0.0 ;
 									}
 								}
-								
-								// set value for kth allele
-								switch( sample_status ) {
-									case eIgnore: break ;
-									case eSetAsMissing:
-										setter.set_value( reportedValueCount++, genfile::MissingValue() ) ;
-										break ;
-									case eSetThisSample:
-										setter.set_value( reportedValueCount++, 1 - sum ) ;
-										sum = 0.0 ;
-										break ;
-								}
 							}
-						}
-					} else {
-						for( uint32_t i = 0; i < pack.numberOfSamples; ++i, ++ploidy_p ) {
-							uint32_t const ploidy = uint32_t(*ploidy_p & 0x3F) ;
-							bool const missing = (*ploidy_p & 0x80) ;
-							int const sample_status = (setter.set_sample( i ) * 0x1) + (missing * 0x2);
-							
-							uint32_t const valueCount
-								= genfile::bgen::impl::n_choose_k(
-									uint32_t( ploidy + pack.numberOfAlleles - 1 ), 
-									uint32_t( pack.numberOfAlleles - 1 )
-								) ;
-							uint32_t const storedValueCount = valueCount - 1 ;
-							
-							if( sample_status & 0x1 ) {
-								setter.set_number_of_entries(
-									ploidy,
-									valueCount,
-									ePerUnorderedGenotype,
-									eProbability
-								) ;
-							}
-							
-							if( !valueConsumer.check( storedValueCount )) {
-								throw BGenError() ;
-							}
-							
-							double sum = 0.0 ;
-							uint32_t reportedValueCount = 0 ;
+						} else {
+							// just consume data, don't set anything.
 							for( uint32_t h = 0; h < storedValueCount; ++h ) {
-								double const value = valueConsumer.next() ;
-								switch( sample_status ) {
-									case eIgnore: break ;
-									case eSetAsMissing:
-										setter.set_value( reportedValueCount++, genfile::MissingValue() ) ;
-										break ;
-									case eSetThisSample:
-										setter.set_value( reportedValueCount++, value ) ;
-										sum += value ;
-										break ;
-								}
-							}
-							
-							// set final value
-							switch( sample_status ) {
-								case eIgnore: break ;
-								case eSetAsMissing:
-									setter.set_value( reportedValueCount++, genfile::MissingValue() ) ;
-									break ;
-								case eSetThisSample:
-									setter.set_value( reportedValueCount++, 1.0 - sum ) ;
-									break ;
+								buffer = impl::read_bits_from_buffer( buffer, end, &data, &size, bits ) ;
+								impl::parse_bit_representation( &data, &size, bits ) ;
 							}
 						}
 					}
@@ -1359,12 +985,10 @@ namespace genfile {
 				
 				ProbabilityDataWriter(
 					uint8_t const number_of_bits,
-					double const max_rounding_error_per_prob = 0.0005
+					double const tolerance = 1.01
 				):
 					m_number_of_bits( number_of_bits ),
-					// Actually likely rounding error is rounding error from limit precision
-					// number, plus error in floating point representation (which is at most epsilon).
-					m_max_error_per_prob( max_rounding_error_per_prob + std::numeric_limits< double >::epsilon() ),
+					m_tolerance( tolerance ),
 					m_state( eUninitialised ),
 					m_order_type( eUnknownOrderType ),
 					m_number_of_samples(0),
@@ -1409,13 +1033,9 @@ namespace genfile {
 				}
 
 				bool set_sample( std::size_t i ) {
-					assert( m_state == eInitialised || m_state == eBaked || m_state == eSampleSet ) ;
+					assert( m_state == eInitialised || m_state == eBaked ) ;
 					// ensure samples are visited in order.
 					assert(( m_sample_i == 0 && i == 0 ) || ( i == m_sample_i + 1 )) ;
-					if( m_state == eSampleSet ) {
-						// Last sample was completely missing, mark as 0 ploid & missing
-						m_buffer[ePloidyBytes + m_sample_i] = 0x80 ;
-					}
 					m_sample_i = i ;
 					m_state = eSampleSet ;
 					return true ;
@@ -1428,11 +1048,11 @@ namespace genfile {
 					ValueType const value_type
 				) {
 					assert( m_state == eSampleSet ) ;
-
+					
 					assert( ploidy < 64 ) ;
 					m_ploidy = ploidy ;
 					uint8_t ploidyByte( ploidy & 0xFF ) ;
-					m_buffer[ePloidyBytes + m_sample_i] = ploidyByte ;
+					*(m_buffer+8+m_sample_i) = ploidyByte ;
 					m_ploidyExtent[0] = std::min( m_ploidyExtent[0], ploidyByte ) ;
 					m_ploidyExtent[1] = std::max( m_ploidyExtent[1], ploidyByte ) ;
 					
@@ -1485,12 +1105,14 @@ namespace genfile {
 #if DEBUG_BGEN_FORMAT
 					std::cerr << "set_value( " << entry_i << ", " << value << "); m_entry_i = " << m_entry_i << "\n" ;
 #endif
-					if( value != value || value < 0.0 || value > (1.0+m_max_error_per_prob) ) {
-						std::cerr << "Sample " << m_sample_i << ", value " << entry_i << " is "
-							<< std::setprecision(17) << value
-							<< ", expected within bounds 0 - " << (1.0+m_max_error_per_prob) << ".\n" ;
+					// Any sane input values will sum to 1 ± somerounding error, which should be small.
+					if( ( m_sum != m_sum ) || (m_sum > m_tolerance)) {
+#if DEBUG_BGEN_FORMAT
+						std::cerr << "First " << entry_i << " input values sum to " << m_sum << ".\n" ;
+#endif
 						throw BGenError() ;
 					}
+
 					if( value != 0.0 ) {
 						m_missing = eNotMissing ;
 					}
@@ -1558,7 +1180,7 @@ namespace genfile {
 				byte_t* m_p ;
 				byte_t* m_end ;
 				uint8_t const m_number_of_bits ;
-				double const m_max_error_per_prob ;
+				double const m_tolerance ;
 				State m_state ;
 				uint8_t m_ploidyExtent[2] ;
 				OrderType m_order_type ;
@@ -1591,14 +1213,8 @@ namespace genfile {
 						// flag this sample as missing.
 						m_buffer[ePloidyBytes + m_sample_i] |= 0x80 ;
 					} else {
-						double const max_error_in_sum = (count * m_max_error_per_prob) ;
-						if( ( sum != sum ) || (sum > (1.0+max_error_in_sum)) || (sum < (1.0-max_error_in_sum))) {
-							std::cerr << "These " << count << " values sum to " << std::fixed << std::setprecision(17) << sum << ", "
-								<< "I expected the sum to be in the range " << (1.0-max_error_in_sum) << " - " << (1.0+max_error_in_sum) << ".\n" ;
-							std::cerr << "Values are:\n" ;
-							for( std::size_t i = 0; i < count; ++i ) {
-								std::cerr << values[i] << "\n" ;
-							}
+						if( ( sum != sum ) || (sum > m_tolerance) || (sum < (1.0/m_tolerance))) {
+							std::cerr << "These " << count << " values sum to " << sum << ".\n" ;
 							throw BGenError() ;
 						}
 						// We project onto the unit simplex before computing the approximation.
@@ -1711,8 +1327,7 @@ namespace genfile {
 				std::vector< byte_t >* buffer1,
 				std::vector< byte_t >* buffer2,
 				Context const& context,
-				int const number_of_bits,
-				double permitted_rounding_error = 0.0005
+				int const number_of_bits
 			):
 				m_buffer1( buffer1 ),
 				m_buffer2( buffer2 ),
@@ -1720,7 +1335,7 @@ namespace genfile {
 				m_layout( m_context.flags & e_Layout ),
 				m_number_of_bits( number_of_bits ),
 				m_layout1_writer(),
-				m_layout2_writer( number_of_bits, permitted_rounding_error ),
+				m_layout2_writer( number_of_bits ),
 				m_writer(0)
 			{
 				assert( m_buffer1 != 0 && m_buffer2 != 0 ) ;

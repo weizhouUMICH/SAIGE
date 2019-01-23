@@ -1,0 +1,17 @@
+PKG_CPPFLAGS = \
+-I ../../../../genfile/include \
+-I ../../../../db/include \
+-I ../../../../3rd_party/boost_1_55_0 \
+-I ../../../../3rd_party/zstd-1.1.0 \
+-I ../../../../3rd_party/zstd-1.1.0/lib \
+-I ../../../../3rd_party/zstd-1.1.0/lib/compress \
+-I ../../../../3rd_party/zstd-1.1.0/lib/decompress \
+-I ../../../../3rd_party/sqlite3 \
+-D SQLITE_ENABLE_COLUMN_METADATA -fPIC -O3 -Wall
+#PKG_LIBS = -Wl,-all_load
+OBJECTS = RcppExports.o load.o $(wildcard ../../../src/*.o) ../../../db/libdb.a ../../../3rd_party/zstd-1.1.0/libzstd.a  ../../../3rd_party/sqlite3/libsqlite3.a ../../../3rd_party/boost_1_55_0/libboost.a
+
+all: $(SHLIB)
+$(SHLIB): ${OBJECTS} Makevars
+
+
