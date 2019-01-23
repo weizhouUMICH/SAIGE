@@ -85,7 +85,7 @@ SPAGMMATtest(dosageFile=opt$dosageFile,
 	     minMAC = opt$minMAC,
              numLinesOutput = opt$numLinesOutput,
 	     IsOutputAFinCaseCtrl = opt$IsOutputAFinCaseCtrl,
-	     LOCO = opt$LOCO
+	     LOCO = opt$LOCO,
              verbose = opt$verbose
 )
 

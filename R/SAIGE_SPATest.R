@@ -248,7 +248,7 @@ SPAGMMATtest = function(dosageFile = "",
 
     nsamplesinBgen = getSampleSizeinBgen()	
     if(nrow(sampleListinDosage) != nsamplesinBgen){
-        stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the bgen file\n")
+	stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the bgen file\nPlease check again. Please note that the sample file needs to have no header.")
     }
 
     if(Mtest == 0){isVariant = FALSE}
@@ -259,6 +259,11 @@ SPAGMMATtest = function(dosageFile = "",
     #setTestField(vcfField)
     isVariant = getGenoOfnthVar_vcfDosage_pre()
     SetSampleIdx_vcfDosage(sampleIndex, N)
+    nsamplesinVCF = getSampleSizeinVCF()
+     if(nrow(sampleListinDosage) != nsamplesinVCF){
+        stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the VCF file\nPlease check again. Please note that the sample file needs to have no header.")
+    }
+
   }
 
   cat("isVariant: ", isVariant, "\n") 
