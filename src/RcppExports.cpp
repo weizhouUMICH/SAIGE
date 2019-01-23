@@ -685,6 +685,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getSampleSizeinPlain
+int getSampleSizeinPlain();
+RcppExport SEXP _SAIGE_getSampleSizeinPlain() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getSampleSizeinPlain());
+    return rcpp_result_gen;
+END_RCPP
+}
 // SetSampleIdx_vcfDosage
 void SetSampleIdx_vcfDosage(Rcpp::IntegerVector sample_idx, int Ntest);
 RcppExport SEXP _SAIGE_SetSampleIdx_vcfDosage(SEXP sample_idxSEXP, SEXP NtestSEXP) {
@@ -772,6 +782,16 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     closetestGenoFile_vcfDosage();
     return R_NilValue;
+END_RCPP
+}
+// getSampleSizeinVCF
+int getSampleSizeinVCF();
+RcppExport SEXP _SAIGE_getSampleSizeinVCF() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getSampleSizeinVCF());
+    return rcpp_result_gen;
 END_RCPP
 }
 // innerProduct
@@ -864,6 +884,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getGenoOfnthVar_plainDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_plainDosage, 3},
     {"_SAIGE_getrowHeaderVec_plainDosage", (DL_FUNC) &_SAIGE_getrowHeaderVec_plainDosage, 0},
     {"_SAIGE_SetSampleIdx_plainDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_plainDosage, 2},
+    {"_SAIGE_getSampleSizeinPlain", (DL_FUNC) &_SAIGE_getSampleSizeinPlain, 0},
     {"_SAIGE_SetSampleIdx_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_vcfDosage, 2},
     {"_SAIGE_setTestField", (DL_FUNC) &_SAIGE_setTestField, 1},
     {"_SAIGE_setgenoTest_vcfDosage", (DL_FUNC) &_SAIGE_setgenoTest_vcfDosage, 8},
@@ -872,6 +893,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getGenoOfnthVar_vcfDosage_pre", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage_pre, 0},
     {"_SAIGE_getGenoOfnthVar_vcfDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage, 1},
     {"_SAIGE_closetestGenoFile_vcfDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_vcfDosage, 0},
+    {"_SAIGE_getSampleSizeinVCF", (DL_FUNC) &_SAIGE_getSampleSizeinVCF, 0},
     {"_SAIGE_innerProduct", (DL_FUNC) &_SAIGE_innerProduct, 2},
     {"_SAIGE_parallelInnerProduct", (DL_FUNC) &_SAIGE_parallelInnerProduct, 2},
     {"_SAIGE_eigenMapMatMult", (DL_FUNC) &_SAIGE_eigenMapMatMult, 2},

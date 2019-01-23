@@ -209,6 +209,10 @@ SetSampleIdx_plainDosage <- function(sample_idx, Ntest) {
     .Call('_SAIGE_SetSampleIdx_plainDosage', PACKAGE = 'SAIGE', sample_idx, Ntest)
 }
 
+getSampleSizeinPlain <- function() {
+    .Call('_SAIGE_getSampleSizeinPlain', PACKAGE = 'SAIGE')
+}
+
 SetSampleIdx_vcfDosage <- function(sample_idx, Ntest) {
     invisible(.Call('_SAIGE_SetSampleIdx_vcfDosage', PACKAGE = 'SAIGE', sample_idx, Ntest))
 }
@@ -239,6 +243,10 @@ getGenoOfnthVar_vcfDosage <- function(mth) {
 
 closetestGenoFile_vcfDosage <- function() {
     invisible(.Call('_SAIGE_closetestGenoFile_vcfDosage', PACKAGE = 'SAIGE'))
+}
+
+getSampleSizeinVCF <- function() {
+    .Call('_SAIGE_getSampleSizeinVCF', PACKAGE = 'SAIGE')
 }
 
 innerProduct <- function(x, y) {
