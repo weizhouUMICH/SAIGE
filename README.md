@@ -45,6 +45,8 @@ The following R pakages need to be installed for running SAIGE:
 Previous versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl/AADFqdssvOBjbWZch6Q9zYNaa?dl=0
 
 # Log for fixing bugs
+
+* 0.29.5 (Add script to check if the sample size in the provided sample file is the same as the sample size in the dosage file for step 2)
 * 0.29.4.4 (break the loop for model fitting when tau 2 is 0 for quantitative traits, solve the issue for the symlinks of the savvy library)
 * 0.29.4.2 (this version works with R-3.5.1)
 * 0.29.4 (this version works with R-3.4.4)
