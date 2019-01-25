@@ -198,11 +198,17 @@ SKATtest_usingSKATLib = function(dosageFile = "",
     #G0 = Gx_cond$dosages
      cntMarker = Gx_cond$cnt
      if(cntMarker > 0){
+	if(dosageFileType == "vcf"){
+	 dosage_cond = Matrix:::sparseMatrix(i = as.vector(Gx_cond$iIndex), j = as.vector(Gx_cond$jIndex), x = as.vector(Gx_cond$dosages), symmetric = FALSE, dims = c(N, Gx_cond$cnt))
+	 dosage_cond = as.matrix(dosage_cond)
+	}else if(dosageFileType == "bgen"){
           dosage_cond = matrix(Gx_cond$dosages, byrow=F, ncol = cntMarker)
-    }
+       }else{
+         stop("ERROR: conditional analysis can only work for dosageFileType vcf, sav or bgen\n")
+      }
+}
     print(dim(dosage_cond))
   }
-
 
 
   #determine minimum MAF for markers to be tested
@@ -254,14 +260,26 @@ if(traitType == "quantitative"){
         }else if(dosageFileType == "bgen"){
           Gx = getGenoOfGene_bgen(bgenFile,bgenFileIndex,marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)          
         }
+        cntMarker = Gx$cnt
 
         G0 = Gx$dosages
-        cntMarker = Gx$cnt
+	print(G0)
 #	cat("markerIDs: ", Gx$markerIDs, "\n")
 #	cat("G0: ", G0, "\n")
         if(cntMarker > 0){
-         Gmat = matrix(G0, byrow=F, ncol = cntMarker)	  
+	if(dosageFileType == "bgen"){
+		Gmat = matrix(G0, byrow=F, ncol = cntMarker)
+		Gmat = as(Gmat, "sparseMatrix") 
+	}else if(dosageFileType == "vcf"){
+		Gmat = Matrix:::sparseMatrix(i = as.vector(Gx$iIndex), j = as.vector(Gx$jIndex), x = as.vector(Gx$dosages), symmetric = FALSE, dims = c(N, Gx$cnt))
+		
+	}else{
+      		stop("ERROR: gene-based tests can only work for dosageFileType vcf, sav or bgen\n")
+    	}
+
+         #Gmat = matrix(G0, byrow=F, ncol = cntMarker)	  
 	 cat("dim(Gmat): ", dim(Gmat), "\n")	
+	 Gmat = as.matrix(Gmat)
 	 #cat("Gmat[,1]: ", Gmat[,1], "\n")	
 	 #cat("colSums(Gmat): ", colSums(Gmat), "\n")
          skatTest = SKAT:::SKAT(Gmat, out.obj, max_maf = 1, method=method, kernel = kernel, weights.beta = weights.beta, r.corr = r.corr, is_check_genotype=FALSE, is_dosage = TRUE)

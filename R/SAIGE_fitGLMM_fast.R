@@ -2271,5 +2271,3 @@ getsubGRM = function(sparseGRMFile=NULL,
 
   }
 }
-
-
