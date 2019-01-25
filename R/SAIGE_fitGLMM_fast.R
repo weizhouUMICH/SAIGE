@@ -1040,7 +1040,9 @@ fitNULLGLMM = function(plinkFile = "",
                                                     sparseGRMSampleIDFile = sparseGRMSampleIDFile,
                                                     numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
                                                     relatednessCutoff = relatednessCutoff,
-                                                    nThreads = nThreads)
+                                                    nThreads = nThreads,
+							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
+                cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude)
     closeGenoFile_plink()
 
   }else if(traitType == "quantitative"){
@@ -1115,7 +1117,9 @@ fitNULLGLMM = function(plinkFile = "",
                 				    sparseGRMSampleIDFile = sparseGRMSampleIDFile,	
 						    numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
 						    relatednessCutoff = relatednessCutoff,
-						    nThreads = nThreads)
+						    nThreads = nThreads,
+							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
+                cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude)
     closeGenoFile_plink()
   }
 }
@@ -1142,7 +1146,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
                                                     sparseGRMSampleIDFile,
                                                     numRandomMarkerforSparseKin,
                                                     relatednessCutoff,
-                                                    nThreads){
+                                                    nThreads,
+							cateVarRatioMinMACVecExclude,
+							cateVarRatioMaxMACVecInclude){
 
 
   if(file.exists(testOut)){file.remove(testOut)}
@@ -1459,7 +1465,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                                                     sparseGRMSampleIDFile,
 						    numRandomMarkerforSparseKin,
                                                     relatednessCutoff,
-						    nThreads){	
+						    nThreads,
+							cateVarRatioMinMACVecExclude,
+                                                        cateVarRatioMaxMACVecInclude){	
 
 
   if(file.exists(testOut)){file.remove(testOut)}
