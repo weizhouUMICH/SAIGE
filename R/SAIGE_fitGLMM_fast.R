@@ -770,7 +770,13 @@ fitNULLGLMM = function(plinkFile = "",
   if(!file.exists(phenoFile)){
     stop("ERROR! phenoFile ", phenoFile, " does not exsit\n")
   }else{
-    ydat = data.table:::fread(phenoFile, header=T, stringsAsFactors=FALSE)
+    #ydat = data.table:::fread(phenoFile, header=T, stringsAsFactors=FALSE)
+    if( grepl(".gz$",phenoFile) | grepl(".bgz$",phenoFile) ) {
+      ydat = data.table:::fread(cmd=paste0("gunzip -c ", phenoFile), header=T, stringsAsFactors=FALSE)
+    } else {
+      ydat = data.table:::fread(phenoFile, header=T, stringsAsFactors=FALSE)
+    }
+
     data = data.frame(ydat)
 
     for(i in c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile)){
