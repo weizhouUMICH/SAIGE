@@ -856,8 +856,7 @@ int setgenoTest_bgenDosage_v2(std::string & filename,
  }
 
 
-
 // [[Rcpp::export]]
 int getSampleSizeinBgen(){
-	return(genoToTest_bgenDosage->number_of_samples());
+        return(numSamples_bgen);
 }
