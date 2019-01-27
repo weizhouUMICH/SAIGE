@@ -1,0 +1,9 @@
+def build( bld ):
+	bld.program(
+		source = bld.path.ant_glob( '*.cpp' ),
+		target = 'test_bgen',
+		use = 'bgen zlib zstd',
+		cxxflags = ['-std=c++11'],
+		includes = './',
+		install_path = None
+	)

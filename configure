@@ -7,5 +7,6 @@ fi
 
 #rm -rf _build
 #rm -rf thirdParty/cget
-cget install -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DUSE_CXX3_ABI=ON --prefix thirdParty/cget -f thirdParty/requirements.txt
+#cget install -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DUSE_CXX3_ABI=ON --prefix thirdParty/cget -f thirdParty/requirements.txt
+cget install -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" --prefix thirdParty/cget -f thirdParty/requirements.txt
 

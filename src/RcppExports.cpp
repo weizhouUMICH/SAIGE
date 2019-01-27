@@ -7,6 +7,62 @@
 
 using namespace Rcpp;
 
+// SetSampleIdx_forGenetest_vcfDosage
+void SetSampleIdx_forGenetest_vcfDosage(std::vector<int> sample_idx, int Ntest);
+RcppExport SEXP _SAIGE_SetSampleIdx_forGenetest_vcfDosage(SEXP sample_idxSEXP, SEXP NtestSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<int> >::type sample_idx(sample_idxSEXP);
+    Rcpp::traits::input_parameter< int >::type Ntest(NtestSEXP);
+    SetSampleIdx_forGenetest_vcfDosage(sample_idx, Ntest);
+    return R_NilValue;
+END_RCPP
+}
+// setMAFcutoffs
+void setMAFcutoffs(float minVal, float maxVal);
+RcppExport SEXP _SAIGE_setMAFcutoffs(SEXP minValSEXP, SEXP maxValSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type minVal(minValSEXP);
+    Rcpp::traits::input_parameter< float >::type maxVal(maxValSEXP);
+    setMAFcutoffs(minVal, maxVal);
+    return R_NilValue;
+END_RCPP
+}
+// setvcfDosageMatrix
+bool setvcfDosageMatrix(const std::string& vcfFileName, const std::string& vcfFileIndex, const std::string& vcfField);
+RcppExport SEXP _SAIGE_setvcfDosageMatrix(SEXP vcfFileNameSEXP, SEXP vcfFileIndexSEXP, SEXP vcfFieldSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type vcfFileName(vcfFileNameSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type vcfFileIndex(vcfFileIndexSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type vcfField(vcfFieldSEXP);
+    rcpp_result_gen = Rcpp::wrap(setvcfDosageMatrix(vcfFileName, vcfFileIndex, vcfField));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getGenoOfGene_vcf
+Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo);
+RcppExport SEXP _SAIGE_getGenoOfGene_vcf(SEXP marker_group_lineSEXP, SEXP minInfoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type marker_group_line(marker_group_lineSEXP);
+    Rcpp::traits::input_parameter< float >::type minInfo(minInfoSEXP);
+    rcpp_result_gen = Rcpp::wrap(getGenoOfGene_vcf(marker_group_line, minInfo));
+    return rcpp_result_gen;
+END_RCPP
+}
+// closevcfDosageFile
+void closevcfDosageFile();
+RcppExport SEXP _SAIGE_closevcfDosageFile() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    closevcfDosageFile();
+    return R_NilValue;
+END_RCPP
+}
 // closeGenoFile_plink
 void closeGenoFile_plink();
 RcppExport SEXP _SAIGE_closeGenoFile_plink() {
@@ -36,6 +92,66 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getMACVec
+arma::ivec getMACVec();
+RcppExport SEXP _SAIGE_getMACVec() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getMACVec());
+    return rcpp_result_gen;
+END_RCPP
+}
+// getSubMarkerIndex
+arma::ivec getSubMarkerIndex();
+RcppExport SEXP _SAIGE_getSubMarkerIndex() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getSubMarkerIndex());
+    return rcpp_result_gen;
+END_RCPP
+}
+// getSubMarkerNum
+int getSubMarkerNum();
+RcppExport SEXP _SAIGE_getSubMarkerNum() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getSubMarkerNum());
+    return rcpp_result_gen;
+END_RCPP
+}
+// getNnomissingOut
+int getNnomissingOut();
+RcppExport SEXP _SAIGE_getNnomissingOut() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getNnomissingOut());
+    return rcpp_result_gen;
+END_RCPP
+}
+// Get_MultiMarkersBySample_StdGeno_Mat
+void Get_MultiMarkersBySample_StdGeno_Mat();
+RcppExport SEXP _SAIGE_Get_MultiMarkersBySample_StdGeno_Mat() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Get_MultiMarkersBySample_StdGeno_Mat();
+    return R_NilValue;
+END_RCPP
+}
+// Get_MultiMarkersBySample_StdGeno
+void Get_MultiMarkersBySample_StdGeno(arma::fvec& markerIndexVec, std::vector<float>& stdGenoMultiMarkers);
+RcppExport SEXP _SAIGE_Get_MultiMarkersBySample_StdGeno(SEXP markerIndexVecSEXP, SEXP stdGenoMultiMarkersSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type markerIndexVec(markerIndexVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<float>& >::type stdGenoMultiMarkers(stdGenoMultiMarkersSEXP);
+    Get_MultiMarkersBySample_StdGeno(markerIndexVec, stdGenoMultiMarkers);
+    return R_NilValue;
+END_RCPP
+}
 // parallelCrossProd
 arma::fvec parallelCrossProd(arma::fcolvec& bVec);
 RcppExport SEXP _SAIGE_parallelCrossProd(SEXP bVecSEXP) {
@@ -44,6 +160,18 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::fcolvec& >::type bVec(bVecSEXP);
     rcpp_result_gen = Rcpp::wrap(parallelCrossProd(bVec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// innerProductFun
+float innerProductFun(std::vector<float>& x, std::vector<float>& y);
+RcppExport SEXP _SAIGE_innerProductFun(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<float>& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< std::vector<float>& >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(innerProductFun(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -56,6 +184,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::fcolvec& >::type bVec(bVecSEXP);
     rcpp_result_gen = Rcpp::wrap(parallelCrossProd_LOCO(bVec));
     return rcpp_result_gen;
+END_RCPP
+}
+// setupSparseGRM
+void setupSparseGRM(int r, arma::umat& locationMatinR, arma::vec& valueVecinR);
+RcppExport SEXP _SAIGE_setupSparseGRM(SEXP rSEXP, SEXP locationMatinRSEXP, SEXP valueVecinRSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type r(rSEXP);
+    Rcpp::traits::input_parameter< arma::umat& >::type locationMatinR(locationMatinRSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type valueVecinR(valueVecinRSEXP);
+    setupSparseGRM(r, locationMatinR, valueVecinR);
+    return R_NilValue;
 END_RCPP
 }
 // getCrossprodMatAndKin
@@ -80,20 +220,60 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// printComb
+void printComb(int N);
+RcppExport SEXP _SAIGE_printComb(SEXP NSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    printComb(N);
+    return R_NilValue;
+END_RCPP
+}
+// findIndiceRelatedSample
+void findIndiceRelatedSample();
+RcppExport SEXP _SAIGE_findIndiceRelatedSample() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    findIndiceRelatedSample();
+    return R_NilValue;
+END_RCPP
+}
+// parallelcalsparseGRM
+void parallelcalsparseGRM(arma::fvec& GRMvec);
+RcppExport SEXP _SAIGE_parallelcalsparseGRM(SEXP GRMvecSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type GRMvec(GRMvecSEXP);
+    parallelcalsparseGRM(GRMvec);
+    return R_NilValue;
+END_RCPP
+}
+// parallelsumTwoVec
+void parallelsumTwoVec(arma::fvec& x);
+RcppExport SEXP _SAIGE_parallelsumTwoVec(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type x(xSEXP);
+    parallelsumTwoVec(x);
+    return R_NilValue;
+END_RCPP
+}
 // setgeno
-void setgeno(std::string genofile, std::vector<int>& subSampleInGeno, float memoryChunk);
-RcppExport SEXP _SAIGE_setgeno(SEXP genofileSEXP, SEXP subSampleInGenoSEXP, SEXP memoryChunkSEXP) {
+void setgeno(std::string genofile, std::vector<int>& subSampleInGeno, float memoryChunk, bool isDiagofKinSetAsOne);
+RcppExport SEXP _SAIGE_setgeno(SEXP genofileSEXP, SEXP subSampleInGenoSEXP, SEXP memoryChunkSEXP, SEXP isDiagofKinSetAsOneSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type genofile(genofileSEXP);
     Rcpp::traits::input_parameter< std::vector<int>& >::type subSampleInGeno(subSampleInGenoSEXP);
     Rcpp::traits::input_parameter< float >::type memoryChunk(memoryChunkSEXP);
-    setgeno(genofile, subSampleInGeno, memoryChunk);
+    Rcpp::traits::input_parameter< bool >::type isDiagofKinSetAsOne(isDiagofKinSetAsOneSEXP);
+    setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne);
     return R_NilValue;
 END_RCPP
 }
 // Get_OneSNP_Geno
-arma::fvec Get_OneSNP_Geno(int SNPIdx);
+arma::ivec Get_OneSNP_Geno(int SNPIdx);
 RcppExport SEXP _SAIGE_Get_OneSNP_Geno(SEXP SNPIdxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -104,7 +284,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // Get_OneSNP_Geno_forVarianceRatio
-arma::fvec Get_OneSNP_Geno_forVarianceRatio(int SNPIdx);
+arma::ivec Get_OneSNP_Geno_forVarianceRatio(int SNPIdx);
 RcppExport SEXP _SAIGE_Get_OneSNP_Geno_forVarianceRatio(SEXP SNPIdxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -175,6 +355,72 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gen_sp_GRM
+arma::sp_mat gen_sp_GRM();
+RcppExport SEXP _SAIGE_gen_sp_GRM() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(gen_sp_GRM());
+    return rcpp_result_gen;
+END_RCPP
+}
+// gen_sp_Sigma
+arma::sp_mat gen_sp_Sigma(arma::fvec& wVec, arma::fvec& tauVec);
+RcppExport SEXP _SAIGE_gen_sp_Sigma(SEXP wVecSEXP, SEXP tauVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(gen_sp_Sigma(wVec, tauVec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gen_spsolve_v3
+arma::vec gen_spsolve_v3(arma::vec& yvec);
+RcppExport SEXP _SAIGE_gen_spsolve_v3(SEXP yvecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec& >::type yvec(yvecSEXP);
+    rcpp_result_gen = Rcpp::wrap(gen_spsolve_v3(yvec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gen_spsolve_v4
+arma::fvec gen_spsolve_v4(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& yvec);
+RcppExport SEXP _SAIGE_gen_spsolve_v4(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP yvecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type yvec(yvecSEXP);
+    rcpp_result_gen = Rcpp::wrap(gen_spsolve_v4(wVec, tauVec, yvec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// setisUsePrecondM
+void setisUsePrecondM(bool isUseSparseSigmaforPCG);
+RcppExport SEXP _SAIGE_setisUsePrecondM(SEXP isUseSparseSigmaforPCGSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type isUseSparseSigmaforPCG(isUseSparseSigmaforPCGSEXP);
+    setisUsePrecondM(isUseSparseSigmaforPCG);
+    return R_NilValue;
+END_RCPP
+}
+// setisUseSparseSigmaforInitTau
+void setisUseSparseSigmaforInitTau(bool isUseSparseSigmaforInitTau0);
+RcppExport SEXP _SAIGE_setisUseSparseSigmaforInitTau(SEXP isUseSparseSigmaforInitTau0SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type isUseSparseSigmaforInitTau0(isUseSparseSigmaforInitTau0SEXP);
+    setisUseSparseSigmaforInitTau(isUseSparseSigmaforInitTau0);
+    return R_NilValue;
+END_RCPP
+}
 // getPCG1ofSigmaAndVector
 arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& bVec, int maxiterPCG, float tolPCG);
 RcppExport SEXP _SAIGE_getPCG1ofSigmaAndVector(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP bVecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
@@ -187,6 +433,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
     Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
     rcpp_result_gen = Rcpp::wrap(getPCG1ofSigmaAndVector(wVec, tauVec, bVec, maxiterPCG, tolPCG));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getPCG1ofSigmaAndVector_old
+arma::fvec getPCG1ofSigmaAndVector_old(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& bVec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getPCG1ofSigmaAndVector_old(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP bVecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type bVec(bVecSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
+    Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
+    rcpp_result_gen = Rcpp::wrap(getPCG1ofSigmaAndVector_old(wVec, tauVec, bVec, maxiterPCG, tolPCG));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -438,8 +699,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // getAIScore_q
-Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec, arma::fvec& tauVec, int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff);
-RcppExport SEXP _SAIGE_getAIScore_q(SEXP YvecSEXP, SEXP XmatSEXP, SEXP wVecSEXP, SEXP tauVecSEXP, SEXP nrunSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP, SEXP traceCVcutoffSEXP) {
+Rcpp::List getAIScore_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& Sigma_iY, arma::fmat& Sigma_iX, arma::fmat& cov, int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff);
+RcppExport SEXP _SAIGE_getAIScore_q(SEXP YvecSEXP, SEXP XmatSEXP, SEXP wVecSEXP, SEXP tauVecSEXP, SEXP Sigma_iYSEXP, SEXP Sigma_iXSEXP, SEXP covSEXP, SEXP nrunSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP, SEXP traceCVcutoffSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -447,11 +708,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::fmat& >::type Xmat(XmatSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Sigma_iY(Sigma_iYSEXP);
+    Rcpp::traits::input_parameter< arma::fmat& >::type Sigma_iX(Sigma_iXSEXP);
+    Rcpp::traits::input_parameter< arma::fmat& >::type cov(covSEXP);
     Rcpp::traits::input_parameter< int >::type nrun(nrunSEXP);
     Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
     Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
     Rcpp::traits::input_parameter< float >::type traceCVcutoff(traceCVcutoffSEXP);
-    rcpp_result_gen = Rcpp::wrap(getAIScore_q(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, traceCVcutoff));
+    rcpp_result_gen = Rcpp::wrap(getAIScore_q(Yvec, Xmat, wVec, tauVec, Sigma_iY, Sigma_iX, cov, nrun, maxiterPCG, tolPCG, traceCVcutoff));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -493,8 +757,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // fitglmmaiRPCG_q
-Rcpp::List fitglmmaiRPCG_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec, arma::fvec& tauVec, int nrun, int maxiterPCG, float tolPCG, float tol, float traceCVcutoff);
-RcppExport SEXP _SAIGE_fitglmmaiRPCG_q(SEXP YvecSEXP, SEXP XmatSEXP, SEXP wVecSEXP, SEXP tauVecSEXP, SEXP nrunSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP, SEXP tolSEXP, SEXP traceCVcutoffSEXP) {
+Rcpp::List fitglmmaiRPCG_q(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& Sigma_iY, arma::fmat& Sigma_iX, arma::fmat& cov, int nrun, int maxiterPCG, float tolPCG, float tol, float traceCVcutoff);
+RcppExport SEXP _SAIGE_fitglmmaiRPCG_q(SEXP YvecSEXP, SEXP XmatSEXP, SEXP wVecSEXP, SEXP tauVecSEXP, SEXP Sigma_iYSEXP, SEXP Sigma_iXSEXP, SEXP covSEXP, SEXP nrunSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP, SEXP tolSEXP, SEXP traceCVcutoffSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -502,12 +766,314 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::fmat& >::type Xmat(XmatSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Sigma_iY(Sigma_iYSEXP);
+    Rcpp::traits::input_parameter< arma::fmat& >::type Sigma_iX(Sigma_iXSEXP);
+    Rcpp::traits::input_parameter< arma::fmat& >::type cov(covSEXP);
     Rcpp::traits::input_parameter< int >::type nrun(nrunSEXP);
     Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
     Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
     Rcpp::traits::input_parameter< float >::type tol(tolSEXP);
     Rcpp::traits::input_parameter< float >::type traceCVcutoff(traceCVcutoffSEXP);
-    rcpp_result_gen = Rcpp::wrap(fitglmmaiRPCG_q(Yvec, Xmat, wVec, tauVec, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff));
+    rcpp_result_gen = Rcpp::wrap(fitglmmaiRPCG_q(Yvec, Xmat, wVec, tauVec, Sigma_iY, Sigma_iX, cov, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff));
+    return rcpp_result_gen;
+END_RCPP
+}
+// parallelCrossProd_usingSubMarker
+arma::fvec parallelCrossProd_usingSubMarker(arma::fcolvec& bVec);
+RcppExport SEXP _SAIGE_parallelCrossProd_usingSubMarker(SEXP bVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fcolvec& >::type bVec(bVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(parallelCrossProd_usingSubMarker(bVec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getCrossprodMatAndKin_usingSubMarker
+arma::fvec getCrossprodMatAndKin_usingSubMarker(arma::fcolvec& bVec);
+RcppExport SEXP _SAIGE_getCrossprodMatAndKin_usingSubMarker(SEXP bVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fcolvec& >::type bVec(bVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(getCrossprodMatAndKin_usingSubMarker(bVec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// parallelInnerProduct
+float parallelInnerProduct(std::vector<float>& x, std::vector<float>& y);
+RcppExport SEXP _SAIGE_parallelInnerProduct(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<float>& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< std::vector<float>& >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(parallelInnerProduct(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// calGRMValueforSamplePair
+float calGRMValueforSamplePair(arma::ivec& sampleidsVec);
+RcppExport SEXP _SAIGE_calGRMValueforSamplePair(SEXP sampleidsVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::ivec& >::type sampleidsVec(sampleidsVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(calGRMValueforSamplePair(sampleidsVec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// createSparseKin
+Rcpp::List createSparseKin(arma::fvec& markerIndexVec, float relatednessCutoff, arma::fvec& wVec, arma::fvec& tauVec);
+RcppExport SEXP _SAIGE_createSparseKin(SEXP markerIndexVecSEXP, SEXP relatednessCutoffSEXP, SEXP wVecSEXP, SEXP tauVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type markerIndexVec(markerIndexVecSEXP);
+    Rcpp::traits::input_parameter< float >::type relatednessCutoff(relatednessCutoffSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(createSparseKin(markerIndexVec, relatednessCutoff, wVec, tauVec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getColfromStdGenoMultiMarkersMat
+arma::fmat getColfromStdGenoMultiMarkersMat(arma::uvec& a);
+RcppExport SEXP _SAIGE_getColfromStdGenoMultiMarkersMat(SEXP aSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::uvec& >::type a(aSEXP);
+    rcpp_result_gen = Rcpp::wrap(getColfromStdGenoMultiMarkersMat(a));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getNColStdGenoMultiMarkersMat
+int getNColStdGenoMultiMarkersMat();
+RcppExport SEXP _SAIGE_getNColStdGenoMultiMarkersMat() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getNColStdGenoMultiMarkersMat());
+    return rcpp_result_gen;
+END_RCPP
+}
+// getNRowStdGenoMultiMarkersMat
+int getNRowStdGenoMultiMarkersMat();
+RcppExport SEXP _SAIGE_getNRowStdGenoMultiMarkersMat() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getNRowStdGenoMultiMarkersMat());
+    return rcpp_result_gen;
+END_RCPP
+}
+// setSubMarkerIndex
+void setSubMarkerIndex(arma::ivec& subMarkerIndexRandom);
+RcppExport SEXP _SAIGE_setSubMarkerIndex(SEXP subMarkerIndexRandomSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::ivec& >::type subMarkerIndexRandom(subMarkerIndexRandomSEXP);
+    setSubMarkerIndex(subMarkerIndexRandom);
+    return R_NilValue;
+END_RCPP
+}
+// setRelatednessCutoff
+void setRelatednessCutoff(float a);
+RcppExport SEXP _SAIGE_setRelatednessCutoff(SEXP aSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type a(aSEXP);
+    setRelatednessCutoff(a);
+    return R_NilValue;
+END_RCPP
+}
+// innerProduct
+double innerProduct(NumericVector x, NumericVector y);
+RcppExport SEXP _SAIGE_innerProduct(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(innerProduct(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// refineKin
+Rcpp::List refineKin(float relatednessCutoff);
+RcppExport SEXP _SAIGE_refineKin(SEXP relatednessCutoffSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type relatednessCutoff(relatednessCutoffSEXP);
+    rcpp_result_gen = Rcpp::wrap(refineKin(relatednessCutoff));
+    return rcpp_result_gen;
+END_RCPP
+}
+// shortenList
+Rcpp::List shortenList(arma::imat& iMat, arma::fvec& kinValueVecTemp, float relatednessCutoff, arma::fvec& wVec, arma::fvec& tauVec);
+RcppExport SEXP _SAIGE_shortenList(SEXP iMatSEXP, SEXP kinValueVecTempSEXP, SEXP relatednessCutoffSEXP, SEXP wVecSEXP, SEXP tauVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::imat& >::type iMat(iMatSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type kinValueVecTemp(kinValueVecTempSEXP);
+    Rcpp::traits::input_parameter< float >::type relatednessCutoff(relatednessCutoffSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(shortenList(iMat, kinValueVecTemp, relatednessCutoff, wVec, tauVec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// testTime
+arma::fvec testTime(int i, arma::fcolvec& m_bVec);
+RcppExport SEXP _SAIGE_testTime(SEXP iSEXP, SEXP m_bVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< arma::fcolvec& >::type m_bVec(m_bVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(testTime(i, m_bVec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gen_sp_v2
+arma::sp_mat gen_sp_v2(const arma::sp_mat& a);
+RcppExport SEXP _SAIGE_gen_sp_v2(SEXP aSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type a(aSEXP);
+    rcpp_result_gen = Rcpp::wrap(gen_sp_v2(a));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gen_spsolve_v2
+arma::vec gen_spsolve_v2(const arma::sp_mat& a);
+RcppExport SEXP _SAIGE_gen_spsolve_v2(SEXP aSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type a(aSEXP);
+    rcpp_result_gen = Rcpp::wrap(gen_spsolve_v2(a));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gen_spsolve_inR
+arma::vec gen_spsolve_inR(const arma::sp_mat& a, arma::vec& y);
+RcppExport SEXP _SAIGE_gen_spsolve_inR(SEXP aSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(gen_spsolve_inR(a, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_DiagofKin
+arma::fvec get_DiagofKin();
+RcppExport SEXP _SAIGE_get_DiagofKin() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(get_DiagofKin());
+    return rcpp_result_gen;
+END_RCPP
+}
+// getstdgenoVectorScalorProduct
+void getstdgenoVectorScalorProduct(int jth, float y, arma::fvec& prodVec);
+RcppExport SEXP _SAIGE_getstdgenoVectorScalorProduct(SEXP jthSEXP, SEXP ySEXP, SEXP prodVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type jth(jthSEXP);
+    Rcpp::traits::input_parameter< float >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type prodVec(prodVecSEXP);
+    getstdgenoVectorScalorProduct(jth, y, prodVec);
+    return R_NilValue;
+END_RCPP
+}
+// sumPz
+void sumPz(arma::fvec& Pbvec, arma::fvec& Ubvec, unsigned int mmchunksize);
+RcppExport SEXP _SAIGE_sumPz(SEXP PbvecSEXP, SEXP UbvecSEXP, SEXP mmchunksizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type Pbvec(PbvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Ubvec(UbvecSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type mmchunksize(mmchunksizeSEXP);
+    sumPz(Pbvec, Ubvec, mmchunksize);
+    return R_NilValue;
+END_RCPP
+}
+// mmGetPb_MbyN
+void mmGetPb_MbyN(unsigned int cthchunk, unsigned int mmchunksize, arma::fvec& bvec, arma::fvec& Pbvec, arma::fvec& kinbvec);
+RcppExport SEXP _SAIGE_mmGetPb_MbyN(SEXP cthchunkSEXP, SEXP mmchunksizeSEXP, SEXP bvecSEXP, SEXP PbvecSEXP, SEXP kinbvecSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type cthchunk(cthchunkSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type mmchunksize(mmchunksizeSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type bvec(bvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Pbvec(PbvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type kinbvec(kinbvecSEXP);
+    mmGetPb_MbyN(cthchunk, mmchunksize, bvec, Pbvec, kinbvec);
+    return R_NilValue;
+END_RCPP
+}
+// mmGetPb_NbyM
+void mmGetPb_NbyM(unsigned int cthchunk, unsigned int mmchunksize, arma::fvec& bvec, arma::fvec& Pbvec);
+RcppExport SEXP _SAIGE_mmGetPb_NbyM(SEXP cthchunkSEXP, SEXP mmchunksizeSEXP, SEXP bvecSEXP, SEXP PbvecSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type cthchunk(cthchunkSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type mmchunksize(mmchunksizeSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type bvec(bvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Pbvec(PbvecSEXP);
+    mmGetPb_NbyM(cthchunk, mmchunksize, bvec, Pbvec);
+    return R_NilValue;
+END_RCPP
+}
+// muliplyMailman
+void muliplyMailman(arma::fvec& bvec, arma::fvec& Gbvec, arma::fvec& kinbvec);
+RcppExport SEXP _SAIGE_muliplyMailman(SEXP bvecSEXP, SEXP GbvecSEXP, SEXP kinbvecSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type bvec(bvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Gbvec(GbvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type kinbvec(kinbvecSEXP);
+    muliplyMailman(bvec, Gbvec, kinbvec);
+    return R_NilValue;
+END_RCPP
+}
+// muliplyMailman_NbyM
+void muliplyMailman_NbyM(arma::fvec& bvec, arma::fvec& tGbvec);
+RcppExport SEXP _SAIGE_muliplyMailman_NbyM(SEXP bvecSEXP, SEXP tGbvecSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type bvec(bvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tGbvec(tGbvecSEXP);
+    muliplyMailman_NbyM(bvec, tGbvec);
+    return R_NilValue;
+END_RCPP
+}
+// freqOverStd
+void freqOverStd(arma::fcolvec& freqOverStdVec);
+RcppExport SEXP _SAIGE_freqOverStd(SEXP freqOverStdVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fcolvec& >::type freqOverStdVec(freqOverStdVecSEXP);
+    freqOverStd(freqOverStdVec);
+    return R_NilValue;
+END_RCPP
+}
+// getCrossprodMatAndKin_mailman
+arma::fvec getCrossprodMatAndKin_mailman(arma::fcolvec& bVec);
+RcppExport SEXP _SAIGE_getCrossprodMatAndKin_mailman(SEXP bVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fcolvec& >::type bVec(bVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(getCrossprodMatAndKin_mailman(bVec));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -616,6 +1182,22 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     closetestGenoFile_bgenDosage();
     return R_NilValue;
+END_RCPP
+}
+// setgenoTest_bgenDosage_v2
+int setgenoTest_bgenDosage_v2(std::string& filename, std::string& index_filename, Rcpp::DataFrame& ranges_to_include, Rcpp::DataFrame& ranges_to_exclude, std::vector< std::string > const& ids_to_include, std::vector< std::string > const& ids_to_exclude);
+RcppExport SEXP _SAIGE_setgenoTest_bgenDosage_v2(SEXP filenameSEXP, SEXP index_filenameSEXP, SEXP ranges_to_includeSEXP, SEXP ranges_to_excludeSEXP, SEXP ids_to_includeSEXP, SEXP ids_to_excludeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string& >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< std::string& >::type index_filename(index_filenameSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_include(ranges_to_includeSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_exclude(ranges_to_excludeSEXP);
+    Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_include(ids_to_includeSEXP);
+    Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_exclude(ids_to_excludeSEXP);
+    rcpp_result_gen = Rcpp::wrap(setgenoTest_bgenDosage_v2(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude));
+    return rcpp_result_gen;
 END_RCPP
 }
 // getSampleSizeinBgen
@@ -794,30 +1376,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// innerProduct
-double innerProduct(NumericVector x, NumericVector y);
-RcppExport SEXP _SAIGE_innerProduct(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(innerProduct(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// parallelInnerProduct
-double parallelInnerProduct(NumericVector x, NumericVector y);
-RcppExport SEXP _SAIGE_parallelInnerProduct(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(parallelInnerProduct(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
 // eigenMapMatMult
 SEXP eigenMapMatMult(const Eigen::Map<Eigen::MatrixXd>& A, Eigen::Map<Eigen::MatrixXd>& B);
 RcppExport SEXP _SAIGE_eigenMapMatMult(SEXP ASEXP, SEXP BSEXP) {
@@ -830,16 +1388,80 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mult_sp_sp_to_sp
+arma::sp_mat mult_sp_sp_to_sp(const arma::sp_mat& a, const arma::sp_mat& b);
+RcppExport SEXP _SAIGE_mult_sp_sp_to_sp(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(mult_sp_sp_to_sp(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mult_sp_den_to_sp
+arma::sp_mat mult_sp_den_to_sp(const arma::sp_mat& a, const arma::mat& b);
+RcppExport SEXP _SAIGE_mult_sp_den_to_sp(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(mult_sp_den_to_sp(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mult_den_sp_to_sp
+arma::sp_mat mult_den_sp_to_sp(const arma::mat& a, const arma::sp_mat& b);
+RcppExport SEXP _SAIGE_mult_den_sp_to_sp(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(mult_den_sp_to_sp(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gen_sp
+arma::sp_mat gen_sp(const arma::sp_mat& a);
+RcppExport SEXP _SAIGE_gen_sp(SEXP aSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type a(aSEXP);
+    rcpp_result_gen = Rcpp::wrap(gen_sp(a));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_SAIGE_SetSampleIdx_forGenetest_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_forGenetest_vcfDosage, 2},
+    {"_SAIGE_setMAFcutoffs", (DL_FUNC) &_SAIGE_setMAFcutoffs, 2},
+    {"_SAIGE_setvcfDosageMatrix", (DL_FUNC) &_SAIGE_setvcfDosageMatrix, 3},
+    {"_SAIGE_getGenoOfGene_vcf", (DL_FUNC) &_SAIGE_getGenoOfGene_vcf, 2},
+    {"_SAIGE_closevcfDosageFile", (DL_FUNC) &_SAIGE_closevcfDosageFile, 0},
     {"_SAIGE_closeGenoFile_plink", (DL_FUNC) &_SAIGE_closeGenoFile_plink, 0},
     {"_SAIGE_gettotalMarker", (DL_FUNC) &_SAIGE_gettotalMarker, 0},
     {"_SAIGE_getAlleleFreqVec", (DL_FUNC) &_SAIGE_getAlleleFreqVec, 0},
+    {"_SAIGE_getMACVec", (DL_FUNC) &_SAIGE_getMACVec, 0},
+    {"_SAIGE_getSubMarkerIndex", (DL_FUNC) &_SAIGE_getSubMarkerIndex, 0},
+    {"_SAIGE_getSubMarkerNum", (DL_FUNC) &_SAIGE_getSubMarkerNum, 0},
+    {"_SAIGE_getNnomissingOut", (DL_FUNC) &_SAIGE_getNnomissingOut, 0},
+    {"_SAIGE_Get_MultiMarkersBySample_StdGeno_Mat", (DL_FUNC) &_SAIGE_Get_MultiMarkersBySample_StdGeno_Mat, 0},
+    {"_SAIGE_Get_MultiMarkersBySample_StdGeno", (DL_FUNC) &_SAIGE_Get_MultiMarkersBySample_StdGeno, 2},
     {"_SAIGE_parallelCrossProd", (DL_FUNC) &_SAIGE_parallelCrossProd, 1},
+    {"_SAIGE_innerProductFun", (DL_FUNC) &_SAIGE_innerProductFun, 2},
     {"_SAIGE_parallelCrossProd_LOCO", (DL_FUNC) &_SAIGE_parallelCrossProd_LOCO, 1},
+    {"_SAIGE_setupSparseGRM", (DL_FUNC) &_SAIGE_setupSparseGRM, 3},
     {"_SAIGE_getCrossprodMatAndKin", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin, 1},
     {"_SAIGE_getCrossprodMatAndKin_LOCO", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin_LOCO, 1},
-    {"_SAIGE_setgeno", (DL_FUNC) &_SAIGE_setgeno, 3},
+    {"_SAIGE_printComb", (DL_FUNC) &_SAIGE_printComb, 1},
+    {"_SAIGE_findIndiceRelatedSample", (DL_FUNC) &_SAIGE_findIndiceRelatedSample, 0},
+    {"_SAIGE_parallelcalsparseGRM", (DL_FUNC) &_SAIGE_parallelcalsparseGRM, 1},
+    {"_SAIGE_parallelsumTwoVec", (DL_FUNC) &_SAIGE_parallelsumTwoVec, 1},
+    {"_SAIGE_setgeno", (DL_FUNC) &_SAIGE_setgeno, 4},
     {"_SAIGE_Get_OneSNP_Geno", (DL_FUNC) &_SAIGE_Get_OneSNP_Geno, 1},
     {"_SAIGE_Get_OneSNP_Geno_forVarianceRatio", (DL_FUNC) &_SAIGE_Get_OneSNP_Geno_forVarianceRatio, 1},
     {"_SAIGE_Get_OneSNP_StdGeno", (DL_FUNC) &_SAIGE_Get_OneSNP_StdGeno, 1},
@@ -847,7 +1469,14 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getDiagOfSigma_LOCO", (DL_FUNC) &_SAIGE_getDiagOfSigma_LOCO, 2},
     {"_SAIGE_getCrossprod", (DL_FUNC) &_SAIGE_getCrossprod, 3},
     {"_SAIGE_getCrossprod_LOCO", (DL_FUNC) &_SAIGE_getCrossprod_LOCO, 3},
+    {"_SAIGE_gen_sp_GRM", (DL_FUNC) &_SAIGE_gen_sp_GRM, 0},
+    {"_SAIGE_gen_sp_Sigma", (DL_FUNC) &_SAIGE_gen_sp_Sigma, 2},
+    {"_SAIGE_gen_spsolve_v3", (DL_FUNC) &_SAIGE_gen_spsolve_v3, 1},
+    {"_SAIGE_gen_spsolve_v4", (DL_FUNC) &_SAIGE_gen_spsolve_v4, 3},
+    {"_SAIGE_setisUsePrecondM", (DL_FUNC) &_SAIGE_setisUsePrecondM, 1},
+    {"_SAIGE_setisUseSparseSigmaforInitTau", (DL_FUNC) &_SAIGE_setisUseSparseSigmaforInitTau, 1},
     {"_SAIGE_getPCG1ofSigmaAndVector", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector, 5},
+    {"_SAIGE_getPCG1ofSigmaAndVector_old", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_old, 5},
     {"_SAIGE_getPCG1ofSigmaAndVector_LOCO", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_LOCO, 5},
     {"_SAIGE_set_seed", (DL_FUNC) &_SAIGE_set_seed, 1},
     {"_SAIGE_nb", (DL_FUNC) &_SAIGE_nb, 1},
@@ -864,10 +1493,36 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getSigma_G", (DL_FUNC) &_SAIGE_getSigma_G, 5},
     {"_SAIGE_getSigma_G_LOCO", (DL_FUNC) &_SAIGE_getSigma_G_LOCO, 5},
     {"_SAIGE_GetTrace_q", (DL_FUNC) &_SAIGE_GetTrace_q, 9},
-    {"_SAIGE_getAIScore_q", (DL_FUNC) &_SAIGE_getAIScore_q, 8},
+    {"_SAIGE_getAIScore_q", (DL_FUNC) &_SAIGE_getAIScore_q, 11},
     {"_SAIGE_getAIScore_q_LOCO", (DL_FUNC) &_SAIGE_getAIScore_q_LOCO, 8},
     {"_SAIGE_fitglmmaiRPCG_q_LOCO", (DL_FUNC) &_SAIGE_fitglmmaiRPCG_q_LOCO, 9},
-    {"_SAIGE_fitglmmaiRPCG_q", (DL_FUNC) &_SAIGE_fitglmmaiRPCG_q, 9},
+    {"_SAIGE_fitglmmaiRPCG_q", (DL_FUNC) &_SAIGE_fitglmmaiRPCG_q, 12},
+    {"_SAIGE_parallelCrossProd_usingSubMarker", (DL_FUNC) &_SAIGE_parallelCrossProd_usingSubMarker, 1},
+    {"_SAIGE_getCrossprodMatAndKin_usingSubMarker", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin_usingSubMarker, 1},
+    {"_SAIGE_parallelInnerProduct", (DL_FUNC) &_SAIGE_parallelInnerProduct, 2},
+    {"_SAIGE_calGRMValueforSamplePair", (DL_FUNC) &_SAIGE_calGRMValueforSamplePair, 1},
+    {"_SAIGE_createSparseKin", (DL_FUNC) &_SAIGE_createSparseKin, 4},
+    {"_SAIGE_getColfromStdGenoMultiMarkersMat", (DL_FUNC) &_SAIGE_getColfromStdGenoMultiMarkersMat, 1},
+    {"_SAIGE_getNColStdGenoMultiMarkersMat", (DL_FUNC) &_SAIGE_getNColStdGenoMultiMarkersMat, 0},
+    {"_SAIGE_getNRowStdGenoMultiMarkersMat", (DL_FUNC) &_SAIGE_getNRowStdGenoMultiMarkersMat, 0},
+    {"_SAIGE_setSubMarkerIndex", (DL_FUNC) &_SAIGE_setSubMarkerIndex, 1},
+    {"_SAIGE_setRelatednessCutoff", (DL_FUNC) &_SAIGE_setRelatednessCutoff, 1},
+    {"_SAIGE_innerProduct", (DL_FUNC) &_SAIGE_innerProduct, 2},
+    {"_SAIGE_refineKin", (DL_FUNC) &_SAIGE_refineKin, 1},
+    {"_SAIGE_shortenList", (DL_FUNC) &_SAIGE_shortenList, 5},
+    {"_SAIGE_testTime", (DL_FUNC) &_SAIGE_testTime, 2},
+    {"_SAIGE_gen_sp_v2", (DL_FUNC) &_SAIGE_gen_sp_v2, 1},
+    {"_SAIGE_gen_spsolve_v2", (DL_FUNC) &_SAIGE_gen_spsolve_v2, 1},
+    {"_SAIGE_gen_spsolve_inR", (DL_FUNC) &_SAIGE_gen_spsolve_inR, 2},
+    {"_SAIGE_get_DiagofKin", (DL_FUNC) &_SAIGE_get_DiagofKin, 0},
+    {"_SAIGE_getstdgenoVectorScalorProduct", (DL_FUNC) &_SAIGE_getstdgenoVectorScalorProduct, 3},
+    {"_SAIGE_sumPz", (DL_FUNC) &_SAIGE_sumPz, 3},
+    {"_SAIGE_mmGetPb_MbyN", (DL_FUNC) &_SAIGE_mmGetPb_MbyN, 5},
+    {"_SAIGE_mmGetPb_NbyM", (DL_FUNC) &_SAIGE_mmGetPb_NbyM, 4},
+    {"_SAIGE_muliplyMailman", (DL_FUNC) &_SAIGE_muliplyMailman, 3},
+    {"_SAIGE_muliplyMailman_NbyM", (DL_FUNC) &_SAIGE_muliplyMailman_NbyM, 2},
+    {"_SAIGE_freqOverStd", (DL_FUNC) &_SAIGE_freqOverStd, 1},
+    {"_SAIGE_getCrossprodMatAndKin_mailman", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin_mailman, 1},
     {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 6},
     {"_SAIGE_getDosage_inner_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery, 0},
     {"_SAIGE_getDosage_inner_bgen_withquery_new", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery_new, 0},
@@ -878,6 +1533,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getMarkerInfo", (DL_FUNC) &_SAIGE_getMarkerInfo, 0},
     {"_SAIGE_SetSampleIdx", (DL_FUNC) &_SAIGE_SetSampleIdx, 2},
     {"_SAIGE_closetestGenoFile_bgenDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_bgenDosage, 0},
+    {"_SAIGE_setgenoTest_bgenDosage_v2", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage_v2, 6},
     {"_SAIGE_getSampleSizeinBgen", (DL_FUNC) &_SAIGE_getSampleSizeinBgen, 0},
     {"_SAIGE_setgenoTest_plainDosage", (DL_FUNC) &_SAIGE_setgenoTest_plainDosage, 3},
     {"_SAIGE_closetestGenoFile_plainDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_plainDosage, 0},
@@ -894,9 +1550,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getGenoOfnthVar_vcfDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage, 1},
     {"_SAIGE_closetestGenoFile_vcfDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_vcfDosage, 0},
     {"_SAIGE_getSampleSizeinVCF", (DL_FUNC) &_SAIGE_getSampleSizeinVCF, 0},
-    {"_SAIGE_innerProduct", (DL_FUNC) &_SAIGE_innerProduct, 2},
-    {"_SAIGE_parallelInnerProduct", (DL_FUNC) &_SAIGE_parallelInnerProduct, 2},
     {"_SAIGE_eigenMapMatMult", (DL_FUNC) &_SAIGE_eigenMapMatMult, 2},
+    {"_SAIGE_mult_sp_sp_to_sp", (DL_FUNC) &_SAIGE_mult_sp_sp_to_sp, 2},
+    {"_SAIGE_mult_sp_den_to_sp", (DL_FUNC) &_SAIGE_mult_sp_den_to_sp, 2},
+    {"_SAIGE_mult_den_sp_to_sp", (DL_FUNC) &_SAIGE_mult_den_sp_to_sp, 2},
+    {"_SAIGE_gen_sp", (DL_FUNC) &_SAIGE_gen_sp, 1},
     {NULL, NULL, 0}
 };
 

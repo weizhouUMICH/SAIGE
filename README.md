@@ -17,7 +17,8 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.29.4.4(for R 3.5.1)
+
+## THIS BRANCH IS UNVER DEVELOPMENT (Current version is 0.35.6)
 
 SAIGE is an R package that implements the Scalable and Accurate Implementation of Generalized mixed model that uses the saddlepoint approximation (SPA)(mhof, J. P. , 1961; Kuonen, D. 1999; Dey, R. et.al 2017) 
 and large scale optimization techniques to calibrate case-control ratios in logistic mixed model score tests
@@ -28,7 +29,8 @@ SAIGE can take dosage files in bgen, plain text (gzipped file is supported), or 
 *This R package is still under development
 
 # Citation
-The SAIGE manuscript can be found in the bioRxiv https://www.biorxiv.org/content/early/2017/11/01/212357.article-metrics
+The SAIGE manuscript:
+Wei Zhou, Jonas B. Nielsen, Lars G. Fritsche, Maiken B. Elvestad, Brooke Wolford, Maoxuan Lin, Kristian Hveem, Hyun Min Kang, Goncalo R. Abecasis, Cristen J. Willer*, Seunggeun Lee* “Efficiently controlling for case-control imbalance and sample relatedness in large-scale genetic association studies.” Nature Genetics 50, 1335–1341 (2018)
 
 # Installation
 
@@ -46,20 +48,23 @@ Previous versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl/AADFqdssvO
 
 # Log for fixing bugs
 
-* 0.29.5 (Add script to check if the sample size in the provided sample file is the same as the sample size in the dosage file for step 2)
-* 0.29.4.4 (break the loop for model fitting when tau 2 is 0 for quantitative traits, solve the issue for the symlinks of the savvy library)
+* 0.35.6 merge in 0.29.5 from master
+
+* 0.35.5 (fix a bug for updating predicted values in the model fit for binary traits. Added a function to create a sparse GRM only for a data set)
+
+* 0.35.3 (this is a clean version for single-variance assoc tests, gene-based tests, and conditional analysis)
+
+* 0.35.2.3 (this version works with the conditonal analysis and gene-based tests)
+
 * 0.29.4.2 (this version works with R-3.5.1)
-* 0.29.4 (this version works with R-3.4.4)
-  update SAIGE as a bug for reading vcf and sav files was fixed in the savvy library
- 
-* 0.29.3.2
-  this version works with R-3.5.1
 
-* 0.29.3:
-  update SAIGE step 1 to use the updated R libary SPAtest 3.0.0
+* 0.29.4 (this version works with R-3.4.4) update SAIGE as a bug for reading vcf and sav files was fixed in the savvy library
 
-* 0.29.2:
-  update SAIGE to use the updated R library SPAtest 3.0.0
+* 0.29.3.2 this version works with R-3.5.1
+
+* 0.29.3: update SAIGE step 1 to use the updated R libary SPAtest 3.0.0
+
+* 0.29.2: update SAIGE to use the updated R library SPAtest 3.0.0
 
 * 0.29:
 ```
@@ -85,11 +90,10 @@ SAIGE contains 2 main steps:
 
 1. Fitting the null logistic mixed model to estiamte variance component and other model parameters
 
-    Run the **fitNULLGLMM** function for step 1
+        Run the **fitNULLGLMM** function for step 1
     
 2. Testing for association between each genetic variant and phenotypes by applyting SPA to the score test
-    
-    Run the **SPAGMMATtest** function for step 2
+        Run the **SPAGMMATtest** function for step 2
     
 ## Examples
 
@@ -99,18 +103,20 @@ Examplary data and script can be found in ./extdata. Run
 
 to run the 2 steps. 
 
+### For gene-based tests, categotical variance ratios (--isCateVarianceRatio=TRUE) and sparse GRM (IsSparseKin=TRUE) are used. In step 1, sparse GRM and sparse Sigma will be generated. In step 2, sparse Sigma will be used as an input. Pvalue is for p value from SKAT-O test. The very last two columns are Pvalue_Burden and Pvalue_SKAT. 
+
 The R package optparse is required to run this script
 
 ## Input files
 
 ### Step 1: Genotype file (for contructing the genetic relationship matrix)
 
-You can use *plinkFile* to specify the genotype file. 
+*plinkFile* is used to specify the genotype file. 
 
 SAIGE takes the PLINK binary file for the genotypes and assumes the file prefix is the same one for .bed, .bim. and .fam
 
 ### Step 1: Phenotype file
-You can use *phenoFile* to sepcify the phenotype file, use *phenoCol* to specify the column name for the phentoype (e.g. y), use *sampleIDColinphenoFile* to specify the column name for the sample ids (e.g. IID), use *covarColList* to specify the column names for covariates (e.g. c("x1","x2")) 
+*phenoFile* is used to sepcify the phenotype file, use *phenoCol* to specify the column name for the phentoype (e.g. y), use *sampleIDColinphenoFile* to specify the column name for the sample ids (e.g. IID), use *covarColList* to specify the column names for covariates (e.g. c("x1","x2")) 
 
 *Note: Current version of SAIGE does not support categorical covariates that have more than two categories*
 
