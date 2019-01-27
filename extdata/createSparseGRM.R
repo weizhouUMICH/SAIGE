@@ -3,7 +3,8 @@ options(stringsAsFactors=F)
 ## load R libraries
 #library(SAIGE)
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-PCGprecond")
-library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-testDec292018_withsparseSigmaforinitTau")
+#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-testDec292018_withsparseSigmaforinitTau")
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.6")
 require(optparse) #install.packages("optparse")
 
 ## set list of cmd line arguments

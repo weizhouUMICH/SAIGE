@@ -1,5 +1,5 @@
-# project bgen (1.1.4) configured on Sun Oct 28 14:21:44 2018 by
-# waf 2.0.6 (abi 20, python 2070ef0 on linux2)
+# project bgen (1.1.4) configured on Sat Jan 26 17:27:56 2019 by
+# waf 2.0.6 (abi 20, python 2070ff0 on linux2)
 # using ./waf configure
 #
 ----------------------------------------
@@ -10,7 +10,7 @@ Setting out to
 /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build
 ----------------------------------------
 Checking for 'gcc' (C compiler)
-find program=['gcc', 'cc'] paths=['/usr/cluster/bin', '/usr/cluster/software/xenial/perl/5.18.2/bin', '/net/dumbo/home/zhowei/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/cluster/bin', '/usr/lib/jvm/java-8-oracle/bin', '/usr/lib/jvm/java-8-oracle/db/bin', '/usr/lib/jvm/java-8-oracle/jre/bin', '/opt/puppetlabs/bin', '/net/hunt/zhowei/script/bin/', '/usr/cluster/bin/'] var='CC' -> ['/usr/bin/gcc']
+find program=['gcc', 'cc'] paths=['/net/dumbo/home/zhowei/anaconda2/bin', '/usr/cluster/bin', '/usr/cluster/software/xenial/perl/5.18.2/bin', '/net/dumbo/home/zhowei/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/cluster/bin', '/usr/lib/jvm/java-8-oracle/bin', '/usr/lib/jvm/java-8-oracle/db/bin', '/usr/lib/jvm/java-8-oracle/jre/bin', '/opt/puppetlabs/bin', '/net/hunt/zhowei/script/bin/', '/usr/cluster/bin/'] var='CC' -> ['/usr/bin/gcc']
 ['/usr/bin/gcc', '-dM', '-E', '-']
 out: #define __SSP_STRONG__ 3
 #define __DBL_MIN_EXP__ (-1021)
@@ -261,11 +261,11 @@ out: #define __SSP_STRONG__ 3
 #define __ATOMIC_ACQ_REL 4
 #define __ATOMIC_RELEASE 3
 
-find program=['ar'] paths=['/usr/cluster/bin', '/usr/cluster/software/xenial/perl/5.18.2/bin', '/net/dumbo/home/zhowei/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/cluster/bin', '/usr/lib/jvm/java-8-oracle/bin', '/usr/lib/jvm/java-8-oracle/db/bin', '/usr/lib/jvm/java-8-oracle/jre/bin', '/opt/puppetlabs/bin', '/net/hunt/zhowei/script/bin/', '/usr/cluster/bin/'] var='AR' -> ['/usr/bin/ar']
+find program=['ar'] paths=['/net/dumbo/home/zhowei/anaconda2/bin', '/usr/cluster/bin', '/usr/cluster/software/xenial/perl/5.18.2/bin', '/net/dumbo/home/zhowei/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/cluster/bin', '/usr/lib/jvm/java-8-oracle/bin', '/usr/lib/jvm/java-8-oracle/db/bin', '/usr/lib/jvm/java-8-oracle/jre/bin', '/opt/puppetlabs/bin', '/net/hunt/zhowei/script/bin/', '/usr/cluster/bin/'] var='AR' -> ['/usr/bin/ar']
 /usr/bin/gcc
 ----------------------------------------
 Checking for 'g++' (C++ compiler)
-find program=['g++', 'c++'] paths=['/usr/cluster/bin', '/usr/cluster/software/xenial/perl/5.18.2/bin', '/net/dumbo/home/zhowei/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/cluster/bin', '/usr/lib/jvm/java-8-oracle/bin', '/usr/lib/jvm/java-8-oracle/db/bin', '/usr/lib/jvm/java-8-oracle/jre/bin', '/opt/puppetlabs/bin', '/net/hunt/zhowei/script/bin/', '/usr/cluster/bin/'] var='CXX' -> ['/usr/bin/g++']
+find program=['g++', 'c++'] paths=['/net/dumbo/home/zhowei/anaconda2/bin', '/usr/cluster/bin', '/usr/cluster/software/xenial/perl/5.18.2/bin', '/net/dumbo/home/zhowei/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/cluster/bin', '/usr/lib/jvm/java-8-oracle/bin', '/usr/lib/jvm/java-8-oracle/db/bin', '/usr/lib/jvm/java-8-oracle/jre/bin', '/opt/puppetlabs/bin', '/net/hunt/zhowei/script/bin/', '/usr/cluster/bin/'] var='CXX' -> ['/usr/bin/g++']
 ['/usr/bin/g++', '-dM', '-E', '-']
 out: #define __SSP_STRONG__ 3
 #define __DBL_MIN_EXP__ (-1021)
@@ -516,7 +516,7 @@ out: #define __SSP_STRONG__ 3
 #define __ATOMIC_ACQ_REL 4
 #define __ATOMIC_RELEASE 3
 
-find program=['ar'] paths=['/usr/cluster/bin', '/usr/cluster/software/xenial/perl/5.18.2/bin', '/net/dumbo/home/zhowei/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/cluster/bin', '/usr/lib/jvm/java-8-oracle/bin', '/usr/lib/jvm/java-8-oracle/db/bin', '/usr/lib/jvm/java-8-oracle/jre/bin', '/opt/puppetlabs/bin', '/net/hunt/zhowei/script/bin/', '/usr/cluster/bin/'] var='AR' -> ['/usr/bin/ar']
+find program=['ar'] paths=['/net/dumbo/home/zhowei/anaconda2/bin', '/usr/cluster/bin', '/usr/cluster/software/xenial/perl/5.18.2/bin', '/net/dumbo/home/zhowei/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/cluster/bin', '/usr/lib/jvm/java-8-oracle/bin', '/usr/lib/jvm/java-8-oracle/db/bin', '/usr/lib/jvm/java-8-oracle/jre/bin', '/opt/puppetlabs/bin', '/net/hunt/zhowei/script/bin/', '/usr/cluster/bin/'] var='AR' -> ['/usr/bin/ar']
 /usr/bin/g++
 ----------------------------------------
 zlib
@@ -528,12 +528,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_3855a3ac7ba7f8f9727eae2cf1b0e018/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_e178944d56d48a59af9308ad5d997414/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_3855a3ac7ba7f8f9727eae2cf1b0e018/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_3855a3ac7ba7f8f9727eae2cf1b0e018/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_e178944d56d48a59af9308ad5d997414/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_e178944d56d48a59af9308ad5d997414/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_3855a3ac7ba7f8f9727eae2cf1b0e018/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lz']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_e178944d56d48a59af9308ad5d997414/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lz']
 yes
 ----------------------------------------
 rt
@@ -545,12 +545,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_95f7649a6017612cd0a205ce6f66662b/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_551c790c0f6541240d69bad5f7b5c278/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_95f7649a6017612cd0a205ce6f66662b/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_95f7649a6017612cd0a205ce6f66662b/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_551c790c0f6541240d69bad5f7b5c278/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_551c790c0f6541240d69bad5f7b5c278/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_95f7649a6017612cd0a205ce6f66662b/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_551c790c0f6541240d69bad5f7b5c278/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt']
 yes
 ----------------------------------------
 pthread
@@ -562,12 +562,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_04d4129948c823683b111972105e8e78/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_46e6fcad18a7a8055c5b95df453e9cd4/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_04d4129948c823683b111972105e8e78/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_04d4129948c823683b111972105e8e78/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_46e6fcad18a7a8055c5b95df453e9cd4/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_46e6fcad18a7a8055c5b95df453e9cd4/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_04d4129948c823683b111972105e8e78/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_46e6fcad18a7a8055c5b95df453e9cd4/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread']
 yes
 ----------------------------------------
 dl
@@ -579,10 +579,10 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_d964467ba322b054e73dee283ef27f2d/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_068514e96c984da6487d6834fe3075ef/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_d964467ba322b054e73dee283ef27f2d/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_d964467ba322b054e73dee283ef27f2d/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_068514e96c984da6487d6834fe3075ef/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_068514e96c984da6487d6834fe3075ef/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_d964467ba322b054e73dee283ef27f2d/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-ldl']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_068514e96c984da6487d6834fe3075ef/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-ldl']
 yes

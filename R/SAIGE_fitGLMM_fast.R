@@ -172,7 +172,6 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     tau0 = tau
     cat("tau0_v1: ", tau0, "\n")
     eta0 = eta
-
     # use Get_Coef before getAIScore        
     re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
     fit = fitglmmaiRPCG(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG, tolPCG, tol = tol, traceCVcutoff = traceCVcutoff)
@@ -334,6 +333,9 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   q = 1
   if(sum(tauInit[fixtau == 0]) == 0){
     tau[fixtau == 0] = var(Y)/(q+1)
+    if (abs(var(Y)) < 0.1){
+      stop("WARNING: variance of the phenotype is much smaller than 1. Please consider invNormalize=T\n")
+    }
   }else{
     tau[fixtau == 0] = tauInit[fixtau == 0]
   }
@@ -447,7 +449,13 @@ if(FALSE){
     print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol)
 }
 
-    if(tau[2] == 0 | tau[1] == 0) break
+    if(tau[1]<=0){
+      stop("ERROR! The first variance component parameter estimate is 0\n")
+    }
+
+    if(tau[2] <= 0) break	
+
+
     if(max(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
 
 #    if(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
@@ -890,21 +898,21 @@ fitNULLGLMM = function(plinkFile = "",
 
 
     if(!skipModelFitting){
-     print("test memory 1")
-     gc(verbose=T)	
+     #print("test memory 1")
+     #gc(verbose=T)	
      if(useSparseSigmaforInitTau){
-     print("test memory 2")
-     gc(verbose=T)	
+     #print("test memory 2")
+     #gc(verbose=T)	
        setisUseSparseSigmaforInitTau(TRUE)
        modglmm0<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne)
-	print("test memory 3")
-	gc(verbose=T)
+	#print("test memory 3")
+	#gc(verbose=T)
 	tauInit = modglmm0$theta		
 	cat("tauInit estimated using sparse Sigma is ", tauInit, "\n")	
 	rm(modglmm0)
 	closeGenoFile_plink()	
       }
-    setisUseSparseSigmaforInitTau(FALSE)
+      setisUseSparseSigmaforInitTau(FALSE)
 
 
 
@@ -921,11 +929,11 @@ fitNULLGLMM = function(plinkFile = "",
      # locationMatinR = rbind(A$i-1, A$j-1)
      # valueVecinR = A$x
      # setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
-     print("test memory 4")
-     gc(verbose=T)
+     #print("test memory 4")
+     #gc(verbose=T)
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
-          print("test memory 5")
-     gc(verbose=T)
+     #print("test memory 5")
+     #gc(verbose=T)
       save(modglmm, file = modelOut)
 
       t_end = proc.time()
@@ -1365,7 +1373,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
       if(length(NAset)/length(G) < 0.5){
         out1 = SPAtest:::Saddle_Prob(q=qtilde, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
       }else {
-        out1 = SPAtest:::Saddle_Prob_fast(q=qtilde,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="p")
+        out1 = SPAtest:::Saddle_Prob_fast(q=qtilde,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="P")
       }
 
 
@@ -1961,7 +1969,7 @@ bigGRMPar = function(x, nblocks = 10, verbose = TRUE, ncore= 1, relatednessCutof
 #       GRM <- NULL
 #       indice = NULL
 }
-  gc()
+  #gc()
   return(results)
 }
 
@@ -2027,7 +2035,7 @@ bigGRMPar_new = function(nblocks = 10, verbose = TRUE, ncore= 1, relatednessCuto
 #       GRM <- NULL
 #       indice = NULL
 }
-  gc()
+  #gc()
   return(results)
 }
 

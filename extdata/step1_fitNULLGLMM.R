@@ -8,9 +8,8 @@ options(stringsAsFactors=F)
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-PCGprecond")
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-testDec292018_withsparseSigmaforinitTau_memoryIssue")
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-testDec292018_withsparseSigmaforinitTau_memoryIssue_bgenforGENEBased/")
-library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.6-Jan242019")
-
-
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.6")
+#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.29.5")
 require(optparse) #install.packages("optparse")
 
 ## set list of cmd line arguments
@@ -134,4 +133,4 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
             isCovariateTransform = opt$isCovariateTransform,
             isDiagofKinSetAsOne = opt$isDiagofKinSetAsOne,
 	    useSparseSigmaConditionerforPCG = opt$useSparseSigmaConditionerforPCG,
-		useSparseSigmaforInitTau = opt$useSparseSigmaforInitTau)	
+	    useSparseSigmaforInitTau = opt$useSparseSigmaforInitTau)	

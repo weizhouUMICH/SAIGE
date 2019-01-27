@@ -194,7 +194,7 @@ SPAGMMATtest = function(dosageFile = "",
       sampleIndex = sampleIndex - 1
 
 
-      rm(sampleListinDosage)
+      #rm(sampleListinDosage)
       rm(dataMerge)
       rm(dataMerge_v2)
       rm(dataMerge_sort)
@@ -551,6 +551,12 @@ SPAGMMATtest = function(dosageFile = "",
       }
       SetSampleIdx_plainDosage(sampleIndex, N)
 
+      nsamplesinPlain = getSampleSizeinPlain()
+    if(nrow(sampleListinDosage) != nsamplesinPlain){
+        stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the plain dosage file\nPlease check again. Please note that the sample file needs to have no header.")
+    }
+
+
     }else if (dosageFileType == "bgen"){
       if(idstoExcludeFile != ""){
         idsExclude = data.table:::fread(idstoExcludeFile, header=F,sep=" ", stringsAsFactors=FALSE, colClasses=c("character"))
@@ -605,6 +611,12 @@ SPAGMMATtest = function(dosageFile = "",
     #setTestField(vcfField)
       isVariant = getGenoOfnthVar_vcfDosage_pre()
       SetSampleIdx_vcfDosage(sampleIndex, N)
+      nsamplesinVCF = getSampleSizeinVCF()
+     if(nrow(sampleListinDosage) != nsamplesinVCF){
+        stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the VCF file\nPlease check again. Please note that the sample file needs to have no header.")
+    }
+
+
     }
 
     write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
@@ -1304,7 +1316,7 @@ scoreTest_SPAGMMAT_binaryTrait=function(g, AC, NAset, y, mu, varRatio, Cutoff){
   if(length(NAset)/length(g) < 0.5){
     out1 = SPAtest:::Saddle_Prob(q=qtilde, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
   }else{
-    out1 = SPAtest:::Saddle_Prob_fast(q=qtilde,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="p")
+    out1 = SPAtest:::Saddle_Prob_fast(q=qtilde,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="P")
   }
 
   out1 = c(out1, var1 = var1)
@@ -1429,7 +1441,10 @@ scoreTest_SPAGMMAT_binaryTrait_cond=function(g, AC, NAset, y, mu, varRatio, Cuto
   out1 = c(out1, var2 = var2)
   #logOR = Tstat0/var1
   #logOR = Tstat0/(sqrt(var1)*sqrt(var2))
+  ##As g was not devided by sqrt(AC) 
   logOR = (Tstat/var1)/sqrt(AC)
+  #logOR = Tstat/var1
+
   SE = abs(logOR/qnorm(out1$p.value/2))
   out1 = c(out1, BETA = logOR, SE = SE, Tstat = Tstat)
 
@@ -1655,7 +1670,6 @@ scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse,
   }else{
     AC2 = AC
   }
-
   ##########################
   ## Added by SLEE 09/06/2017
   Run1=TRUE
@@ -1679,7 +1693,7 @@ if(!isCondition){
        #outVec = c(rowHeader, N, unlist(out.score))
        #print("OKKK0")
 #       print(out.score)
-       outVec = list(BETA = out.score$BETA, SE = out.score$SE, Tstat = out.score$Tstat, p.value = out.score$pval.noadj, p.value.NA = out.score$pval.noadj, Is.converge = NA, var1 = out.score$var1, var2 = out.score$var2)
+       outVec = list(BETA = out.score$BETA, SE = out.score$SE, Tstat = out.score$Tstat, p.value = out.score$pval.noadj, p.value.NA = out.score$pval.noadj, Is.converge = 1, var1 = out.score$var1, var2 = out.score$var2)
        #NSparse=NSparse+1
        #print("OKKK4")
        #print(outVec)	
@@ -1687,8 +1701,8 @@ if(!isCondition){
 
      }
   }
-
 }
+
 
   if(Run1){
     G0 = matrix(G0, ncol = 1)
@@ -1703,6 +1717,8 @@ if(!isCondition){
 #      out1$Tstat = (-1)*out1$Tstat
 #    }
     out1 = scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma(g, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
+   
+
     #out1 = unlist(out1)
     #print("OKKKK1")
     #print(out1)
@@ -1752,16 +1768,6 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
     G1tilde_P_G2tilde = matrix(G1tilde_P_G2tilde,nrow=1)
     Tstat_c = Tstat - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% T2stat
     var1_c = var1 - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
-
-
-#    cat("var1_c: ", var1_c, "\n")
-#    cat("var1: ", var1, "\n")
-#    cat("AC: ", AC, "\n")
-#    cat("AC_true: ", AC_true, "\n")
-#    cat("G1tilde_P_G2tilde: ", G1tilde_P_G2tilde, "\n")
-#    cat("G2tilde_P_G2tilde_inv: ", G2tilde_P_G2tilde_inv, "\n")
-#    cat("G1tilde_P_G2tilde: ", G1tilde_P_G2tilde, "\n")
-#    cat("G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde): ", G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde), "\n")
   }
 
   AF = AC_true/(2*length(y))
@@ -1780,13 +1786,18 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
     out1 = SPAtest:::Saddle_Prob_fast(q=qtilde,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="p")
   }
 
+
+  print("out1")
+  print(out1)
   #out1 = c(out1, var1 = var1)
   #out1 = c(out1, var2 = var2)
   out1$var1 = var1
   out1$var2 = var2
-  #logOR = Tstat0/var1
-  #logOR = Tstat0/(sqrt(var1)*sqrt(var2))
-  logOR = (Tstat/var1)/sqrt(AC)
+
+  #01-27-2019
+  #as g is not divided by sqrt(AC), the sqrt(AC) is removed from the denominator
+  #logOR = (Tstat/var1)/sqrt(AC)
+  logOR = Tstat/var1
   SE = abs(logOR/qnorm(out1$p.value/2))
 #  out1 = c(out1, BETA = logOR, SE = SE, Tstat = Tstat)
   out1$BETA=logOR
@@ -1804,14 +1815,17 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
       }else{
         out1_c = SPAtest:::Saddle_Prob_fast(q=qtilde_c,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="p")
       }
-    logOR_c = (Tstat_c/var1_c)/sqrt(AC)
+    #01-27-2019
+    #logOR_c = (Tstat_c/var1_c)/sqrt(AC)
+    logOR_c = Tstat_c/var1_c
     SE_c = abs(logOR_c/qnorm(out1_c$p.value/2))	
     out1 = c(out1, var1_c = var1_c,BETA_c = logOR_c, SE_c = SE_c, Tstat_c = Tstat_c, p.value.c = out1_c$p.value, p.value.NA.c = out1_c$p.value.NA) 
     }
 
-
-
   }
+
+  print("out1")
+  print(out1)
 
   return(out1)
 }

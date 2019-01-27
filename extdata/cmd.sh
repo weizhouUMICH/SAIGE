@@ -1,10 +1,20 @@
-
 #binary
 #For single-variant association tests. 
 #Not use sparse GRM and not use categorical variance ratios#
 #randomly selected markers with MAC >= 20 are used to estimate the variance ratio
 #step 1: fit the NULL glmm 
 Rscript step1_fitNULLGLMM.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --phenoFile=./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt \
+        --phenoCol=y_binary \
+        --covarColList=x1,x2 \
+        --sampleIDColinphenoFile=IID \
+        --traitType=binary        \
+        --outputPrefix=./output/example_binary \
+        --nThreads=4 \
+        --LOCO=FALSE
+
+Rscript step1_fitNULLGLMM_old.R     \
         --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
         --phenoFile=./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt \
         --phenoCol=y_binary \
@@ -30,6 +40,23 @@ Rscript step2_SPAtests.R \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE     
 
+
+Rscript step2_SPAtests_old_2.R \
+        --vcfFile=./input/genotype_10markers.vcf.gz \
+        --vcfFileIndex=./input/genotype_10markers.vcf.gz.tbi \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype_old_2.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE
+
+
+
 ## --condition = Genetic marker ids (chr:pos_ref/alt) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for vcf/sav input.
 Rscript step2_SPAtests.R \
         --vcfFile=./input/genotype_10markers.vcf.gz \
@@ -37,7 +64,7 @@ Rscript step2_SPAtests.R \
         --vcfField=GT \
         --chrom=1 \
         --minMAF=0.0001 \
-        --minMAC=1 \
+        --minMAC=4 \
         --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output/example_binary.rda \
         --varianceRatioFile=./output/example_binary.varianceRatio.txt \
@@ -168,6 +195,25 @@ Rscript step2_SPAtests.R \
         --IsOutputAFinCaseCtrl=TRUE	\
 	--IsSingleVarinGroupTest=TRUE		
 
+Rscript step2_SPAtests_old.R \
+	--vcfFile=./input/seedNumLow_126001_seedNumHigh_127000_nfam_1000_nindep_0.sav \
+        --vcfFileIndex=./input/seedNumLow_126001_seedNumHigh_127000_nfam_1000_nindep_0.sav.s1r \
+        --vcfField=DS \
+        --chrom=chr1 \
+        --minMAF=0 \
+        --minMAC=0.5 \
+        --maxMAFforGroupTest=0.01       \
+        --sampleFile=./input/samplelist.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary_cate.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary_cate.SAIGE.gene_old.txt \
+        --numLinesOutput=1 \
+        --groupFile=./input/groupFile_geneBasedtest.txt \
+        --sparseSigmaFile=./output/example_binary_cate.varianceRatio.txt.sparseSigma.mtx        \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsSingleVarinGroupTest=TRUE
+
+
 
 #conditional analysis
 Rscript step2_SPAtests.R \
@@ -229,7 +275,7 @@ Rscript step2_SPAtests.R \
         --vcfField=GT \
         --chrom=1 \
         --minMAF=0.0001 \
-        --minMAC=1 \
+        --minMAC=4 \
         --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output/example_quantitative.rda \
         --varianceRatioFile=./output/example_quantitative.varianceRatio.txt \
@@ -238,6 +284,20 @@ Rscript step2_SPAtests.R \
         --IsOutputAFinCaseCtrl=TRUE    
 
 
+########sav file
+Rscript step2_SPAtests.R	\
+	--savFile=./input/dosage_10markers.sav	\
+	--savFileIndex=./input/dosage_10markers.sav.s1r	\
+	--minMAF=0.0001 \
+        --minMAC=4 \
+	--vcfField=DS \
+	--chrom=1 \
+        --sampleFile=./input/samplefileforbgen_10000samples.txt \
+        --GMMATmodelFile=./output/example.rda \
+        --varianceRatioFile=./output/example.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example.SAIGE.sav.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE
 
 Rscript step2_SPAtests.R \
         --vcfFile=./input/genotype_10markers.vcf.gz \
