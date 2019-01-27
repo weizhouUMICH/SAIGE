@@ -172,8 +172,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     tau0 = tau
     cat("tau0_v1: ", tau0, "\n")
     eta0 = eta
-    
-    # use Get_Coef before getAIScore
+    # use Get_Coef before getAIScore        
     re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
     fit = fitglmmaiRPCG(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG, tolPCG, tol = tol, traceCVcutoff = traceCVcutoff)
     
@@ -334,6 +333,9 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   q = 1
   if(sum(tauInit[fixtau == 0]) == 0){
     tau[fixtau == 0] = var(Y)/(q+1)
+    if (abs(var(Y)) < 0.1){
+      stop("WARNING: variance of the phenotype is much smaller than 1. Please consider invNormalize=T\n")
+    }
   }else{
     tau[fixtau == 0] = tauInit[fixtau == 0]
   }
@@ -433,21 +435,27 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     #mu.eta = family$mu.eta(eta)
     #Y = eta - offset + (y - mu)/mu.eta
     #sqrtW = mu.eta/sqrt(family$variance(mu))
-    if(FALSE){
-      cat("abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)\n")
-      print(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol))
-      cat("tau: ", tau,"\n")
-      cat("tau0: ", tau0,"\n")
-      cat("abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)\n")
-      print(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol))
-      cat("tol: ")
-      print(tol)
-      
-      print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
-      print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol)
+if(FALSE){
+    cat("abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)\n")
+    print(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol))	
+    cat("tau: ", tau,"\n")
+    cat("tau0: ", tau0,"\n")
+    cat("abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)\n")
+    print(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol))
+    cat("tol: ")
+    print(tol)
+
+    print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
+    print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol)
+}
+
+    if(tau[1]<=0){
+      stop("ERROR! The first variance component parameter estimate is 0\n")
     }
-    
-    if(tau[2] == 0 | tau[1] == 0) break
+
+    if(tau[2] <= 0) break	
+
+
     if(max(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
     
     #    if(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
@@ -902,37 +910,48 @@ fitNULLGLMM = function(plinkFile = "",
     
     
     if(!skipModelFitting){
-      if(useSparseSigmaforInitTau){
-        setisUseSparseSigmaforInitTau(TRUE)
-        modglmm0<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne)
-        tauInit = modglmm0$theta
-        cat("tauInit estimated using sparse Sigma is ", tauInit, "\n")
-        rm(modglmm0)
-        closeGenoFile_plink()
+     #print("test memory 1")
+     #gc(verbose=T)	
+     if(useSparseSigmaforInitTau){
+     #print("test memory 2")
+     #gc(verbose=T)	
+       setisUseSparseSigmaforInitTau(TRUE)
+       modglmm0<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne)
+	#print("test memory 3")
+	#gc(verbose=T)
+	tauInit = modglmm0$theta		
+	cat("tauInit estimated using sparse Sigma is ", tauInit, "\n")	
+	rm(modglmm0)
+	closeGenoFile_plink()	
       }
       setisUseSparseSigmaforInitTau(FALSE)
-      
-      
-      
+
+
+
       cat("Start fitting the NULL GLMM\n")
       t_begin = proc.time()
       print(t_begin)
       
       #set up the sparse GRM to speed up the PCG
-      # sparseGRMtest = Matrix:::readMM(sparseGRMFile)
-      # m4 = gen_sp_v2(sparseGRMtest)
-      # print("print m4")
-      # print(dim(m4))
-      # A = summary(m4)
-      # locationMatinR = rbind(A$i-1, A$j-1)
-      # valueVecinR = A$x
-      # setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
-      modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne)
-      # remove hidden environments from the model
+     # sparseGRMtest = Matrix:::readMM(sparseGRMFile)
+     # m4 = gen_sp_v2(sparseGRMtest)
+     # print("print m4")
+     # print(dim(m4))
+     # A = summary(m4)
+     # locationMatinR = rbind(A$i-1, A$j-1)
+     # valueVecinR = A$x
+     # setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
+     #print("test memory 4")
+     #gc(verbose=T)
+      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
+      ##Added by Juha in finngen
       modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
       for (x in names(modglmm$obj.glm.null)) {
         attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
-      }
+      }	
+
+     #print("test memory 5")
+     #gc(verbose=T)
       save(modglmm, file = modelOut)
       
       t_end = proc.time()
@@ -1047,7 +1066,9 @@ fitNULLGLMM = function(plinkFile = "",
                                                     sparseGRMSampleIDFile = sparseGRMSampleIDFile,
                                                     numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
                                                     relatednessCutoff = relatednessCutoff,
-                                                    nThreads = nThreads)
+                                                    nThreads = nThreads,
+							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
+                cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude)
     closeGenoFile_plink()
     
   }else if(traitType == "quantitative"){
@@ -1108,26 +1129,28 @@ fitNULLGLMM = function(plinkFile = "",
     
     cat("Start estimating variance ratios\n")
     scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait(obj.glmm.null = modglmm,
-                                                          obj.glm.null = fit0,
-                                                          obj.noK = obj.noK,
-                                                          Cutoff = SPAcutoff,
-                                                          maxiterPCG = maxiterPCG,
-                                                          tolPCG = tolPCG,
-                                                          numMarkers = numMarkers,
-                                                          varRatioOutFile = varRatioFile,
-                                                          ratioCVcutoff = ratioCVcutoff,
-                                                          testOut = SPAGMMATOut,
-                                                          plinkFile = plinkFile,
-                                                          chromosomeStartIndexVec = chromosomeStartIndexVec,
-                                                          chromosomeEndIndexVec = chromosomeEndIndexVec,
-                                                          isCateVarianceRatio = isCateVarianceRatio,
-                                                          cateVarRatioIndexVec = cateVarRatioIndexVec,
-                                                          IsSparseKin = IsSparseKin,
-                                                          sparseGRMFile = sparseGRMFile,
-                                                          sparseGRMSampleIDFile = sparseGRMSampleIDFile,
-                                                          numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
-                                                          relatednessCutoff = relatednessCutoff,
-                                                          nThreads = nThreads)
+                                                    obj.glm.null = fit0,
+                                                    obj.noK = obj.noK,
+                                                    Cutoff = SPAcutoff,
+                                                    maxiterPCG = maxiterPCG,
+                                                    tolPCG = tolPCG,
+                                                    numMarkers = numMarkers,
+                                                    varRatioOutFile = varRatioFile,
+						    ratioCVcutoff = ratioCVcutoff,
+                                                    testOut = SPAGMMATOut,
+						    plinkFile = plinkFile,
+                                                    chromosomeStartIndexVec = chromosomeStartIndexVec,
+                                                    chromosomeEndIndexVec = chromosomeEndIndexVec,
+						    isCateVarianceRatio = isCateVarianceRatio,
+						    cateVarRatioIndexVec = cateVarRatioIndexVec,
+						    IsSparseKin = IsSparseKin,
+						    sparseGRMFile = sparseGRMFile,
+                				    sparseGRMSampleIDFile = sparseGRMSampleIDFile,	
+						    numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
+						    relatednessCutoff = relatednessCutoff,
+						    nThreads = nThreads,
+							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
+                cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude)
     closeGenoFile_plink()
   }
 }
@@ -1135,28 +1158,30 @@ fitNULLGLMM = function(plinkFile = "",
 
 
 scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
-                                                           obj.glm.null,
-                                                           obj.noK,
-                                                           Cutoff = 2,
-                                                           maxiterPCG = 500,
-                                                           tolPCG = 0.01,
-                                                           numMarkers,
-                                                           varRatioOutFile,
-                                                           ratioCVcutoff,
-                                                           testOut,
-                                                           plinkFile,
-                                                           chromosomeStartIndexVec,
-                                                           chromosomeEndIndexVec,
-                                                           isCateVarianceRatio,
-                                                           cateVarRatioIndexVec,
-                                                           IsSparseKin,
-                                                           sparseGRMFile,
-                                                           sparseGRMSampleIDFile,
-                                                           numRandomMarkerforSparseKin,
-                                                           relatednessCutoff,
-                                                           nThreads){
-  
-  
+                                                    obj.glm.null,
+                                                    obj.noK,
+                                                    Cutoff = 2,
+                                                    maxiterPCG = 500,
+                                                    tolPCG = 0.01,
+                                                    numMarkers,
+                                                    varRatioOutFile,
+						    ratioCVcutoff,
+                                                    testOut,
+                                                    plinkFile,
+						    chromosomeStartIndexVec, 
+						    chromosomeEndIndexVec,
+						    isCateVarianceRatio,
+						    cateVarRatioIndexVec,
+                                                    IsSparseKin,
+                                                    sparseGRMFile,
+                                                    sparseGRMSampleIDFile,
+                                                    numRandomMarkerforSparseKin,
+                                                    relatednessCutoff,
+                                                    nThreads,
+							cateVarRatioMinMACVecExclude,
+							cateVarRatioMaxMACVecInclude){
+
+
   if(file.exists(testOut)){file.remove(testOut)}
   
   
@@ -1412,11 +1437,30 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
         }else{
           cat("CV for variance ratio estimate using ", numMarkers0, " markers is ", ratioCV, " < ", ratioCVcutoff, "\n")
         }
-        
-        if(indexInMarkerList-1 == length(listOfMarkersForVarRatio[[k]])){
-          ratioCV = ratioCVcutoff
-          cat("no more markers are available in the MAC category ", k, "\n")
-          print(indexInMarkerList-1)
+
+      var2q = innerProduct(mu*(1-mu), g*g)
+      qtilde = (q-m1)/sqrt(var1) * sqrt(var2q) + m1
+
+      if(length(NAset)/length(G) < 0.5){
+        out1 = SPAtest:::Saddle_Prob(q=qtilde, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
+      }else {
+        out1 = SPAtest:::Saddle_Prob_fast(q=qtilde,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="P")
+      }
+
+
+      OUT = rbind(OUT, c(bimPlink[i,1], bimPlink[i,2], bimPlink[i,4], bimPlink[i,5], bimPlink[i,6], out1$p.value, out1$p.value.NA, out1$Is.converge, var1, var2, Nnomissing, AC, AF))	
+#        OUT = rbind(OUT, c(i, p.value, p.value.NA, var1, var2, Tv1, Nnomissing, AC, AF))
+
+      indexInMarkerList = indexInMarkerList + 1
+      numTestedMarker = numTestedMarker + 1
+
+      if(numTestedMarker %% 10 == 0 | numTestedMarker == numMarkers | indexInMarkerList-1 == length(listOfMarkersForVarRatio[[k]]) ){
+          OUT = as.data.frame(OUT)
+          print("OK")
+          OUTtotal = rbind(OUTtotal, OUT)
+          print("OK1")
+          write.table(OUT, testOut, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
+          OUT = NULL
         }
         
       }#end of while(ratioCV > ratioCVcutoff)
@@ -1452,28 +1496,30 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 
 
 scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
-                                                                 obj.glm.null,
-                                                                 obj.noK,
-                                                                 Cutoff = 2,
-                                                                 maxiterPCG = 500,
-                                                                 tolPCG = 0.01,
-                                                                 numMarkers,
-                                                                 varRatioOutFile,
-                                                                 ratioCVcutoff,
-                                                                 testOut,
-                                                                 plinkFile,
-                                                                 chromosomeStartIndexVec,
-                                                                 chromosomeEndIndexVec,
-                                                                 isCateVarianceRatio,
-                                                                 cateVarRatioIndexVec,
-                                                                 IsSparseKin,
-                                                                 sparseGRMFile,
-                                                                 sparseGRMSampleIDFile,
-                                                                 numRandomMarkerforSparseKin,
-                                                                 relatednessCutoff,
-                                                                 nThreads){
-  
-  
+                                                    obj.glm.null,
+                                                    obj.noK,
+                                                    Cutoff = 2,
+                                                    maxiterPCG = 500,
+                                                    tolPCG = 0.01,
+                                                    numMarkers,
+                                                    varRatioOutFile,
+						    ratioCVcutoff,
+                                                    testOut,
+						    plinkFile,
+                                                    chromosomeStartIndexVec,
+                                                    chromosomeEndIndexVec,
+						    isCateVarianceRatio,
+						    cateVarRatioIndexVec,
+						    IsSparseKin,
+						    sparseGRMFile,
+                                                    sparseGRMSampleIDFile,
+						    numRandomMarkerforSparseKin,
+                                                    relatednessCutoff,
+						    nThreads,
+							cateVarRatioMinMACVecExclude,
+                                                        cateVarRatioMaxMACVecInclude){	
+
+
   if(file.exists(testOut)){file.remove(testOut)}
   
   #  if(nThreads > 1){
@@ -1967,27 +2013,27 @@ bigGRMPar = function(x, nblocks = 10, verbose = TRUE, ncore= 1, relatednessCutof
   ## symmetric sides of the diagonal
   `%dopar%` <- foreach::`%dopar%`
   results <- foreach:::foreach(i = 1:nrow(COMBS), .combine='rbind')%dopar%{
-    COMB <- COMBS[i, ]
-    G1 <- SPLIT[[COMB[1]]]
-    G2 <- SPLIT[[COMB[2]]]
-    if (verbose) cat("Block", COMB[1], "with Block", COMB[2], "\n")
-    flush.console()
-    GRM <- t(x[, G1])%*%(x[, G2])
-    
-    if(sum(G1 != G2) == 0){
-      GRM[lower.tri(GRM, diag = FALSE)] = 0
-    }
-    GRM <- GRM/NROW
-    indice <- which(GRM >= relatednessCutoff, arr.ind=T)
-    cbind(G1[indice[,1]], G2[indice[,2]])
-    #       resultsIVec =c(resultsIVec, G1[indice[,1]])
-    #        resultsJVec =c(resultsJVec, G2[indice[,2]])
-    #corMAT[G1, G2] <- COR
-    #corMAT[G2, G1] <- t(COR)
-    #       GRM <- NULL
-    #       indice = NULL
-  }
-  gc()
+        COMB <- COMBS[i, ]
+        G1 <- SPLIT[[COMB[1]]]
+        G2 <- SPLIT[[COMB[2]]]
+        if (verbose) cat("Block", COMB[1], "with Block", COMB[2], "\n")
+        flush.console()
+        GRM <- t(x[, G1])%*%(x[, G2])
+
+        if(sum(G1 != G2) == 0){
+                GRM[lower.tri(GRM, diag = FALSE)] = 0
+        }
+        GRM <- GRM/NROW
+        indice <- which(GRM >= relatednessCutoff, arr.ind=T)
+        cbind(G1[indice[,1]], G2[indice[,2]])
+#       resultsIVec =c(resultsIVec, G1[indice[,1]])
+#        resultsJVec =c(resultsJVec, G2[indice[,2]])
+        #corMAT[G1, G2] <- COR
+        #corMAT[G2, G1] <- t(COR)
+#       GRM <- NULL
+#       indice = NULL
+}
+  #gc()
   return(results)
 }
 
@@ -2024,36 +2070,36 @@ bigGRMPar_new = function(nblocks = 10, verbose = TRUE, ncore= 1, relatednessCuto
   ## symmetric sides of the diagonal
   `%dopar%` <- foreach::`%dopar%`
   results <- foreach:::foreach(i = 1:nrow(COMBS), .combine='rbind')%dopar%{
-    COMB <- COMBS[i, ]
-    G1 <- SPLIT[[COMB[1]]] - 1
-    G2 <- SPLIT[[COMB[2]]] - 1
-    #if (verbose) cat("Block", COMB[1], "with Block", COMB[2], "\n")
-    flush.console()
-    G1M = getColfromStdGenoMultiMarkersMat(G1)
-    G2M = getColfromStdGenoMultiMarkersMat(G2)
-    #	cat("G1M ", dim(G1M), "\n")
-    #	cat("G2M ", dim(G2M), "\n")
-    GRM <- t(G1M)%*%(G2M)
-    #	cat("G1M: ", G1M, "\n")
-    #	cat("G2M: ", G2M, "\n")
-    #	cat("GRM: ", GRM, "\n")
-    if(sum(G1 != G2) == 0){
-      GRM[lower.tri(GRM, diag = FALSE)] = 0
-    }
-    GRM <- GRM/NROW
-    indice <- which(GRM >= relatednessCutoff, arr.ind=T)
-    #	cat("GRM[1:10,1:10]: ", GRM[1:10,1:10], "\n")
-    #	cat("relatednessCutoff: ", relatednessCutoff, "\n")
-    #	cat("indice: ", indice, "\n")
-    cbind(G1[indice[,1]], G2[indice[,2]])
-    #       resultsIVec =c(resultsIVec, G1[indice[,1]])
-    #        resultsJVec =c(resultsJVec, G2[indice[,2]])
-    #corMAT[G1, G2] <- COR
-    #corMAT[G2, G1] <- t(COR)
-    #       GRM <- NULL
-    #       indice = NULL
-  }
-  gc()
+        COMB <- COMBS[i, ]
+        G1 <- SPLIT[[COMB[1]]] - 1
+        G2 <- SPLIT[[COMB[2]]] - 1
+        #if (verbose) cat("Block", COMB[1], "with Block", COMB[2], "\n")
+        flush.console()
+        G1M = getColfromStdGenoMultiMarkersMat(G1)
+        G2M = getColfromStdGenoMultiMarkersMat(G2)
+#	cat("G1M ", dim(G1M), "\n")
+#	cat("G2M ", dim(G2M), "\n")
+        GRM <- t(G1M)%*%(G2M)
+#	cat("G1M: ", G1M, "\n")
+#	cat("G2M: ", G2M, "\n")
+#	cat("GRM: ", GRM, "\n")
+        if(sum(G1 != G2) == 0){
+                GRM[lower.tri(GRM, diag = FALSE)] = 0
+        }
+        GRM <- GRM/NROW
+        indice <- which(GRM >= relatednessCutoff, arr.ind=T)
+#	cat("GRM[1:10,1:10]: ", GRM[1:10,1:10], "\n")
+#	cat("relatednessCutoff: ", relatednessCutoff, "\n")
+#	cat("indice: ", indice, "\n")
+        cbind(G1[indice[,1]], G2[indice[,2]])
+#       resultsIVec =c(resultsIVec, G1[indice[,1]])
+#        resultsJVec =c(resultsJVec, G2[indice[,2]])
+        #corMAT[G1, G2] <- COR
+        #corMAT[G2, G1] <- t(COR)
+#       GRM <- NULL
+#       indice = NULL
+}
+  #gc()
   return(results)
 }
 

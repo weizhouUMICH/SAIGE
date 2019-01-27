@@ -21,6 +21,8 @@ std::string testField;
 Rcpp::IntegerVector gm_sample_idx_vcfDosage;
 int gmtest_samplesize_vcfDosage;
 
+int numSamples_vcf;
+
 using namespace std;
 
 // [[Rcpp::export]]
@@ -54,7 +56,9 @@ bool setgenoTest_vcfDosage(const std::string& vcfFileName,  const std::string& v
     cout << "To read the field " << vcfField << endl;
     std::cout << "Number of meta lines in the vcf file (lines starting with ##): " << reader.headers().size() << endl;
     std::cout << "Number of samples in in the vcf file: " << reader.samples().size() << endl;
+    numSamples_vcf = reader.samples().size();
   }else{
+    numSamples_vcf = -10;
     std::cout << "WARNING: Open VCF failed" << std::endl;
   }
 
@@ -173,3 +177,7 @@ void closetestGenoFile_vcfDosage() //needs further check
 
 }
 
+// [[Rcpp::export]]
+int getSampleSizeinVCF(){
+  return(numSamples_vcf);
+}

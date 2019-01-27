@@ -1200,6 +1200,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getSampleSizeinBgen
+int getSampleSizeinBgen();
+RcppExport SEXP _SAIGE_getSampleSizeinBgen() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getSampleSizeinBgen());
+    return rcpp_result_gen;
+END_RCPP
+}
 // setgenoTest_plainDosage
 int setgenoTest_plainDosage(std::string testGenoFile, int testGenofileNrowSkip, int testGenofileNcolSkip);
 RcppExport SEXP _SAIGE_setgenoTest_plainDosage(SEXP testGenoFileSEXP, SEXP testGenofileNrowSkipSEXP, SEXP testGenofileNcolSkipSEXP) {
@@ -1254,6 +1264,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type sample_idx(sample_idxSEXP);
     Rcpp::traits::input_parameter< int >::type Ntest(NtestSEXP);
     rcpp_result_gen = Rcpp::wrap(SetSampleIdx_plainDosage(sample_idx, Ntest));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getSampleSizeinPlain
+int getSampleSizeinPlain();
+RcppExport SEXP _SAIGE_getSampleSizeinPlain() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getSampleSizeinPlain());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1344,6 +1364,16 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     closetestGenoFile_vcfDosage();
     return R_NilValue;
+END_RCPP
+}
+// getSampleSizeinVCF
+int getSampleSizeinVCF();
+RcppExport SEXP _SAIGE_getSampleSizeinVCF() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getSampleSizeinVCF());
+    return rcpp_result_gen;
 END_RCPP
 }
 // eigenMapMatMult
@@ -1504,11 +1534,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_SetSampleIdx", (DL_FUNC) &_SAIGE_SetSampleIdx, 2},
     {"_SAIGE_closetestGenoFile_bgenDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_bgenDosage, 0},
     {"_SAIGE_setgenoTest_bgenDosage_v2", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage_v2, 6},
+    {"_SAIGE_getSampleSizeinBgen", (DL_FUNC) &_SAIGE_getSampleSizeinBgen, 0},
     {"_SAIGE_setgenoTest_plainDosage", (DL_FUNC) &_SAIGE_setgenoTest_plainDosage, 3},
     {"_SAIGE_closetestGenoFile_plainDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_plainDosage, 0},
     {"_SAIGE_getGenoOfnthVar_plainDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_plainDosage, 3},
     {"_SAIGE_getrowHeaderVec_plainDosage", (DL_FUNC) &_SAIGE_getrowHeaderVec_plainDosage, 0},
     {"_SAIGE_SetSampleIdx_plainDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_plainDosage, 2},
+    {"_SAIGE_getSampleSizeinPlain", (DL_FUNC) &_SAIGE_getSampleSizeinPlain, 0},
     {"_SAIGE_SetSampleIdx_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_vcfDosage, 2},
     {"_SAIGE_setTestField", (DL_FUNC) &_SAIGE_setTestField, 1},
     {"_SAIGE_setgenoTest_vcfDosage", (DL_FUNC) &_SAIGE_setgenoTest_vcfDosage, 8},
@@ -1517,6 +1549,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getGenoOfnthVar_vcfDosage_pre", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage_pre, 0},
     {"_SAIGE_getGenoOfnthVar_vcfDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage, 1},
     {"_SAIGE_closetestGenoFile_vcfDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_vcfDosage, 0},
+    {"_SAIGE_getSampleSizeinVCF", (DL_FUNC) &_SAIGE_getSampleSizeinVCF, 0},
     {"_SAIGE_eigenMapMatMult", (DL_FUNC) &_SAIGE_eigenMapMatMult, 2},
     {"_SAIGE_mult_sp_sp_to_sp", (DL_FUNC) &_SAIGE_mult_sp_sp_to_sp, 2},
     {"_SAIGE_mult_sp_den_to_sp", (DL_FUNC) &_SAIGE_mult_sp_den_to_sp, 2},

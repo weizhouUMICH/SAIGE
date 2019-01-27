@@ -18,7 +18,7 @@ Table of Contents
 # Introduction
 
 
-## THIS BRANCH IS UNVER DEVELOPMENT (Current version is 0.35.3)
+## THIS BRANCH IS UNVER DEVELOPMENT (Current version is 0.35.6)
 
 SAIGE is an R package that implements the Scalable and Accurate Implementation of Generalized mixed model that uses the saddlepoint approximation (SPA)(mhof, J. P. , 1961; Kuonen, D. 1999; Dey, R. et.al 2017) 
 and large scale optimization techniques to calibrate case-control ratios in logistic mixed model score tests
@@ -36,15 +36,20 @@ Wei Zhou, Jonas B. Nielsen, Lars G. Fritsche, Maiken B. Elvestad, Brooke Wolford
 
 Installation from the binary file in linux
 
-    R CMD INSTALL SAIGE_0.XX_R_x86_64-pc-linux-gnu.tar.gz
+    R CMD INSTALL SAIGE_0.29.4.4_R_x86_64-pc-linux-gnu.tar.gz
+
+Current version is 0.29.4.4, working with R-3.5.1, gcc >= 5.5.0
 
 The following R pakages need to be installed for running SAIGE:
 
 *Rcpp, RcppArmadillo, RcppParallel, data.table, SPAtest, RcppEigen, Matrix, methods*
 
-Source code for all versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl/AADFqdssvOBjbWZch6Q9zYNaa?dl=0
+Previous versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl/AADFqdssvOBjbWZch6Q9zYNaa?dl=0
 
 # Log for fixing bugs
+
+* 0.35.6 merge in 0.29.5 from master
+
 * 0.35.5 (fix a bug for updating predicted values in the model fit for binary traits. Added a function to create a sparse GRM only for a data set)
 
 * 0.35.3 (this is a clean version for single-variance assoc tests, gene-based tests, and conditional analysis)
@@ -60,7 +65,6 @@ Source code for all versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl
 * 0.29.3: update SAIGE step 1 to use the updated R libary SPAtest 3.0.0
 
 * 0.29.2: update SAIGE to use the updated R library SPAtest 3.0.0
-
 
 * 0.29:
 ```

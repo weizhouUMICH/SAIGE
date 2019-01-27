@@ -389,6 +389,10 @@ setgenoTest_bgenDosage_v2 <- function(filename, index_filename, ranges_to_includ
     .Call('_SAIGE_setgenoTest_bgenDosage_v2', PACKAGE = 'SAIGE', filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude)
 }
 
+getSampleSizeinBgen <- function() {
+    .Call('_SAIGE_getSampleSizeinBgen', PACKAGE = 'SAIGE')
+}
+
 setgenoTest_plainDosage <- function(testGenoFile, testGenofileNrowSkip, testGenofileNcolSkip) {
     .Call('_SAIGE_setgenoTest_plainDosage', PACKAGE = 'SAIGE', testGenoFile, testGenofileNrowSkip, testGenofileNcolSkip)
 }
@@ -407,6 +411,10 @@ getrowHeaderVec_plainDosage <- function() {
 
 SetSampleIdx_plainDosage <- function(sample_idx, Ntest) {
     .Call('_SAIGE_SetSampleIdx_plainDosage', PACKAGE = 'SAIGE', sample_idx, Ntest)
+}
+
+getSampleSizeinPlain <- function() {
+    .Call('_SAIGE_getSampleSizeinPlain', PACKAGE = 'SAIGE')
 }
 
 SetSampleIdx_vcfDosage <- function(sample_idx, Ntest) {
@@ -439,6 +447,10 @@ getGenoOfnthVar_vcfDosage <- function(mth) {
 
 closetestGenoFile_vcfDosage <- function() {
     invisible(.Call('_SAIGE_closetestGenoFile_vcfDosage', PACKAGE = 'SAIGE'))
+}
+
+getSampleSizeinVCF <- function() {
+    .Call('_SAIGE_getSampleSizeinVCF', PACKAGE = 'SAIGE')
 }
 
 eigenMapMatMult <- function(A, B) {
