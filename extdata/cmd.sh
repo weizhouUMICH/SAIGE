@@ -252,7 +252,8 @@ Rscript step1_fitNULLGLMM.R     \
         --nThreads=4 \
         --LOCO=FALSE	\
 	--ratioCVcutoff=1	\
-	--traceCVcutoff=1	
+	--traceCVcutoff=1	\
+	--tauInit=1,0
 	
 
 Rscript step1_fitNULLGLMM_0.29.4.R.3.5.1.R	\
@@ -355,7 +356,8 @@ Rscript step1_fitNULLGLMM.R     \
         --LOCO=FALSE	\
 	--skipModelFitting=FALSE \
         --IsSparseKin=TRUE      \
-        --isCateVarianceRatio=TRUE
+        --isCateVarianceRatio=TRUE	\
+	--tauInit=1,0
 
 #Perform gene-based/region-based tests according to the group file specified in groupFile
 #IsSingleVarinGroupTest=TRUE is to perform single-variant assoc tests as well for markers included in the gene-based tests

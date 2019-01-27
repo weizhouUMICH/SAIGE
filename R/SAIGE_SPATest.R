@@ -1485,7 +1485,7 @@ scoreTest_SPAGMMAT_binaryTrait_cond=function(g, AC, NAset, y, mu, varRatio, Cuto
   #var1c = var1 - varRatio*(covM[1,2:ncol(covM)])%*% solve(G2_tildeG2_tilde) %*% t(covM[1,2:ncol(covM)])
   cat("var1c: ", var1c, "\n")
 
-if(var1c > 10^-5){
+if(var1c > (.Machine$double.xmin)^2){
   qtilde1c = ((Tstat1c)/sqrt(AC))/sqrt(var1c/AC) * sqrt(var2/AC) + m1
   
   if(length(NAset)/length(g) < 0.5){
@@ -1627,7 +1627,7 @@ if(AF > 0.5){
     }	
 }
 
-if(var1 < 1*10^-5){
+if(var1 < (.Machine$double.xmin)){
   p.value = 1
   BETA = NA
   SE = NA
@@ -1640,7 +1640,7 @@ if(var1 < 1*10^-5){
 
 
   if(isCondition){
-    if(var1_c < 1*10^-5){
+    if(var1_c <= (.Machine$double.xmin)){
       p.value.c = 1
       BETA_c = NA
       SE_c = NA
@@ -1805,7 +1805,7 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
   out1$Tstat = Tstat
 
   if(isCondition){
-    if(var1_c < 1*10^-5){
+    if(var1_c <= (.Machine$double.xmin)^2){
       out1 = c(out1, var1_c = var1_c,BETA_c = NA, SE_c = NA, Tstat_c = Tstat_c, p.value.c = 1, p.value.NA.c = 1)	
     }else{
 

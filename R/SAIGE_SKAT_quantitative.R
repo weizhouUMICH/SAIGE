@@ -137,7 +137,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 			print(Phi_cond)
 #			cat("Phi_cond ", Phi_cond, "\n")
 			if(m_new == 1){
-                        	if(sum(diag(Phi_cond) < 10^-60) > 0){
+                        	#if(sum(diag(Phi_cond) < 10^-60) > 0){
+                        	if(sum(diag(Phi_cond) < (.Machine$double.xmin)^(1/4)) > 0){
 					re_cond = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
 
                         	}else{
@@ -156,7 +157,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                   	Phi = Phi * singleGClambda
 		  	Phi = as.matrix(Phi)
 			if(m_new == 1){
-                 		if(sum(diag(Phi) < 10^-60) > 0){
+                 		if(sum(diag(Phi) < (.Machine$double.xmin)^(1/4)) > 0){
                             		re = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
 				}else{	
                   	    		re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
@@ -170,7 +171,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 		}else{
 
 			if(m_new == 1){
-				if(sum(diag(Phi) < 10^-60) > 0){
+				if(sum(diag(Phi) < (.Machine$double.xmin)^(1/4)) > 0){
 					re = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, p.value.cond=NA, P_singlGCadj=NA, GCadjOut=NA)
 				}else{	
 					re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
@@ -182,7 +183,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 			Phi = Phi * singleGClambda
 			Phi = as.matrix(Phi)
 			if(m_new == 1){	
-				if(sum(diag(Phi) < 10^-60) > 0){
+				if(sum(diag(Phi) < (.Machine$double.xmin)^(1/4)) > 0){
 					re$P_singlGCadj = 1
 					re$GCadjOut = NA							
 				}else{
