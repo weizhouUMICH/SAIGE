@@ -112,8 +112,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 		#print(Phi)
 		#print(diag(as.matrix(Phi)))
 		#print(indexNeg)
-		cat("Phi: ", Phi, "\n")
-		cat("Score: ", Score, "\n")
+		#cat("Phi: ", Phi, "\n")
+		#cat("Score: ", Score, "\n")
 		if(length(indexNeg) > 0){
 			Phi = Phi[-indexNeg, -indexNeg]
 			Score = Score[-indexNeg]
