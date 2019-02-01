@@ -843,7 +843,7 @@ SPAGMMATtest = function(dosageFile = "",
          }else{
 	   resultHeader = c("Gene", "Pvalue", "Pvalue_singleGCadjust", MACcateNumHeader , "markerIDs","markerAFs")
 	   if(method=="optimal.adj"){
-	     resultHeader = c("Gene", "Pvalue", MACcateNumHeader , "markerIDs","markerAFs","Pvalue_Burden","Pvalue_SKAT","Pvalue_Burden_singleGCadjust","Pvalue_SKAT_singleGCadjust")		
+	     resultHeader = c("Gene", "Pvalue", "Pvalue_singleGCadjust", MACcateNumHeader , "markerIDs","markerAFs","Pvalue_Burden","Pvalue_SKAT","Pvalue_Burden_singleGCadjust","Pvalue_SKAT_singleGCadjust")		
 	   }
          }
        }else{
