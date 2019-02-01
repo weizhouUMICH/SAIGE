@@ -825,6 +825,17 @@ fitNULLGLMM = function(plinkFile = "",
       dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
   }
 
+
+  #check for perfect separation
+  if(traitType == "binary"){
+    out_checksep = checkPerfectSep(formula.null, data=dataMerge_sort)
+    covarColList <- covarColList[!(covarColList %in% out_checksep)]
+    formula = paste0(phenoCol,"~", paste0(covarColList,collapse="+"))
+    formula.null = as.formula(formula)
+    dataMerge_sort <- dataMerge_sort[, !(names(dataMerge_sort) %in% out_checksep)]
+  }
+
+
   if(isCovariateTransform){
     cat("qr transformation has been performed on covariates\n")
     out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
@@ -2295,4 +2306,28 @@ getsubGRM = function(sparseGRMFile=NULL,
     }
 
   }
+}
+
+
+checkPerfectSep<-function(formula, data){
+  X1<-model.matrix(formula,data=data)
+  X_name = colnames(X1)
+  X1 = as.matrix(X1[,-1])
+  X_name = X_name[-1]
+  colnames(X1) = X_name
+  formula.frame<-model.frame(formula,data=data)
+  Y = model.response(formula.frame, type = "any")
+  q = length(X_name)
+  colnamesDelete = c()
+  for(i in 1:q){
+    if (length(unique(X1[,i])) == 2){
+      sumTable = table(Y, X1[,i])
+      if(sum(sumTable == 0) > 0){
+        colnamesDelete = c(colnamesDelete, X_name[i])
+        cat("perfect seperation is detected! ", X_name[i], " will be excluded in the model\n")
+      }
+    }
+  }
+
+  return(colnamesDelete)
 }
