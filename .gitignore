@@ -1,12 +1,10 @@
 /archived
-<<<<<<< HEAD
 ./cget
 thirdParty/cget
 src/*.o
 src/*.so
 extdata/output/compare
 
-=======
 /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/extdata/input/makeQuantiPheno.R
 /extdata
 /extdata/output
@@ -17,4 +15,3 @@ extdata/output/compare
 ./thirdParty
 man/SAIGE-package.Rd
 thirdParty/bgen/.waf-1.8.13-4da49748f68a49832130c7ef124357f6/
->>>>>>> master-gene
