@@ -26,6 +26,106 @@ Rscript step1_fitNULLGLMM_old.R     \
         --LOCO=FALSE
 
 #step 2: perform the single-variant association tests
+Rscript step2_SPAtests.missingness.R	\
+        --vcfFile=./input/genotype_10markers.vcf.gz \
+        --vcfFileIndex=./input/genotype_10markers.vcf.gz.tbi \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype.missingness.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE	\
+	--condition=1:4_1/2
+
+Rscript step2_SPAtests.missingness.R    \
+	--vcfFile=./input/genotype_10markers.missingness.vcf.gz	\
+	--vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.tbi	\
+	--vcfField=GT \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype.missingness.TRUE.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsDropMissingDosages=TRUE	\
+	--condition=1:4_A/C
+
+#	--condition=1:4_A/C
+
+
+
+
+
+##gene-based
+Rscript step2_SPAtests.missingness.R \
+	--vcfFile=./input/genotype_10markers.missingness.vcf.gz \
+        --vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.tbi        \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0 \
+        --minMAC=0.5 \
+        --maxMAFforGroupTest=0.5       \
+	--sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary_cate_v2.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.gene_conditional.missingness.txt.gene \
+        --numLinesOutput=1 \
+        --groupFile=./input/groupFile_geneBasedtest_simulation.txt    \
+        --sparseSigmaFile=./output/example_binary_cate_v2.varianceRatio.txt_relatednessCutoff_0.125_500_randomMarkersUsed.sparseSigma.mtx	\
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsSingleVarinGroupTest=TRUE   \
+	--IsDropMissingDosages=TRUE    \
+	--condition=1:4_A/C 
+
+
+Rscript step2_SPAtests.R \
+	--vcfFile=./input/genotype_10markers.missingness.vcf.gz \
+        --vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.tbi        \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0 \
+        --minMAC=0.5 \
+        --maxMAFforGroupTest=0.5       \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary_cate_v2.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.gene_conditional.missingness.txt.gene \
+        --numLinesOutput=1 \
+        --groupFile=./input/groupFile_geneBasedtest_simulation.txt    \
+        --sparseSigmaFile=./output/example_binary_cate_v2.varianceRatio.txt_relatednessCutoff_0.125_500_randomMarkersUsed.sparseSigma.mtx       \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsSingleVarinGroupTest=TRUE   \
+        --condition=1:4_A/C
+
+
+
+Rscript step1_fitNULLGLMM.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --phenoFile=./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt \
+        --phenoCol=y_binary \
+        --covarColList=x1,x2 \
+        --sampleIDColinphenoFile=IID \
+        --traitType=binary        \
+        --outputPrefix=./output/example_binary \
+        --outputPrefix_varRatio=./output/example_binary_cate_v2      \
+        --nThreads=4 \
+        --LOCO=FALSE    \
+        --skipModelFitting=FALSE \
+        --IsSparseKin=TRUE      \
+        --sparseGRMFile=./output/example_binary_cate.varianceRatio.txt.sparseGRM.mtx    \
+        --sparseGRMSampleIDFile=./output/example_binary.varianceRatio.txt.sparseGRM.mtx.sample  \
+        --isCateVarianceRatio=TRUE
+
+
+
+
 Rscript step2_SPAtests.R \
 	--vcfFile=./input/genotype_10markers.vcf.gz \
         --vcfFileIndex=./input/genotype_10markers.vcf.gz.tbi \
@@ -53,7 +153,8 @@ Rscript step2_SPAtests_old_2.R \
         --varianceRatioFile=./output/example_binary.varianceRatio.txt \
         --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype_old_2.txt \
         --numLinesOutput=2 \
-        --IsOutputAFinCaseCtrl=TRUE
+        --IsOutputAFinCaseCtrl=TRUE	\
+	--condition=1:4_1/2
 
 
 
@@ -72,6 +173,23 @@ Rscript step2_SPAtests.R \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE     \
 	--condition=1:4_1/2	
+
+Rscript step2_SPAtests.missingness.R    \
+	--vcfFile=./input/genotype_10markers.vcf.gz \
+        --vcfFileIndex=./input/genotype_10markers.vcf.gz.tbi \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=4 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype_conditional.missingness.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --condition=1:4_1/2
+
+
 
 Rscript step2_SPAtests_old.R \
         --vcfFile=./input/genotype_10markers.vcf.gz \
@@ -195,6 +313,29 @@ Rscript step2_SPAtests.R \
         --IsOutputAFinCaseCtrl=TRUE	\
 	--IsSingleVarinGroupTest=TRUE		
 
+
+Rscript step2_SPAtests.missingness.R \
+        --vcfFile=./input/seedNumLow_126001_seedNumHigh_127000_nfam_1000_nindep_0.sav \
+        --vcfFileIndex=./input/seedNumLow_126001_seedNumHigh_127000_nfam_1000_nindep_0.sav.s1r \
+        --vcfField=DS \
+        --chrom=chr1 \
+        --minMAF=0 \
+        --minMAC=0.5 \
+        --maxMAFforGroupTest=0.01       \
+        --sampleFile=./input/samplelist.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary_cate.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary_cate.SAIGE.gene.missingness.txt \
+        --numLinesOutput=1 \
+        --groupFile=./input/groupFile_geneBasedtest.txt \
+        --sparseSigmaFile=./output/example_binary_cate.varianceRatio.txt.sparseSigma.mtx        \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsSingleVarinGroupTest=TRUE
+
+
+
+
+
 Rscript step2_SPAtests_old.R \
 	--vcfFile=./input/seedNumLow_126001_seedNumHigh_127000_nfam_1000_nindep_0.sav \
         --vcfFileIndex=./input/seedNumLow_126001_seedNumHigh_127000_nfam_1000_nindep_0.sav.s1r \
@@ -293,12 +434,30 @@ Rscript step2_SPAtests.R	\
         --minMAC=4 \
 	--vcfField=DS \
 	--chrom=1 \
-        --sampleFile=./input/samplefileforbgen_10000samples.txt \
+        --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output/example.rda \
         --varianceRatioFile=./output/example.varianceRatio.txt \
         --SAIGEOutputFile=./output/example.SAIGE.sav.txt \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE
+
+Rscript step2_SPAtests.missingness.R \
+	--savFile=./input/dosage_10markers.sav  \
+        --savFileIndex=./input/dosage_10markers.sav.s1r \
+        --minMAF=0.0001 \
+        --minMAC=4 \
+        --vcfField=DS \
+        --chrom=1 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output/example.rda \
+        --varianceRatioFile=./output/example.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example.SAIGE.sav.missingness.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE
+
+
+
+
 
 Rscript step2_SPAtests.R \
         --vcfFile=./input/genotype_10markers.vcf.gz \
@@ -411,4 +570,21 @@ Rscript step2_SPAtests.R \
 	--condition=chr1:32302_A/C 
 
 
-
+Rscript step2_SPAtests.missingness.R \
+	        --vcfFile=./input/seedNumLow_126001_seedNumHigh_127000_nfam_1000_nindep_0.sav \
+        --vcfFileIndex=./input/seedNumLow_126001_seedNumHigh_127000_nfam_1000_nindep_0.sav.s1r \
+        --vcfField=DS \
+        --chrom=chr1 \
+        --minMAF=0 \
+        --minMAC=0.5 \
+        --maxMAFforGroupTest=0.01       \
+        --sampleFile=./input/samplelist.txt \
+        --GMMATmodelFile=./output/example_quantitative.rda \
+        --varianceRatioFile=./output/example_quantitative_cate.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_quantitative.SAIGE.gene_conditional.missingness.txt \
+        --numLinesOutput=1 \
+        --groupFile=./input/groupFile_geneBasedtest.txt    \
+        --sparseSigmaFile=./output/example_quantitative_cate.varianceRatio.txt_relatednessCutoff_0.125.sparseSigma.mtx       \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsSingleVarinGroupTest=TRUE   \
+        --condition=chr1:32302_A/C

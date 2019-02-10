@@ -1832,6 +1832,17 @@ getCovMandOUT_cond_pre = function(dosage_cond, cateVarRatioMinMACVecExclude, cat
         covM = matrix(0,nrow=Mcond+1, ncol = Mcond+1)
 
         covMsub = getCovM_nopcg(G1 = dosage_cond, G2 = dosage_cond, obj.glmm.null$obj.noK$XV, obj.glmm.null$obj.noK$XXVX_inv, sparseSigma=sparseSigma, mu2 = mu2.a)
+
+	#print("obj.glmm.null$obj.noK$X1")
+	#print(obj.glmm.null$obj.noK$X1)
+	#covMsubnew = getCovM_nopcg_new(G1 = dosage_cond, G2 = dosage_cond, obj.glmm.null$obj.noK$X1,  sparseSigma=sparseSigma, mu2 = mu2.a)
+
+	#print("covMsub")
+	#print(covMsub)
+
+	#print("covMsubnew")
+	#print(covMsubnew)
+
         print("TEST3")
         covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
         GratioMatrix_cond = getVarRatio(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)

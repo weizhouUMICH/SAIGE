@@ -102,10 +102,10 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
 
       it.group_id();
       it.sites();
-      std::cout << "cnt: " << cnt << std::endl;	
+      //std::cout << "cnt: " << cnt << std::endl;	
 
       std::string marker_id = it->chromosome() + ":" + std::to_string(it->position()) + "_" + it->ref() + "/" + it->alt();
-      std::cout << "marker_id " << marker_id << std::endl;	
+      //std::cout << "marker_id " << marker_id << std::endl;	
       //std::cout << it->prop("R2") << std::endl; 
       std::string markerInfo_str = it->prop("R2");
       float markerInfo = strtof((markerInfo_str).c_str(),0);
