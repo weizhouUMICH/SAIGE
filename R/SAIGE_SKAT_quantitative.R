@@ -63,6 +63,14 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
                 Score = as.vector(t(G1) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
 
+		print("G1")	
+		print(G1)
+
+		print("obj$residuals")
+		print(obj$residuals)
+		
+		print("obj$theta")
+		print(obj$theta)
                 #compute Score test statistics after conditionining
                 if(!is.null(G2_cond)){
                         #G2_cond_tilde<- G2_cond  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G2_cond)
@@ -82,7 +90,25 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                 G2_tilde_Ps_G2_tilde = getCovM_nopcg(G1=G2_cond, G2=G2_cond, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
                                 G1_tilde_Ps_G2_tilde = getCovM_nopcg(G1=G1, G2=G2_cond, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
                                 G2_tilde_Ps_G1_tilde = t(G1_tilde_Ps_G2_tilde) 
+
+				print("G2_tilde_Ps_G2_tilde")
+				print(G2_tilde_Ps_G2_tilde)
+
+				print("G1_tilde_Ps_G2_tilde")
+                                print(G1_tilde_Ps_G2_tilde)
+
+				print("GratioMatrixall")
+				print(GratioMatrixall)
+
+
                                 G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv = (G1_tilde_Ps_G2_tilde*(GratioMatrixall[1:m,c((m+1):(m+m_cond))]))%*%(solve(G2_tilde_Ps_G2_tilde*(GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))])))
+				print("G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv")
+				print(G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv)
+				print("Score")
+				print(Score)
+				print("T2")
+				print(T2)
+
                                 Score_cond = Score - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% T2
                                 Phi_cond = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m]) - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% (G2_tilde_Ps_G1_tilde * (GratioMatrixall[c((m+1):(m+m_cond)), 1:m]))
                                 Phi_cond = as.matrix(Phi_cond)
@@ -134,8 +160,10 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 		m_new = length(Score)
                 #Perform the SKAT test
                 if(!is.null(G2_cond)){
+			
 			print(Phi_cond)
-#			cat("Phi_cond ", Phi_cond, "\n")
+			#cat("Phi_cond ", Phi_cond, "\n")
+			cat("Score_cond ", Score_cond, "\n")
 			if(m_new == 1){
                         	#if(sum(diag(Phi_cond) < 10^-60) > 0){
                         	if(sum(diag(Phi_cond) < (.Machine$double.xmin)^(1/4)) > 0){
@@ -261,7 +289,7 @@ getGratioMatrix = function(MACvec_indVec, ratioVec){
 
 # Function to calculate t(G1_tilde) %*% Sigma_Inverse %*% G1_tilde
 # need to get SI_XXVX_inv first
-getCovM_nopcg<-function(G1, G2, XV, XXVX_inv, sparseSigma=NULL, mu2 = NULL){
+getCovM_nopcg<-function(G1, G2, XV, XXVX_inv, sparseSigma=NULL, mu2){
 
         # XV<-obj.noK$XV; XXVX_inv<-obj.noK$XXVX_inv
         nSNP2<-ncol(G2)
@@ -280,9 +308,7 @@ getCovM_nopcg<-function(G1, G2, XV, XXVX_inv, sparseSigma=NULL, mu2 = NULL){
                         Mat[,i] <-(A1 - t(XV_G1) %*% A2)[,1]
                 }
         }else{
-                 if(!is.null(mu2)){
-                        G2 = G2 * mu2
-                 }
+                 G2 = G2 * mu2
                  SI_A_G2<-XXVX_inv %*% XV_G2
                  A1<- t(G1) %*% (G2 - SI_A_G2)
                  A2<- t(XXVX_inv) %*% (G2 - SI_A_G2)

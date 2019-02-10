@@ -64,7 +64,8 @@ SPAGMMATtest = function(dosageFile = "",
 		 rangestoIncludeFile = "",
 		 chrom = "",
 		 start = 1,
-		 end = 250000000,	
+		 end = 250000000,
+		 IsDropMissingDosages = FALSE,	
 		 minMAC = 0.5, 
                  minMAF = 0,
 		 maxMAFforGroupTest = 0.5,
@@ -127,8 +128,8 @@ SPAGMMATtest = function(dosageFile = "",
     #print(sampleInModel$IID[1:10])
 #    print("HERERERE")
   #  gc(full=T, verbose=T)
-    obj.glm.null = obj.glmm.null$obj.glm.null
-    obj.noK = obj.glmm.null$obj.noK   
+    #obj.glm.null = obj.glmm.null$obj.glm.null
+    #obj.noK = obj.glmm.null$obj.noK   
     traitType = obj.glmm.null$traitType
 #    gc(full=T, verbose=T)
     if(!LOCO | is.null(obj.glmm.null$LOCO)){
@@ -237,10 +238,6 @@ SPAGMMATtest = function(dosageFile = "",
     if(!file.exists(bgenFile)){
       stop("ERROR! bgenFile ", bgenFile, " does not exsit\n")
     }
-    #bgenFileIndex is not necessary if there is no query
-    #if(!file.exists(bgenFileIndex)){
-    #stop("ERROR! bgenFileIndex ", bgenFileIndex, " does not exsit\n")
-    #}
     dosageFileType = "bgen"
 
   }else if(vcfFile != ""){
@@ -268,6 +265,20 @@ SPAGMMATtest = function(dosageFile = "",
       vcfFileIndex = savFileIndex
     }	
     dosageFileType = "vcf"
+  }
+
+
+  if(IsDropMissingDosages){
+#    if(isGroupTest){
+#      stop("Samples with missing dosages have been set to be dropped from the analysis, which is not feasible for gene-based tests.\n Please set IsDropMissingDosages = false for gene-based tests\n")
+#    }else{
+     cat("Samples with missing dosages will be dropped from the analysis\n")
+     if(dosageFileType == "plain"){
+        stop("ERROR! plain text dosages are not supported for missing dosages\n")
+     }
+#    }    
+  }else{
+    cat("Missing dosages will be mean imputed for the analysis\n")
   }
 
 
@@ -322,7 +333,7 @@ SPAGMMATtest = function(dosageFile = "",
       Gx_cond = getGenoOfGene_vcf(conditionlist, minInfo)
     #print("HERE")
     #print(Gx_cond)	
-    dosage_cond = Matrix:::sparseMatrix(i = as.vector(Gx_cond$iIndex), j = as.vector(Gx_cond$jIndex), x = as.vector(Gx_cond$dosages), symmetric = FALSE, dims = c(N, Gx_cond$cnt))
+      dosage_cond = Matrix:::sparseMatrix(i = as.vector(Gx_cond$iIndex), j = as.vector(Gx_cond$jIndex), x = as.vector(Gx_cond$dosages), symmetric = FALSE, dims = c(N, Gx_cond$cnt))
     #print(dim(Gx_cond))	
       #Gmat = matrix(Gx$dosages, byrow=F, ncol = cntMarker)
       #Gmat = as(Gmat, "sparseMatrix")
@@ -373,32 +384,28 @@ SPAGMMATtest = function(dosageFile = "",
       write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
     } #if(!isGroupTest){ 
 
-
-
     if(SPAcutoff < 10^-2){
       Cutoff=10^-2
     }else{
       Cutoff = SPAcutoff
     }
 
-    y = obj.glm.null$y
+    y = obj.glmm.null$obj.glm.null$y
     y1Index = which(y == 1)
     NCase = length(y1Index)
     y0Index = which(y == 0)
     NCtrl = length(y0Index)
 
     cat("Analyzing ", NCase, " cases and ",NCtrl, " controls \n")
-
-
     N = length(y)
-    obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
+    obj.glmm.null$obj.noK$XVX_inv_XV = obj.glmm.null$obj.noK$XXVX_inv * obj.glmm.null$obj.noK$V
     indChromCheck = FALSE
     if(!obj.glmm.null$LOCO){
       mu = obj.glmm.null$fitted.values
       mu.a<-as.vector(mu)
       mu2.a<-mu.a *(1-mu.a)
-      obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
-      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+      obj.glmm.null$obj.noK$XVX = t(obj.glmm.null$obj.noK$X1) %*% (obj.glmm.null$obj.noK$X1 * mu2.a)
+      obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
     }else if(chrom != ""){
       chrom_v2 = as.character(chrom)
       chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
@@ -411,8 +418,8 @@ SPAGMMATtest = function(dosageFile = "",
         mu.a<-as.vector(mu)
         mu2.a<-mu.a *(1-mu.a)
       }
-      obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
-      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+      obj.glmm.null$obj.noK$XVX = t(obj.glmm.null$obj.noK$X1) %*% (obj.glmm.null$obj.noK$X1 * mu2.a)
+      obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
     }else{
       cat("WARNING: LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
       indChromCheck = TRUE
@@ -421,7 +428,6 @@ SPAGMMATtest = function(dosageFile = "",
 
   }else if(traitType == "quantitative"){
     cat("It is a quantitative trait\n")
-    mu2.a = NULL
     if(!isGroupTest){
       if(!isCondition){
         resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
@@ -431,11 +437,12 @@ SPAGMMATtest = function(dosageFile = "",
       write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
     }
 
-    y = obj.glm.null$y
+    y = obj.glmm.null$obj.glm.null$y
     N = length(y)
+    mu2.a = rep(1, N)
     tauVec = obj.glmm.null$theta
-    obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1)
-    obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
+    obj.glmm.null$obj.noK$XVX = t(obj.glmm.null$obj.noK$X1) %*% (obj.glmm.null$obj.noK$X1)
+    obj.glmm.null$obj.noK$XVX_inv_XV = obj.glmm.null$obj.noK$XXVX_inv * obj.glmm.null$obj.noK$V
     indChromCheck = FALSE
 
 
@@ -443,7 +450,7 @@ SPAGMMATtest = function(dosageFile = "",
     if(!obj.glmm.null$LOCO){
       mu = obj.glmm.null$fitted.values
       mu.a<-as.vector(mu)
-      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+      obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
 
     }else if(chrom != ""){
       chrom_v2 = as.character(chrom)
@@ -455,7 +462,7 @@ SPAGMMATtest = function(dosageFile = "",
         mu = obj.glmm.null$fitted.values
         mu.a<-as.vector(mu)
       }
-      obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+      obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
 
     }else{
       cat("WARNING: LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
@@ -475,50 +482,9 @@ SPAGMMATtest = function(dosageFile = "",
 
 
   if(isCondition){
-    OUT_cond = NULL
-    for(i in 1:ncol(dosage_cond)){
-      G0  = dosage_cond[,i]
-      AC = sum(G0)
-      N  = length(G0)
-      AF = AC/(2*N)
-      MAF = AF
-      MAC = AC
-      if(AF > 0.5){
-        MAF = 1-AF
-        MAC = 2*N - MAC
-      }
-
-      varRatio = getVarRatio(G0, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
-      rowHeader = paste0("condMarker_",i)
-
-      if(traitType == "binary"){
-        out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma)
-	OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
-
-      }else if(traitType == "quantitative"){
-	print("TEST")
-        out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma)
-	print("TEST2")
-        OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
-      }
-   
-       OUT_cond = as.matrix(OUT_cond)
-
-    } # end of for(i in 1:ncol(dosage_cond)){
-
-   #getCovM_nopcg<-function(G1, G2, XV, XXVX_inv, sparseSigma=NULL, mu2 = NULL){
-
-    #dosage_cond_tilde<-dosage_cond  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% dosage_cond)
-    Mcond = ncol(dosage_cond)
-    covM = matrix(0,nrow=Mcond+1, ncol = Mcond+1)
-
-    covMsub = getCovM_nopcg(G1 = dosage_cond, G2 = dosage_cond, obj.noK$XV, obj.noK$XXVX_inv, sparseSigma=sparseSigma, mu2 = mu2.a)	
-    print("TEST3")
-    covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
-
-    GratioMatrix_cond = getVarRatio(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
-    G2tilde_P_G2tilde_inv = solve(covMsub * GratioMatrix_cond)
-
+    condpre = getCovMandOUT_cond_pre(dosage_cond=dosage_cond, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude, ratioVec=ratioVec, obj.glmm.null = obj.glmm.null, sparseSigma = sparseSigma, IsSparse=IsSparse, mu = mu, mu.a = mu.a, mu2.a = mu2.a, Cutoff = Cutoff)
+    OUT_cond = condpre$OUT_cond
+    G2tilde_P_G2tilde_inv = condpre$G2tilde_P_G2tilde_inv	
   }else{# end of if(isCondition)
     OUT_cond = NULL
     G2tilde_P_G2tilde_inv = NULL
@@ -555,7 +521,6 @@ SPAGMMATtest = function(dosageFile = "",
     if(nrow(sampleListinDosage) != nsamplesinPlain){
         stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the plain dosage file\nPlease check again. Please note that the sample file needs to have no header.")
     }
-
 
     }else if (dosageFileType == "bgen"){
       if(idstoExcludeFile != ""){
@@ -640,6 +605,7 @@ SPAGMMATtest = function(dosageFile = "",
         }
 
         if(Mtest == mth){isVariant = FALSE}
+        indexforMissing = NULL
 
       }else if (dosageFileType == "bgen"){
         if(isQuery){
@@ -661,6 +627,7 @@ SPAGMMATtest = function(dosageFile = "",
         }	
 
         if(Mtest == mth){isVariant = FALSE}
+        indexforMissing = Gx$indexforMissing
 
       }else if(dosageFileType == "vcf"){
         Gx = getGenoOfnthVar_vcfDosage(mth)
@@ -675,6 +642,7 @@ SPAGMMATtest = function(dosageFile = "",
 	  cat("CHR ", CHR , "\n")
         }
         isVariant = getGenoOfnthVar_vcfDosage_pre()
+        indexforMissing = Gx$indexforMissing
       }
 
       MAC = AC
@@ -683,8 +651,8 @@ SPAGMMATtest = function(dosageFile = "",
         MAC = 2*N - AC
         MAF = 1 - AF
       }
-
-
+     
+  
       if(MAF >= testMinMAF & markerInfo >= minInfo){
          numPassMarker = numPassMarker + 1
          varRatio = getVarRatio(G0, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
@@ -699,63 +667,127 @@ SPAGMMATtest = function(dosageFile = "",
              mu.a<-as.vector(mu)
 	     if(traitType == "binary"){
                mu2.a<-mu.a *(1-mu.a)
-	     }
+	     }else if(traitType == "quantitative"){
+		mu2.a = rep(1,N)
+	     }	
       	   }else{
              mu = obj.glmm.null$fitted.values
              mu.a<-as.vector(mu)
 	     if(traitType == "binary"){
                mu2.a<-mu.a *(1-mu.a)
-	     }
+	     }else if(traitType == "quantitative"){
+                mu2.a = rep(1,N)
+             }
            }
 
-      	   obj.noK$XVX = t(obj.noK$X1) %*% (obj.noK$X1 * mu2.a)
-           obj.noK$XVX_inv_XV = obj.noK$XXVX_inv * obj.noK$V
-           obj.noK$S_a = colSums(obj.noK$X1 * (y - mu.a))
+      	   obj.glmm.null$obj.noK$XVX = t(obj.glmm.null$obj.noK$X1) %*% (obj.glmm.null$obj.noK$X1 * mu2.a)
+           obj.glmm.null$obj.noK$XVX_inv_XV = obj.glmm.null$obj.noK$XXVX_inv * obj.glmm.null$obj.noK$V
+           obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
          }
 
-  
-	 ##conditional analysis
-   	 if(isCondition){	
 
-           Gall = cbind(G0, dosage_cond)
+	if(IsDropMissingDosages & isCondition){
+		indexforMissing = unique(c(indexforMissing, Gx_cond$indexforMissing))
+	}
 
-	   GratioMatrixall = getVarRatio(Gall, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)	
-           #cat("GratioMatrixall\n")
-           #print(GratioMatrixall)    	
 
-           if(AF > 0.5){
-             G0_v2 = 2 - G0
+    if(IsDropMissingDosages & length(indexforMissing) > 0){
+        missingind = seq(1, length(G0))[-(indexforMissing + 1)]
+	cat("Removing ", length(indexforMissing), " samples with missing dosages/genotypes\n")
+
+        G0 = G0[missingind]
+	subsetModelResult = subsetModelFileforMissing(obj.glmm.null, missingind, mu, mu.a ,mu2.a)	
+	obj.glmm.null.sub = subsetModelResult$obj.glmm.null.sub
+	mu.a.sub = subsetModelResult$mu.a.sub
+	mu.sub = subsetModelResult$mu.sub
+	mu2.a.sub = subsetModelResult$mu2.a.sub
+	rm(subsetModelResult)
+
+        y.sub = obj.glmm.null.sub$obj.glm.null$y
+	N.sub = length(G0)
+	AC_Allele2.sub = sum(G0)
+	AF_Allele2.sub = AC_Allele2.sub/(2*N.sub)
+	rowHeader[6] = AC_Allele2.sub
+	rowHeader[7] = AF_Allele2.sub
+
+        if(traitType == "binary"){
+          y1Index.sub = which(y.sub == 1)
+          NCase.sub = length(y1Index.sub)
+          y0Index.sub = which(y.sub == 0)
+	  NCtrl.sub = length(y0Index.sub)
+	}
+
+	sparseSigma.sub = sparseSigma
+	if(!is.null(sparseSigma)){sparseSigma.sub = sparseSigma[missingind, missingind]}
+	####Update the conditional analysis after dropping missing genotypes
+        if(isCondition){
+        	cat("Removing ", length(indexforMissing), " samples from the conditional marker\n")
+                dosage_cond.sub = dosage_cond[missingind, ]
+                dosage_cond.sub = as(dosage_cond.sub, "sparseMatrix")
+                ######re-test the conditional variants after removing samples with missing genotypes
+		condpre.sub = getCovMandOUT_cond_pre(dosage_cond=dosage_cond.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude, ratioVec=ratioVec, obj.glmm.null = obj.glmm.null.sub, sparseSigma = sparseSigma.sub, IsSparse=IsSparse,  mu = mu.sub, mu.a = mu.a.sub, mu2.a = mu2.a.sub, Cutoff = Cutoff)
+    		OUT_cond.sub = condpre$OUT_cond
+    		G2tilde_P_G2tilde_inv.sub = condpre.sub$G2tilde_P_G2tilde_inv
+		condpre2.sub = getCovMandOUT_cond(G0 = G0, dosage_cond = dosage_cond.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, obj.glmm.null = obj.glmm.null.sub, sparseSigma = sparseSigma.sub, covM = condpre.sub$covM, mu2.a = mu2.a.sub)
+          	G1tilde_P_G2tilde.sub = condpre2.sub$G1tilde_P_G2tilde
+          	GratioMatrixall.sub = condpre2.sub$GratioMatrixall
+        }
+
+	if(traitType == "binary"){
+	  if (NCase.sub == 0 | NCtrl.sub == 0) {	
+	   out1 = c(rep(NA, 8), NCase.sub, NCtrl.sub)
+	   if(!IsOutputAFinCaseCtrl){
+             OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1)))	
+	   }else{
+	     if(NCase.sub == 0){
+		AFCase = NA
+		AFCtrl = sum(G0[y0Index.sub])/(2*NCtrl.sub)		
+	     }else if(NCtrl.sub == 0){
+		AFCtrl = NA
+		AFCase = sum(G0[y1Index.sub])/(2*NCase.sub)
+	     }	
+	     OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1), AFCase, AFCtrl))	
+	   }	 	
+
+	  }else{ #if (NCase.sub == 0 | NCtrl.sub == 0) {
+           out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
+	   if(!IsOutputAFinCaseCtrl){
+             OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1)))
            }else{
-             G0_v2 = G0
+             AFCase = sum(G0[y1Index.sub])/(2*NCase.sub)
+             AFCtrl = sum(G0[y0Index.sub])/(2*NCtrl.sub)
+             OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1), AFCase, AFCtrl))
            }
-           #G0_tilde = G0_v2 - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0_v2)
+	  }
+         }else if(traitType == "quantitative"){
 
-           #if(traitType == "quantitative"){  
-           #  covM[1,2:ncol(covM)] = getcovM(G0_tilde, dosage_cond_tilde, sparseSigma)			
-           #}else if(traitType == "binary"){
-           #  covM[1,2:ncol(covM)] = getcovM(G0_tilde, dosage_cond_tilde, sparseSigma, mu2 = mu2.a)
-           #}
-	   G0_v2 = matrix(G0_v2, ncol=1)
+           out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0,obj.glmm.null.sub$obj.noK, AC, AF, y.sub, mu.sub, varRatio, tauVec, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
 
-	   covM[1,2:ncol(covM)] = getCovM_nopcg(G1 = G0_v2, G2 = dosage_cond, obj.noK$XV, obj.noK$XXVX_inv, sparseSigma=sparseSigma, mu2 = mu2.a)
-	   
-
-
-	   print("covM")
-	   print(covM)
-
-
-           G1tilde_P_G2tilde = covM[1,c(2:ncol(covM))]*(GratioMatrixall[1,c(2:ncol(covM))])
+           if(!isCondition){
+             OUT = rbind(OUT, c(rowHeader, N.sub, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
+           }else{
+             OUT = rbind(OUT, c(rowHeader, N.sub, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2, out1$Tstat_c,  out1$p.value.c, out1$var1_c, out1$BETA_c, out1$SE_c))
+           }
+         }
+	
+     }else{ #if(IsDropMissingDosages & length(indexforMissing) > 0){
+	          ##conditional analysis
+         if(isCondition){
+           condpre2 = getCovMandOUT_cond(G0 = G0, dosage_cond = dosage_cond, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, obj.glmm.null = obj.glmm.null, sparseSigma = sparseSigma, covM = condpre$covM, mu2.a = mu2.a)
+           G1tilde_P_G2tilde = condpre2$G1tilde_P_G2tilde
+           GratioMatrixall = condpre2$GratioMatrixall
 
          }else{ #end of if(isCondition)
            G1tilde_P_G2tilde = NULL
            GratioMatrixall = NULL
-         }
-		
+         }	
+
+
+
 
 
   	 if(traitType == "binary"){
-           out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+           out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 
 
     	   if(!IsOutputAFinCaseCtrl){
@@ -767,7 +799,7 @@ SPAGMMATtest = function(dosageFile = "",
            }
          }else if(traitType == "quantitative"){
 
-           out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+           out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.glmm.null$obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 
            if(!isCondition){
              OUT = rbind(OUT, c(rowHeader, N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
@@ -776,6 +808,9 @@ SPAGMMATtest = function(dosageFile = "",
            }
          }
   
+     } #end of else{ #if(IsDropMissingDosages & length(indexforMissing) > 0){
+
+
      } #end of the if(MAF >= bgenMinMaf & markerInfo >= bgenMinInfo)
       #if(mth %% 100000 == 0 | mth == Mtest){
        if(mth %% numLinesOutput == 0 | !isVariant){
@@ -793,6 +828,7 @@ SPAGMMATtest = function(dosageFile = "",
    }else{ #end if(!isGroupTest){
 #	 gc(verbose=T, full=T)	
    #########Group Test
+
    
      OUT_single = NULL
      if(IsSingleVarinGroupTest){
@@ -862,8 +898,14 @@ SPAGMMATtest = function(dosageFile = "",
          if(length(marker_group_line) == 0 ){
 	   break	
          }else{
-           geneID = strsplit(marker_group_line, split="\t")[[1]][1]
+	   marker_group_line_list = strsplit(marker_group_line, split="\t")[[1]] 
+	   geneID = marker_group_line_list[1]
+           #geneID = strsplit(marker_group_line, split="\t")[[1]][1]
 	   cat("geneID: ", geneID, "\n")	
+	   if(length(marker_group_line_list) <= 1){
+	    stop("no marker IDs are found for gene ", geneID, ". Please make sure the group file is tab delimited.", "\n")
+	   }
+
 	   #print(lsos())
 	   #print(memory.profile())
            if(dosageFileType == "vcf"){
@@ -891,172 +933,62 @@ SPAGMMATtest = function(dosageFile = "",
 			Gmat = matrix(Gx$dosages, byrow=F, ncol = cntMarker)
 			Gmat = as(Gmat, "sparseMatrix")	
 		}
-		#print(colSums(Gmat))
-		#cat("colSums(Gmat)\n")
-		#print(colSums(Gmat))
 
-#	   cat("object.size(obj.glmm.null): ", object.size(obj.glmm.null), "\n")	
-#	   gc(verbose=T, full=T)	
-	
-#	   Rprof(tf <- "/net/hunt/disk2/zhowei/project/SAIGE/debug/Wenjian/Nov4/rprof.log", memory.profiling=TRUE)
-             testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=dosage_cond, G2_cond_es=OUT_cond[,1], kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu2 = mu2.a)})
-	     cat("time for SAIGE_SKAT_withRatioVec\n")
-	     print(testtime)	
-#	     gc(verbose=T, full=T)	
-#	     Rprof(NULL)
-#	     print(summaryRprof(tf))
-#		break
-	    if(length(saigeskatTest$indexNeg) > 0){	
-	    	Gmat = Gmat[,-saigeskatTest$indexNeg]
-		Gmat = as.matrix(Gmat)
-		Gx$markerIDs = Gx$markerIDs[-saigeskatTest$indexNeg]
-		Gx$markerAFs = Gx$markerAFs[-saigeskatTest$indexNeg]
-	    }	
-             cat("saigeskatTest$p.value: ", saigeskatTest$p.value, "\n")
 
-	if(length(Gx$markerIDs > 0)){
-
-	     if(IsSingleVarinGroupTest){
-	       for(nc in 1:ncol(Gmat)){
-	         G0_single = Gmat[,nc]
-		 AC = sum(G0_single)
-		 AF = AC/(2*length(G0_single))
-		 MAC = min(AC, 2*length(G0_single)-AC)
-		 MAF = MAC/(2*N)
-		 varRatio = getVarRatio(G0_single, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
-		 varRatio_single = varRatio * singleGClambda			
-
-	 	 if(traitType == "quantitative"){
-#		Rprof(tf <- "/net/hunt/disk2/zhowei/project/SAIGE/debug/Wenjian/Nov4/rprof_single.log", memory.profiling=TRUE)	
-		   out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma)
-		   if(singleGClambda != 1){
-		     out1b = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.noK, AC, AF, y, mu, varRatio_single, tauVec, sparseSigma=sparseSigma)  
-		   }
-#		Rprof(NULL)
-#print(summaryRprof(tf))
-
-  		  }else if(traitType == "binary"){
-  		    out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma)
-		    #print(out1)	
-	            #cat("out1\n")
-
-		    if(singleGClambda != 1){ 
-		      out1b = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio_single, Cutoff, rowHeader, sparseSigma=sparseSigma)
-		    }	
-		  }
-
-		  if(singleGClambda != 1){
-		    OUT_single = rbind(OUT_single, c(as.character((Gx$markerIDs)[nc]), as.numeric(AC), as.numeric((Gx$markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1b$p.value), as.numeric(out1$var1), as.numeric(out1$var2)))
-		  }else{
-		     OUT_single = rbind(OUT_single, c(as.character((Gx$markerIDs)[nc]), as.numeric(AC), as.numeric((Gx$markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1$var1), as.numeric(out1$var2)))	
-		  }
- 		}
-	      }
-	    }# if(length(Gx$markerIDs > 0)){
-
-	    if(isCondition){
-	       if(saigeskatTest$m > 0){
-	       outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$p.value.cond, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
-
-		if(method=="optimal.adj" & saigeskatTest$m > 0){
-#			print("HERERERERE")
-#			print(saigeskatTest)
-		if(saigeskatTest$m > 1){
-		if(!is.na(saigeskatTest$param[[1]][1])){
-
-		  p.val.vec = saigeskatTest$param$p.val.each
-		  rho.val.vec = saigeskatTest$param$rho
-		  outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
-
-		  if(!is.na(saigeskatTest$condOut$param[1])){
-
-		    p.val.cond.vec = saigeskatTest$condOut$param$p.val.each
-                    rho.val.cond.vec = saigeskatTest$condOut$param$rho
-                    outVec = c(outVec, p.val.cond.vec[which(rho.val.cond.vec == 1)], p.val.cond.vec[which(rho.val.cond.vec == 0)])
-		  }else{
-		    outVec = c(outVec, 1, 1)
-		  }
-
+		if(isCondition){
+			indexforMissing = unique(c(Gx$indexforMissing, Gx_cond$indexforMissing))
 		}else{
-			outVec = c(outVec, NA, NA, NA, NA)
-
+			indexforMissing = unique(Gx$indexforMissing)
 		}
-	}else{	
-		outVec = c(outVec, NA, NA, NA, NA)
+		
+
+
+
+	     if(IsDropMissingDosages & length(indexforMissing) > 0){	
+
+	        missingind = seq(1, nrow(Gmat))[-(indexforMissing + 1)]
+		subsetModelResult = subsetModelFileforMissing(obj.glmm.null, missingind, mu, mu.a ,mu2.a)
+        	obj.glmm.null.sub = subsetModelResult$obj.glmm.null.sub
+        	mu.a.sub = subsetModelResult$mu.a.sub
+        	mu.sub = subsetModelResult$mu.sub
+       		mu2.a.sub = subsetModelResult$mu2.a.sub
+        	rm(subsetModelResult)
+
+		y.sub = obj.glmm.null.sub$obj.glm.null$y
+
+        	if(traitType == "binary"){
+          		y1Index.sub = which(y.sub == 1)
+          		NCase.sub = length(y1Index.sub)
+          		y0Index.sub = which(y.sub == 0)
+          		NCtrl.sub = length(y0Index.sub)
+        	}
+
+        	sparseSigma.sub = sparseSigma
+        	if(!is.null(sparseSigma)){sparseSigma.sub = sparseSigma[missingind, missingind]}
+	       	Gmat = Gmat[missingind,]
+
+		if(isCondition){
+                	cat("Removing ", length(indexforMissing), " samples from the conditional marker\n")
+                	dosage_cond.sub = dosage_cond[missingind, ]
+                	dosage_cond.sub = as(dosage_cond.sub, "sparseMatrix")
+
+
+			condpre.sub = getCovMandOUT_cond_pre(dosage_cond=dosage_cond.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude, ratioVec=ratioVec, obj.glmm.null = obj.glmm.null.sub, sparseSigma = sparseSigma.sub, IsSparse=IsSparse,  mu = mu.sub, mu.a = mu.a.sub, mu2.a = mu2.a.sub, Cutoff = Cutoff)
+	                OUT_cond.sub = condpre.sub$OUT_cond
+        	        G2tilde_P_G2tilde_inv.sub = condpre.sub$G2tilde_P_G2tilde_inv
+
+		}else{ #if(isCondition){
+			dosage_cond.sub = NULL
+			OUT_cond.sub = NULL
+		}
+		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, singleGClambda = singleGClambda, mu.a = mu.a.sub, mu2.a = mu2.a.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff)
+
+	     }else{#if(IsDropMissingDosages & length(indexforMissing) > 0){	
+
+		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu.a = mu.a, mu2.a = mu2.a, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff)	
 	}
-		}
+	outVec = groupTestResult$outVec
 
-	}else{ #end if(saigeskatTest$m > 0){
-
-		outVec = c(geneID, NA, NA,  saigeskatTest$markerNumbyMAC, NA, NA, NA, NA)
-		if(method=="optimal.adj"){
-			outVec = c(outVec, NA, NA)
-		}
-	}
-
-
-	    }else{ #end of if(isCondition){
-	
-
-		if(saigeskatTest$m > 0){
-
-	      if(singleGClambda == 1){
-
-	        outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
-	      }else{
-	        outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$P_singlGCadj, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
-	      }
-
-	}else{#end of if(saigeskatTest$m > 0){
-		if(singleGClambda == 1){
-
-                outVec = c(geneID, NA, saigeskatTest$markerNumbyMAC, NA, NA) 
-
-              }else{
-                outVec = c(geneID, NA, NA, saigeskatTest$markerNumbyMAC, NA, NA) 
-              }		
-	}	
-
-
-	      if(method=="optimal.adj" & saigeskatTest$m > 0){
-                #rho = 1 for burden, 0 for skat
-	if(saigeskatTest$m > 1){
-
-		if(!is.na(saigeskatTest$param[[1]][1])){
-                p.val.vec = saigeskatTest$param$p.val.each
-                rho.val.vec=saigeskatTest$param$rho
-                outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
-		if(singleGClambda != 1){
-		  p.val.GCadj.vec = saigeskatTest$GCadjOut$param$p.val.each
-		  rho.val.GCadj.vec = saigeskatTest$GCadjOut$param$rho
-		  outVec = c(outVec, p.val.GCadj.vec[which(rho.val.GCadj.vec == 1)], p.val.GCadj.vec[which(rho.val.GCadj.vec == 0)])
-		}
-		}else{
-			outVec = c(outVec, NA, NA)
-			if(singleGClambda != 1){
-				outVec = c(outVec, NA, NA)
-			}
-		}	
-
-            }else{
-		outVec = c(outVec, NA, NA)
-		if(singleGClambda != 1){
-			outVec = c(outVec, NA, NA)
-		}
-	}#else if(saigeskatTest$m > 1)
-
-	} # else if(method=="optimal.adj" & saigeskatTest$m > 0){
-
-	if(method=="optimal.adj" & saigeskatTest$m == 0){
-		outVec = c(outVec, NA, NA)
-                if(singleGClambda != 1){
-                        outVec = c(outVec, NA, NA)
-                }
-	}
-
-
-
-	    }# if(isCondition){
 
 	    OUT = rbind(OUT, outVec)
 
@@ -1071,7 +1003,7 @@ SPAGMMATtest = function(dosageFile = "",
 	      if(IsSingleVarinGroupTest){	
 		#print(OUT_single)
 		#cat("OUT_single\n")
-	        OUT_single = as.data.frame(OUT_single)
+	        OUT_single = as.data.frame(groupTestResult$OUT_single)
                 #print(OUT_single)
                 #cat("OUT_single\n")
 	        write.table(OUT_single, SAIGEOutputFile_single, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)	
@@ -1096,7 +1028,8 @@ SPAGMMATtest = function(dosageFile = "",
   #}else{
   #  stop("ERROR! The type of the trait has to be quantitative\n")
   #}  
-  
+ 
+ 
 }#if(groupTest)
 
 #gc(verbose=T, reset = TRUE, full=T)
@@ -1829,4 +1762,276 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
 
   return(out1)
 }
+
+
+subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
+        obj.glmm.null.sub = obj.glmm.null
+        obj.glmm.null.sub$residuals = obj.glmm.null.sub$residuals[missingind]
+
+        if(!is.null(obj.glmm.null.sub$P)){
+                obj.glmm.null.sub$P = obj.glmm.null.sub$P[missingind, missingind]
+        }
+
+        obj.glmm.null.sub$obj.noK$X1 = obj.glmm.null.sub$obj.noK$X1[missingind,]
+        obj.glmm.null.sub$obj.noK$XXVX_inv = obj.glmm.null.sub$obj.noK$XXVX_inv[missingind,]
+        obj.glmm.null.sub$obj.noK$V = obj.glmm.null.sub$obj.noK$V[missingind]
+        obj.glmm.null.sub$obj.noK$XV = obj.glmm.null.sub$obj.noK$XV[,missingind]
+        obj.glmm.null.sub$obj.noK$y = obj.glmm.null.sub$obj.noK$y[missingind]
+        obj.glmm.null.sub$obj.noK$XVX_inv_XV = obj.glmm.null.sub$obj.noK$XVX_inv_XV[missingind,]
+        ##fitted values
+        obj.glmm.null.sub$fitted.values = obj.glmm.null.sub$fitted.values[missingind]
+        ##
+
+	mu.sub = mu[missingind]
+	mu.a.sub = mu.a[missingind]
+	mu2.a.sub = mu2.a[missingind]
+
+#        if(obj.glmm.null.sub$traitType == "binary"){
+       obj.glmm.null.sub$obj.noK$XVX = t(obj.glmm.null.sub$obj.noK$X1) %*% (obj.glmm.null.sub$obj.noK$X1 *mu2.a.sub)
+#        }
+
+	obj.glmm.null.sub$obj.glm.null$y = obj.glmm.null.sub$obj.glm.null$y[missingind]
+	obj.glmm.null.sub$obj.noK$S_a = colSums(obj.glmm.null.sub$obj.noK$X1 * (obj.glmm.null.sub$obj.glm.null$y -  mu.a.sub))
+#	 obj.glmm.null.sub$residuals = obj.glmm.null.sub$residuals[missingind]
+
+        return(subsertforMissingResult = list(obj.glmm.null.sub = obj.glmm.null.sub, mu.sub = mu.sub, mu.a.sub = mu.a.sub, mu2.a.sub = mu2.a.sub))
+}
+
+getCovMandOUT_cond_pre = function(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, obj.glmm.null, sparseSigma, IsSparse=TRUE, mu, mu.a, mu2.a, Cutoff){
+        OUT_cond = NULL
+        for(i in 1:ncol(dosage_cond)){
+                G0  = dosage_cond[,i]
+                AC = sum(G0)
+                N  = length(G0)
+                AF = AC/(2*N)
+                MAF = AF
+                MAC = AC
+                if(AF > 0.5){
+                        MAF = 1-AF
+                        MAC = 2*N - MAC
+                }
+                varRatio = getVarRatio(G0, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
+
+                rowHeader = paste0("condMarker_",i)
+
+                if(obj.glmm.null$traitType == "binary"){
+                        out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, obj.glmm.null$obj.glm.null$y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma)
+                        OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
+
+                }else if(obj.glmm.null$traitType == "quantitative"){
+                        print("TEST")
+                        out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.glmm.null$obj.noK, AC, AF, obj.glmm.null$obj.glm.null$y, mu, varRatio, tauVec = obj.glmm.null$theta, sparseSigma=sparseSigma)
+                        print("TEST2")
+                        OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
+                }
+
+                OUT_cond = as.matrix(OUT_cond)
+        } #end of for(i in 1:ncol(dosage_cond)){
+
+        Mcond = ncol(dosage_cond)
+        covM = matrix(0,nrow=Mcond+1, ncol = Mcond+1)
+
+        covMsub = getCovM_nopcg(G1 = dosage_cond, G2 = dosage_cond, obj.glmm.null$obj.noK$XV, obj.glmm.null$obj.noK$XXVX_inv, sparseSigma=sparseSigma, mu2 = mu2.a)
+        print("TEST3")
+        covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
+        GratioMatrix_cond = getVarRatio(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
+        G2tilde_P_G2tilde_inv = solve(covMsub * GratioMatrix_cond)
+
+        return(condpre = list(covM = covM, OUT_cond = OUT_cond, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv))
+}
+
+
+
+getCovMandOUT_cond = function(G0, dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, obj.glmm.null, sparseSigma, covM, mu2.a){
+        Gall = cbind(G0, dosage_cond)
+
+        GratioMatrixall = getVarRatio(Gall, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
+        N = nrow(Gall)
+        AF = sum(G0)/(2*N)
+        if(AF > 0.5){
+             G0_v2 = 2 - G0
+        }else{
+             G0_v2 = G0
+        }
+        G0_v2 = matrix(G0_v2, ncol=1)
+
+        covM[1,2:ncol(covM)] = getCovM_nopcg(G1 = G0_v2, G2 = dosage_cond, obj.glmm.null$obj.noK$XV, obj.glmm.null$obj.noK$XXVX_inv, sparseSigma=sparseSigma, mu2 = mu2.a)
+        print("covM")
+        print(covM)
+        G1tilde_P_G2tilde = covM[1,c(2:ncol(covM))]*(GratioMatrixall[1,c(2:ncol(covM))])
+        return(condpre2 = list(covM = covM, GratioMatrixall = GratioMatrixall, G1tilde_P_G2tilde = G1tilde_P_G2tilde))
+}
+
+
+
+
+groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta, r.corr, max_maf, sparseSigma, singleGClambda, mu.a, mu2.a, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff){
+
+
+
+        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu2 = mu2.a)})
+
+
+
+        if(is.null(G2_cond)){
+                isCondition = FALSE
+
+        }else{
+                isCondition = TRUE
+
+        }
+        OUT_single = NULL
+
+#       testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=dosage_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu2 = mu2)})
+        cat("time for SAIGE_SKAT_withRatioVec\n")
+        print(testtime)
+        if(length(saigeskatTest$indexNeg) > 0){
+                Gmat = Gmat[,-saigeskatTest$indexNeg]
+                Gmat = as.matrix(Gmat)
+                markerIDs = markerIDs[-saigeskatTest$indexNeg]
+                markerAFs = markerAFs[-saigeskatTest$indexNeg]
+        }
+        cat("saigeskatTest$p.value: ", saigeskatTest$p.value, "\n")
+
+        if(ncol(Gmat) > 0){
+		N = nrow(Gmat)
+             if(IsSingleVarinGroupTest){
+               for(nc in 1:ncol(Gmat)){
+                 G0_single = Gmat[,nc]
+                 AC = sum(G0_single)
+                 AF = AC/(2*length(G0_single))
+                 MAC = min(AC, 2*length(G0_single)-AC)
+                 MAF = MAC/(2*N)
+                 varRatio = getVarRatio(G0_single, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
+                 varRatio_single = varRatio * singleGClambda
+
+                 if(obj.glmm.null$traitType == "quantitative"){
+                   out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.glmm.null$obj.noK, AC, AF, y = obj.glmm.null$obj.glm.null$y, mu = mu.a, varRatio, tauVec = obj.glmm.null$theta, sparseSigma=sparseSigma)
+                   if(singleGClambda != 1){
+                     out1b = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.glmm.null$obj.noK, AC, AF, obj.glmm.null$obj.glm.null$y, mu = mu.a, varRatio_single, tauVec = obj.glmm.null$theta, sparseSigma=sparseSigma)
+                   }
+
+                  }else if(obj.glmm.null$traitType == "binary"){
+                    out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a = mu.a, mu2.a = mu2.a, obj.glmm.null$obj.glm.null$y,varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma)
+
+                    if(singleGClambda != 1){
+                      out1b = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a = mu.a, mu2.a = mu2.a, obj.glmm.null$obj.glm.null$y,varRatio_single, Cutoff, rowHeader, sparseSigma=sparseSigma)
+                    }
+                  }
+
+                  if(singleGClambda != 1){
+                    OUT_single = rbind(OUT_single, c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1b$p.value), as.numeric(out1$var1), as.numeric(out1$var2)))
+                  }else{
+                     OUT_single = rbind(OUT_single, c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1$var1), as.numeric(out1$var2)))
+                  }
+                }
+              }
+            }# if(length(Gx$markerIDs > 0)){
+
+
+            if(isCondition){
+               if(saigeskatTest$m > 0){
+               outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$p.value.cond, saigeskatTest$markerNumbyMAC, paste(markerIDs, collapse=";"), paste(markerAFs, collapse=";"))
+
+                if(method=="optimal.adj" & saigeskatTest$m > 0){
+                        if(saigeskatTest$m > 1){
+                                if(!is.na(saigeskatTest$param[[1]][1])){
+
+                                        p.val.vec = saigeskatTest$param$p.val.each
+                                        rho.val.vec = saigeskatTest$param$rho
+                                        outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
+
+                                        if(!is.na(saigeskatTest$condOut$param[1])){
+
+                                                p.val.cond.vec = saigeskatTest$condOut$param$p.val.each
+                                                rho.val.cond.vec = saigeskatTest$condOut$param$rho
+                                                outVec = c(outVec, p.val.cond.vec[which(rho.val.cond.vec == 1)], p.val.cond.vec[which(rho.val.cond.vec == 0)])
+                                        }else{
+                                                outVec = c(outVec, 1, 1)
+                                        }
+
+                                }else{
+                                        outVec = c(outVec, NA, NA, NA, NA)
+
+                                }
+                        }else{
+                                outVec = c(outVec, NA, NA, NA, NA)
+                        }
+                }
+
+             }else{ #end if(saigeskatTest$m > 0){
+
+                outVec = c(geneID, NA, NA,  saigeskatTest$markerNumbyMAC, NA, NA, NA, NA)
+                if(method=="optimal.adj"){
+                        outVec = c(outVec, NA, NA)
+                }
+            }
+
+
+            }else{ #end of if(isCondition){
+
+
+                if(saigeskatTest$m > 0){
+
+                        if(singleGClambda == 1){
+
+                                outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$markerNumbyMAC, paste(markerIDs, collapse=";"), paste(markerAFs, collapse=";"))
+                        }else{
+                                outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$P_singlGCadj, saigeskatTest$markerNumbyMAC, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
+                        }
+
+                }else{#end of if(saigeskatTest$m > 0){
+                        if(singleGClambda == 1){
+                                outVec = c(geneID, NA, saigeskatTest$markerNumbyMAC, NA, NA)
+
+                        }else{
+                                outVec = c(geneID, NA, NA, saigeskatTest$markerNumbyMAC, NA, NA)
+                        }
+                }
+
+              if(method=="optimal.adj" & saigeskatTest$m > 0){
+                #rho = 1 for burden, 0 for skat
+                if(saigeskatTest$m > 1){
+
+                        if(!is.na(saigeskatTest$param[[1]][1])){
+                                p.val.vec = saigeskatTest$param$p.val.each
+                                rho.val.vec=saigeskatTest$param$rho
+                                outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
+                                if(singleGClambda != 1){
+                                        p.val.GCadj.vec = saigeskatTest$GCadjOut$param$p.val.each
+                                        rho.val.GCadj.vec = saigeskatTest$GCadjOut$param$rho
+                                        outVec = c(outVec, p.val.GCadj.vec[which(rho.val.GCadj.vec == 1)], p.val.GCadj.vec[which(rho.val.GCadj.vec == 0)])
+                                }
+                        }else{
+                                outVec = c(outVec, NA, NA)
+                                if(singleGClambda != 1){
+                                        outVec = c(outVec, NA, NA)
+                                }
+                        }
+
+            }else{
+                outVec = c(outVec, NA, NA)
+                if(singleGClambda != 1){
+                        outVec = c(outVec, NA, NA)
+                }
+            }#else if(saigeskatTest$m > 1)
+
+          } # else if(method=="optimal.adj" & saigeskatTest$m > 0){
+
+                if(method=="optimal.adj" & saigeskatTest$m == 0){
+                        outVec = c(outVec, NA, NA)
+                        if(singleGClambda != 1){
+                                outVec = c(outVec, NA, NA)
+                        }
+                }
+
+      }# if(isCondition){
+
+      return(groupTestResult = list(OUT_single = OUT_single, outVec = outVec))
+
+}
+
+
+
+
 

@@ -73,20 +73,13 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
   //bool isGetDosage = TRUE;
   using namespace Rcpp;
   List result ;
-//  std::cout << "here0!" << std::endl; 
-  //savvy::variant_group_iterator<savvy::compressed_vector<float>> it(marker_file, marker_group_line);
   savvy::variant_group_iterator<savvy::compressed_vector<float>> it(marker_file, marker_group_line);
-//  std::cout << "here1!" << std::endl;
   savvy::variant_group_iterator<savvy::compressed_vector<float>> end{};
-//  std::cout << "it.sites().size(): " << it.sites().size() << std::endl; 
-//  std::string marker_id = it->chromosome() + ":" + std::to_string(it->position()) + "_" + it->ref() + "/" + it->alt();
-//  std::cout << marker_id << std::endl;
   group_matrix.resize(0);
   std::cout << "std::size_t sample_size = marker_file.samples().size();" << marker_file.samples().size() << std::endl;
+  std::vector< int > indexforMissingAll;
 
   if (it != end){
-    //group_matrix.resize(it.sites().size() * sample_size);
-    //group_matrix.reserve(it.sites().size() * genetest_samplesize_vcfDosage);
     int missing_cnt = 0;
     std::vector< int > indexforMissing;
     int cnt = 0;
@@ -96,18 +89,9 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
     markerIDs.clear();
     markerAFs.clear();
 
-//  std::cout << "here2!" << std::endl; 
     for ( ; it != end; ++it)
     {
 
-     //if(jIndexforOneMarker.size() > 0){
-     //for (unsigned int i = 0; i < jIndexforOneMarker.size(); i++){
-//	std::cout << "jIndexforOneMarker[i] " << jIndexforOneMarker[i] << std::endl;
-  //        }
-    //  }
-
-
-      //std::cout << "cnt: " << cnt << std::endl;	
       AC = 0;
       missing_cnt = 0;
       indexforMissing.clear();
@@ -118,33 +102,32 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
 
       it.group_id();
       it.sites();
-      //std::cout << "cnt: " << cnt << std::endl;	
+      std::cout << "cnt: " << cnt << std::endl;	
 
       std::string marker_id = it->chromosome() + ":" + std::to_string(it->position()) + "_" + it->ref() + "/" + it->alt();
-      //std::cout << "here4!" << std::endl; 
+      std::cout << "marker_id " << marker_id << std::endl;	
       //std::cout << it->prop("R2") << std::endl; 
       std::string markerInfo_str = it->prop("R2");
       float markerInfo = strtof((markerInfo_str).c_str(),0);
       for (auto dose_it = it->data().begin(); dose_it != it->data().end(); ++dose_it){
 	int lengthi = std::distance(it->data().begin(), it->data().end());
-	//std::cout << "i " << i << std::endl;
 	int i = dose_it.offset();	
+	//std::cout << "i " << i << std::endl;
         if(genetest_sample_idx_vcfDosage[i] >= 0) {
+	  //std::cout << "genetest_sample_idx_vcfDosage[i] " << genetest_sample_idx_vcfDosage[i] << std::endl;		
           if (std::isnan(*dose_it)) {
-            dosagesforOneMarker[genetest_sample_idx_vcfDosage[i]] = -1;
+
+      //      dosagesforOneMarker[genetest_sample_idx_vcfDosage[i]] = float(1);
             ++missing_cnt;
             indexforMissing.push_back(genetest_sample_idx_vcfDosage[i]);
+	    indexforMissingAll.push_back(genetest_sample_idx_vcfDosage[i]);
           }else {
-	      //if(i < 1000){
-	      //std::cout << "*dose_it " << *dose_it << std::endl;	
-	      //std::cout << "i " << i << std::endl;	
-	    //}
-		if(*dose_it > 0){	
-			dosagesforOneMarker.push_back(*dose_it);
-			jIndexforOneMarker.push_back(cnt+1);
-			iIndexforOneMarker.push_back(genetest_sample_idx_vcfDosage[i]+1);
+	    if(*dose_it > 0){	
+		dosagesforOneMarker.push_back(*dose_it);
+		jIndexforOneMarker.push_back(cnt+1);
+		iIndexforOneMarker.push_back(genetest_sample_idx_vcfDosage[i]+1);
             		//dosagesforOneMarker[genetest_sample_idx_vcfDosage[i]] = *dose_it;
-            AC = AC + *dose_it;
+            	AC = AC + *dose_it;
 	    }	
 
           }
@@ -183,6 +166,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
     } //for ( ; it != end; ++it)  
     //group_matrix.resize(sample_size * cnt);
     result["dosages"] = group_matrix;
+    result["indexforMissing"] = indexforMissingAll;
     result["markerIDs"] = markerIDs;
     result["markerAFs"] = markerAFs;
     result["cnt"] = cnt;
