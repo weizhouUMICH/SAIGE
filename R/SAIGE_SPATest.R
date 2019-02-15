@@ -88,7 +88,8 @@ SPAGMMATtest = function(dosageFile = "",
 		 IsSingleVarinGroupTest = TRUE,
 		 cateVarRatioMinMACVecExclude=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5), 
 		 cateVarRatioMaxMACVecInclude=c(1.5,2.5,3.5,4.5,5.5,10.5,20.5),
-		 singleGClambda = 1){
+		 singleGClambda = 1,
+		traitType = NULL){
 
   # if group file is specified, the region-based test will be performed, otherwise, the single-variant assoc test will be performed. 
 
@@ -130,7 +131,9 @@ SPAGMMATtest = function(dosageFile = "",
   #  gc(full=T, verbose=T)
     #obj.glm.null = obj.glmm.null$obj.glm.null
     #obj.noK = obj.glmm.null$obj.noK   
-    traitType = obj.glmm.null$traitType
+    if(is.null(traitType)){
+      traitType = obj.glmm.null$traitType
+    }
 #    gc(full=T, verbose=T)
     if(!LOCO | is.null(obj.glmm.null$LOCO)){
       obj.glmm.null$LOCO = FALSE
