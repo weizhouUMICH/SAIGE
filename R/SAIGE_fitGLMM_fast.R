@@ -1799,9 +1799,12 @@ Covariate_Transform<-function(formula, data){
 #  out.lm<-lm(Y ~ X1, data=data)
   idx.na<-which(is.na(out.lm$coef))
   if(length(idx.na)> 0){
+	print(head(X1))
 	X1<-X1[, -idx.na]
-	X_name = X_name[-idx.na]		
+	print(head(X1))
         cat("Warning: multi collinearity is detected in covariates! ", X_name[idx.na], " will be excluded in the model\n")
+	X_name = X_name[-idx.na]		
+        #cat("Warning: multi collinearity is detected in covariates! ", X_name[idx.na], " will be excluded in the model\n")
   }
   if(!(1 %in% idx.na)){
     X_name[1] = "minus1"
