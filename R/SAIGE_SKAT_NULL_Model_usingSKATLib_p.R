@@ -283,8 +283,14 @@ if(traitType == "quantitative"){
 	 #cat("Gmat[,1]: ", Gmat[,1], "\n")	
 	 #cat("colSums(Gmat): ", colSums(Gmat), "\n")
          skatTest = SKAT:::SKAT(Gmat, out.obj, max_maf = 1, method=method, kernel = kernel, weights.beta = weights.beta, r.corr = r.corr, is_check_genotype=FALSE, is_dosage = TRUE)
-	print(skatTest$param)	 
-	outVec = c(geneID, skatTest$p.value, skatTest$param$Is_Converged, skatTest$param$n.marker, skatTest$param$n.marker.test, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
+	print(skatTest$param)
+	if(!is.null(skatTest$param$Is_Converged)){
+		Is_Converged = skatTest$param$Is_Converged
+	}else{
+		Is_Converged = NA
+	}
+	 
+	outVec = c(geneID, skatTest$p.value, Is_Converged, skatTest$param$n.marker, skatTest$param$n.marker.test, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";"))
 	if(method=="optimal.adj"){
                 #rho = 1 for burden, 0 for skat
 	    if(cntMarker > 1){	
