@@ -9,8 +9,16 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
         obj.noK = obj$obj.noK
         m = ncol(G1)
         n = nrow(G1)
-	MAF = colMeans(G1)/2
+	AF = colMeans(G1)/2
+	
+	flipindex = which(AF > 0.5)
+	if(length(flipindex) > 0){
+		G1[,flipindex] = 2 - G1[,flipindex]
+		cat("Note the ", flipindex, "th variants were flipped to use dosages for the minor alleles in gene-based tests\n")
+	}
 
+	MAF = colMeans(G1)/2
+		
 	cat("m =", m, "\n")
         id_include<-1:n
         # Added by SLEE 4/24/2017
