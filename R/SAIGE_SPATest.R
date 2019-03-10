@@ -988,10 +988,13 @@ SPAGMMATtest = function(dosageFile = "",
 
 		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu.a = mu.a, mu2.a = mu2.a, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff)	
 	}
-	outVec = groupTestResult$outVec
-
-
+	    outVec = groupTestResult$outVec
 	    OUT = rbind(OUT, outVec)
+	    if(IsSingleVarinGroupTest){
+            	outsingle = as.data.frame(groupTestResult$OUT_single)
+            	OUT_single = rbind(OUT_single, outsingle)
+            }
+
 
             mth = mth + 1
             if(mth %% numLinesOutput == 0){
@@ -1004,7 +1007,7 @@ SPAGMMATtest = function(dosageFile = "",
 	      if(IsSingleVarinGroupTest){	
 		#print(OUT_single)
 		#cat("OUT_single\n")
-	        OUT_single = as.data.frame(groupTestResult$OUT_single)
+	        #OUT_single = as.data.frame(groupTestResult$OUT_single)
                 #print(OUT_single)
                 #cat("OUT_single\n")
 	        write.table(OUT_single, SAIGEOutputFile_single, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)	
@@ -1020,7 +1023,7 @@ SPAGMMATtest = function(dosageFile = "",
       write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
       OUT = NULL
       if(IsSingleVarinGroupTest){
-        OUT_single = as.data.frame(OUT_single)
+        #OUT_single = as.data.frame(OUT_single)
         write.table(OUT_single, SAIGEOutputFile_single, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
         OUT_single = NULL
       }	
@@ -2038,7 +2041,6 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                 }
 
       }# if(isCondition){
-
       return(groupTestResult = list(OUT_single = OUT_single, outVec = outVec))
 
 }
