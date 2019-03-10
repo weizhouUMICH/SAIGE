@@ -245,6 +245,12 @@ if(traitType == "quantitative"){
     mth = 0
 
     resultHeader = c("Gene","Pvalue", "Is.converged", "markerNumber", "testedMarkerNumber","markerIDs", "markerAFs")
+
+    if(method=="optimal.adj"){
+        resultHeader = c("Gene","Pvalue", "Is.converged", "markerNumber", "testedMarkerNumber","markerIDs", "markerAFs", "Pvalue_Burden","Pvalue_SKAT")
+    }	
+
+
     write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
 #OUT = rbind(OUT, c(geneID, skatTest$p.value, skatTest$param$n.marker, skatTest$param$n.marker.test, paste(Gx$markerIDs, collapse=";"), paste(Gx$markerAFs, collapse=";")))
     gf = file(groupFile, "r")
