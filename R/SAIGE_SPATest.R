@@ -2009,14 +2009,22 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                 if(saigeskatTest$m > 1){
 
                         if(!is.na(saigeskatTest$param[[1]][1])){
-                                p.val.vec = saigeskatTest$param$p.val.each
-                                rho.val.vec=saigeskatTest$param$rho
-                                outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
-                                if(singleGClambda != 1){
-                                        p.val.GCadj.vec = saigeskatTest$GCadjOut$param$p.val.each
-                                        rho.val.GCadj.vec = saigeskatTest$GCadjOut$param$rho
-                                        outVec = c(outVec, p.val.GCadj.vec[which(rho.val.GCadj.vec == 1)], p.val.GCadj.vec[which(rho.val.GCadj.vec == 0)])
-                                }
+
+				if(!is.null(saigeskatTest$param$rho)){
+                                	p.val.vec = saigeskatTest$param$p.val.each
+                                	rho.val.vec=saigeskatTest$param$rho
+                               		outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
+                                	if(singleGClambda != 1){
+                                        	p.val.GCadj.vec = saigeskatTest$GCadjOut$param$p.val.each
+                                        	rho.val.GCadj.vec = saigeskatTest$GCadjOut$param$rho
+                                        	outVec = c(outVec, p.val.GCadj.vec[which(rho.val.GCadj.vec == 1)], p.val.GCadj.vec[which(rho.val.GCadj.vec == 0)])
+                                	}
+				}else{
+					outVec = c(outVec,saigeskatTest$p.value, saigeskatTest$p.value)
+					if(singleGClambda != 1){
+						outVec = c(outVec, saigeskatTest$GCadjOut$p.value, saigeskatTest$GCadjOut$p.value)
+					}
+				}
                         }else{
                                 outVec = c(outVec, NA, NA)
                                 if(singleGClambda != 1){
