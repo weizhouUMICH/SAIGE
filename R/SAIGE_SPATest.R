@@ -2025,9 +2025,9 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                         }
 
             }else{
-                outVec = c(outVec, NA, NA)
+                outVec = c(outVec, saigeskatTest$p.value, saigeskatTest$p.value)
                 if(singleGClambda != 1){
-                        outVec = c(outVec, NA, NA)
+                        outVec = c(outVec, saigeskatTest$GCadjOut$p.value, saigeskatTest$GCadjOut$p.value)
                 }
             }#else if(saigeskatTest$m > 1)
 
