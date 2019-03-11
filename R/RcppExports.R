@@ -345,6 +345,10 @@ getCrossprodMatAndKin_mailman <- function(bVec) {
     .Call('_SAIGE_getCrossprodMatAndKin_mailman', PACKAGE = 'SAIGE', bVec)
 }
 
+get_GRMdiagVec <- function() {
+    .Call('_SAIGE_get_GRMdiagVec', PACKAGE = 'SAIGE')
+}
+
 setgenoTest_bgenDosage <- function(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude) {
     .Call('_SAIGE_setgenoTest_bgenDosage', PACKAGE = 'SAIGE', filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude)
 }

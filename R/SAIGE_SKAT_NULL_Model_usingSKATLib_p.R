@@ -301,9 +301,13 @@ if(traitType == "quantitative"){
                 #rho = 1 for burden, 0 for skat
 	    if(cntMarker > 1){	
                 p.val.vec = skatTest$param$p.val.each
-                rho.val.vec = skatTest$param$rho
-                outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
-		print("optimal.adj")	
+                if(!is.null(skatTest$param$rho)){
+			rho.val.vec = skatTest$param$rho
+                	outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
+			print("optimal.adj")
+		}else{
+			outVec = c(outVec, skatTest$param$liu_pval, skatTest$param$liu_pval)
+		}	
 	    }else{
 		outVec = c(outVec, skatTest$param$liu_pval, skatTest$param$liu_pval)
 	    }	

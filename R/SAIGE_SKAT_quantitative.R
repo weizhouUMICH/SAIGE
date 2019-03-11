@@ -185,8 +185,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 			}
                 }
 
-		#cat("Phi is ", Phi, "\n")
-		#cat("Score is ", Score, "\n")
 
 		
 		if(singleGClambda == 1){
@@ -200,7 +198,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 				}
 			}else{#if(m_new == 1)
 				re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)		
-
 			}
 
 
