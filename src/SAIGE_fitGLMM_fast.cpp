@@ -3841,4 +3841,9 @@ double wall3in = get_wall_time();
 
 }
 
-
+// [[Rcpp::export]]
+arma::fvec get_GRMdiagVec(){
+  int mMarker = gettotalMarker(); 
+  arma::fvec diagGRMVec = (*geno.Get_Diagof_StdGeno())/mMarker;
+  return(diagGRMVec);
+}

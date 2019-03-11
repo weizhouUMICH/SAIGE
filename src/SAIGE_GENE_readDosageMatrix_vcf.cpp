@@ -154,6 +154,12 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
             //dosagesforOneMarker[indexforMissing[i]] = imputeDosage;
           }
        }
+
+//	if(AF > 0.5){
+//		std::cout << marker_id << " has AF > 0.5, so the alleles are flipped to use the dosages for minor allele";
+//		dosagesforOneMarker = 2 - dosagesforOneMarker;
+		//AF = AF - 1;
+//	}
         group_matrix.insert(std::end(group_matrix), std::begin(dosagesforOneMarker), std::end(dosagesforOneMarker));
         iIndexVec.insert(std::end(iIndexVec), std::begin(iIndexforOneMarker), std::end(iIndexforOneMarker));
         jIndexVec.insert(std::end(jIndexVec), std::begin(jIndexforOneMarker), std::end(jIndexforOneMarker));
