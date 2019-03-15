@@ -772,6 +772,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 while(ratioCV > ratioCVcutoff){
 
   while(numTestedMarker < numMarkers){
+    if(indexInMarkerList >= mMarkers){
+      stop("Number of markers is not large enough to estimate the variance ratio\n")
+    }
     i = listOfMarkersForVarRatio[indexInMarkerList]
     cat("i is ", i, "\n")
     G0 = Get_OneSNP_Geno(i-1)
@@ -853,6 +856,7 @@ while(ratioCV > ratioCVcutoff){
     cat("CV for variance ratio estimate using ", numMarkers, " markers is ", ratioCV, " > ", ratioCVcutoff, "\n")
     numMarkers = numMarkers + 10
     cat("try ", numMarkers, " markers\n")
+
   }else{
     cat("CV for variance ratio estimate using ", numMarkers, " markers is ", ratioCV, " < ", ratioCVcutoff, "\n")
   }
@@ -914,6 +918,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   ##randomize the marker orders to be tested
   mMarkers = gettotalMarker()
   listOfMarkersForVarRatio = sample(c(1:mMarkers), size = mMarkers, replace = FALSE)
+  cat(mMarkers, " markers for variance ratio estimation\n" )
  # listOfMarkersForVarRatio = c(1:mMarkers)
   freqVec = getAlleleFreqVec()
   Nnomissing = length(mu)
@@ -932,6 +937,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 while(ratioCV > ratioCVcutoff){  
 
   while(numTestedMarker < numMarkers){
+    if(indexInMarkerList >= mMarkers){
+      stop("Number of markers is not large enough to estimate the variance ratio\n")
+    }
     i = listOfMarkersForVarRatio[indexInMarkerList]
     cat("i is ", i, "\n")
     G0 = Get_OneSNP_Geno(i-1)
