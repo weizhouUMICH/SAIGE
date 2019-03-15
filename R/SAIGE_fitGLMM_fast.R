@@ -835,6 +835,7 @@ while(ratioCV > ratioCVcutoff){
       numTestedMarker = numTestedMarker + 1
       if(numTestedMarker %% 10 == 0 | numTestedMarker == numMarkers){
         OUT = as.data.frame(OUT)
+	colnames(OUT) = resultHeader
         OUTtotal = rbind(OUTtotal, OUT)
         write.table(OUT, testOut, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
         OUT = NULL
@@ -920,6 +921,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   OUTtotal = NULL
   OUT = NULL
 
+
   indexInMarkerList = 1
   numTestedMarker = 0
 
@@ -979,12 +981,14 @@ while(ratioCV > ratioCVcutoff){
       Tv1 = (q-m1)/tauVecNew[1]
       p.value = pchisq(Tv1^2/var1, lower.tail = FALSE, df=1)
       p.value.NA = pchisq(Tv1^2/var2, lower.tail = FALSE, df=1)
+	
       OUT = rbind(OUT, c(i, p.value, p.value.NA, var1, var2, Tv1, Nnomissing, AC, AF))
 
       indexInMarkerList = indexInMarkerList + 1
       numTestedMarker = numTestedMarker + 1
       if(numTestedMarker %% 10 == 0 | numTestedMarker == numMarkers){
         OUT = as.data.frame(OUT)
+	colnames(OUT) = resultHeader
         OUTtotal = rbind(OUTtotal, OUT)
         write.table(OUT, testOut, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
         OUT = NULL
