@@ -10,6 +10,20 @@ Rscript step1_fitNULLGLMM.R \
 	--nThreads=4 \
 	--LOCO=TRUE
 
+#step 1: fit the NULL GLMM
+Rscript step1_fitNULLGLMM.R \
+        --plinkFile=./input/plinkforGRM_1000samples_10kMarkers \
+        --phenoFile=./input/pheno_1000samples.txt \
+        --phenoCol=x1 \
+        --covarColList=y,x2 \
+        --sampleIDColinphenoFile=IID \
+        --traitType=quantitative \
+        --outputPrefix=./output/example_quantitative \
+        --nThreads=4 \
+        --LOCO=TRUE
+
+
+
 ##step 2: perfrom score test with SPA applied for each marker
 ######plain text dosage file
  Rscript step2_SPAtests.R \
