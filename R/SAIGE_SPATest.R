@@ -1,10 +1,10 @@
 #' Run single variant score tests with SPA based on the logistic mixed model.
 #'
 #' @param dosageFile character. Path to dosage file. Each line contains dosages for a marker to be tested
-#' @param dosageFileNrowSkip integer(>=0). Number of lines to be skiped in the dosage file.
-#' @param dosageFileNcolSkip integer(>=0). Number of columns to be skiped in the dosage file
-#' @param dosageFilecolnamesSkip vector of characters. The column names of the skipped columns. Default: c("SNPID", "CHR", "POS", "Allele0", "Allele1")
-#' @param dosageFileChrCol string. The column name for the chromosome column. Must be in the dosageFilecolnamesSkip. Required If LOCO = TRUE and chrom ="".  
+#' @param dosageFileNrowSkip integer(>=0). Number of lines to be skiped in the dosage file. By default, 0
+#' @param dosageFileNcolSkip integer(>=0). Number of columns to be skiped in the dosage file. By default, 0
+#' @param dosageFilecolnamesSkip vector of characters. The column names of the skipped columns. By default: c("SNPID", "CHR", "POS", "Allele0", "Allele1")
+#' @param dosageFileChrCol string. The column name for the chromosome column. Must be in the dosageFilecolnamesSkip. Required If LOCO = TRUE and chrom ="". By default, "CHR" 
 #' @param bgenFile character. Path to bgen file. Currently version 1.2 with 8 bit compression is supported
 #' @param bgenFileIndex character. Path to the .bgi file (index of the bgen file)
 #' @param vcfFile character. Path to vcf file
@@ -12,29 +12,30 @@
 #' @param vcfField character. genotype field in vcf file to use. "DS" for dosages or "GT" for genotypes. By default, "DS".
 #' @param savFile character. Path to sav file
 #' @param savFileIndex character. Path to index for sav file .s1r
-#' @param idstoExcludeFile character. Path to the file containing variant ids to be excluded from the bgen or vcf file
-#' @param idstoIncludeFile character. Path to the file containing variant ids to be included from the bgen or vcf file
+#' @param idstoExcludeFile character. Path to the file containing variant ids to be excluded from the bgen or vcf file. The file does not have a header and each line is for a marker ID.
+#' @param idstoIncludeFile character. Path to the file containing variant ids to be included from the bgen or vcf file. The file does not have a header and each line is for a marker ID.
 #' @param rangestoExcludeFile character. Path to the file containing genome regions to be excluded from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header 
 #' @param rangestoIncludeFile character. Path to the file containing genome regions to be included from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header 
-#' @param chrom character. string for the chromosome to include from vcf file. Required for vcf file. Note: the string needs to exactly match the chromoosme string in the vcf/sav file. For example, "1" does not match "chr1". If LOCO is specified, providing chrom will save computation cost
-#' @param start numeric. start genome position to include from vcf file. 
-#' @param end numeric. end genome position to include from vcf file. 
+#' @param chrom character. string for the chromosome to include from vcf file. Required for vcf file. Note: the string needs to exactly match the chromosome string in the vcf/sav file. For example, "1" does not match "chr1". If LOCO is specified, providing chrom will save computation cost
+#' @param start numeric. start genome position to include from vcf file. By default, 1 
+#' @param end numeric. end genome position to include from vcf file. By default, 250000000
+#' @param IsDropMissingDosages logical. whether to drop missing dosages (TRUE) or to mean impute missing dosages (FALSE). By default, FALSE. This option only works for bgen, vcf, and sav input.  
 #' @param minMAC numeric. Minimum minor allele count of markers to test. By default, 0.5. The higher threshold between minMAC and minMAF will be used
 #' @param minMAF numeric. Minimum minor allele frequency of markers to test. By default 0. The higher threshold between minMAC and minMAF will be used
 #' @param maxMAFforGroupTest numeric. Maximum minor allele frequency of markers to test in group test. By default 0.5.
-#' @param minInfo numeric. Minimum imputation info of markers to test (in bgen file)
+#' @param minInfo numeric. Minimum imputation info of markers to test. By default, 0. This option only works for bgen, vcf, and sav input
 #' @param sampleFile character. Path to the file that contains one column for IDs of samples in the dosage, vcf, sav, or bgen file with NO header
 #' @param GMMATmodelFile character. Path to the input file containing the glmm model, which is output from previous step. Will be used by load()
 #' @param varianceRatioFile character. Path to the input file containing the variance ratio, which is output from the previous step
 #' @param SPAcutoff by default = 2 (SPA test would be used when p value < 0.05 under the normal approximation)
-#' @param IsSparse logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE 
-#' @param numLinesOutput numeric. Output results for how many marker each time.    
 #' @param SAIGEOutputFile character. Path to the output file containing the SPAGMMAT test results
+#' @param numLinesOutput numeric. Number of  markers to be output each time. By default, 10000   
+#' @param IsSparse logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE 
 #' @param IsOutputAFinCaseCtrl logical. Whether to output allele frequency in cases and controls. By default, FALSE
 #' @param LOCO logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE
-#' @param condition character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for vcf/sav input.
+#' @param condition character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input.
 #' @param sparseSigmaFile character. Path to the file containing the sparseSigma from step 1. The suffix of this file is ".mtx". 
-#' @param groupFile character. Path to the file containing the group information for gene-based tests. Each line is for one gene/set of variants. The first element is for gene/set name. The rest of the line is for variant ids included in this gene/set. For vcf/sav, the genetic marker ids are in the format chr:pos_ref/alt. For begen, the genetic marker ids should match the ids in the bgen file. Each element in the line is seperated by tab. 
+#' @param groupFile character. Path to the file containing the group information for gene-based tests. Each line is for one gene/set of variants. The first element is for gene/set name. The rest of the line is for variant ids included in this gene/set. For vcf/sav, the genetic marker ids are in the format chr:pos_ref/alt. For bgen, the genetic marker ids should match the ids in the bgen file. Each element in the line is seperated by tab. 
 #' @param kernel character. For gene-based test. By default, "linear.weighted". More options can be seen in the SKAT library 
 #' @param method character. method for gene-based test p-values. By default, "optimal.adj". More options can be seen in the SKAT library
 #' @param weights.beta vector of numeric. parameters for the beta distribution to weight genetic markers in gene-based tests. By default, "c(1,25)". More options can be seen in the SKAT library
@@ -42,7 +43,7 @@
 #' @param IsSingleVarinGroupTest logical. Whether to perform single-variant assoc tests for genetic markers included in the gene-based tests. By default, FALSE
 #' @param cateVarRatioMinMACVecExclude vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. By default, c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5). If groupFile="", only one variance ratio corresponding to MAC >= 20 is used 
 #' @param cateVarRatioMaxMACVecInclude vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. By default, c(1.5,2.5,3.5,4.5,5.5,10.5,20.5). If groupFile="", only one variance ratio corresponding to MAC >= 20 is used
-#' @param singleGClambda numeric. GC lambda values that can be used to adjust the gene-based tests results. This value is usually estimated based on the single-variant assoc test results.  
+#' @param singleGClambda numeric. GC lambda values that can be used to adjust the gene-based tests results. This value is usually estimated based on the single-variant assoc test results. By default, 1 
 #' @return SAIGEOutputFile
 #' @export
 SPAGMMATtest = function(dosageFile = "",
