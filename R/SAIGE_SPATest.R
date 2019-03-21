@@ -28,7 +28,7 @@
 #' @param GMMATmodelFile character. Path to the input file containing the glmm model, which is output from previous step. Will be used by load()
 #' @param varianceRatioFile character. Path to the input file containing the variance ratio, which is output from the previous step
 #' @param SPAcutoff by default = 2 (SPA test would be used when p value < 0.05 under the normal approximation)
-#' @param SAIGEOutputFile character. Path to the output file containing the SPAGMMAT test results
+#' @param SAIGEOutputFile character. Path to the output file containing the assoc test results
 #' @param numLinesOutput numeric. Number of  markers to be output each time. By default, 10000   
 #' @param IsSparse logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE 
 #' @param IsOutputAFinCaseCtrl logical. Whether to output allele frequency in cases and controls. By default, FALSE
@@ -1725,8 +1725,8 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
   }
 
 
-  print("out1")
-  print(out1)
+  #print("out1")
+  #print(out1)
   #out1 = c(out1, var1 = var1)
   #out1 = c(out1, var2 = var2)
   out1$var1 = var1
@@ -1762,8 +1762,8 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
 
   }
 
-  print("out1")
-  print(out1)
+  #print("out1")
+  #print(out1)
 
   return(out1)
 }
@@ -1824,9 +1824,9 @@ getCovMandOUT_cond_pre = function(dosage_cond, cateVarRatioMinMACVecExclude, cat
                         OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
 
                 }else if(obj.glmm.null$traitType == "quantitative"){
-                        print("TEST")
+                        #print("TEST")
                         out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.glmm.null$obj.noK, AC, AF, obj.glmm.null$obj.glm.null$y, mu, varRatio, tauVec = obj.glmm.null$theta, sparseSigma=sparseSigma)
-                        print("TEST2")
+                        #print("TEST2")
                         OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
                 }
 
@@ -1872,8 +1872,8 @@ getCovMandOUT_cond = function(G0, dosage_cond, cateVarRatioMinMACVecExclude, cat
         G0_v2 = matrix(G0_v2, ncol=1)
 
         covM[1,2:ncol(covM)] = getCovM_nopcg(G1 = G0_v2, G2 = dosage_cond, obj.glmm.null$obj.noK$XV, obj.glmm.null$obj.noK$XXVX_inv, sparseSigma=sparseSigma, mu2 = mu2.a)
-        print("covM")
-        print(covM)
+        #print("covM")
+        #print(covM)
         G1tilde_P_G2tilde = covM[1,c(2:ncol(covM))]*(GratioMatrixall[1,c(2:ncol(covM))])
         return(condpre2 = list(covM = covM, GratioMatrixall = GratioMatrixall, G1tilde_P_G2tilde = G1tilde_P_G2tilde))
 }
