@@ -335,7 +335,9 @@ SPAGMMATtest = function(dosageFile = "",
       Gx_cond = getGenoOfGene_vcf(conditionlist, 0)
     #print("HERE")
     #print(Gx_cond)	
-      dosage_cond = Matrix:::sparseMatrix(i = as.vector(Gx_cond$iIndex), j = as.vector(Gx_cond$jIndex), x = as.vector(Gx_cond$dosages), symmetric = FALSE, dims = c(N, Gx_cond$cnt))
+      if(Gx_cond$cnt > 0){
+        dosage_cond = Matrix:::sparseMatrix(i = as.vector(Gx_cond$iIndex), j = as.vector(Gx_cond$jIndex), x = as.vector(Gx_cond$dosages), symmetric = FALSE, dims = c(N, Gx_cond$cnt))
+      }
     #print(dim(Gx_cond))	
       #Gmat = matrix(Gx$dosages, byrow=F, ncol = cntMarker)
       #Gmat = as(Gmat, "sparseMatrix")
@@ -343,8 +345,10 @@ SPAGMMATtest = function(dosageFile = "",
     }else if(dosageFileType == "bgen"){
       SetSampleIdx(sampleIndex, N)
       Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist)
-      dosage_cond = matrix(Gx_cond$dosages, byrow=F, ncol = Gx_cond$cnt)	
-      dosage_cond = as(dosage_cond, "sparseMatrix") 
+      if(Gx_cond$cnt > 0){
+        dosage_cond = matrix(Gx_cond$dosages, byrow=F, ncol = Gx_cond$cnt)	
+        dosage_cond = as(dosage_cond, "sparseMatrix") 
+      }	
     }else{
       stop("ERROR: conditional analysis can only work for dosageFileType vcf, sav or bgen\n")
     }
