@@ -1,6 +1,9 @@
 /archived
 thirdParty/cget
 thirdParty/zlib-1.2.8
+thirdParty/bgen/.lock-waf_linux2_build
+thirdParty/bgen/build
+thirdParty/bgen/.hg
 src/*.o
 src/*.so
 extdata/output
