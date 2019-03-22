@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 options(stringsAsFactors=F)
 
 ## load R libraries

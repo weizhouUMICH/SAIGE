@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 options(stringsAsFactors=F, digits=3, warn=1)
 library(SAIGE)
 require(optparse)
