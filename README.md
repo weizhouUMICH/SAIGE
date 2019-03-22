@@ -47,7 +47,7 @@ Installation from the binary file in linux
 
     R CMD INSTALL SAIGE_XX_R_x86_64-pc-linux-gnu.tar.gz
 
-Current version is 0.35.7, working with R-3.5.1, gcc >= 5.5.0
+Current version is 0.35.8, working with R-3.5.1, gcc >= 5.5.0, cmake 3.8.1
 
 The following R pakages need to be installed for running SAIGE:
 
@@ -56,6 +56,8 @@ The following R pakages need to be installed for running SAIGE:
 Previous versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl/AADFqdssvOBjbWZch6Q9zYNaa?dl=0
 
 # Log for fixing bugs
+
+* 0.35.8 merge changes in the master-gene branch to master
 
 * 0.35.7 merge changes in 0.29.6 and 0.29.7 from master
 
@@ -181,7 +183,7 @@ http://pheweb.sph.umich.edu/SAIGE-UKB/
 
 https://www.leelabsg.org/resources
 
-*This research has been conducted using the UK Biobank Resource under application number 24460. 
+*This research has been conducted using the UK Biobank Resource under application number 45227. 
 
 
 
