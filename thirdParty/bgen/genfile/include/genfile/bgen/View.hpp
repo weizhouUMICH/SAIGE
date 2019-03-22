@@ -114,7 +114,6 @@ namespace genfile {
 		private:
 			// Open the bgen file, read header data and gather metadata.
 			void setup( std::string const& filename ) ;
-
 		public:
 			// Utility function to read and uncompress variant genotype probability data
 			// without further processing.

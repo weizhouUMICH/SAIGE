@@ -234,7 +234,7 @@ namespace genfile {
 			m_file_position = m_stream->tellg() ;
 			m_state = e_ReadyForVariant ;
 			genfile::bgen::uncompress_probability_data( m_context, m_buffer1, &m_buffer2 ) ;
-			++m_variant_i ;	
+			++m_variant_i;
 			return m_buffer2 ;
 		}
 	}
