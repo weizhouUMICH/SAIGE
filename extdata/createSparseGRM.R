@@ -1,11 +1,10 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
-#library(SAIGE)
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-PCGprecond")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-testDec292018_withsparseSigmaforinitTau")
-library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.6")
+library(SAIGE)
 require(optparse) #install.packages("optparse")
+
+print(sessionInfo())
 
 ## set list of cmd line arguments
 option_list <- list(
@@ -17,8 +16,8 @@ option_list <- list(
    help="The size (Gb) for each memory chunk. By default, 2"),
   make_option("--outputPrefix", type="character", default="~/",
     help="path and prefix to the output files [default='~/']"),
-  make_option("--numRandomMarkerforSparseKin", type="integer", default=1000,
-    help="number of randomly selected markers (MAF >= 1%) to be used to identify related samples for sparse GRM [default=1000]"),
+  make_option("--numRandomMarkerforSparseKin", type="integer", default=2000,
+    help="number of randomly selected markers (MAF >= 1%) to be used to identify related samples for sparse GRM [default=2000]"),
   make_option("--relatednessCutoff", type="numeric", default=0.125,
     help="The threshold to treat two samples as unrelated if IsSparseKin is TRUE [default=0.125]"),
   make_option("--isDiagofKinSetAsOne", type="logical", default=FALSE,

@@ -1,16 +1,10 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
-#library(SAIGE)
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.2.mmSKAT.debugged.R-3.5.1.test2_subsetSparseSigma_speedup_test2")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.3.2")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.3")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-PCGprecond")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-testDec292018_withsparseSigmaforinitTau_memoryIssue")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.5.2-testDec292018_withsparseSigmaforinitTau_memoryIssue_bgenforGENEBased/")
-library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.6.test")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.29.5")
+library(SAIGE)
 require(optparse) #install.packages("optparse")
+
+print(sessionInfo())
 
 ## set list of cmd line arguments
 option_list <- list(
@@ -30,6 +24,8 @@ option_list <- list(
     help="Column name of the IDs in the phenotype file"),
   make_option("--tol", type="numeric", default=0.02,
     help="The tolerance for fitting the null GLMMM to converge. By default, 0.02."),
+  make_option("--maxiter", type="integer", default=20,
+    help="The maximum number of iterations used to fit the null GLMMM. By default, 20."),
   make_option("--tolPCG", type="numeric", default=1e-5,
     help="The tolerance for PCG to converge"),
   make_option("--maxiterPCG", type="integer", default=500,
@@ -45,7 +41,7 @@ option_list <- list(
   make_option("--memoryChunk", type="numeric", default=2,
    help="The size (Gb) for each memory chunk. By default, 2"),
   make_option("--tauInit", type="character", default="0,0",
-   help="Unitial values for tau. [default=0,0]"),
+   help="initial values for tau. [default=0,0]"),
   make_option("--LOCO", type="logical", default=FALSE,
     help="Whether to apply the leave-one-chromosome-out (LOCO) approach. By default, FALSE. This option has not been extensively tested."),
   make_option("--traceCVcutoff", type="numeric", default=0.0025,
@@ -62,8 +58,8 @@ option_list <- list(
    help="Path to the pre-calculated sparse GRM file. If not specified and  IsSparseKin=TRUE, sparse GRM will be computed [default=NULL]"),
   make_option("--sparseGRMSampleIDFile", type="character", default=NULL,
    help="Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to the order of samples in the sparse GRM [default=NULL]"),
-  make_option("--numRandomMarkerforSparseKin", type="integer", default=500,
-    help="number of randomly selected markers (MAF >= 1%) to be used to identify related samples for sparse GRM [default=500]"),
+  make_option("--numRandomMarkerforSparseKin", type="integer", default=2000,
+    help="number of randomly selected markers (MAF >= 1%) to be used to identify related samples for sparse GRM [default=2000]"),
   make_option("--isCateVarianceRatio", type="logical", default=FALSE,
     help="Whether to estimate variance ratio based on different MAC categories. If yes, variance ratio will be estiamted for multiple MAC categories corresponding to cateVarRatioMinMACVecExclude and cateVarRatioMaxMACVecInclude. Currently, if isCateVarianceRatio=TRUE, then LOCO=FALSE [default=FALSE]"),
   make_option("--relatednessCutoff", type="numeric", default=0.125,
@@ -77,7 +73,7 @@ option_list <- list(
   make_option("--isDiagofKinSetAsOne", type="logical", default=FALSE,
     help="Whether to set the diagnal elements in GRM to be 1 [default='FALSE']."),
   make_option("--useSparseSigmaConditionerforPCG", type="logical", default=FALSE,
-    help="Whether to sparse GRM to speed up the PCG [default='FALSE']."),
+    help="Whether to sparse GRM to speed up the PCG. Current this option is deactivated. [default='FALSE']."),
   make_option("--useSparseSigmaforInitTau", type="logical", default=FALSE,
     help="Whether to use sparse Sigma to estiamte initial tau [default='FALSE'].")	
 )
