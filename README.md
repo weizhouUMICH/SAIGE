@@ -53,6 +53,8 @@ The following R pakages need to be installed for running SAIGE:
 
 *Rcpp, RcppArmadillo, RcppParallel, data.table, SPAtest, RcppEigen, Matrix, methods, optparse*
 
+/extdata/install_packages.R can be used to install the R packages
+
 Previous versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl/AADFqdssvOBjbWZch6Q9zYNaa?dl=0
 
 # Log for fixing bugs
