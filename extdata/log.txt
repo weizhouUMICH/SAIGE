@@ -1,4 +1,0 @@
-* using log directory ‘/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/extdata/step1_fitNULLGLMM.R.Rcheck’
-* using R version 3.5.2 (2018-12-20)
-* using platform: x86_64-pc-linux-gnu (64-bit)
-* using session charset: UTF-8
