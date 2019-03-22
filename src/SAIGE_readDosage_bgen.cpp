@@ -46,6 +46,14 @@ bool isReadVariantBgen = true;
 //double bgenMinINFO = 0;
 double markerInfo;
 int numSamples_bgen;
+// bool isDropMissingDosages_bgen = false;
+
+
+// // [[Rcpp::export]]
+//void setIsDropMissingDosages_bgen(bool isDropMissing){
+//  isDropMissingDosages_bgen = isDropMissing;
+//}
+
 
 // ProbSetter is a callback object appropriate for passing to bgen::read_genotype_data_block() or
 // the synonymous method of genfile::bgen::View. See the comment in bgen.hpp above
@@ -158,11 +166,11 @@ int setgenoTest_bgenDosage(std::string & filename,
 
 
      if(isQuery){
-        std::cout << "debug for id query for bgen file" << std::endl;
+	std::cout << "TEST " << ids_to_include.size() << std::endl;
         genoToTest_bgenDosage = View::create( filename ) ;
-        std::cout << "debug for id query for bgen file2" << std::endl;
+	std::cout << "TEST 1 OK" << std::endl;
 	IndexQuery::UniquePtr query = IndexQuery::create( index_filename ) ;
-        std::cout << "debug for id query for bgen file3" << std::endl;
+	std::cout << "TEST2 " << ids_to_include.size() << std::endl;
 
 	std::cout << "ranges_to_include.nrow() " << ranges_to_include.nrow() << std::endl;
 	std::cout << "ranges_to_exclude.nrow() " << ranges_to_exclude.nrow() << std::endl;
@@ -331,11 +339,12 @@ Rcpp::List getDosage_inner_bgen_withquery(){
                 Named("chromosome") = chromosome,
                 Named("position") = position,
                 Named("rsid") = rsid,
+                Named("SNPID") = SNPID,
         //        Named("number_of_alleles") = number_of_allele,
                 Named("allele0") = alleles[0],
                 Named("allele1") = alleles[1],
 		_["stringsAsFactors"] = false
-  ) ;
+  );
 
 
   List result ;
@@ -374,7 +383,7 @@ Rcpp::List getDosage_bgen_withquery()
         This function is revised based on the Parse function in BOLT-LMM v2.3 source code
 *************************************/
 
-double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint Nbgen,std::vector< double > & dosages, double & AC, double & AF){
+double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint Nbgen,std::vector< double > & dosages, double & AC, double & AF, std::vector<int> & indexforMissing){
 
     size_t destLen = bufLen;
 
@@ -400,14 +409,32 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
       std::cerr << "ERROR: " << snpName << " has maximum ploidy = " << Pmax << " (not 2)" << std::endl;
       exit(1);
     }
+
+    //deal with missing dosages
+    std::vector <bool> missingIdxVec;
+    missingIdxVec.clear();
+    missingIdxVec.reserve(N);
+    missingIdxVec.resize(N); 
+    int missingSamplesize = 0;
+
     for (uint i = 0; i < N; i++) {
       uint ploidyMiss = *bufAt; bufAt++;
-      if (ploidyMiss != 2U) {
-        std::cerr << "ERROR: " << snpName << " has ploidy/missingness byte = " << ploidyMiss
-             << " (not 2)" << std::endl;
-        exit(1);
-      }
+      bool const missing = (ploidyMiss & 0x80) ;
+      missingIdxVec[i] = missing;
+	if(missing){
+          missingSamplesize = missingSamplesize + 1;
+        }	
     }
+
+
+    //for (uint i = 0; i < N; i++) {
+    //  uint ploidyMiss = *bufAt; bufAt++;
+    //  if (ploidyMiss != 2U) {
+    //    std::cerr << "ERROR: " << snpName << " has ploidy/missingness byte = " << ploidyMiss
+    //         << " (not 2)" << std::endl;
+    //    exit(1);
+    //  }
+    // }
     uint Phased = *bufAt; bufAt++;
     if (Phased != 0U) {
       std::cerr << "ERROR: " << snpName << " has Phased = " << Pmax << " (not 0)" << std::endl;
@@ -429,40 +456,48 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
     dosages.clear();
     dosages.reserve(gmtest_samplesize);
     dosages.resize(gmtest_samplesize);
+    std::size_t missing_cnt = 0;
 
    for (uint i = 0; i < N; i++) {
       p11 = lut[*bufAt]; bufAt++;
       p10 = lut[*bufAt]; bufAt++;
-
       dosage = 2*p11 + p10;
-/*
-    if(i < 3){
-        std::cout << "p11: " << p11 << std::endl;
-        std::cout << "p10: " << p10 << std::endl;
-        std::cout << "dosage: " << 2-dosage << std::endl;
+
+      if(!missingIdxVec[i]){
+        eij = dosage;
+        fij = 4*p11 + p10;
+        sum_eij += eij;
+        sum_fij_minus_eij2 += fij - eij*eij;
+        if(gm_sample_idx[i] >= 0){
+          dosages[gm_sample_idx[i]] = 2 - dosage;
+	  sum_eij_sub += eij;
+        }
+     }else{
+        if(gm_sample_idx[i] >= 0){        
+          indexforMissing.push_back(gm_sample_idx[i]);
+          ++missing_cnt;
+          dosages[gm_sample_idx[i]] = -1; 
+        }
+     }
+    //std::cout << "i: " <<  i << std::endl;
     }
-*/
-      eij = dosage;
-      fij = 4*p11 + p10;
-      sum_eij += eij;
-      sum_fij_minus_eij2 += fij - eij*eij;
-      if(gm_sample_idx[i] >= 0){
-        dosages[gm_sample_idx[i]] = 2 - dosage;
-	sum_eij_sub += eij;
-      }
-
-    }
 
 
-     AC = 2* ((double) gmtest_samplesize) - sum_eij_sub;
-     AF = AC/ 2/ ((double)gmtest_samplesize) ;
+     AC = 2* ((double) (gmtest_samplesize - missing_cnt)) - sum_eij_sub;
+     AF = AC/ 2/ ((double) (gmtest_samplesize - missing_cnt)) ;
 
 
-     double thetaHat = sum_eij / (2*N);
+     double thetaHat = sum_eij / (2* (N - missingSamplesize));
      double info = thetaHat==0 || thetaHat==1 ? 1 :
      1 - sum_fij_minus_eij2 / (2*N*thetaHat*(1-thetaHat));
 
-
+     if(missing_cnt > 0){
+       double imputeDosage = 2*AF;
+       for (unsigned int i = 0; i < indexforMissing.size(); i++)
+       {
+          dosages[indexforMissing[i]] = imputeDosage;
+       }
+     }
 
 
 
@@ -533,9 +568,10 @@ Rcpp::List getDosage_inner_bgen_withquery_new(){
 
   unsigned char * buf  = (unsigned char *) buffer2.data();
   uint Nbgen = genoToTest_bgenDosage->number_of_samples();
+  std::vector< int > indexforMissing;
 
   AC=0; AF=0;
-  markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF);
+  markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF, indexforMissing);
 
   //t1=clock();
   //t2=clock();
@@ -548,6 +584,7 @@ Rcpp::List getDosage_inner_bgen_withquery_new(){
                 Named("chromosome") = chromosome,
                 Named("position") = position,
                 Named("rsid") = rsid,
+                Named("SNPID") = SNPID,
         //        Named("number_of_alleles") = number_of_allele,
                 Named("allele0") = alleles[0],
                 Named("allele1") = alleles[1],
@@ -560,9 +597,11 @@ Rcpp::List getDosage_inner_bgen_withquery_new(){
   List result ;
   result[ "variants" ] = variants ;
   result[ "dosages" ] = dosages ;
+  result["indexforMissing"] = indexforMissing;
 
+  indexforMissing.clear();
   dosages.clear();
-
+  
   return(result);
 
 }
@@ -638,12 +677,14 @@ Rcpp::List getDosage_inner_bgen_noquery(){
   unsigned char * buf  = (unsigned char *) buffer2.data();
   uint Nbgen = gm_context.number_of_samples;
   AC=0; AF=0;
-  markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF);
+  std::vector< int > indexforMissing;
+  markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF, indexforMissing);
 
   DataFrame variants = DataFrame::create(
                 Named("chromosome") = chromosome,
                 Named("position") = position,
                 Named("rsid") = RSID,
+		Named("SNPID") = SNPID,
         //        Named("number_of_alleles") = number_of_allele,
                 Named("allele0") = first_allele,
                 Named("allele1") = second_allele,
@@ -655,8 +696,10 @@ Rcpp::List getDosage_inner_bgen_noquery(){
   List result ;
   result[ "variants" ] = variants ;
   result[ "dosages" ] = dosages ;
+  result["indexforMissing"] = indexforMissing;
 
   dosages.clear();
+  indexforMissing.clear();
 
   return(result);
 }
@@ -717,6 +760,140 @@ void closetestGenoFile_bgenDosage() //needs further check
   printf("closed the genofile!\n");
 
 }
+
+
+//for gene-based test
+
+// [[Rcpp::export]]
+int setgenoTest_bgenDosage_v2(std::string & filename,
+        std::string & index_filename,
+        Rcpp::DataFrame & ranges_to_include,
+        Rcpp::DataFrame & ranges_to_exclude,
+        std::vector< std::string > const& ids_to_include,
+        std::vector< std::string > const& ids_to_exclude
+){
+
+   //bgenMinMAF = bgenMinMaf;
+   //bgenMinINFO = bgenMinInfo;
+   int numMarkers;
+   {
+     using namespace genfile::bgen ;
+     using namespace Rcpp;
+     isQuery = false;
+     if(index_filename == ""){
+       isQuery = false;
+       std::cout << "no index file for bgen is provided" << std::endl;
+     }else if(ranges_to_include.nrow() == 0 &&
+          ranges_to_exclude.nrow() == 0 &&
+          ids_to_include.size() == 0 &&
+          ids_to_exclude.size() == 0){
+       std::cout << "no query list is provided" << std::endl;
+       isQuery = false;
+     }else{
+       isQuery = true;
+     }
+
+
+     if(isQuery){
+        std::cout << "TEST " << ids_to_include.size() << std::endl;
+        genoToTest_bgenDosage = View::create( filename ) ;
+        std::cout << "TEST 1 OK" << std::endl;
+        IndexQuery::UniquePtr query = IndexQuery::create( index_filename ) ;
+        std::cout << "TEST2 " << ids_to_include.size() << std::endl;
+
+        std::cout << "ranges_to_include.nrow() " << ranges_to_include.nrow() << std::endl;
+        std::cout << "ranges_to_exclude.nrow() " << ranges_to_exclude.nrow() << std::endl;
+        std::cout << "ids_to_include.size() " << ids_to_include.size() << std::endl;
+        std::cout << "ids_to_exclude.size() " << ids_to_exclude.size() << std::endl;
+        //check the query list
+        if (ranges_to_include.nrow() > 0){
+                StringVector const& chromosome = ranges_to_include["chromosome"] ;
+                IntegerVector const& start = ranges_to_include["start"] ;
+                IntegerVector const& end = ranges_to_include["end"] ;
+                for( int i = 0; i < ranges_to_include.nrows(); ++i ) {
+                        if( end[i] < start[i] ) {
+                                throw std::invalid_argument( "Range (" + chromosome[i] + ":" + atoi( start[i] ) + "-" + atoi( end[i] ) + ") is malformed." ) ;
+                         }
+                        query->include_range( IndexQuery::GenomicRange( std::string( chromosome[i] ), start[i], end[i] )) ;
+                }
+
+        }
+
+        if (ranges_to_exclude.nrow() > 0){
+
+                StringVector const& chromosome_exclude = ranges_to_exclude["chromosome"] ;
+                IntegerVector const& start_exclude = ranges_to_exclude["start"] ;
+                IntegerVector const& end_exclude = ranges_to_exclude["end"] ;
+                for( int i = 0; i < ranges_to_exclude.nrows(); ++i ) {
+                        if( end_exclude[i] < start_exclude[i] ) {
+                                throw std::invalid_argument( "Range (" + chromosome_exclude[i] + ":" + atoi( start_exclude[i] ) + "-" + atoi( end_exclude[i] ) + ") is malformed." ) ;
+                         }
+                        query->exclude_range( IndexQuery::GenomicRange( std::string( chromosome_exclude[i] ), start_exclude[i], end_exclude[i] )) ;
+                }
+
+        }
+
+        if (ids_to_include.size() != 0){
+                query->include_rsids(ids_to_include);
+
+        }
+
+        if (ids_to_exclude.size() != 0){
+                query->exclude_rsids(ids_to_exclude);
+
+        }
+
+        query->initialise() ;
+        if(query->number_of_variants() > 0){
+          genoToTest_bgenDosage->set_query( query ) ;
+          numMarkers = genoToTest_bgenDosage->number_of_variants() ;
+          std::cout << numMarkers << " markers will be analyzed " << std::endl;
+          return numMarkers ;
+        }else{
+          std::cout << "No queried variant is found in the bgen file! All variants bgen file will be analyzed" << std::endl;
+//          isQuery = false;
+	 genoToTest_bgenDosage->set_query( query ) ;
+	 numMarkers = genoToTest_bgenDosage->number_of_variants() ;
+	 return numMarkers ;
+        }
+      }
+
+      if(!isQuery){
+
+          gm_stream.reset(
+            new std::ifstream( filename.c_str(), std::ifstream::binary )
+          ) ;
+
+          if( !*gm_stream ) {
+            throw std::invalid_argument( filename ) ;
+          }
+
+          //printf("1\n");fflush(NULL);
+          gm_stream->seekg( 0, std::ios::beg ) ;
+          genfile::bgen::read_offset( *gm_stream, &gm_offset ) ;
+          //printf("2\n");fflush(NULL);
+          genfile::bgen::read_header_block( *gm_stream, &gm_context ) ;
+
+          uint Nbgen = gm_context.number_of_samples;
+          int numSamples = int(Nbgen);
+          std::cout << numSamples << " samples are found in the bgen file" << std::endl;
+
+          // Jump to the first variant data block.
+          gm_stream->seekg( gm_offset + 4 ) ;
+          //printf("4\n");fflush(NULL);
+          uint Mbgen = gm_context.number_of_variants;
+          numMarkers = int(Mbgen);
+          //std::cout << "All " << numMarkers << " markers will be analyzed " << std::endl;
+          std::cout << numMarkers << " markers are found in the bgen file " << std::endl;
+          return numMarkers ;
+                //numMarkers = genoToTest_bgenDosage->number_of_variants() ;
+                //std::cout << "All " << numMarkers << " markers in the bgen file will be analyzed " << std::endl;
+        }
+   }
+
+   //return numMarkers ;
+ }
+
 
 // [[Rcpp::export]]
 int getSampleSizeinBgen(){

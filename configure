@@ -5,7 +5,12 @@ if [[ -z "$(which cget)" ]]; then
   exit 1
 fi
 
-#rm -rf _build
-rm -rf thirdParty/cget
-cget install -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DUSE_CXX3_ABI=ON --prefix thirdParty/cget -f thirdParty/requirements.txt
+#install savvy library
+#rm -rf thirdParty/cget
+cget install -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" --prefix thirdParty/cget -f thirdParty/requirements.txt
+
+#install the bgen library
+cd thirdParty/bgen
+./waf configure
+./waf
 

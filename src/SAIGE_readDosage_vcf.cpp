@@ -25,6 +25,8 @@ int numSamples_vcf;
 
 using namespace std;
 
+
+
 // [[Rcpp::export]]
 void SetSampleIdx_vcfDosage(Rcpp::IntegerVector sample_idx, int Ntest){
   gmtest_samplesize_vcfDosage = Ntest;
@@ -140,7 +142,8 @@ Rcpp::List getGenoOfnthVar_vcfDosage(int mth) {
     }  
   }
 
-    result[ "dosages" ] = dosages ;
+    result[ "dosages" ] = dosages;
+    result["indexforMissing"] = indexforMissing;
     dosages.clear();
     DataFrame variants = DataFrame::create(
     Named("chromosome") = chromosome,
@@ -151,7 +154,8 @@ Rcpp::List getGenoOfnthVar_vcfDosage(int mth) {
     Named("allele1") = alleles1,
     _["stringsAsFactors"] = false,
     Named("AC") = AC,
-    Named("AF") = AF
+    Named("AF") = AF,
+    Named("markerInfo") = record.prop("R2")
   );
 
 

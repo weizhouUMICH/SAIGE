@@ -1,0 +1,7 @@
+bgzip -c genotype_10markers.missingness.vcf > genotype_10markers.missingness.vcf.gz
+tabix -p vcf genotype_10markers.missingness.vcf.gz
+
+
+/net/dumbo/home/zhowei/tools/qctool/build/release/qctool_v2.0.1 -g genotype_10markers.missingness.vcf -bgen-bits 8 -og genotype_10markers.missingness.bgen
+
+
