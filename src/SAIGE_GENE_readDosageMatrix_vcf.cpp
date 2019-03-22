@@ -61,7 +61,7 @@ bool setvcfDosageMatrix(const std::string& vcfFileName,  const std::string& vcfF
     cout << "To read the field " << vcfField << endl;
     std::cout << "Number of meta lines in the vcf file (lines starting with ##): " << marker_file.headers().size() << endl;
     sample_size = marker_file.samples().size(); 
-    std::cout << "Number of samples in in the vcf file: " << sample_size << endl;
+    std::cout << "Number of samples in the vcf file: " << sample_size << endl;
   }else{
     std::cout << "WARNING: Open VCF failed" << std::endl;
   }
@@ -88,7 +88,6 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
     std::vector<float> markerAFs;
     markerIDs.clear();
     markerAFs.clear();
-
     for ( ; it != end; ++it)
     {
 
@@ -105,7 +104,6 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
       //std::cout << "cnt: " << cnt << std::endl;	
 
       std::string marker_id = it->chromosome() + ":" + std::to_string(it->position()) + "_" + it->ref() + "/" + it->alt();
-      //std::cout << "marker_id " << marker_id << std::endl;	
       //std::cout << it->prop("R2") << std::endl; 
       std::string markerInfo_str = it->prop("R2");
       float markerInfo = strtof((markerInfo_str).c_str(),0);
