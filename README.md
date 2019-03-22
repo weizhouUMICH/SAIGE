@@ -104,6 +104,7 @@ SAIGE contains 2 main steps:
         Run the **fitNULLGLMM** function for step 1
     
 2. Testing for association between each genetic variant and phenotypes by applyting SPA to the score test
+
         Run the **SPAGMMATtest** function for step 2
 
 	Conditional analysis can be conducted by spacifying the --condition argument with conditioning marker ID(s). 	    
@@ -168,6 +169,11 @@ https://github.com/weizhouUMICH/SAIGE/wiki/Genetic-association-tests-using-SAIGE
 1. The GWAS results for binary phenotypes in UK Biobank (1,283 phenotypes) using SAIGE are currently available for public download at
 
 https://www.leelabsg.org/resources
+
+Pheweb browser for the UK Biobank results 
+
+http://pheweb.sph.umich.edu/SAIGE-UKB/
+
 
 *This research has been conducted using the UK Biobank Resource under application number 24460. 
 
