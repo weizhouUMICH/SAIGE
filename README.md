@@ -3,10 +3,10 @@ Table of Contents
 
    * [Introduction](#introduction)
    * [Citation](#citation)
-   * [How to install and run SAIGE and SAIGE-GENE](#How to install and run SAIGE and SAIGE-GENE)
+   * [How to install and run SAIGE and SAIGE-GENE](#how-to-install-and-run-saige-and-saige-gene)
+   * [UK Biobank GWAS Results](#uk-biobank-gwas-results)
    * [Log for fixing bugs](#log-for-fixing-bugs)
    * [Notes for users before running jobs](#notes-for-users-before-running-jobs)
-   * [UK Biobank GWAS Results](#uk-biobank-gwas-results)
 
 # Introduction
 
@@ -41,6 +41,25 @@ Examplary data and script can be found in ./extdata. Run
     bash cmd.sh
 
 to run single-variant and gene-based association tests
+
+
+# UK Biobank GWAS Results
+1. The GWAS results for binary phenotypes in UK Biobank (1,283 phenotypes) using SAIGE are currently available for public download at
+
+https://www.leelabsg.org/resources
+
+Pheweb browser for the UK Biobank results
+
+http://pheweb.sph.umich.edu/SAIGE-UKB/
+
+
+*This research has been conducted using the UK Biobank Resource under application number 24460.
+
+2. The exome-wide gene-based association results for quantitative traits in UK Biobank (53 traits) using SAIGE-GENE are currently available for public download at
+
+https://www.leelabsg.org/resources
+
+*This research has been conducted using the UK Biobank Resource under application number 45227.
 
 
 # Log for fixing bugs
@@ -84,29 +103,5 @@ to run single-variant and gene-based association tests
   vector::_M_range_check", try use a smaller memeoryChunk, such as 2
 4. IMPORTANT:In version <= 0.26, for binary traits, BETA is for alt allele and for quantitative traits, BETA is for minor allele 
 5. Please note that LOCO only works for autosomal genetic variants. For non-autosomal genetic variants, please leave LOCO=FALSE in step 2.
-
-
-# UK Biobank GWAS Results
-1. The GWAS results for binary phenotypes in UK Biobank (1,283 phenotypes) using SAIGE are currently available for public download at
-
-https://www.leelabsg.org/resources
-
-Pheweb browser for the UK Biobank results 
-
-http://pheweb.sph.umich.edu/SAIGE-UKB/
-
-
-*This research has been conducted using the UK Biobank Resource under application number 24460. 
-
-2. The exome-wide gene-based association results for quantitative traits in UK Biobank (53 traits) using SAIGE-GENE are currently available for public download at
-
-https://www.leelabsg.org/resources
-
-*This research has been conducted using the UK Biobank Resource under application number 45227. 
-
-
-
-
-
 
 
