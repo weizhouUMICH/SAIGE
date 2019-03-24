@@ -870,7 +870,7 @@ SPAGMMATtest = function(dosageFile = "",
        cat("It is a quantitative trait\n")
      }else if(traitType == "binary"){
        cat("It is a binary trait\n")
-       cat("WARINING!!!! Gene-based tests does work for binary traits with unbalanced case-control ratios!\n")	
+       cat("WARNING!!!! Gene-based tests do work for binary traits with unbalanced case-control ratios (disease prevalence < 20%)! \n")	
      }
 
 
