@@ -12,8 +12,8 @@
 #' @param vcfField character. genotype field in vcf file to use. "DS" for dosages or "GT" for genotypes. By default, "DS".
 #' @param savFile character. Path to sav file
 #' @param savFileIndex character. Path to index for sav file .s1r
-#' @param idstoExcludeFile character. Path to the file containing variant ids to be excluded from the bgen or vcf file. The file does not have a header and each line is for a marker ID.
-#' @param idstoIncludeFile character. Path to the file containing variant ids to be included from the bgen or vcf file. The file does not have a header and each line is for a marker ID.
+#' @param idstoExcludeFile character. Path to the file containing variant ids to be excluded from the bgen file. The file does not have a header and each line is for a marker ID.
+#' @param idstoIncludeFile character. Path to the file containing variant ids to be included from the bgen file. The file does not have a header and each line is for a marker ID.
 #' @param rangestoExcludeFile character. Path to the file containing genome regions to be excluded from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header 
 #' @param rangestoIncludeFile character. Path to the file containing genome regions to be included from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header 
 #' @param chrom character. string for the chromosome to include from vcf file. Required for vcf file. Note: the string needs to exactly match the chromosome string in the vcf/sav file. For example, "1" does not match "chr1". If LOCO is specified, providing chrom will save computation cost
