@@ -1,3 +1,12 @@
+
+
+
+# SAIGE-GENE now has been merged to SAIGE in the master branch. Please use the master branch for the newest version!!
+
+
+
+
+
 Table of Contents
 =================
 
