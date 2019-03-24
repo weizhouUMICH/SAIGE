@@ -3,17 +3,9 @@ Table of Contents
 
    * [Introduction](#introduction)
    * [Citation](#citation)
-   * [Tutorial](#tutorial)
-   * [Installation](#installation)
+   * [How to install and run SAIGE and SAIGE-GENE](#How to install and run SAIGE and SAIGE-GENE)
    * [Log for fixing bugs](#log-for-fixing-bugs)
    * [Notes for users before running jobs](#notes-for-users-before-running-jobs)
-   * [Running SAIGE](#running-saige)
-      * [Examples](#examples)
-      * [Input files](#input-files)
-         * [Step 1: Genotype file (for contructing the genetic relationship matrix)](#step-1-genotype-file-for-contructing-the-genetic-relationship-matrix)
-         * [Step 1: Phenotype file](#step-1-phenotype-file)
-         * [Step 2: Dosage file containing dosages for genetic variates to be tested](#step-2-dosage-file-containing-dosages-for-genetic-variates-to-be-tested)
-         * [Step 2: Two files output by step 1](#step-2-two-files-output-by-step-1)
    * [UK Biobank GWAS Results](#uk-biobank-gwas-results)
 
 # Introduction
@@ -25,37 +17,31 @@ SAIGE is an R package with Scalable and Accurate Implementation of Generalized m
 
 SAIGE performs single-variant association tests for binary traits and quantitative taits. For binary traits, SAIGE uses the saddlepoint approximation (SPA)(mhof, J. P. , 1961; Kuonen, D. 1999; Dey, R. et.al 2017) to account for case-control imbalance.
 
-SAIGE-GENE (implemented in the SAIGE R package) perfroms gene- or region-based association tests (Burde, SKAT, SKAT-O) for binary traits and quantitative traits. Note: SAIGE-GENE does not yet account for case-control imbalance. We recommend using SAIGE-GENE for binary traits with prevalence >= 20%.    
+SAIGE-GENE (implemented in the SAIGE R package) performs gene- or region-based association tests (Burde, SKAT, SKAT-O) for binary traits and quantitative traits. Note: SAIGE-GENE does not yet account for case-control imbalance. We recommend using SAIGE-GENE for binary traits with prevalence >= 20%.    
  
+
 *This R package is still under development
 
 # Citation
 The SAIGE manuscript:
 Wei Zhou, Jonas B. Nielsen, Lars G. Fritsche, Maiken B. Elvestad, Brooke Wolford, Maoxuan Lin, Kristian Hveem, Hyun Min Kang, Goncalo R. Abecasis, Cristen J. Willer*, Seunggeun Lee* “Efficiently controlling for case-control imbalance and sample relatedness in large-scale genetic association studies.” Nature Genetics 50, 1335–1341 (2018)
 
-The SAIGE-GENE pre-print: https://www.biorxiv.org/content/10.1101/583278v1?rss=1
+The SAIGE-GENE pre-print:
+https://www.biorxiv.org/content/10.1101/583278v1?rss=1
 
 
-# Tutorial
+# How to install and run SAIGE and SAIGE-GENE
 
   https://github.com/weizhouUMICH/SAIGE/wiki/Genetic-association-tests-using-SAIGE
 
+## Examples
 
-# Installation
+Examplary data and script can be found in ./extdata. Run
 
-Installation from the binary file in linux
+    bash cmd.sh
 
-    R CMD INSTALL SAIGE_XX_R_x86_64-pc-linux-gnu.tar.gz
+to run single-variant and gene-based association tests
 
-Current version is 0.35.8, working with R-3.5.1, gcc >= 5.5.0, cmake 3.8.1
-
-The following R pakages need to be installed for running SAIGE:
-
-*Rcpp, RcppArmadillo, RcppParallel, data.table, SPAtest, RcppEigen, Matrix, methods, optparse*
-
-/extdata/install_packages.R can be used to install the R packages
-
-Previous versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl/AADFqdssvOBjbWZch6Q9zYNaa?dl=0
 
 # Log for fixing bugs
 
@@ -99,75 +85,6 @@ Previous versions are here https://www.dropbox.com/sh/zmlu1llpxd66pjl/AADFqdssvO
 4. IMPORTANT:In version <= 0.26, for binary traits, BETA is for alt allele and for quantitative traits, BETA is for minor allele 
 5. Please note that LOCO only works for autosomal genetic variants. For non-autosomal genetic variants, please leave LOCO=FALSE in step 2.
 
-# Running SAIGE
-
-SAIGE contains 2 main steps:
-
-1. Fitting the null logistic mixed model to estiamte variance component and other model parameters
-
-        Run the **fitNULLGLMM** function for step 1
-    
-2. Testing for association between each genetic variant and phenotypes by applyting SPA to the score test
-
-        Run the **SPAGMMATtest** function for step 2
-
-	Conditional analysis can be conducted by spacifying the --condition argument with conditioning marker ID(s). 	    
-## Examples
-
-Examplary data and script can be found in ./extdata. Run 
-
-    bash cmd.sh
-
-to run the 2 steps. 
-
-
-# Running SAIGE-GENE
-
-SAIGE-GENE has the same two steps as SAIGE does. The difference include:
-
-1. For gene-based tests, sparse GRM are used. The sparse GRM only needs to be created once for each data set, e.g. a biobank,  and can be used for all different phenotypes as long as all tested samples are in the sparse GRM
-
-    Rscript createSparseGRM.R --help
-
-can be used to create a sparse GRM. 
-
-2. Variance ratios based on different MAC categories are used for gene-based tests. In step 1, --isCateVarianceRatio=TRUE needs to be specified to estiamte categorical variance ratios. As the variance ratios are estimated based on sparse GRM, IsSparseKin=TRUE. If a sparse GRM has been pre-calculated using **createSparseGRM.R**, --sparseGRMFile and --sparseGRMSampleIDFile are used to specify the sparse GRM and the sample IDs in it (output by createSparseGRM.R). If --sparseGRMFile and --sparseGRMSampleIDFile are not specified, the sparse GRM will be output by step 1.  
-
-3. In step 1, sparse GRM and sparse Sigma that contain the tested samples will be generated. In step 2, **sparse Sigma**  will be used as an input. Pvalue is for p value from SKAT-O test. The very last two columns are Pvalue_Burden and Pvalue_SKAT.
-
-
-
-## Input files
-
-### Step 1: Genotype file (for contructing the genetic relationship matrix)
-
-*plinkFile* is used to specify the genotype file. 
-
-SAIGE takes the PLINK binary file for the genotypes and assumes the file prefix is the same one for .bed, .bim. and .fam
-
-### Step 1: Phenotype file
-*phenoFile* is used to sepcify the phenotype file, use *phenoCol* to specify the column name for the phentoype (e.g. y), use *sampleIDColinphenoFile* to specify the column name for the sample ids (e.g. IID), use *covarColList* to specify the column names for covariates (e.g. c("x1","x2")) 
-
-*Note: Current version of SAIGE does not support categorical covariates that have more than two categories*
-
-### Step 2: Dosage file containing dosages for genetic variates to be tested
-SAIGE takes dosage files in plain text (gzipped file is supported), BGEN, VCF, BCF and [SAV](https://github.com/statgen/savvy) format.
-
-### Step 2: Two files output by step 1
-*GMMATmodelFile* and *varianceRatioFile*
-
-## Output files
-
-### Step 1
-Three files are output by Step 1
-1. prefix.rda. This file contains the information for the fitted null glm. 
-2. prefix.varianceRatio.txt. This file contains the value of variance ratio that will be used in step 2
-3. prefix_XXmarkers.SAIGE.results.txt. This file contains the association results for the XX randomly selected genetic markers, which are used to estimate the variance ratio.
-
-### Step 2
-Information about the output file can be found here
-
-https://github.com/weizhouUMICH/SAIGE/wiki/Genetic-association-tests-using-SAIGE
 
 # UK Biobank GWAS Results
 1. The GWAS results for binary phenotypes in UK Biobank (1,283 phenotypes) using SAIGE are currently available for public download at
