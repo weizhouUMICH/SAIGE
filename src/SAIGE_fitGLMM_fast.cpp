@@ -1210,7 +1210,7 @@ arma::fvec getCrossprodMatAndKin(arma::fcolvec& bVec){
 if(isUseSparseSigmaforInitTau){
         cout << "use sparse kinship to estimate initial tau and for getCrossprodMatAndKin" <<  endl;
 	arma::sp_mat result(locationMat, valueVec, dimNum, dimNum);
-	arma::vec x = result * bVec;
+	arma::vec x = result * arma::conv_to<arma::dcolvec>::from(bVec);
 
 
 //double wall3in = get_wall_time();
