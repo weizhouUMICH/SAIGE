@@ -64,6 +64,8 @@ https://www.leelabsg.org/resources
 
 # Log for fixing bugs
 
+* 0.35.8.2 (April-16-2019): minor changes include fix error message, change MAC to MAF, add a line to check if the chomosome in plink file is numeric or not, add rsid to the header when input file is bgen
+
 * 0.35.8.1: fix some errors in documentation and the warning message for case-control imbalance of binary traits when running SAIGE-GENE
 
 * 0.35.8 merge changes in the master-gene branch to master
