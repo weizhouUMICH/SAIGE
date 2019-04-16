@@ -291,7 +291,9 @@ SPAGMMATtest = function(dosageFile = "",
 #  gc(verbose=T, full=T)
 
   if(!isGroupTest){
-    if(dosageFileType == "bgen" | dosageFileType == "vcf"){
+    if(dosageFileType == "bgen"){
+      dosageFilecolnamesSkip = c("CHR","POS","rsid","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
+    }else if(dosageFileType == "vcf"){
       dosageFilecolnamesSkip = c("CHR","POS","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
     }else{
       dosageFilecolnamesSkip = c(dosageFilecolnamesSkip, "AC", "AF")
