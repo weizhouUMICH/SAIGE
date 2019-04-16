@@ -1198,7 +1198,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
   resultHeader = c("CHR","SNPID","POS","A1","A2","p.value", "p.value.NA", "Is.converge","var1","var2", "N", "AC", "AF")
   write(resultHeader,file = testOut, ncolumns = length(resultHeader))
   bimPlink = data.frame(data.table:::fread(paste0(plinkFile,".bim"), header=F))
-
+  if(sum(sapply(bimPlink[,1], is.numeric)) != nrow(bimPlink)){
+    stop("ERROR: chromosome column in plink bim file is no numeric!\n")
+  }
 
   if(Cutoff < 10^-2){
     Cutoff = 10^-2
@@ -1522,6 +1524,10 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   write(resultHeader,file = testOut, ncolumns = length(resultHeader))
 
   bimPlink = data.frame(data.table:::fread(paste0(plinkFile,".bim"), header=F))
+  if(sum(sapply(bimPlink[,1], is.numeric)) != nrow(bimPlink)){
+    stop("ERROR: chromosome column in plink bim file is no numeric!\n")
+  }
+
 
   if(Cutoff < 10^-2){
     Cutoff = 10^-2
