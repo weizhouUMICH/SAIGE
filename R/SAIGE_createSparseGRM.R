@@ -41,7 +41,7 @@ createSparseGRM = function(plinkFile = "",
     MAFindex = which(freqVec >= 0.01 & freqVec <= 0.99)
     cat(numRandomMarkerforSparseKin, "genetic markers are randomly selected to decide which samples are related\n")
     if(length(MAFindex) < numRandomMarkerforSparseKin){
-      stop("ERROR! not enough genetic markers with MAC >= 1% to detect which samples are related\n","Try include at least ", numRandomMarkerforSparseKin, " genetic markers with MAC >= 1% in the plink file\n")
+      stop("ERROR! not enough genetic markers with MAF >= 1% to detect which samples are related\n","Try include at least ", numRandomMarkerforSparseKin, " genetic markers with MAF >= 1% in the plink file\n")
     }
 
     markerIndexforSparseM = sample(MAFindex, size = numRandomMarkerforSparseKin, replace=FALSE)
