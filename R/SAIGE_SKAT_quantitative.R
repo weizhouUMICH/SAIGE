@@ -301,9 +301,9 @@ getCovM_nopcg<-function(G1, G2, XV, XXVX_inv, sparseSigma=NULL, mu2){
         nSNP1<-ncol(G1)
         Mat<-matrix(0, nrow=nSNP1, ncol=nSNP2)
         XV_G1 = XV %*% G1
-        XV_G2 = XV %*% G2
 
         if(!is.null(sparseSigma)){
+        	XV_G2 = XV %*% G2
 		SI_XXVX_inv = solve(sparseSigma, XXVX_inv ,sparse=TRUE)
                 for(i in 1:nSNP2){
                         SI_G2<-solve(sparseSigma, G2[,i], sparse = TRUE)
@@ -314,6 +314,7 @@ getCovM_nopcg<-function(G1, G2, XV, XXVX_inv, sparseSigma=NULL, mu2){
                 }
         }else{
                  G2 = G2 * mu2
+        	 XV_G2 = XV %*% G2
                  SI_A_G2<-XXVX_inv %*% XV_G2
                  A1<- t(G1) %*% (G2 - SI_A_G2)
                  A2<- t(XXVX_inv) %*% (G2 - SI_A_G2)
