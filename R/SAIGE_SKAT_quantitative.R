@@ -3,7 +3,38 @@
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
 SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta=c(1,25), weights=NULL, impute.method="fixed"
-, r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1, mu2 = NULL){
+, r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL){
+
+
+	
+	if(adjustCCratioinGroupTest){
+          y = obj$obj.glm.null$y
+          N = length(y)
+          obj.noK = obj$obj.noK
+	  obj.noK$mu = mu
+          obj.noK$res=y - obj.noK$mu 
+	  obj.noK$V = mu2
+          #print("OK2_casecontrol")
+	  #print(names(obj.noK))
+          obj_cc<-SKAT::SKAT_Null_Model(y ~ obj.noK$X1-1, out_type="D", Adjustment = FALSE)
+	  #print(mu)
+	  #print(obj_cc$mu)
+          obj_cc$mu=mu
+          #print("OK3")
+	  #print(names(obj))
+	  #print(y-obj$mu)
+          obj_cc$res=y-obj_cc$mu
+	  #print(obj_cc$res)
+          obj_cc$pi_1=obj_cc$mu*(1-obj_cc$mu)
+          Out_List=Related_ER(G1, obj_cc,  obj.noK, ratioVec=ratioVec, sparseSigma, cateVarRatioMinMACVecExclude,Cutoff=2)
+}
+
+
+
+
+
+
+
 	xt <- proc.time()	
         #check the input genotype G1
         obj.noK = obj$obj.noK
@@ -19,7 +50,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
 	MAF = colMeans(G1)/2
 		
-	cat("m =", m, "\n")
+	#cat("m =", m, "\n")
+	#cat("MAF =", MAF, "\n")
         id_include<-1:n
         # Added by SLEE 4/24/2017
         out.method<-SKAT:::SKAT_Check_Method(method,r.corr, n=n, m=m)
@@ -27,10 +59,11 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
         r.corr=out.method$r.corr
         IsMeta=out.method$IsMeta
         SKAT:::SKAT_Check_RCorr(kernel, r.corr)
-	
+
 	if(is.null(weights)){
 		weights <- SKAT:::Beta.Weights(MAF, weights.beta)
 	}
+	#cat("weights : ", weights, "\n")	
 
 	indexNeg = NULL
         #if more than 1 marker is left, continue the test
@@ -197,7 +230,12 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                   	    		re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
 				}
 			}else{#if(m_new == 1)
-				re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)		
+				re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)	
+				
+         #cat("Score code: ", Score, "\n")
+         #print(Phi)
+
+	
 			}
 
 
@@ -208,10 +246,15 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 					re = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, p.value.cond=NA, P_singlGCadj=NA, GCadjOut=NA)
 				}else{	
 					re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
+					     #cat("Score code: ", Score, "\n")
+        print(Phi)
+
 				}
 			}else{#if(m_new == 1){
 
 				re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
+				     #cat("Score code: ", Score, "\n")
+        print(Phi)
 			}
 			Phi = Phi * singleGClambda
 			Phi = as.matrix(Phi)
@@ -263,6 +306,23 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
         re$markerNumbyMAC = markerNumbyMAC
 	re$m = m
 	re$indexNeg = indexNeg
+
+
+if(adjustCCratioinGroupTest){
+	###Without adjustment  
+re$p_skato_old2=Out_List$p_skato_old  ##SKATO
+re$p_each_old2=Out_List$p_each_old ##SKAT and burden
+		
+###With adjustment 
+re$p_skato2=Out_List$p_skato ##SKATO
+re$p_each2=Out_List$p_each ##SKAT and burden
+
+###With additional adjustment (Current robust approach)
+re$p_skato_2_2=Out_List$p_skato_2 ##SKATO
+re$p_each_2_2=Out_List$p_each_2 ##SKAT and burden
+}
+
+
         print(re)
         return(re)
 
