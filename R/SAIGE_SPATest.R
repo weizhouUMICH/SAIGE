@@ -1707,19 +1707,20 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
     var1 = var2b * varRatio
   }
 
-  if(isCondition){
-    T2stat = OUT_cond[,2]
-    G1tilde_P_G2tilde = matrix(G1tilde_P_G2tilde,nrow=1)
-    Tstat_c = Tstat - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% T2stat
-    var1_c = var1 - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
-  }
+#  if(isCondition){
+#    T2stat = OUT_cond[,2]
+#    G1tilde_P_G2tilde = matrix(G1tilde_P_G2tilde,nrow=1)
+#    Tstat_c = Tstat - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% T2stat
+#    var1_c = var1 - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
+#  }
 
   AF = AC_true/(2*length(y))
+  Tstat_old = Tstat
   if(AF > 0.5){
     Tstat = (-1)*Tstat
-    if(isCondition){
-      Tstat_c = (-1)*Tstat_c
-    }
+    #if(isCondition){
+    #  Tstat_c = (-1)*Tstat_c
+    #}
   }
 
   qtilde = Tstat/sqrt(var1) * sqrt(var2) + m1
@@ -1749,6 +1750,16 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
   out1$Tstat = Tstat
 
   if(isCondition){
+    T2stat = OUT_cond[,2]
+    G1tilde_P_G2tilde = matrix(G1tilde_P_G2tilde,nrow=1)
+    Tstat_c = Tstat_old - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% T2stat
+    if(AF > 0.5){
+      Tstat_c = (-1)*Tstat_c
+    }
+
+    var1_new = Tstat^2/qchisq(out1$p.value, lower.tail = FALSE, df=1)
+    var1_c = var1_new - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
+      
     if(var1_c <= (.Machine$double.xmin)^2){
       out1 = c(out1, var1_c = var1_c,BETA_c = NA, SE_c = NA, Tstat_c = Tstat_c, p.value.c = 1, p.value.NA.c = 1)	
     }else{
@@ -1827,7 +1838,13 @@ getCovMandOUT_cond_pre = function(dosage_cond, cateVarRatioMinMACVecExclude, cat
 
                 if(obj.glmm.null$traitType == "binary"){
                         out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, obj.glmm.null$obj.glm.null$y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma)
-                        OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
+			print("HERE")
+			print(names(out1))
+			print(out1$Tstat)
+			var1_new = (as.numeric((out1$Tstat))^2)/qchisq(as.numeric(out1$p.value), lower.tail = FALSE, df=1)
+			
+                        #OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
+                        OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(var1_new)))
 
                 }else if(obj.glmm.null$traitType == "quantitative"){
                         #print("TEST")
@@ -1855,9 +1872,21 @@ getCovMandOUT_cond_pre = function(dosage_cond, cateVarRatioMinMACVecExclude, cat
 	#print(covMsubnew)
 
         print("TEST3")
+        print(OUT_cond)
         covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
         GratioMatrix_cond = getVarRatio(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
-        G2tilde_P_G2tilde_inv = solve(covMsub * GratioMatrix_cond)
+
+	G2tilde_P_G2tilde = covMsub * GratioMatrix_cond
+	if(Mcond > 1){
+	  diag(G2tilde_P_G2tilde) = OUT_cond[,3]	
+	}else{
+          G2tilde_P_G2tilde = OUT_cond[1,3]
+        }
+
+        G2tilde_P_G2tilde_inv = solve(G2tilde_P_G2tilde)
+
+
+        #G2tilde_P_G2tilde_inv = solve(covMsub * GratioMatrix_cond)
 
         return(condpre = list(covM = covM, OUT_cond = OUT_cond, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv))
 }
