@@ -171,10 +171,15 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	G1_tilde_Ps_G1_tilde = getCovM_nopcg(G1=G_w, G2=G_w, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2.a)
 #	print("test3")
 
-
-	VarRatio_12m=Matrix(diag(sqrt(VarRatio_Vec)), sparse=TRUE)
-	Phi=as.matrix(VarRatio_12m%*%G1_tilde_Ps_G1_tilde %*%VarRatio_12m)
+	if(length(VarRatio_Vec) > 1){
+		VarRatio_12m=Matrix(diag(sqrt(VarRatio_Vec)), sparse=TRUE)
+		#cat("VarRatio_12m dim :", dim(VarRatio_12m), "\n")
+		#cat("G1_tilde_Ps_G1_tilde dim :", dim(G1_tilde_Ps_G1_tilde), "\n")
+		Phi=as.matrix(VarRatio_12m %*% G1_tilde_Ps_G1_tilde %*% VarRatio_12m)
 #	print("test4")
+	}else{
+		Phi = as.matrix(VarRatio_Vec[1] * G1_tilde_Ps_G1_tilde)
+	}
 	out_kernel=SPA_ER_kernel_related(G,obj, obj.noK, Cutoff=Cutoff, Phi, weight,VarRatio_Vec, mu.a);
 #	print("test2")
 
@@ -211,7 +216,11 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 		Phi[vars_inf,]=0
 		Phi[,vars_inf]=0
 	}
-	G2_adj_n=Phi%*%diag(VarS/VarS_org)	
+	if(length(VarS) > 1){
+	G2_adj_n=as.matrix(Phi)%*%diag(VarS/VarS_org)	
+	}else{
+	G2_adj_n=as.matrix(Phi)%*%(VarS/VarS_org)
+	}
 	mu =out_kernel$mu
 	g.sum =out_kernel$g.sum
 	q.sum=out_kernel$q.sum
