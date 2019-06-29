@@ -99,7 +99,7 @@ SPA_ER_kernel_related<-function(G,obj,  obj.noK, Cutoff=2, Phi,  weight,VarRatio
 	return(outlist) ;
 }
 
-Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff, Cutoff=2){
+Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff, Cutoff=2, weights.beta=c(1,25)){
 	if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
     	for (gi in 1:dim(G)[2]){
 		temp_gi=which(G[,gi]==9 | G[,gi]==NA)
@@ -148,7 +148,7 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	maf_temp=which(MAF<mafcutoff)##rare variants
 	if (length(maf_temp)>0 & length(maf_temp)<length(MAF)){
 		#weight[maf_temp]=Beta_Weight(MAF[maf_temp],c(1,25))
-		weight[maf_temp]=SKAT:::Beta.Weights(MAF[maf_temp],c(1,25))
+		weight[maf_temp]=SKAT:::Beta.Weights(MAF[maf_temp],weights.beta)
 		#weight[-maf_temp]=Beta_Weight(MAF[-maf_temp],c(0.5,0.5))
 		weight[-maf_temp]=SKAT:::Beta.Weights(MAF[-maf_temp],c(0.5,0.5))
 		flag=1
@@ -157,7 +157,7 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 		#if (length(maf_temp)==0){weight=Beta_Weight(MAF,c(0.5,0.5));flag=2} ###flag 1 means both; 2 only common; 3 only rare;
 		if (length(maf_temp)==0){weight=SKAT:::Beta.Weights(MAF,c(0.5,0.5));flag=2} ###flag 1 means both; 2 only common; 3 only rare;
 		#if (length(maf_temp)==length(MAF)){weight=Beta_Weight(MAF,c(1,25));flag=3}
-		if (length(maf_temp)==length(MAF)){weight=SKAT:::Beta.Weights(MAF,c(1,25));flag=3}
+		if (length(maf_temp)==length(MAF)){weight=SKAT:::Beta.Weights(MAF,weights.beta);flag=3}
 		
 #		cat("MAF: ", MAF, "\n")
 #		cat("maf_temp: ", maf_temp, "\n")
@@ -194,14 +194,10 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 		r.all[IDX]<-0.999	
 	}
 #	print("test1")
-	out=SKAT::: Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(Phi), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)
+	out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(Phi), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)
 #	cat("Score from Zhaocheng's code: ", zscore.all_1, "\n")	
 #	print(Phi)
 	
-
-
-
-
 	list_myfun=list();
 	list_myfun$p_skato_old=out$p.value
 	rho.val.vec = out$param$rho
@@ -240,7 +236,7 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	r=min(r,1)
 		
 
-	out=SKAT::: Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(G2_adj_n), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)		
+	out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(G2_adj_n), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)		
 	
 
 	list_myfun$p_skato=out$p.value
@@ -248,7 +244,7 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	rho.val.vec = out$param$rho
         list_myfun$p_each = c(out$param$p.val.each[which(rho.val.vec == 1)], out$param$p.val.each[which(rho.val.vec == 0)])	
 
-	out=SKAT::: Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(G2_adj_n%*%diag(rep(1/r,dim(G2_adj_n)[2]))), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)	
+	out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(G2_adj_n%*%diag(rep(1/r,dim(G2_adj_n)[2]))), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)	
 	list_myfun$p_skato_2=out$p.value
 	#list_myfun$p_each_2=out$param$p.val.each
 	rho.val.vec = out$param$rho

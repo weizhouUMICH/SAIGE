@@ -26,8 +26,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
           obj_cc$res=y-obj_cc$mu
 	  #print(obj_cc$res)
           obj_cc$pi_1=obj_cc$mu*(1-obj_cc$mu)
-          Out_List=Related_ER(G1, obj_cc,  obj.noK, ratioVec=ratioVec, sparseSigma, cateVarRatioMinMACVecExclude,Cutoff=2)
-}
+          Out_List=Related_ER(G1, obj_cc,  obj.noK, ratioVec=ratioVec, sparseSigma, cateVarRatioMinMACVecExclude,Cutoff=2, weights.beta = weights.beta)
+	}
 
 
 
