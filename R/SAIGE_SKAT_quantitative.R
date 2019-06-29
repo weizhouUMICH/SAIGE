@@ -3,10 +3,10 @@
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
 SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta=c(1,25), weights=NULL, impute.method="fixed"
-, r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, isOutputPvalueNA = FALSE){
+, r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNA = FALSE){
 
 
-	xt <- proc.time()	
+#	xt <- proc.time()	
         #check the input genotype G1
         obj.noK = obj$obj.noK
         m = ncol(G1)
@@ -24,16 +24,24 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 	if(adjustCCratioinGroupTest){
           y = obj$obj.glm.null$y
           N = length(y)
-          obj.noK = obj$obj.noK
+#          obj.noK = obj$obj.noK
 	  obj.noK$mu = mu
           obj.noK$res=y - obj.noK$mu 
 	  obj.noK$V = mu2
-          obj_cc<-SKAT::SKAT_Null_Model(y ~ obj.noK$X1-1, out_type="D", Adjustment = FALSE)
+#	xt0 <- proc.time()
+          #obj_cc<-SKAT::SKAT_Null_Model(y ~ obj.noK$X1-1, out_type="D", Adjustment = FALSE)
+	  obj_cc <- obj$obj_cc	
+
+#	xt1 <- proc.time()
+#	print("xt1-xt0")
+#	print(xt1-xt0)
           obj_cc$mu=mu
           obj_cc$res=y-obj_cc$mu
           obj_cc$pi_1=obj_cc$mu*(1-obj_cc$mu)
-          re=Related_ER(G1, obj_cc,  obj.noK, ratioVec=ratioVec, sparseSigma, mac_cutoff = cateVarRatioMinMACVecExclude,Cutoff=2, weights.beta = weights.beta, isOutputPvalueNA=isOutputPvalueNA)
-	#if(isOutputPvalueNA){
+          testtime = system.time({re=Related_ER(G1, obj_cc,  obj.noK, ratioVec=ratioVec, sparseSigma, mac_cutoff = cateVarRatioMinMACVecExclude,Cutoff=2, weights.beta = weights.beta, IsOutputPvalueNA=IsOutputPvalueNA)})
+	  print("testtime")
+	  print(testtime)
+	#if(IsOutputPvalueNA){
 	#  	re$p_skato_old2=re$p_skato_old  ##SKATO
 	#	re$p_each_old2=Out_List$p_each_old ##SKAT and burden
 	#}
@@ -292,6 +300,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
 }#if(adjustCCratioinGroupTest){ else
 
+	#xt1 <- proc.time()
+	#print(xt1 - xt)
         print(re)
         return(re)
 
@@ -401,7 +411,11 @@ getCateVarRatio_indVec = function(G, cateVarRatioMinMACVecExclude, cateVarRatioM
 #	cat("numCate: ", numCate, "\n")
 #	cat("MACvector: ", MACvector, "\n")
     	for(i in 1:(numCate-1)){
-		MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
+		if(i == 1){
+			MACvecIndex = which(MACvector >= cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
+		}else{
+			MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
+		}
 		if(length(MACvecIndex) > 0){
 			MACvec_indVec[MACvecIndex] = i
 		}
@@ -453,7 +467,11 @@ getVarRatio = function(G, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInc
 #       cat("numCate: ", numCate, "\n")
 #       cat("MACvector: ", MACvector, "\n")
         for(i in 1:(numCate-1)){
-                MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
+		if(i == 1){
+			MACvecIndex = which(MACvector >= cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
+		}else{
+                	MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
+		}
                 if(length(MACvecIndex) > 0){
                         MACvec_indVec[MACvecIndex] = i
                 }
