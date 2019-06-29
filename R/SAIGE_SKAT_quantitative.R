@@ -3,36 +3,7 @@
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
 SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta=c(1,25), weights=NULL, impute.method="fixed"
-, r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL){
-
-
-	
-	if(adjustCCratioinGroupTest){
-          y = obj$obj.glm.null$y
-          N = length(y)
-          obj.noK = obj$obj.noK
-	  obj.noK$mu = mu
-          obj.noK$res=y - obj.noK$mu 
-	  obj.noK$V = mu2
-          #print("OK2_casecontrol")
-	  #print(names(obj.noK))
-          obj_cc<-SKAT::SKAT_Null_Model(y ~ obj.noK$X1-1, out_type="D", Adjustment = FALSE)
-	  #print(mu)
-	  #print(obj_cc$mu)
-          obj_cc$mu=mu
-          #print("OK3")
-	  #print(names(obj))
-	  #print(y-obj$mu)
-          obj_cc$res=y-obj_cc$mu
-	  #print(obj_cc$res)
-          obj_cc$pi_1=obj_cc$mu*(1-obj_cc$mu)
-          Out_List=Related_ER(G1, obj_cc,  obj.noK, ratioVec=ratioVec, sparseSigma, cateVarRatioMinMACVecExclude,Cutoff=2, weights.beta = weights.beta)
-	}
-
-
-
-
-
+, r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, isOutputPvalueNA = FALSE){
 
 
 	xt <- proc.time()	
@@ -50,10 +21,33 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
 	MAF = colMeans(G1)/2
 		
-	#cat("m =", m, "\n")
-	#cat("MAF =", MAF, "\n")
+	if(adjustCCratioinGroupTest){
+          y = obj$obj.glm.null$y
+          N = length(y)
+          obj.noK = obj$obj.noK
+	  obj.noK$mu = mu
+          obj.noK$res=y - obj.noK$mu 
+	  obj.noK$V = mu2
+          obj_cc<-SKAT::SKAT_Null_Model(y ~ obj.noK$X1-1, out_type="D", Adjustment = FALSE)
+          obj_cc$mu=mu
+          obj_cc$res=y-obj_cc$mu
+          obj_cc$pi_1=obj_cc$mu*(1-obj_cc$mu)
+          re=Related_ER(G1, obj_cc,  obj.noK, ratioVec=ratioVec, sparseSigma, mac_cutoff = cateVarRatioMinMACVecExclude,Cutoff=2, weights.beta = weights.beta, isOutputPvalueNA=isOutputPvalueNA)
+	#if(isOutputPvalueNA){
+	#  	re$p_skato_old2=re$p_skato_old  ##SKATO
+	#	re$p_each_old2=Out_List$p_each_old ##SKAT and burden
+	#}
+	###With additional adjustment (Current robust approach)
+	#re$p_skato_2_2=Out_List$p_skato_2 ##SKATO
+	#re$p_each_2_2=Out_List$p_each_2 ##SKAT and burden
+
+
+
+
+	}else{ #if(adjustCCratioinGroupTest){
+
+
         id_include<-1:n
-        # Added by SLEE 4/24/2017
         out.method<-SKAT:::SKAT_Check_Method(method,r.corr, n=n, m=m)
         method=out.method$method
         r.corr=out.method$r.corr
@@ -104,19 +98,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
                 Score = as.vector(t(G1) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
 
-		#print("G1")	
-		#print(G1)
-
-		#print("obj$residuals")
-		#print(obj$residuals)
-		
-		#print("obj$theta")
-		#print(obj$theta)
-                #compute Score test statistics after conditionining
                 if(!is.null(G2_cond)){
-                        #G2_cond_tilde<- G2_cond  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G2_cond)
                         T2 = as.vector(t(G2_cond) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
-                        #Score_cond = as.vector(t(G1) %*% matrix(obj$residuals - G2_cond_tilde%*%G2_cond_es, ncol=1)) / as.numeric(obj$theta[1])
                 }
 
 
@@ -307,21 +290,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 	re$m = m
 	re$indexNeg = indexNeg
 
-
-if(adjustCCratioinGroupTest){
-	###Without adjustment  
-re$p_skato_old2=Out_List$p_skato_old  ##SKATO
-re$p_each_old2=Out_List$p_each_old ##SKAT and burden
-		
-###With adjustment 
-re$p_skato2=Out_List$p_skato ##SKATO
-re$p_each2=Out_List$p_each ##SKAT and burden
-
-###With additional adjustment (Current robust approach)
-re$p_skato_2_2=Out_List$p_skato_2 ##SKATO
-re$p_each_2_2=Out_List$p_each_2 ##SKAT and burden
-}
-
+}#if(adjustCCratioinGroupTest){ else
 
         print(re)
         return(re)

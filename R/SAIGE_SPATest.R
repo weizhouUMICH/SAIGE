@@ -90,7 +90,8 @@ SPAGMMATtest = function(dosageFile = "",
 		 cateVarRatioMinMACVecExclude=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5), 
 		 cateVarRatioMaxMACVecInclude=c(1.5,2.5,3.5,4.5,5.5,10.5,20.5),
 		 singleGClambda = 1,
-		adjustCCratioinGroupTest=FALSE){
+		 isOutputPvalueNA = FALSE){
+#		 adjustCCratioinGroupTest=FALSE){
 
   # if group file is specified, the region-based test will be performed, otherwise, the single-variant assoc test will be performed. 
 
@@ -873,7 +874,11 @@ SPAGMMATtest = function(dosageFile = "",
        cat("It is a quantitative trait\n")
      }else if(traitType == "binary"){
        cat("It is a binary trait\n")
-       cat("WARNING!!!! Gene-based tests do not work for binary traits with unbalanced case-control ratios (disease prevalence < 20%)! \n")	
+       #cat("WARNING!!!! Gene-based tests do not work for binary traits with unbalanced case-control ratios (disease prevalence < 20%)! \n")	
+       cat("Gene-based tests for binary traits are now adjusted for unbalanced case-control ratios! Conditional analysis and GC lambda adjustion are not working yet\n")	
+       adjustCCratioinGroupTest = TRUE
+       isCondition = FALSE
+       singleGClambda = FALSE		
      }
 
 
@@ -899,9 +904,17 @@ SPAGMMATtest = function(dosageFile = "",
        }
 
 	if(adjustCCratioinGroupTest){
-
-	  resultHeader = c(resultHeader, "Pvalue_skato_old", "Pvalue_burden_old", "Pvalue_skat_old", "Pvalue_skato_new", "Pvalue_burden_new", "Pvalue_skat_new", "Pvalue_skato_new2", "Pvalue_burden_new2", "Pvalue_skat_new2")	
+		if(isOutputPvalueNA){
+			if(method=="optimal.adj"){
+				resultHeader = c(resultHeader, "Pvalue_skato_NA", "Pvalue_burden_NA", "Pvalue_skat_NA")
+			}else{
+				resultHeader = c(resultHeader, "Pvalue_NA")
+			}
+		}
+		#resultHeader = c(resultHeader, "Pvalue_skato_old", "Pvalue_burden_old", "Pvalue_skat_old", "Pvalue_skato_new", "Pvalue_burden_new", "Pvalue_skat_new", "Pvalue_skato_new2", "Pvalue_burden_new2", "Pvalue_skat_new2")	
 	}
+
+
        write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
 #	gc(verbose=T, full=T)	
 
@@ -994,11 +1007,11 @@ SPAGMMATtest = function(dosageFile = "",
 			dosage_cond.sub = NULL
 			OUT_cond.sub = NULL
 		}
-		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, singleGClambda = singleGClambda, mu.a = mu.a.sub, mu2.a = mu2.a.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest)
+		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, singleGClambda = singleGClambda, mu.a = mu.a.sub, mu2.a = mu2.a.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, isOutputPvalueNA = isOutputPvalueNA)
 
 	     }else{#if(IsDropMissingDosages & length(indexforMissing) > 0){	
 
-		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu.a = mu.a, mu2.a = mu2.a, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest)	
+		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu.a = mu.a, mu2.a = mu2.a, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, isOutputPvalueNA = isOutputPvalueNA)	
 	}
 	    outVec = groupTestResult$outVec
 	    OUT = rbind(OUT, outVec)
@@ -1892,10 +1905,10 @@ getCovMandOUT_cond = function(G0, dosage_cond, cateVarRatioMinMACVecExclude, cat
 
 
 
-groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta, r.corr, max_maf, sparseSigma, singleGClambda, mu.a, mu2.a, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest){
+groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta, r.corr, max_maf, sparseSigma, singleGClambda, mu.a, mu2.a, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, isOutputPvalueNA){
 
-        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu2 = mu2.a, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = mu.a)})
-
+        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu2 = mu2.a, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = mu.a, isOutputPvalueNA = isOutputPvalueNA)})
+	
         if(is.null(G2_cond)){
                 isCondition = FALSE
 
@@ -1903,6 +1916,14 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                 isCondition = TRUE
 
         }
+
+	if(adjustCCratioinGroupTest){
+		isCondition=FALSE
+		singleGClambda=1
+	}
+
+
+
         OUT_single = NULL
 
 #       testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=dosage_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu2 = mu2)})
@@ -2012,7 +2033,13 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                         }
                 }
 
+
+	if(!adjustCCratioinGroupTest){
+
+
+
               if(method=="optimal.adj" & saigeskatTest$m > 0){
+
                 #rho = 1 for burden, 0 for skat
                 if(saigeskatTest$m > 1){
 
@@ -2056,11 +2083,41 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                         }
                 }
 
+
+
+	}else{#if(!adjustCCratioinGroupTest){
+		if(method=="optimal.adj"){
+			if(isOutputPvalueNA){
+				if(saigeskatTest$m > 1){
+					outVec = c(outVec, saigeskatTest$p_each_2, saigeskatTest$p_skato_old, saigeskatTest$p_each_old)
+				}else{
+					outVec = c(outVec, saigeskatTest$p.value, saigeskatTest$p.value, saigeskatTest$p_skato_old, saigeskatTest$p_skato_old, saigeskatTest$p_skato_old)	
+				}
+
+			}else{ #if(isOutputPvalueNA){
+				if(saigeskatTest$m > 1){
+					outVec = c(outVec,  saigeskatTest$p_each_2)
+				}else{
+					outVec = c(outVec, saigeskatTest$p.value, saigeskatTest$p.value)
+				}
+			}
+
+		}else{#if(method=="optimal.adj"){
+			if(isOutputPvalueNA){
+				outVec = c(outVec, saigeskatTest$p_skato_old)
+			}
+		}
+
+	}#else if(!adjustCCratioinGroupTest)
+
+
+
+
       }# if(isCondition){
 
-	if(adjustCCratioinGroupTest){
-		outVec = c(outVec, saigeskatTest$p_skato_old2, saigeskatTest$p_each_old2, saigeskatTest$p_skato2,  saigeskatTest$p_each2, saigeskatTest$p_skato_2_2, saigeskatTest$p_each_2_2)
-	}
+	#if(adjustCCratioinGroupTest){
+	#	outVec = c(outVec, saigeskatTest$p_skato_old2, saigeskatTest$p_each_old2, saigeskatTest$p_skato2,  saigeskatTest$p_each2, saigeskatTest$p_skato_2_2, saigeskatTest$p_each_2_2)
+	#}
 
       return(groupTestResult = list(OUT_single = OUT_single, outVec = outVec))
 

@@ -99,25 +99,24 @@ SPA_ER_kernel_related<-function(G,obj,  obj.noK, Cutoff=2, Phi,  weight,VarRatio
 	return(outlist) ;
 }
 
-Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff, Cutoff=2, weights.beta=c(1,25)){
-	if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
-    	for (gi in 1:dim(G)[2]){
-		temp_gi=which(G[,gi]==9 | G[,gi]==NA)
-		if (length(temp_gi)>0){
-			G[temp_gi,gi]=mean(G[-temp_gi,gi])
-			cat("The missing values in column", gi," are imputed by the mean genotype value. \n")
-    		}
-    	}
-	mu.a=       obj.noK$mu
-	mu2.a=    obj.noK$V
-    	MAF_0 = which(colSums(G)==0)
-    	if (length(MAF_0)>0){
-		cat("The following columns are removed due to no-variation: ", MAF_0,"\n")
-		G=G[,-MAF_0]
-	} 
-	if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
-
-	mac_cutoff=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5)
+Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff, Cutoff=2, weights.beta=c(1,25), isOutputPvalueNA=FALSE){
+	#if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
+    	#for (gi in 1:dim(G)[2]){
+	#	temp_gi=which(G[,gi]==9 | G[,gi]==NA)
+	#	if (length(temp_gi)>0){
+	#		G[temp_gi,gi]=mean(G[-temp_gi,gi])
+	#		cat("The missing values in column", gi," are imputed by the mean genotype value. \n")
+    	#	}
+    	#}
+	mu.a=obj.noK$mu
+	mu2.a=obj.noK$V
+    	#MAF_0 = which(colSums(G)==0)
+    	#if (length(MAF_0)>0){
+	#	cat("The following columns are removed due to no-variation: ", MAF_0,"\n")
+	#	G=G[,-MAF_0]
+	#} 
+	#if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
+	#mac_cutoff=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5)
 	for (jj in 1:ncol(G)){
 		n.g<-sum(G[,jj])
 		if(n.g/(2*length(G[,jj]))>0.5)
@@ -138,9 +137,12 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 			} 
 		}
 		if (MAFsum[G_k]>=mac_cutoff[length(mac_cutoff)]){VarRatio_Vec[G_k]=ratioVec[length(mac_cutoff)]}
-
 	}
-
+	MACvec_indVec = getCateVarRatio_indVec(G, mac_cutoff, mac_cutoff[2:length(mac_cutoff)])
+	#markerNumbyMAC = NULL
+        #for(i in 1:length(mac_cutoff)){
+        #  markerNumbyMAC = c(markerNumbyMAC, sum(MACvec_indVec == i))
+        #}
 
         	
 	mafcutoff=0.01  ###########1/sqrt(nrow(G_o) * 2)
@@ -159,13 +161,10 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 		#if (length(maf_temp)==length(MAF)){weight=Beta_Weight(MAF,c(1,25));flag=3}
 		if (length(maf_temp)==length(MAF)){weight=SKAT:::Beta.Weights(MAF,weights.beta);flag=3}
 		
-#		cat("MAF: ", MAF, "\n")
-#		cat("maf_temp: ", maf_temp, "\n")
-#		cat("flag: ", flag, "\n")
-#	        cat("weight from Zhaocheng's code : ", weight, "\n")	
-
 
 	}
+
+	indexNeg = NULL
 
 	G_w=Matrix(t(t(G)*weight),sparse=TRUE)
 	G1_tilde_Ps_G1_tilde = getCovM_nopcg(G1=G_w, G2=G_w, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2.a)
@@ -173,16 +172,29 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 
 	if(length(VarRatio_Vec) > 1){
 		VarRatio_12m=Matrix(diag(sqrt(VarRatio_Vec)), sparse=TRUE)
-		#cat("VarRatio_12m dim :", dim(VarRatio_12m), "\n")
-		#cat("G1_tilde_Ps_G1_tilde dim :", dim(G1_tilde_Ps_G1_tilde), "\n")
 		Phi=as.matrix(VarRatio_12m %*% G1_tilde_Ps_G1_tilde %*% VarRatio_12m)
-#	print("test4")
 	}else{
 		Phi = as.matrix(VarRatio_Vec[1] * G1_tilde_Ps_G1_tilde)
 	}
-	out_kernel=SPA_ER_kernel_related(G,obj, obj.noK, Cutoff=Cutoff, Phi, weight,VarRatio_Vec, mu.a);
-#	print("test2")
 
+	#check if variance for each marker is negative, remove the variant
+        indexNeg = which(diag(as.matrix(Phi)) <= (.Machine$double.xmin)^(1/4))
+
+	if(length(indexNeg) > 0){
+			G = G[,-indexNeg]
+			weight = weight[-indexNeg]
+			VarRatio_Vec = VarRatio_Vec[-indexNeg]
+                        Phi = Phi[-indexNeg, -indexNeg]
+			MACvec_indVec = MACvec_indVec[-indexNeg]
+                        cat("WARNING: ", indexNeg, " th marker(s) are excluded because of negative variance\n")
+	}
+
+	markerNumbyMAC = NULL
+        for(i in 1:length(mac_cutoff)){
+          markerNumbyMAC = c(markerNumbyMAC, sum(MACvec_indVec == i))
+        }
+
+	out_kernel=SPA_ER_kernel_related(G,obj, obj.noK, Cutoff=Cutoff, Phi, weight,VarRatio_Vec, mu.a);
 	zscore.all_1=out_kernel$zscore.all_0* weight
 	VarS=out_kernel$VarS*weight^2
 	gc()
@@ -193,16 +205,15 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	if(length(IDX) > 0){
 		r.all[IDX]<-0.999	
 	}
-#	print("test1")
-	out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(Phi), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)
-#	cat("Score from Zhaocheng's code: ", zscore.all_1, "\n")	
-#	print(Phi)
-	
 	list_myfun=list();
-	list_myfun$p_skato_old=out$p.value
-	rho.val.vec = out$param$rho
+	if(isOutputPvalueNA){
+		out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(Phi), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)
+		list_myfun$p_skato_old=out$p.value
+		rho.val.vec = out$param$rho
 	#list_myfun$p_each_old=out$param$p.val.each
-	list_myfun$p_each_old = c(out$param$p.val.each[which(rho.val.vec == 1)], out$param$p.val.each[which(rho.val.vec == 0)])
+		list_myfun$p_each_old = c(out$param$p.val.each[which(rho.val.vec == 1)], out$param$p.val.each[which(rho.val.vec == 0)])
+	}
+
 
 	VarS_org=diag(Phi)		
 	vars_inf=which(VarS==Inf)
@@ -221,38 +232,32 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	g.sum =out_kernel$g.sum
 	q.sum=out_kernel$q.sum
 	p.value_burden<-SPAtest:::Saddle_Prob(q.sum , mu=mu, g=g.sum, Cutoff=2,alpha=2.5*10^-6)$p.value
-
-
 	v1=rep(1,dim(G2_adj_n)[1])
 	VarQ=t(v1)%*%G2_adj_n %*%v1
-
-
 	p.m<-dim(G)[2]
 	Q_b=p.m^2 * rowMeans(zscore.all_1)^2
-
 	VarQ_2=Q_b/qchisq(p.value_burden, df=1, ncp = 0, lower.tail = FALSE, log.p = FALSE)
-
 	if (VarQ_2== 0) {r=1} else {r=VarQ/VarQ_2}
 	r=min(r,1)
 		
 
-	out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(G2_adj_n), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)		
-	
-
-	list_myfun$p_skato=out$p.value
-	#list_myfun$p_each=out$param$p.val.each
-	rho.val.vec = out$param$rho
-        list_myfun$p_each = c(out$param$p.val.each[which(rho.val.vec == 1)], out$param$p.val.each[which(rho.val.vec == 0)])	
+	#out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(G2_adj_n), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)	
+	#list_myfun$p_skato=out$p.value
+	##list_myfun$p_each=out$param$p.val.each
+	#rho.val.vec = out$param$rho
+        #list_myfun$p_each = c(out$param$p.val.each[which(rho.val.vec == 1)], out$param$p.val.each[which(rho.val.vec == 0)])	
 
 	out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(G2_adj_n%*%diag(rep(1/r,dim(G2_adj_n)[2]))), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)	
-	list_myfun$p_skato_2=out$p.value
+	list_myfun$p.value=out$p.value
 	#list_myfun$p_each_2=out$param$p.val.each
 	rho.val.vec = out$param$rho
         list_myfun$p_each_2 = c(out$param$p.val.each[which(rho.val.vec == 1)], out$param$p.val.each[which(rho.val.vec == 0)])
+	list_myfun$r=r		
 
+	list_myfun$indexNeg=indexNeg
+	list_myfun$markerNumbyMAC = markerNumbyMAC
+	list_myfun$m =ncol(G)
 
-	list_myfun$r=r
-		
 	p_old=out_kernel$p.old
 	p_new=out_kernel$p.new
 
