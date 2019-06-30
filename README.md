@@ -63,6 +63,8 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.35.8.5 (June-29-2019): account for case control imbalance for binary traits in gene-based tests
+
 * 0.35.8.3 (May-14-2019): fix a bug in the function getCovM_nopcg, which affected the conditional analysis for binary traits. Merge hyacz/master to use cget to manage superlu 
 
 * 0.35.8.2 (April-16-2019): minor changes include fix error message, change MAC to MAF, add a line to check if the chomosome in plink file is numeric or not, add rsid to the header when input file is bgen
