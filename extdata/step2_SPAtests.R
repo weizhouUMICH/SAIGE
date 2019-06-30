@@ -90,7 +90,9 @@ option_list <- list(
   make_option("--cateVarRatioMaxMACVecInclude",type="character", default="1.5,2.5,3.5,4.5,5.5,10.5,20.5",
     help="vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. [default='1.5,2.5,3.5,4.5,5.5,10.5,20.5']"),
   make_option("--singleGClambda",type="numeric", default=1,
-    help="GC lambda values that can be used to adjust the gene-based tests results. This value is usually estimated based on the single-variant assoc test results. [default=1]")
+    help="GC lambda values that can be used to adjust the gene-based tests results. This value is usually estimated based on the single-variant assoc test results. [default=1]"),
+  make_option("--IsOutputPvalueNAinGroupTestforBinary", type="logical",default=FALSE,
+    help="whether to output p value if not account for case-control imbalance when performing group test (only for binary traits). [default=FALSE]")	
 )
 
 parser <- OptionParser(usage="%prog [options]", option_list=option_list)
@@ -150,7 +152,8 @@ SPAGMMATtest(dosageFile=opt$dosageFile,
 	     IsSingleVarinGroupTest=opt$IsSingleVarinGroupTest,
              cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude,
              cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,
-	     singleGClambda=opt$singleGClambda
+	     singleGClambda=opt$singleGClambda,
+		IsOutputPvalueNAinGroupTestforBinary=opt$IsOutputPvalueNAinGroupTestforBinary
 )
 
 
