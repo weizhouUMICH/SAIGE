@@ -99,7 +99,7 @@ SPA_ER_kernel_related<-function(G,obj,  obj.noK, Cutoff=2, Phi,  weight,VarRatio
 	return(outlist) ;
 }
 
-Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff, Cutoff=2, weights.beta=c(1,25), IsOutputPvalueNA=FALSE){
+Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff, Cutoff=2, weights.beta=c(1,25), IsOutputPvalueNAinGroupTestforBinary=FALSE){
 	#if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
     	#for (gi in 1:dim(G)[2]){
 	#	temp_gi=which(G[,gi]==9 | G[,gi]==NA)
@@ -206,7 +206,7 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 		r.all[IDX]<-0.999	
 	}
 	list_myfun=list();
-	if(IsOutputPvalueNA){
+	if(IsOutputPvalueNAinGroupTestforBinary){
 		out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(Phi), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)
 		list_myfun$p_skato_old=out$p.value
 		rho.val.vec = out$param$rho
