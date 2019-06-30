@@ -3,7 +3,7 @@
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
 SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta=c(1,25), weights=NULL, impute.method="fixed"
-, r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNA = FALSE){
+, r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE){
 
 
 #	xt <- proc.time()	
@@ -38,10 +38,10 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
           obj_cc$mu=mu
           obj_cc$res=y-obj_cc$mu
           obj_cc$pi_1=obj_cc$mu*(1-obj_cc$mu)
-          testtime = system.time({re=Related_ER(G1, obj_cc,  obj.noK, ratioVec=ratioVec, sparseSigma, mac_cutoff = cateVarRatioMinMACVecExclude,Cutoff=2, weights.beta = weights.beta, IsOutputPvalueNA=IsOutputPvalueNA)})
+          testtime = system.time({re=Related_ER(G1, obj_cc,  obj.noK, ratioVec=ratioVec, sparseSigma, mac_cutoff = cateVarRatioMinMACVecExclude,Cutoff=2, weights.beta = weights.beta, IsOutputPvalueNAinGroupTestforBinary=IsOutputPvalueNAinGroupTestforBinary)})
 	  print("testtime")
 	  print(testtime)
-	#if(IsOutputPvalueNA){
+	#if(IsOutputPvalueNAinGroupTestforBinary){
 	#  	re$p_skato_old2=re$p_skato_old  ##SKATO
 	#	re$p_each_old2=Out_List$p_each_old ##SKAT and burden
 	#}
