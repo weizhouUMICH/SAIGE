@@ -94,7 +94,7 @@ SPAGMMATtest = function(dosageFile = "",
 #		 adjustCCratioinGroupTest=FALSE){
 
   # if group file is specified, the region-based test will be performed, otherwise, the single-variant assoc test will be performed. 
-
+  adjustCCratioinGroupTest=FALSE
   if(groupFile == ""){
     isGroupTest = FALSE
     cat("single-variant association test will be performed\n")
