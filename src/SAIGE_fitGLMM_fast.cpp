@@ -516,6 +516,7 @@ public:
 		//test_bedfile.read((char*)(&genoVecTemp[0]),nbyteTemp*M);
 
 		cout << "setgeno mark2" << endl;
+		int Mmafge1perc = 0;
 		for(int i = 0; i < M; i++){
 			genoVecOneMarkerOld.clear();
 			genoVecOneMarkerOld.reserve(nbyteOld);
@@ -605,7 +606,9 @@ public:
       				invStd= 1/Std;
       			}
 			alleleFreqVec[i] = freq;
-
+			if(freq >= 0.01 && freq <= 0.99){
+				Mmafge1perc = Mmafge1perc + 1;
+			}
 			if(freq > 0.5){
 			  MACVec[i] = (2*Nnomissing) - sum(m_OneSNP_Geno);
 			}else{
@@ -643,7 +646,11 @@ public:
   	int getM() const{
     		return(M);
   	}
-  
+ 
+	int getMmafge1perc() const{
+		return(Mmafge1perc);
+ 	}
+
 	int getMsub() const{
                 return(Msub);
         }
@@ -1025,9 +1032,11 @@ struct CorssProd : public Worker
   	void operator()(std::size_t begin, std::size_t end) {
   	  	arma::fvec vec;
   	  	for(unsigned int i = begin; i < end; i++){
-			geno.Get_OneSNP_StdGeno(i, &vec);
-			float val1 = dot(vec,  m_bVec);
-			m_bout += val1 * (vec) ;
+			if(geno.alleleFreqVec[i] >= 0.01 && geno.alleleFreqVec[i] <= 0.99){
+				geno.Get_OneSNP_StdGeno(i, &vec);
+				float val1 = dot(vec,  m_bVec);
+				m_bout += val1 * (vec) ;
+			}
 		/*	std::cout << "i: " << i << std::endl;
 			for(unsigned int j = 0; j < 10; j++){
 				std::cout << "m_bVec[j] " << m_bVec[j] << std::endl;
@@ -1058,7 +1067,7 @@ struct CorssProd_LOCO : public Worker
 	int endIndex;
         // product that I have accumulated
         arma::fvec m_bout;
-
+	unsigned int m_Msub_mafge1perc;
 
         // constructors
         CorssProd_LOCO(arma::fcolvec & y)
@@ -1070,6 +1079,7 @@ struct CorssProd_LOCO : public Worker
                 m_M = geno.getM(); //LOCO
                 m_N = geno.getNnomissing();
                 m_bout.zeros(m_N);
+		m_Msub_mafge1perc=0;
         }
         CorssProd_LOCO(const CorssProd_LOCO& CorssProd_LOCO, Split)
                 : m_bVec(CorssProd_LOCO.m_bVec)
@@ -1081,7 +1091,7 @@ struct CorssProd_LOCO : public Worker
 		startIndex = geno.getStartIndex();
                 endIndex = geno.getEndIndex();
                 m_bout.zeros(m_N);
-
+		m_Msub_mafge1perc=0;
         }
 	
 	   // process just the elements of the range I've been asked to
@@ -1090,22 +1100,26 @@ struct CorssProd_LOCO : public Worker
 		float val1;
                 for(unsigned int i = begin; i < end; i++){
                         geno.Get_OneSNP_StdGeno(i, &vec);
-			
-			if(i >= startIndex && i <= endIndex){
-				val1 = 0;
-				//if(endIndex == 4){
-				//	cout << "i: " << i << endl;
-				//}
-			}else{
-                        	val1 = dot(vec,  m_bVec);
+			if(geno.alleleFreqVec[i] >= 0.01 && geno.alleleFreqVec[i] <= 0.99){	
+				if(i >= startIndex && i <= endIndex){
+					val1 = 0;
+					//if(endIndex == 4){
+					//		cout << "i: " << i << endl;
+					//}
+				}else{
+                        		val1 = dot(vec,  m_bVec);
+				}
+                        	m_bout += val1 * (vec);
+				m_Msub_mafge1perc += 1;
 			}
-                        m_bout += val1 * (vec);
+
                 }
         }
 
         // join my value with that of another InnerProduct
         void join(const CorssProd_LOCO & rhs) {
         m_bout += rhs.m_bout;
+	m_Msub_mafge1perc += rhs.m_Msub_mafge1perc;	
         }
 };
 
@@ -1119,7 +1133,7 @@ arma::fvec parallelCrossProd(arma::fcolvec & bVec) {
   
   // declare the InnerProduct instance that takes a pointer to the vector data
   	int M = geno.getM();
-  
+ 	int Msub_mafge1perc = geno.getMmafge1perc();
   	CorssProd CorssProd(bVec);
   
   // call paralleReduce to start the work
@@ -1134,7 +1148,7 @@ arma::fvec parallelCrossProd(arma::fcolvec & bVec) {
         //}
         ////cout << endl; 
   // return the computed product
-  	return CorssProd.m_bout/M;
+  	return CorssProd.m_bout/Msub_mafge1perc;
   	//return CorssProd.m_bout;
 }
 
@@ -1163,7 +1177,8 @@ arma::fvec parallelCrossProd_LOCO(arma::fcolvec & bVec) {
         //	cout << (CorssProd_LOCO.m_bout/Msub)[i] << ' ';
         //}
 	//cout << endl;
-        return CorssProd_LOCO.m_bout/Msub;
+        //return CorssProd_LOCO.m_bout/Msub;
+        return CorssProd_LOCO.m_bout/(CorssProd_LOCO.m_Msub_mafge1perc);
 }
 
 
