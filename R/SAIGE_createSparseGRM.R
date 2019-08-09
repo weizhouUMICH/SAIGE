@@ -17,14 +17,15 @@ createSparseGRM = function(plinkFile = "",
 	        isDiagofKinSetAsOne = FALSE,
 		nThreads = 1,
 		minMAFforGRM = 0.01,
-		isSetGeno=TRUE
+		isSetGeno=TRUE,
+		isWritetoFiles=TRUE
                 ){
 
   if(nThreads > 1){
     RcppParallel:::setThreadOptions(numThreads = nThreads)
     cat(nThreads, " threads are set to be used ", "\n")
   }
-
+  #cat("numRandomMarkerforSparseKin is ", numRandomMarkerforSparseKin, "\n")
   cat("sparse GRM will be created\n")
   setminMAFforGRM(minMAFforGRM)
   if(minMAFforGRM > 0){
@@ -38,9 +39,10 @@ createSparseGRM = function(plinkFile = "",
   sparseGRMSampleID = fam[,2]
   sparseGRMSampleIDFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff,"_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt")
 
-  cat("write sample IDs for the sparse GRM to ", sparseGRMSampleIDFile ,"\n")
-  write.table(sparseGRMSampleID, sparseGRMSampleIDFile, quote=F, col.names=F, row.names=F)
-
+  if(isWritetoFiles){
+    cat("write sample IDs for the sparse GRM to ", sparseGRMSampleIDFile ,"\n")
+    write.table(sparseGRMSampleID, sparseGRMSampleIDFile, quote=F, col.names=F, row.names=F)
+  }
 
   genoSampleIndex = seq(1, nrow(fam))
 
@@ -102,9 +104,10 @@ createSparseGRM = function(plinkFile = "",
     print(tc-tb)
 
 
+  if(isWritetoFiles){
     sparseGRMFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff, "_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseGRM.mtx")
-
-  cat("write sparse GRM to ", sparseGRMFile ,"\n")
-  Matrix:::writeMM(sparseGRM, sparseGRMFile)
-  return(1)
+    cat("write sparse GRM to ", sparseGRMFile ,"\n")
+    Matrix:::writeMM(sparseGRM, sparseGRMFile)
+  }
+  return(list(sparseGRMSampleID=sparseGRMSampleID, sparseGRM=sparseGRM))
 }
