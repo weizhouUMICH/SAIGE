@@ -57,7 +57,7 @@ public:
 	tbb::concurrent_vector< std::pair<int, int> > indiceVec;
 	arma::ivec xout;
         arma::ivec yout;
-
+	//int Mmafge1perc;
 	bool setKinDiagtoOne;
 
 //	arma::SpMat<float> sparseGRMinC(2,2);
@@ -516,7 +516,7 @@ public:
 		//test_bedfile.read((char*)(&genoVecTemp[0]),nbyteTemp*M);
 
 		cout << "setgeno mark2" << endl;
-		int Mmafge1perc = 0;
+		//Mmafge1perc = 0;
 		for(int i = 0; i < M; i++){
 			genoVecOneMarkerOld.clear();
 			genoVecOneMarkerOld.reserve(nbyteOld);
@@ -606,9 +606,9 @@ public:
       				invStd= 1/Std;
       			}
 			alleleFreqVec[i] = freq;
-			if(freq >= 0.01 && freq <= 0.99){
-				Mmafge1perc = Mmafge1perc + 1;
-			}
+			//if(freq >= 0.01 && freq <= 0.99){
+			//	Mmafge1perc = Mmafge1perc + 1;
+			//}
 			if(freq > 0.5){
 			  MACVec[i] = (2*Nnomissing) - sum(m_OneSNP_Geno);
 			}else{
@@ -647,9 +647,9 @@ public:
     		return(M);
   	}
  
-	int getMmafge1perc() const{
-		return(Mmafge1perc);
- 	}
+	//int getMmafge1perc() const{
+	//	return(Mmafge1perc);
+ 	//}
 
 	int getMsub() const{
                 return(Msub);
@@ -778,7 +778,7 @@ public:
 
 // //create a geno object as a global variable
 genoClass geno;
-
+float minMAFtoConstructGRM = 0;
 
 // [[Rcpp::export]]
 void closeGenoFile_plink()
@@ -839,8 +839,10 @@ int getNnomissingOut(){
 	return(geno.getNnomissing());
 }
 
-
-
+//  // [[Rcpp::export]]
+//int getMmafge1perc(){
+//	return(geno.getMmafge1perc());
+//}
 //arma::fmat Get_MultiMarkersBySample_StdGeno_Mat(arma::fvec& markerIndexVec){
 //arma::fmat Get_MultiMarkersBySample_StdGeno_Mat(){
 
@@ -1009,7 +1011,7 @@ struct CorssProd : public Worker
   
   	// product that I have accumulated
   	arma::fvec m_bout;
-  	
+        int Msub_mafge1perc;	
   
   	// constructors
   	CorssProd(arma::fcolvec & y)
@@ -1018,6 +1020,7 @@ struct CorssProd : public Worker
   		m_M = geno.getM();
   		m_N = geno.getNnomissing();
   		m_bout.zeros(m_N);
+		Msub_mafge1perc=0;
   	} 
   	CorssProd(const CorssProd& CorssProd, Split)
   		: m_bVec(CorssProd.m_bVec)
@@ -1026,16 +1029,18 @@ struct CorssProd : public Worker
   		m_N = CorssProd.m_N;
   		m_M = CorssProd.m_M;
   		m_bout.zeros(m_N);
+		Msub_mafge1perc=0;
   	
   	}  
   	// process just the elements of the range I've been asked to
   	void operator()(std::size_t begin, std::size_t end) {
   	  	arma::fvec vec;
   	  	for(unsigned int i = begin; i < end; i++){
-			if(geno.alleleFreqVec[i] >= 0.01 && geno.alleleFreqVec[i] <= 0.99){
+			if(geno.alleleFreqVec[i] >= minMAFtoConstructGRM && geno.alleleFreqVec[i] <= 1-minMAFtoConstructGRM){
 				geno.Get_OneSNP_StdGeno(i, &vec);
 				float val1 = dot(vec,  m_bVec);
 				m_bout += val1 * (vec) ;
+				Msub_mafge1perc += 1;
 			}
 		/*	std::cout << "i: " << i << std::endl;
 			for(unsigned int j = 0; j < 10; j++){
@@ -1049,7 +1054,8 @@ struct CorssProd : public Worker
   
   	// join my value with that of another InnerProduct
   	void join(const CorssProd & rhs) { 
-    		m_bout += rhs.m_bout; 
+    		m_bout += rhs.m_bout;
+		Msub_mafge1perc += rhs.Msub_mafge1perc; 
   	}
 };
 
@@ -1100,7 +1106,7 @@ struct CorssProd_LOCO : public Worker
 		float val1;
                 for(unsigned int i = begin; i < end; i++){
                         geno.Get_OneSNP_StdGeno(i, &vec);
-			if(geno.alleleFreqVec[i] >= 0.01 && geno.alleleFreqVec[i] <= 0.99){	
+			if(geno.alleleFreqVec[i] >= minMAFtoConstructGRM && geno.alleleFreqVec[i] <= 1-minMAFtoConstructGRM){	
 				if(i >= startIndex && i <= endIndex){
 					val1 = 0;
 					//if(endIndex == 4){
@@ -1133,7 +1139,7 @@ arma::fvec parallelCrossProd(arma::fcolvec & bVec) {
   
   // declare the InnerProduct instance that takes a pointer to the vector data
   	int M = geno.getM();
- 	int Msub_mafge1perc = geno.getMmafge1perc();
+ 	//int Msub_mafge1perc = geno.getMmafge1perc();
   	CorssProd CorssProd(bVec);
   
   // call paralleReduce to start the work
@@ -1148,7 +1154,8 @@ arma::fvec parallelCrossProd(arma::fcolvec & bVec) {
         //}
         ////cout << endl; 
   // return the computed product
-  	return CorssProd.m_bout/Msub_mafge1perc;
+	//std::cout << "number of markers with maf ge 0.01 " << CorssProd.Msub_mafge1perc << std::endl;
+  	return CorssProd.m_bout/(CorssProd.Msub_mafge1perc);
   	//return CorssProd.m_bout;
 }
 
@@ -3181,14 +3188,17 @@ Rcpp::List refineKin(float relatednessCutoff){
 	arma::fvec kinValueVecTemp2;
 	arma::fvec GRMvec;
 	GRMvec.set_size(ni);
-
+	int Mmarker_mafgr1perc = 0;
   	for(size_t i=0; i< Mmarker; i++){
 //		std::cout << "OKKK: "  << std::endl;
 //		std::cout << "Mmarker: " << std::endl;
 
 //                geno.Get_OneSNP_StdGeno(i, temp);
-                geno.Get_OneSNP_Geno(i);
 		float freqv = geno.alleleFreqVec[i];
+		if(freqv >= minMAFtoConstructGRM && freqv <= 1-minMAFtoConstructGRM){
+		Mmarker_mafgr1perc = Mmarker_mafgr1perc + 1;
+
+                geno.Get_OneSNP_Geno(i);
 		float invstdv = geno.invstdvVec[i];
 		geno.setSparseKinLookUpArr(freqv, invstdv);			
 
@@ -3212,6 +3222,7 @@ Rcpp::List refineKin(float relatednessCutoff){
 //			(geno.kinValueVecFinal)[j] = (geno.kinValueVecFinal)[j] + GRMvec(j);
 //		}
 		(*temp).clear();
+	   }//if(freqv >= 0.01 && freqv <= 0.99){
 		//kinValueVecTemp.clear();
         }
 
@@ -3226,7 +3237,7 @@ Rcpp::List refineKin(float relatednessCutoff){
 	int a1;
 	int a2;
         for(size_t j=0; j < ni; j++){
-		geno.kinValueVecFinal[j] = (geno.kinValueVecFinal[j]) /(Mmarker);
+		geno.kinValueVecFinal[j] = (geno.kinValueVecFinal[j]) /(Mmarker_mafgr1perc);
 
 //		std::cout << "j: " << j << " geno.kinValueVecFinal[j]: " << geno.kinValueVecFinal[j] << std::endl;
             //    if(geno.kinValueVecFinal[j] >= relatednessCutoff){
@@ -3861,4 +3872,9 @@ arma::fvec get_GRMdiagVec(){
   int mMarker = gettotalMarker(); 
   arma::fvec diagGRMVec = (*geno.Get_Diagof_StdGeno())/mMarker;
   return(diagGRMVec);
+}
+
+// [[Rcpp::export]]
+void setminMAFforGRM(float minMAFforGRM){
+  minMAFtoConstructGRM = minMAFforGRM;
 }
