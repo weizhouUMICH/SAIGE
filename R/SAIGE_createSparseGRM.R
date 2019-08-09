@@ -15,7 +15,9 @@ createSparseGRM = function(plinkFile = "",
                 relatednessCutoff = 0.125,
 		memoryChunk = 2,
 	        isDiagofKinSetAsOne = FALSE,
-		nThreads = 1
+		nThreads = 1,
+		minMAFforGRM = 0.01,
+		isSetGeno=TRUE
                 ){
 
   if(nThreads > 1){
@@ -24,6 +26,12 @@ createSparseGRM = function(plinkFile = "",
   }
 
   cat("sparse GRM will be created\n")
+  setminMAFforGRM(minMAFforGRM)
+  if(minMAFforGRM > 0){
+    cat("Markers in the Plink file with MAF >= ", minMAFforGRM, " will be used to construct GRM\n")
+  }else{
+    cat("Markers in the Plink file with MAF > ", minMAFforGRM, " will be used to construct GRM\n")    
+  }
   #  
   famFile = paste0(plinkFile, ".fam")
   fam = data.frame(data.table:::fread(famFile, header=F, stringsAsFactors=FALSE))
@@ -35,13 +43,28 @@ createSparseGRM = function(plinkFile = "",
 
 
   genoSampleIndex = seq(1, nrow(fam))
-  setgeno(plinkFile, genoSampleIndex, memoryChunk, isDiagofKinSetAsOne)
 
+  if(isSetGeno){
+    setgeno(plinkFile, genoSampleIndex, memoryChunk, isDiagofKinSetAsOne)
+  }
     freqVec = getAlleleFreqVec()
-    MAFindex = which(freqVec >= 0.01 & freqVec <= 0.99)
-    cat(numRandomMarkerforSparseKin, "genetic markers are randomly selected to decide which samples are related\n")
+    if(minMAFforGRM > 0){
+      MAFindex = which(freqVec >= minMAFforGRM & freqVec <= 1-minMAFforGRM)
+      cat(length(MAFindex), " markers have MAF >= ", minMAFforGRM, "\n") 
+    }else{
+      MAFindex = which(freqVec > 0 & freqVec < 1)
+      cat(length(MAFindex), " markers have MAF > ", minMAFforGRM, "\n") 
+    } 
+
+    cat(numRandomMarkerforSparseKin, " genetic markers are randomly selected to decide which samples are related\n")
     if(length(MAFindex) < numRandomMarkerforSparseKin){
-      stop("ERROR! not enough genetic markers with MAF >= 1% to detect which samples are related\n","Try include at least ", numRandomMarkerforSparseKin, " genetic markers with MAF >= 1% in the plink file\n")
+     if(minMAFforGRM > 0){
+      stop("ERROR! not enough genetic markers with MAF >= ", minMAFforGRM, " to detect which samples are related\n","Try include at least ", numRandomMarkerforSparseKin, " genetic markers with MAF >= ", minMAFforGRM, " in the plink file\n")
+     }else{
+      stop("ERROR! not enough genetic markers with MAF > ", minMAFforGRM, " to detect which samples are related\n","Try include at least ", numRandomMarkerforSparseKin, " genetic markers with MAF > ", minMAFforGRM, " in the plink file\n")
+	
+
+     }	
     }
 
     markerIndexforSparseM = sample(MAFindex, size = numRandomMarkerforSparseKin, replace=FALSE)
