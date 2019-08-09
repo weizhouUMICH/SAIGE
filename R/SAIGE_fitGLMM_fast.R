@@ -116,7 +116,8 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   }
 
   re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne)})
-
+  #testM=getMmafge1perc()  
+  #cat("testM: ", testM,"\n")
   if(verbose){
     print("Genotype reading is done")
   }
@@ -147,7 +148,8 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   q = 1
 
   if(tauInit[fixtau == 0] == 0){
-    tau[fixtau == 0] = 0.5
+    tau[fixtau == 0] = 0.1
+    #tau[fixtau == 0] = var(Y)/2
   }else{
     tau[fixtau == 0] = tauInit[fixtau == 0]
   }
@@ -639,7 +641,15 @@ fitNULLGLMM = function(plinkFile = "",
 		isCovariateTransform = TRUE,
 		isDiagofKinSetAsOne = FALSE,
 		useSparseSigmaConditionerforPCG = FALSE,
-		useSparseSigmaforInitTau = FALSE){
+		useSparseSigmaforInitTau = FALSE, 
+		minMAFforGRM = 0.01){
+
+  setminMAFforGRM(minMAFforGRM)
+  if(minMAFforGRM > 0){
+    cat("Markers in the Plink file with MAF >= ", minMAFforGRM, " will be used to construct GRM\n")
+  }else{
+    cat("Markers in the Plink file with MAF > ", minMAFforGRM, " will be used to construct GRM\n") 
+  }
 
   useSparseSigmaConditionerforPCG = FALSE
   if(useSparseSigmaConditionerforPCG){
@@ -903,8 +913,8 @@ fitNULLGLMM = function(plinkFile = "",
 
   if(traitType == "binary"){
     cat(phenoCol, " is a binary trait\n")
-  #  uniqPheno = sort(unique(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)]))
-    uniqPheno = sort(unique(out.transform$Y))
+    uniqPheno = sort(unique(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)]))
+  #  uniqPheno = sort(unique(out.transform$Y))
     if (uniqPheno[1] != 0 | uniqPheno[2] != 1){
       stop("ERROR! phenotype value needs to be 0 or 1 \n")
     }
@@ -1076,7 +1086,8 @@ fitNULLGLMM = function(plinkFile = "",
                                                     relatednessCutoff = relatednessCutoff,
                                                     nThreads = nThreads,
 							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
-                cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude)
+                cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
+		minMAFforGRM = minMAFforGRM)
     closeGenoFile_plink()
 
   }else if(traitType == "quantitative"){
@@ -1159,7 +1170,8 @@ fitNULLGLMM = function(plinkFile = "",
 						    relatednessCutoff = relatednessCutoff,
 						    nThreads = nThreads,
 							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
-                cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude)
+                cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
+		minMAFforGRM = minMAFforGRM)
     closeGenoFile_plink()
   }
 }
@@ -1188,7 +1200,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
                                                     relatednessCutoff,
                                                     nThreads,
 							cateVarRatioMinMACVecExclude,
-							cateVarRatioMaxMACVecInclude){
+							cateVarRatioMaxMACVecInclude,
+							minMAFforGRM = minMAFforGRM){
 
 
   if(file.exists(testOut)){file.remove(testOut)}
@@ -1223,11 +1236,13 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
     #####sparse Kin
 
   if(IsSparseKin){
-    sparseSigma = getSparseSigma(outputPrefix=varRatioOutFile,
+    sparseSigma = getSparseSigma(plinkFile = plinkFile, 
+		outputPrefix=varRatioOutFile,
                 sparseGRMFile=sparseGRMFile,
                 sparseGRMSampleIDFile=sparseGRMSampleIDFile,
                 numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
                 relatednessCutoff = relatednessCutoff,
+		minMAFforGRM = minMAFforGRM,		
                 obj.glmm.null = obj.glmm.null,
                 W=W, tauVecNew=tauVecNew)
   }
@@ -1509,7 +1524,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                                                     relatednessCutoff,
 						    nThreads,
 							cateVarRatioMinMACVecExclude,
-                                                        cateVarRatioMaxMACVecInclude){	
+                                                        cateVarRatioMaxMACVecInclude,
+							minMAFforGRM){	
 
 
   if(file.exists(testOut)){file.remove(testOut)}
@@ -1553,6 +1569,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                 sparseGRMSampleIDFile=sparseGRMSampleIDFile,
                 numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
                 relatednessCutoff = relatednessCutoff,
+		minMAFforGRM = minMAFforGRM,
                 obj.glmm.null = obj.glmm.null,
                 W=W, tauVecNew=tauVecNew)
   }
@@ -2166,61 +2183,33 @@ createSparseKinParallel = function(nblocks, ncore, relatednessCutoff){
 
 
 
-getSparseSigma = function(outputPrefix="",
+getSparseSigma = function(plinkFile = plinkFile
+		outputPrefix="",
                 sparseGRMFile=NULL,
                 sparseGRMSampleIDFile="",
                 numRandomMarkerforSparseKin = 500,
                 relatednessCutoff = 0.125,
+		minMAFforGRM=0,
+		nThreads = 1, 
+		isDiagofKinSetAsOne = FALSE
 		obj.glmm.null,
-                W, tauVecNew){
+                W, 
+		tauVecNew,
+		nThreads = nThreads, ){
 
   cat("sparse GRM will be used\n")
 #  sparseGRMFile = paste0(outputPrefix, ".sparseGRM.mtx")
   if(is.null(sparseGRMFile)){
-    freqVec = getAlleleFreqVec()
-    MAFindex = which(freqVec >= 0.01 & freqVec <= 0.99)
-    cat(numRandomMarkerforSparseKin, "genetic markers are randomly selected to decide which samples are related\n")
-    if(length(MAFindex) < numRandomMarkerforSparseKin){
-      stop("ERROR! not enough genetic markers with MAC >= 1% to detect which samples are related\n","Try include at least ", numRandomMarkerforSparseKin, " genetic markers with MAC >= 1% in the plink file\n")
-    }
+    cat("sparseGRMFile is not specified and the sparse GRM will be constructed\n")
+    createSparseGRM(plinkFile = plinkFile, 
+    outputPrefix = outputPrefix, 
+    numRandomMarkerforSparseKin = numRandomMarkerforSparseKin, 
+    relatednessCutoff = relatednessCutoff, 
+    isDiagofKinSetAsOne = isDiagofKinSetAsOne
+    nThreads = nThreads, 
+    minMAFforGRM = minMAFforGRM, 
+    isSetGeno = FALSE)
 
-    markerIndexforSparseM = sample(MAFindex, size = numRandomMarkerforSparseKin, replace=FALSE)
-
-    cat("Start detecting related samples for the sparse GRM\n")
-    ta = proc.time()
-    setSubMarkerIndex(markerIndexforSparseM -1)
-    tb = proc.time()
-    cat("tb-ta\n")
-    print(tb-ta)
-
-
-    cat("Start creating sparse GRM\n")
-    ta = proc.time()
-    sparseMList = createSparseKinParallel(nblocks = nThreads, ncore = nThreads, relatednessCutoff)
-    tb = proc.time()
-    cat("tb-ta\n")
-    print(tb-ta)
-
-
-
-    cat("length(sparseMList$iIndex): ", length(sparseMList$iIndex), "\n")
-    print(sparseMList$iIndex[1:102])
-    cat("length(sparseMList$jIndex): ", length(sparseMList$jIndex), "\n")
-    print(sparseMList$jIndex[1:102])
-    cat("length(sparseMList$kinValue): ", length(sparseMList$kinValue), "\n")
-    print(sparseMList$kinValue[1:102])
-    sparseGRM = Matrix:::sparseMatrix(i = as.vector(sparseMList$iIndex), j = as.vector(sparseMList$jIndex), x = as.vector(sparseMList$kinValue), symmetric = TRUE)
-    cat("nrow(sparseGRM): ", nrow(sparseGRM), "\n")
-    cat("ncol(sparseGRM): ", ncol(sparseGRM), "\n")
-    cat("ncol(sparseGRM): ", sum(sparseGRM != 0), "\n")
-
-    tc = proc.time()
-    cat("tc-tb\n")
-    print(tc-tb)
-
-#    cat("td-tc\n")
-#    print(td-tc)
-    #cat("OK3", "\n")
   }else{ # if(sparseGRMFile=="")
 
        cat("sparse GRM has been specified\n")
