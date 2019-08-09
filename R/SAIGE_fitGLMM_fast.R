@@ -1087,7 +1087,8 @@ fitNULLGLMM = function(plinkFile = "",
                                                     nThreads = nThreads,
 							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
                 cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
-		minMAFforGRM = minMAFforGRM)
+		minMAFforGRM = minMAFforGRM,
+		isDiagofKinSetAsOne = isDiagofKinSetAsOne)
     closeGenoFile_plink()
 
   }else if(traitType == "quantitative"){
@@ -1171,7 +1172,8 @@ fitNULLGLMM = function(plinkFile = "",
 						    nThreads = nThreads,
 							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
                 cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
-		minMAFforGRM = minMAFforGRM)
+		minMAFforGRM = minMAFforGRM,
+		isDiagofKinSetAsOne = isDiagofKinSetAsOne)
     closeGenoFile_plink()
   }
 }
@@ -1199,9 +1201,10 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
                                                     numRandomMarkerforSparseKin,
                                                     relatednessCutoff,
                                                     nThreads,
-							cateVarRatioMinMACVecExclude,
-							cateVarRatioMaxMACVecInclude,
-							minMAFforGRM = minMAFforGRM){
+						    cateVarRatioMinMACVecExclude,
+						    cateVarRatioMaxMACVecInclude,
+						    minMAFforGRM,
+							isDiagofKinSetAsOne){
 
 
   if(file.exists(testOut)){file.remove(testOut)}
@@ -1243,6 +1246,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
                 numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
                 relatednessCutoff = relatednessCutoff,
 		minMAFforGRM = minMAFforGRM,		
+		nThreads = nThreads,
+		isDiagofKinSetAsOne = isDiagofKinSetAsOne, 
                 obj.glmm.null = obj.glmm.null,
                 W=W, tauVecNew=tauVecNew)
   }
@@ -1525,7 +1530,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 						    nThreads,
 							cateVarRatioMinMACVecExclude,
                                                         cateVarRatioMaxMACVecInclude,
-							minMAFforGRM){	
+							minMAFforGRM,
+							isDiagofKinSetAsOne){	
 
 
   if(file.exists(testOut)){file.remove(testOut)}
@@ -1564,12 +1570,15 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
     #####sparse Kin
 
   if(IsSparseKin){
-    sparseSigma = getSparseSigma(outputPrefix=varRatioOutFile,
+       sparseSigma = getSparseSigma(plinkFile = plinkFile,
+                outputPrefix=varRatioOutFile,
                 sparseGRMFile=sparseGRMFile,
                 sparseGRMSampleIDFile=sparseGRMSampleIDFile,
                 numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
                 relatednessCutoff = relatednessCutoff,
-		minMAFforGRM = minMAFforGRM,
+                minMAFforGRM = minMAFforGRM,
+                nThreads = nThreads,
+                isDiagofKinSetAsOne = isDiagofKinSetAsOne,
                 obj.glmm.null = obj.glmm.null,
                 W=W, tauVecNew=tauVecNew)
   }
@@ -2183,38 +2192,45 @@ createSparseKinParallel = function(nblocks, ncore, relatednessCutoff){
 
 
 
-getSparseSigma = function(plinkFile = plinkFile
+getSparseSigma = function(plinkFile = plinkFile,
 		outputPrefix="",
                 sparseGRMFile=NULL,
                 sparseGRMSampleIDFile="",
-                numRandomMarkerforSparseKin = 500,
+                numRandomMarkerforSparseKin = 1000,
                 relatednessCutoff = 0.125,
 		minMAFforGRM=0,
 		nThreads = 1, 
-		isDiagofKinSetAsOne = FALSE
+		isDiagofKinSetAsOne = FALSE,
 		obj.glmm.null,
                 W, 
-		tauVecNew,
-		nThreads = nThreads, ){
+		tauVecNew){
 
   cat("sparse GRM will be used\n")
-#  sparseGRMFile = paste0(outputPrefix, ".sparseGRM.mtx")
+  #cat("sparseGRMFile is ", sparseGRMFile, "\n")
+  #sparseGRMFile = paste0(outputPrefix, ".sparseGRM.mtx")
   if(is.null(sparseGRMFile)){
     cat("sparseGRMFile is not specified and the sparse GRM will be constructed\n")
-    createSparseGRM(plinkFile = plinkFile, 
-    outputPrefix = outputPrefix, 
+    outputPrefix1 = paste0(outputPrefix, "_allPlinksamples")
+    sparseGRMList = createSparseGRM(plinkFile = plinkFile, 
+    outputPrefix = outputPrefix1, 
     numRandomMarkerforSparseKin = numRandomMarkerforSparseKin, 
     relatednessCutoff = relatednessCutoff, 
-    isDiagofKinSetAsOne = isDiagofKinSetAsOne
+    isDiagofKinSetAsOne = isDiagofKinSetAsOne,
     nThreads = nThreads, 
     minMAFforGRM = minMAFforGRM, 
-    isSetGeno = FALSE)
-
+    isSetGeno = FALSE,
+    isWritetoFiles = FALSE)
+    sparseGRMLarge = sparseGRMList$sparseGRM
+    sparseGRMSampleID = data.frame(sampleID = sparseGRMList$sparseGRMSampleID)
+    colnames(sparseGRMSampleID) = c("sampleID") 
+    rm(sparseGRMList)
+    #sparseGRMFile = paste0(outputPrefix1,"_relatednessCutoff_",relatednessCutoff, "_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseGRM.mtx")
+    #cat("sparse GRM for all samples in the plink files is stored in ", sparseGRMFile, "\n")
+    #sparseGRMSampleIDFile = paste0(outputPrefix1,"_relatednessCutoff_",relatednessCutoff,"_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt")
+    #cat("sample IDs for the constructed sparse GRM are stored in ", sparseGRMSampleIDFile, "\n")
   }else{ # if(sparseGRMFile=="")
-
-       cat("sparse GRM has been specified\n")
-       cat("read in sparse GRM from ",sparseGRMFile,"\n")
-
+    cat("sparse GRM has been specified\n")
+    cat("read in sparse GRM from ",sparseGRMFile,"\n")
     sparseGRMLarge = Matrix:::readMM(sparseGRMFile)
     #cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
     if(sparseGRMSampleIDFile != ""){
@@ -2223,50 +2239,37 @@ getSparseSigma = function(plinkFile = plinkFile
       }else{
         sparseGRMSampleID = data.frame(data.table:::fread(sparseGRMSampleIDFile, header=F, stringsAsFactors=FALSE))
         colnames(sparseGRMSampleID) = c("sampleID")
-        sparseGRMSampleID$IndexGRM = seq(1,nrow(sparseGRMSampleID), by=1)
-        sampleInModel = NULL
-        sampleInModel$IID = obj.glmm.null$sampleID
-        sampleInModel = data.frame(sampleInModel)
-        sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
-        cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
-        mergeID = merge(sampleInModel, sparseGRMSampleID, by.x="IID", by.y = "sampleID")
-        mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
-        indexIDofGRM=mergeID$IndexGRM
-        #cat("Subset sparse GRM to be ", indexIDofSigma," by ", indexIDofSigma, "\n")
-        sparseGRM = sparseGRMLarge[indexIDofGRM, indexIDofGRM]
-        rm(sparseGRMLarge)
-      }
+      } 
     }else{#end of if(sparseSigmaSampleIDFile != "")
       stop("ERROR! sparseSigmaSampleIDFile is not specified\n")
     }
+  }
 
-  #cat("sparse GRM has been specified\n")
-  #cat("read in sparse GRM from ",sparseSigmaOutFile,"\n")
-  #sparseSigma = Matrix:::readMM(sparseSigmaOutFile)
- }
-  sparseGRMFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff, "_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseGRM.mtx")
-  cat("write sparse GRM to ", sparseGRMFile ,"\n")
-  Matrix:::writeMM(sparseGRM, sparseGRMFile)
+      sparseGRMSampleID$IndexGRM = seq(1,nrow(sparseGRMSampleID), by=1)
+      sampleInModel = NULL
+      sampleInModel$IID = obj.glmm.null$sampleID
+      sampleInModel = data.frame(sampleInModel)
+      sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
+      cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
+      mergeID = merge(sampleInModel, sparseGRMSampleID, by.x="IID", by.y = "sampleID")
+      mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
+      indexIDofGRM=mergeID$IndexGRM
+      #cat("Subset sparse GRM to be ", indexIDofSigma," by ", indexIDofSigma, "\n")
+      sparseGRM = sparseGRMLarge[indexIDofGRM, indexIDofGRM]
+      rm(sparseGRMLarge)
+
+  #sparseGRMFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff, "_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseGRM.subset.mtx")
+  #cat("write sparse GRM to ", sparseGRMFile ,"\n")
+  #Matrix:::writeMM(sparseGRM, sparseGRMFile)
   Nval = length(W)
-
-
   sparseSigma = sparseGRM * tauVecNew[2]
   diag(sparseSigma) = getDiagOfSigma(W, tauVecNew)
 
   sparseSigmaFile = paste0(outputPrefix, "_relatednessCutoff_",relatednessCutoff, "_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseSigma.mtx")
-
   cat("write sparse Sigma to ", sparseSigmaFile ,"\n")
   Matrix:::writeMM(sparseSigma, sparseSigmaFile)
-
-#    td = proc.time()
-#    cat("td-tc\n")
-#    print(td-tc)
-
-
   return(sparseSigma)
 }
-
-
 
 getsubGRM = function(sparseGRMFile=NULL,
                 sparseGRMSampleIDFile="",
