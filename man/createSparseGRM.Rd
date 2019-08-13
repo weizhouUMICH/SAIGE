@@ -5,15 +5,16 @@
 \title{Construct a sparse GRM for a given data set}
 \usage{
 createSparseGRM(plinkFile = "", outputPrefix = "",
-  numRandomMarkerforSparseKin = 500, relatednessCutoff = 0.125,
-  memoryChunk = 2, isDiagofKinSetAsOne = FALSE, nThreads = 1)
+  numRandomMarkerforSparseKin = 1000, relatednessCutoff = 0.125,
+  memoryChunk = 2, isDiagofKinSetAsOne = FALSE, nThreads = 1,
+  minMAFforGRM = 0.01, isSetGeno = TRUE, isWritetoFiles = TRUE)
 }
 \arguments{
 \item{plinkFile}{character. Path to plink file to be used for calculating the sparse GRM}
 
 \item{outputPrefix}{character. Path to the output files with prefix}
 
-\item{numRandomMarkerforSparseKin}{integer. number of randomly selected markers (MAF >= 0.01) to be used to identify related samples for sparse GRM. By default, 500}
+\item{numRandomMarkerforSparseKin}{integer. number of randomly selected markers (MAF >= 0.01) to be used to identify related samples for sparse GRM. By default, 1000}
 
 \item{relatednessCutoff}{float. The threshold to treat two samples as unrelated if IsSparseKin is TRUE. By default, 0.125}
 
@@ -22,6 +23,8 @@ createSparseGRM(plinkFile = "", outputPrefix = "",
 \item{isDiagofKinSetAsOne}{logical. Whether to set the diagnal elements in GRM to be 1. By default, FALSE}
 
 \item{nThreads}{integer. Number of threads to be used. By default, 1}
+
+\item{minMAFforGRM}{numeric. Minimum MAF for markers (in the Plink file) used for construcing the sparse GRM. By default, 0.01}
 }
 \value{
 a file ended with sampleIDs.txt that contains sample IDs for the sparse GRM and a file ended with .sparseGRM.mtx that contains the sparse GRM
