@@ -61,7 +61,7 @@ option_list <- list(
   make_option("--sparseGRMSampleIDFile", type="character", default=NULL,
    help="Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to the order of samples in the sparse GRM [default=NULL]"),
   make_option("--numRandomMarkerforSparseKin", type="integer", default=2000,
-    help="number of randomly selected markers (MAF >= 1%) to be used to identify related samples for sparse GRM [default=2000]"),
+    help="number of randomly selected markers to be used to identify related samples for sparse GRM [default=2000]"),
   make_option("--isCateVarianceRatio", type="logical", default=FALSE,
     help="Whether to estimate variance ratio based on different MAC categories. If yes, variance ratio will be estiamted for multiple MAC categories corresponding to cateVarRatioMinMACVecExclude and cateVarRatioMaxMACVecInclude. Currently, if isCateVarianceRatio=TRUE, then LOCO=FALSE [default=FALSE]"),
   make_option("--relatednessCutoff", type="numeric", default=0.125,
