@@ -2103,17 +2103,26 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
 		if(method=="optimal.adj"){
 			if(IsOutputPvalueNAinGroupTestforBinary){
 				if(saigeskatTest$m > 1){
-					outVec = c(outVec, saigeskatTest$p_each_2, saigeskatTest$p_skato_old, saigeskatTest$p_each_old)
+					if(!is.null(saigeskatTest$p_each_2)){
+						outVec = c(outVec, saigeskatTest$p_each_2, saigeskatTest$p_skato_old, saigeskatTest$p_each_old)
+					}else{
+						outVec = c(outVec,saigeskatTest$p.value, saigeskatTest$p.value, saigeskatTest$p_skato_old, saigeskatTest$p_skato_old, saigeskatTest$p_skato_old)
+					}		
 				}else{
-					outVec = c(outVec, saigeskatTest$p.value, saigeskatTest$p.value, saigeskatTest$p_skato_old, saigeskatTest$p_skato_old, saigeskatTest$p_skato_old)	
+					outVec = c(outVec,NA,NA,NA,NA,NA)
 				}
 
 			}else{ #if(IsOutputPvalueNAinGroupTestforBinary){
 				if(saigeskatTest$m > 1){
-					outVec = c(outVec,  saigeskatTest$p_each_2)
+					if(!is.null(saigeskatTest$p_each_2)){
+						outVec = c(outVec,  saigeskatTest$p_each_2)
+					}else{
+						outVec = c(outVec, saigeskatTest$p.value, saigeskatTest$p.value)
+					}
 				}else{
-					outVec = c(outVec, saigeskatTest$p.value, saigeskatTest$p.value)
-				}
+					outVec = c(outVec, NA, NA)
+				}	
+
 			}
 
 		}else{#if(method=="optimal.adj"){
