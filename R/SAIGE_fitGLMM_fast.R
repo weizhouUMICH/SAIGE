@@ -26,7 +26,9 @@ Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG
     sqrtW = mu.eta/sqrt(family$variance(mu))
     W = sqrtW^2
 
-    if( max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol.coef))< tol.coef) break
+    if( max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol.coef))< tol.coef){
+	break
+    }
       alpha0 = alpha
     }
 
@@ -470,7 +472,7 @@ if(FALSE){
     }
   }
 
-   if(verbose) cat("\nFinal " ,tau, ":\n")
+  if(verbose) cat("\nFinal " ,tau, ":\n")
 
   re.coef = Get_Coef(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
   cov = re.coef$cov
@@ -982,7 +984,7 @@ fitNULLGLMM = function(plinkFile = "",
       load(modelOut)
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
-
+      	
 
 #if(FALSE){
 

@@ -1087,6 +1087,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// setminMAFforGRM
+void setminMAFforGRM(float minMAFforGRM);
+RcppExport SEXP _SAIGE_setminMAFforGRM(SEXP minMAFforGRMSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type minMAFforGRM(minMAFforGRMSEXP);
+    setminMAFforGRM(minMAFforGRM);
+    return R_NilValue;
+END_RCPP
+}
 // setgenoTest_bgenDosage
 int setgenoTest_bgenDosage(std::string& filename, std::string& index_filename, Rcpp::DataFrame& ranges_to_include, Rcpp::DataFrame& ranges_to_exclude, std::vector< std::string > const& ids_to_include, std::vector< std::string > const& ids_to_exclude);
 RcppExport SEXP _SAIGE_setgenoTest_bgenDosage(SEXP filenameSEXP, SEXP index_filenameSEXP, SEXP ranges_to_includeSEXP, SEXP ranges_to_excludeSEXP, SEXP ids_to_includeSEXP, SEXP ids_to_excludeSEXP) {
@@ -1534,6 +1544,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_freqOverStd", (DL_FUNC) &_SAIGE_freqOverStd, 1},
     {"_SAIGE_getCrossprodMatAndKin_mailman", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin_mailman, 1},
     {"_SAIGE_get_GRMdiagVec", (DL_FUNC) &_SAIGE_get_GRMdiagVec, 0},
+    {"_SAIGE_setminMAFforGRM", (DL_FUNC) &_SAIGE_setminMAFforGRM, 1},
     {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 6},
     {"_SAIGE_getDosage_inner_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery, 0},
     {"_SAIGE_getDosage_inner_bgen_withquery_new", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery_new, 0},

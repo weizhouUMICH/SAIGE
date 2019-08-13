@@ -16,6 +16,7 @@ using namespace std;
 using namespace RcppParallel;
 
 
+float minMAFtoConstructGRM = 0;
 //This is a class with attritbutes about the genotype informaiton 
 class genoClass{
 private:
@@ -59,7 +60,7 @@ public:
         arma::ivec yout;
 	//int Mmafge1perc;
 	bool setKinDiagtoOne;
-
+	int numberofMarkerswithMAFge_minMAFtoConstructGRM = 0;
 //	arma::SpMat<float> sparseGRMinC(2,2);
 	
 
@@ -609,6 +610,12 @@ public:
 			//if(freq >= 0.01 && freq <= 0.99){
 			//	Mmafge1perc = Mmafge1perc + 1;
 			//}
+			if(minMAFtoConstructGRM > 0){
+				if(freq >= minMAFtoConstructGRM && freq <= (1-minMAFtoConstructGRM)){
+					numberofMarkerswithMAFge_minMAFtoConstructGRM = numberofMarkerswithMAFge_minMAFtoConstructGRM + 1;
+				}
+			}
+			
 			if(freq > 0.5){
 			  MACVec[i] = (2*Nnomissing) - sum(m_OneSNP_Geno);
 			}else{
@@ -621,6 +628,12 @@ public:
 
     		}//end for(int i = 0; i < M; i++){
 
+		if( minMAFtoConstructGRM > 0){
+			cout << numberofMarkerswithMAFge_minMAFtoConstructGRM << " markers with MAF >= " << minMAFtoConstructGRM << " are used for GRM." << endl;
+		}else{
+			cout << M << " markers with MAF >= " << minMAFtoConstructGRM << " are used for GRM." << endl;
+
+		}
         	test_bedfile.close();
 		cout << "setgeno mark5" << endl;
 //		printAlleleFreqVec();
@@ -684,8 +697,9 @@ public:
     		}
   	}
 
-
- 
+	//int getnumberofMarkerswithMAFge_minMAFtoConstructGRM(){
+ 	//	return(numberofMarkerswithMAFge_minMAFtoConstructGRM);
+	//}
   	//print out the vector of genotypes
   	void printGenoVec(){
     		//for(unsigned int i=0; i<M; ++i)
@@ -778,7 +792,6 @@ public:
 
 // //create a geno object as a global variable
 genoClass geno;
-float minMAFtoConstructGRM = 0;
 
 // [[Rcpp::export]]
 void closeGenoFile_plink()
@@ -1154,7 +1167,7 @@ arma::fvec parallelCrossProd(arma::fcolvec & bVec) {
         //}
         ////cout << endl; 
   // return the computed product
-	//std::cout << "number of markers with maf ge 0.01 " << CorssProd.Msub_mafge1perc << std::endl;
+	//std::cout << "number of markers with maf ge " << minMAFtoConstructGRM << " is " << CorssProd.Msub_mafge1perc << std::endl;
   	return CorssProd.m_bout/(CorssProd.Msub_mafge1perc);
   	//return CorssProd.m_bout;
 }
@@ -3878,3 +3891,9 @@ arma::fvec get_GRMdiagVec(){
 void setminMAFforGRM(float minMAFforGRM){
   minMAFtoConstructGRM = minMAFforGRM;
 }
+
+// // [[Rcpp::export]] 
+//int getNumofMarkersforGRM(){
+//  int a = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
+//  return(a);
+//}

@@ -297,11 +297,11 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
         re$markerNumbyMAC = markerNumbyMAC
 	re$m = m
 	re$indexNeg = indexNeg
-
 }#if(adjustCCratioinGroupTest){ else
 
 	#xt1 <- proc.time()
 	#print(xt1 - xt)
+	cat("re!\n")
         print(re)
         return(re)
 
