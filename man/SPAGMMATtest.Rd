@@ -12,27 +12,28 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
   savFileIndex = "", sampleFile = "", idstoExcludeFile = "",
   idstoIncludeFile = "", rangestoExcludeFile = "",
   rangestoIncludeFile = "", chrom = "", start = 1, end = 2.5e+08,
-  minMAC = 0.5, minMAF = 0, maxMAFforGroupTest = 0.5, minInfo = 0,
-  GMMATmodelFile = "", varianceRatioFile = "", SPAcutoff = 2,
-  SAIGEOutputFile = "", numLinesOutput = 10000, IsSparse = TRUE,
+  IsDropMissingDosages = FALSE, minMAC = 0.5, minMAF = 0,
+  maxMAFforGroupTest = 0.5, minInfo = 0, GMMATmodelFile = "",
+  varianceRatioFile = "", SPAcutoff = 2, SAIGEOutputFile = "",
+  numLinesOutput = 10000, IsSparse = TRUE,
   IsOutputAFinCaseCtrl = FALSE, LOCO = FALSE, condition = "",
   sparseSigmaFile = "", groupFile = "", kernel = "linear.weighted",
   method = "optimal.adj", weights.beta = c(1, 25), r.corr = 0,
   IsSingleVarinGroupTest = TRUE, cateVarRatioMinMACVecExclude = c(0.5,
   1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
   cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
-  singleGClambda = 1)
+  singleGClambda = 1, IsOutputPvalueNAinGroupTestforBinary = FALSE)
 }
 \arguments{
 \item{dosageFile}{character. Path to dosage file. Each line contains dosages for a marker to be tested}
 
-\item{dosageFileNrowSkip}{integer(>=0). Number of lines to be skiped in the dosage file.}
+\item{dosageFileNrowSkip}{integer(>=0). Number of lines to be skiped in the dosage file. By default, 0}
 
-\item{dosageFileNcolSkip}{integer(>=0). Number of columns to be skiped in the dosage file}
+\item{dosageFileNcolSkip}{integer(>=0). Number of columns to be skiped in the dosage file. By default, 0}
 
-\item{dosageFilecolnamesSkip}{vector of characters. The column names of the skipped columns. Default: c("SNPID", "CHR", "POS", "Allele0", "Allele1")}
+\item{dosageFilecolnamesSkip}{vector of characters. The column names of the skipped columns. By default: c("SNPID", "CHR", "POS", "Allele0", "Allele1")}
 
-\item{dosageFileChrCol}{string. The column name for the chromosome column. Must be in the dosageFilecolnamesSkip. Required If LOCO = TRUE and chrom ="".}
+\item{dosageFileChrCol}{string. The column name for the chromosome column. Must be in the dosageFilecolnamesSkip. Required If LOCO = TRUE and chrom ="". By default, "CHR"}
 
 \item{bgenFile}{character. Path to bgen file. Currently version 1.2 with 8 bit compression is supported}
 
@@ -50,19 +51,21 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{sampleFile}{character. Path to the file that contains one column for IDs of samples in the dosage, vcf, sav, or bgen file with NO header}
 
-\item{idstoExcludeFile}{character. Path to the file containing variant ids to be excluded from the bgen or vcf file}
+\item{idstoExcludeFile}{character. Path to the file containing variant ids to be excluded from the bgen file. The file does not have a header and each line is for a marker ID.}
 
-\item{idstoIncludeFile}{character. Path to the file containing variant ids to be included from the bgen or vcf file}
+\item{idstoIncludeFile}{character. Path to the file containing variant ids to be included from the bgen file. The file does not have a header and each line is for a marker ID.}
 
 \item{rangestoExcludeFile}{character. Path to the file containing genome regions to be excluded from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header}
 
 \item{rangestoIncludeFile}{character. Path to the file containing genome regions to be included from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header}
 
-\item{chrom}{character. string for the chromosome to include from vcf file. Required for vcf file. Note: the string needs to exactly match the chromoosme string in the vcf/sav file. For example, "1" does not match "chr1". If LOCO is specified, providing chrom will save computation cost}
+\item{chrom}{character. string for the chromosome to include from vcf file. Required for vcf file. Note: the string needs to exactly match the chromosome string in the vcf/sav file. For example, "1" does not match "chr1". If LOCO is specified, providing chrom will save computation cost}
 
-\item{start}{numeric. start genome position to include from vcf file.}
+\item{start}{numeric. start genome position to include from vcf file. By default, 1}
 
-\item{end}{numeric. end genome position to include from vcf file.}
+\item{end}{numeric. end genome position to include from vcf file. By default, 250000000}
+
+\item{IsDropMissingDosages}{logical. whether to drop missing dosages (TRUE) or to mean impute missing dosages (FALSE). By default, FALSE. This option only works for bgen, vcf, and sav input.}
 
 \item{minMAC}{numeric. Minimum minor allele count of markers to test. By default, 0.5. The higher threshold between minMAC and minMAF will be used}
 
@@ -70,7 +73,7 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{maxMAFforGroupTest}{numeric. Maximum minor allele frequency of markers to test in group test. By default 0.5.}
 
-\item{minInfo}{numeric. Minimum imputation info of markers to test (in bgen file)}
+\item{minInfo}{numeric. Minimum imputation info of markers to test. By default, 0. This option only works for bgen, vcf, and sav input}
 
 \item{GMMATmodelFile}{character. Path to the input file containing the glmm model, which is output from previous step. Will be used by load()}
 
@@ -78,9 +81,9 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{SPAcutoff}{by default = 2 (SPA test would be used when p value < 0.05 under the normal approximation)}
 
-\item{SAIGEOutputFile}{character. Path to the output file containing the SPAGMMAT test results}
+\item{SAIGEOutputFile}{character. Path to the output file containing the assoc test results}
 
-\item{numLinesOutput}{numeric. Output results for how many marker each time.}
+\item{numLinesOutput}{numeric. Number of  markers to be output each time. By default, 10000}
 
 \item{IsSparse}{logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE}
 
@@ -88,11 +91,11 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{LOCO}{logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE}
 
-\item{condition}{character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for vcf/sav input.}
+\item{condition}{character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input , marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input.}
 
 \item{sparseSigmaFile}{character. Path to the file containing the sparseSigma from step 1. The suffix of this file is ".mtx".}
 
-\item{groupFile}{character. Path to the file containing the group information for gene-based tests. Each line is for one gene/set of variants. The first element is for gene/set name. The rest of the line is for variant ids included in this gene/set. For vcf/sav, the genetic marker ids are in the format chr:pos_ref/alt. For begen, the genetic marker ids should match the ids in the bgen file. Each element in the line is seperated by tab.}
+\item{groupFile}{character. Path to the file containing the group information for gene-based tests. Each line is for one gene/set of variants. The first element is for gene/set name. The rest of the line is for variant ids included in this gene/set. For vcf/sav, the genetic marker ids are in the format chr:pos_ref/alt. For bgen, the genetic marker ids should match the ids in the bgen file. Each element in the line is seperated by tab.}
 
 \item{kernel}{character. For gene-based test. By default, "linear.weighted". More options can be seen in the SKAT library}
 
@@ -108,7 +111,7 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{cateVarRatioMaxMACVecInclude}{vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. By default, c(1.5,2.5,3.5,4.5,5.5,10.5,20.5). If groupFile="", only one variance ratio corresponding to MAC >= 20 is used}
 
-\item{singleGClambda}{numeric. GC lambda values that can be used to adjust the gene-based tests results. This value is usually estimated based on the single-variant assoc test results.}
+\item{singleGClambda}{numeric. GC lambda values that can be used to adjust the gene-based tests results. This value is usually estimated based on the single-variant assoc test results. By default, 1}
 }
 \value{
 SAIGEOutputFile

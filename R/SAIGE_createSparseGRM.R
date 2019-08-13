@@ -7,6 +7,7 @@
 #' @param memoryChunk integer or float. The size (Gb) for each memory chunk. By default, 2
 #' @param isDiagofKinSetAsOne  logical. Whether to set the diagnal elements in GRM to be 1. By default, FALSE
 #' @param nThreads integer. Number of threads to be used. By default, 1 
+#' @param minMAFforGRM numeric. Minimum MAF for markers (in the Plink file) used for construcing the sparse GRM. By default, 0.01
 #' @return a file ended with sampleIDs.txt that contains sample IDs for the sparse GRM and a file ended with .sparseGRM.mtx that contains the sparse GRM 
 #' @export
 createSparseGRM = function(plinkFile = "", 
