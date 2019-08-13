@@ -207,7 +207,7 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	}
 	list_myfun=list();
 	if(IsOutputPvalueNAinGroupTestforBinary){
-		cat("test here \n")
+		#cat("test here \n")
 		out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(Phi), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)
 		list_myfun$p_skato_old=out$p.value
 	#list_myfun$p_each_old=out$param$p.val.each
@@ -279,8 +279,8 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	list_myfun$mac=MAFsum
 	#list_myfun$p_single_new=p_new
 	#list_myfun$p_single_old=p_old
-	print("list_myfun")
-	print(list_myfun)
+	#print("list_myfun")
+	#print(list_myfun)
 	return (list_myfun);
 
 }
