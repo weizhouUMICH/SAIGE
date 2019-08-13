@@ -26,7 +26,7 @@ option_list <- list(
   make_option("--isDiagofKinSetAsOne", type="logical", default=FALSE,
     help="Whether to set the diagnal elements in GRM to be 1 [default='FALSE']."),
   make_option("--minMAFforGRM", type="numeric", default=0.01,
-    help="minimum MAF of markers used for GRM"
+    help="minimum MAF of markers used for GRM")
 )
 
 
