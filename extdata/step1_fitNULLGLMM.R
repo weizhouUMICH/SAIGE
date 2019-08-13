@@ -77,7 +77,9 @@ option_list <- list(
   make_option("--useSparseSigmaConditionerforPCG", type="logical", default=FALSE,
     help="Whether to sparse GRM to speed up the PCG. Current this option is deactivated. [default='FALSE']."),
   make_option("--useSparseSigmaforInitTau", type="logical", default=FALSE,
-    help="Whether to use sparse Sigma to estiamte initial tau [default='FALSE'].")	
+    help="Whether to use sparse Sigma to estiamte initial tau [default='FALSE']."),
+  make_option("--minMAFforGRM", type="numeric", default=0.01,
+    help="minimum MAF of markers used for GRM")	
 )
 
 
@@ -131,4 +133,5 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
             isCovariateTransform = opt$isCovariateTransform,
             isDiagofKinSetAsOne = opt$isDiagofKinSetAsOne,
 	    useSparseSigmaConditionerforPCG = opt$useSparseSigmaConditionerforPCG,
-	    useSparseSigmaforInitTau = opt$useSparseSigmaforInitTau)	
+	    useSparseSigmaforInitTau = opt$useSparseSigmaforInitTau,
+	     minMAFforGRM = opt$minMAFforGRM)	
