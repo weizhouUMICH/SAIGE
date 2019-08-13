@@ -207,11 +207,16 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	}
 	list_myfun=list();
 	if(IsOutputPvalueNAinGroupTestforBinary){
+		cat("test here \n")
 		out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(Phi), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)
 		list_myfun$p_skato_old=out$p.value
-		rho.val.vec = out$param$rho
 	#list_myfun$p_each_old=out$param$p.val.each
-		list_myfun$p_each_old = c(out$param$p.val.each[which(rho.val.vec == 1)], out$param$p.val.each[which(rho.val.vec == 0)])
+		if(!is.na(out$param[[1]][1])){
+			rho.val.vec = out$param$rho
+			list_myfun$p_each_old = c(out$param$p.val.each[which(rho.val.vec == 1)], out$param$p.val.each[which(rho.val.vec == 0)])
+		}else{
+			list_myfun$p_each_old = c(NA, NA)
+		}
 	}
 
 
@@ -250,8 +255,14 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(G2_adj_n%*%diag(rep(1/r,dim(G2_adj_n)[2]))), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)	
 	list_myfun$p.value=out$p.value
 	#list_myfun$p_each_2=out$param$p.val.each
-	rho.val.vec = out$param$rho
-        list_myfun$p_each_2 = c(out$param$p.val.each[which(rho.val.vec == 1)], out$param$p.val.each[which(rho.val.vec == 0)])
+
+	if(!is.na(out$param[[1]][1])){
+		rho.val.vec = out$param$rho
+        	list_myfun$p_each_2 = c(out$param$p.val.each[which(rho.val.vec == 1)], out$param$p.val.each[which(rho.val.vec == 0)])
+	}else{
+		list_myfun$p_each_2 = c(NA,NA)
+	}
+
 	list_myfun$r=r		
 
 	list_myfun$indexNeg=indexNeg
@@ -268,6 +279,8 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	list_myfun$mac=MAFsum
 	#list_myfun$p_single_new=p_new
 	#list_myfun$p_single_old=p_old
+	print("list_myfun")
+	print(list_myfun)
 	return (list_myfun);
 
 }
