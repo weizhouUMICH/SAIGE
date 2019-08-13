@@ -849,6 +849,9 @@ SPAGMMATtest = function(dosageFile = "",
 	 }else{
            headerline = c("markerID", "AC", "AF", "N", "BETA", "SE", "Tstat", "p.value","Pvalue_singleGCadjust","varT","varTstar") 
          }
+	 if(traitType=="binary"){
+	   headerline = c(headerline, "AF.Cases", "AF.Controls")	
+	 }	
        write(headerline,file = SAIGEOutputFile_single, ncolumns = length(headerline))
      }
     	 
@@ -1952,10 +1955,17 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
         cat("saigeskatTest$p.value: ", saigeskatTest$p.value, "\n")
 
         if(ncol(Gmat) > 0){
-		N = nrow(Gmat)
+	     N = nrow(Gmat)
              if(IsSingleVarinGroupTest){
+		 if(obj.glmm.null$traitType == "binary"){
+		   caseIndex = which(obj.glmm.null$obj.glm.null$y == 1)
+		   numofCase = length(caseIndex)	
+		   ctrlIndex = which(obj.glmm.null$obj.glm.null$y == 0)	
+		   numofCtrl = length(ctrlIndex)
+		 }
                for(nc in 1:ncol(Gmat)){
                  G0_single = Gmat[,nc]
+
                  AC = sum(G0_single)
                  AF = AC/(2*length(G0_single))
                  MAC = min(AC, 2*length(G0_single)-AC)
@@ -1970,6 +1980,8 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                    }
 
                   }else if(obj.glmm.null$traitType == "binary"){
+		    freqinCase = sum(G0_single[caseIndex])/(2*numofCase)
+		    freqinCtrl = sum(G0_single[ctrlIndex])/(2*numofCtrl)
                     out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a = mu.a, mu2.a = mu2.a, obj.glmm.null$obj.glm.null$y,varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma)
 
                     if(singleGClambda != 1){
@@ -1978,10 +1990,17 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                   }
 
                   if(singleGClambda != 1){
-                    OUT_single = rbind(OUT_single, c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1b$p.value), as.numeric(out1$var1), as.numeric(out1$var2)))
+			outsingle = c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1b$p.value), as.numeric(out1$var1), as.numeric(out1$var2))
                   }else{
-                     OUT_single = rbind(OUT_single, c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1$var1), as.numeric(out1$var2)))
+			outsingle = c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1$var1), as.numeric(out1$var2))
+                        #OUT_single = rbind(OUT_single, c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1$var1), as.numeric(out1$var2)))
                   }
+		  if(obj.glmm.null$traitType == "binary"){
+			outsingle = c(outsingle, freqinCase, freqinCtrl)
+		  }
+
+		 OUT_single = rbind(OUT_single, outsingle)
+
                 }
               }
             }# if(length(Gx$markerIDs > 0)){
