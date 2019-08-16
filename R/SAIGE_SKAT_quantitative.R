@@ -238,14 +238,14 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 				}else{	
 					re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
 					     #cat("Score code: ", Score, "\n")
-        print(Phi)
+        				#print(Phi)
 
 				}
 			}else{#if(m_new == 1){
 
 				re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
 				     #cat("Score code: ", Score, "\n")
-        print(Phi)
+        			#print(Phi)
 			}
 			Phi = Phi * singleGClambda
 			Phi = as.matrix(Phi)
@@ -301,8 +301,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
 	#xt1 <- proc.time()
 	#print(xt1 - xt)
-	cat("re!\n")
-        print(re)
+	#cat("re!\n")
+        #print(re)
         return(re)
 
 }
