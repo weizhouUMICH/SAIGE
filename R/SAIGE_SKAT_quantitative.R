@@ -38,9 +38,9 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
           obj_cc$mu=mu
           obj_cc$res=y-obj_cc$mu
           obj_cc$pi_1=obj_cc$mu*(1-obj_cc$mu)
-          testtime = system.time({re=Related_ER(G1, obj_cc,  obj.noK, ratioVec=ratioVec, sparseSigma, mac_cutoff = cateVarRatioMinMACVecExclude,Cutoff=2, weights.beta = weights.beta, IsOutputPvalueNAinGroupTestforBinary=IsOutputPvalueNAinGroupTestforBinary)})
-	  print("testtime")
-	  print(testtime)
+          re=Related_ER(G1, obj_cc,  obj.noK, ratioVec=ratioVec, sparseSigma, mac_cutoff = cateVarRatioMinMACVecExclude,Cutoff=2, weights.beta = weights.beta, IsOutputPvalueNAinGroupTestforBinary=IsOutputPvalueNAinGroupTestforBinary)
+#	  print("testtime")
+#	  print(testtime)
 	#if(IsOutputPvalueNAinGroupTestforBinary){
 	#  	re$p_skato_old2=re$p_skato_old  ##SKATO
 	#	re$p_each_old2=Out_List$p_each_old ##SKAT and burden
@@ -302,7 +302,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 	#xt1 <- proc.time()
 	#print(xt1 - xt)
 	#cat("re!\n")
-        #print(re)
+        print(re)
         return(re)
 
 }
