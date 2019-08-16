@@ -63,6 +63,8 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.35.8.7 (August-15-2019): fixed the bug when there is no covariate specified and added an argument IsOutputNinCaseCtrl for step 2 to allow for output sample sizes in cases and controls for binary traits in the output file.
+
 * 0.35.8.6 (August-13-2019): fixed the output bug when the genotype matrix has rank 1 for binary phenotypes and add an argument minMAFtoConstructGRM for step 0 and step 1 to allow users to specify the minumum MAF of markers used to construct GRM.
 
 * 0.35.8.5 (June-29-2019): account for case control imbalance for binary traits in gene-based tests
