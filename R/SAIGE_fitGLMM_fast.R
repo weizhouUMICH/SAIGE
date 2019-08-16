@@ -749,8 +749,13 @@ fitNULLGLMM = function(plinkFile = "",
 	if(length(which(bimData[,1] == i)) > 0){
           chromosomeStartIndexVec = c(chromosomeStartIndexVec, min(which(bimData[,1] == i))-1)
 	  chromosomeEndIndexVec = c(chromosomeEndIndexVec, max(which(bimData[,1] == i))-1)
-	  if(chromosomeStartIndexVec[i] <= chromosomeStartIndexVec[i-1] | chromosomeEndIndexVec[i] <= chromosomeEndIndexVec[i-1]){
+
+	  if(i > 1 ){
+	   if(!is.na(chromosomeStartIndexVec[i-1])){
+	    if(chromosomeStartIndexVec[i] <= chromosomeStartIndexVec[i-1] | chromosomeEndIndexVec[i] <= chromosomeEndIndexVec[i-1]){
 		stop(paste0("ERROR! chromosomes need to be ordered from 1 to 22 in ", plinkFile, ".bim\n"))
+	    }
+           }
 	  }
 
 	}else{
@@ -761,7 +766,10 @@ fitNULLGLMM = function(plinkFile = "",
       }
       cat("chromosomeStartIndexVec: ", chromosomeStartIndexVec, "\n")
       cat("chromosomeEndIndexVec: ", chromosomeEndIndexVec, "\n")
-
+      if(sum(!is.na(chromosomeStartIndexVec)) <= 1 | sum(!is.na(chromosomeEndIndexVec)) <= 1){
+        cat("WARNING: The number of autosomal chromosomes is less than 2 and leave-one-chromosome-out can't be conducted! \n")
+        LOCO=FALSE
+      }
      # setChromosomeIndicesforLOCO(chromosomeStartIndexVec, chromosomeEndIndexVec, chromosomeVecVec) 
     }else{
       chromosomeStartIndexVec = rep(NA, 22)
