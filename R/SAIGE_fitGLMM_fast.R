@@ -844,7 +844,7 @@ fitNULLGLMM = function(plinkFile = "",
 
 
   #check for perfect separation
-  if(traitType == "binary"){
+  if(traitType == "binary" & (length(covarColList) > 0)){
     out_checksep = checkPerfectSep(formula.null, data=dataMerge_sort)
     covarColList <- covarColList[!(covarColList %in% out_checksep)]
     formula = paste0(phenoCol,"~", paste0(covarColList,collapse="+"))
