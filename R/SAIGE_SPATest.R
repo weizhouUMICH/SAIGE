@@ -32,6 +32,7 @@
 #' @param numLinesOutput numeric. Number of  markers to be output each time. By default, 10000   
 #' @param IsSparse logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE 
 #' @param IsOutputAFinCaseCtrl logical. Whether to output allele frequency in cases and controls. By default, FALSE
+#' @param IsOutputNinCaseCtrl logical. Whether to output sample sizes in cases and controls. By default, FALSE
 #' @param LOCO logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE
 #' @param condition character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input , marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input.
 #' @param sparseSigmaFile character. Path to the file containing the sparseSigma from step 1. The suffix of this file is ".mtx". 
@@ -78,6 +79,7 @@ SPAGMMATtest = function(dosageFile = "",
 		 numLinesOutput = 10000, 
 		 IsSparse=TRUE,
 		 IsOutputAFinCaseCtrl=FALSE,
+		 IsOutputNinCaseCtrl=FALSE,
 		 LOCO=FALSE,
 		 condition="",
 		 sparseSigmaFile="",
@@ -391,6 +393,9 @@ SPAGMMATtest = function(dosageFile = "",
       if(IsOutputAFinCaseCtrl){
         resultHeader = c(resultHeader, "AF.Cases", "AF.Controls")
       }
+      if(IsOutputNinCaseCtrl){
+	resultHeader = c(resultHeader, "N.Cases", "N.Controls")
+      } 	
       write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
     } #if(!isGroupTest){ 
 
@@ -416,6 +421,7 @@ SPAGMMATtest = function(dosageFile = "",
       mu2.a<-mu.a *(1-mu.a)
       obj.glmm.null$obj.noK$XVX = t(obj.glmm.null$obj.noK$X1) %*% (obj.glmm.null$obj.noK$X1 * mu2.a)
       obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
+
     }else if(chrom != ""){
       chrom_v2 = as.character(chrom)
       chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
@@ -745,10 +751,11 @@ SPAGMMATtest = function(dosageFile = "",
 
 	if(traitType == "binary"){
 	  if (NCase.sub == 0 | NCtrl.sub == 0) {	
-	   out1 = c(rep(NA, 8), NCase.sub, NCtrl.sub)
-	   if(!IsOutputAFinCaseCtrl){
-             OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1)))	
-	   }else{
+	   #out1 = c(rep(NA, 8), NCase.sub, NCtrl.sub)
+	   out1 = c(rep(NA, 8))
+	   OUTvec=c(rowHeader, N.sub, unlist(out1))
+            # OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1)))	
+	   if(IsOutputAFinCaseCtrl){
 	     if(NCase.sub == 0){
 		AFCase = NA
 		AFCtrl = sum(G0[y0Index.sub])/(2*NCtrl.sub)		
@@ -756,18 +763,33 @@ SPAGMMATtest = function(dosageFile = "",
 		AFCtrl = NA
 		AFCase = sum(G0[y1Index.sub])/(2*NCase.sub)
 	     }	
-	     OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1), AFCase, AFCtrl))	
-	   }	 	
+	     #OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1), AFCase, AFCtrl))	
+	     OUTvec=c(OUTvec, AFCase, AFCtrl)
+	   }
 
+	   if(IsOutputNinCaseCtrl){
+	     OUTvec=c(OUTvec, NCase.sub, NCtrl.sub)			
+	   }
+	   OUT = rbind(OUT, OUTvec)
+	   OUTvec=NULL
 	  }else{ #if (NCase.sub == 0 | NCtrl.sub == 0) {
            out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
-	   if(!IsOutputAFinCaseCtrl){
-             OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1)))
-           }else{
+	  OUTvec=c(rowHeader, N.sub, unlist(out1))
+
+	   #if(!IsOutputAFinCaseCtrl){
+           #  OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1)))
+           #}else{
+	   if(IsOutputAFinCaseCtrl){
              AFCase = sum(G0[y1Index.sub])/(2*NCase.sub)
              AFCtrl = sum(G0[y0Index.sub])/(2*NCtrl.sub)
-             OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1), AFCase, AFCtrl))
+	     OUTvec=c(OUTvec, AFCase, AFCtrl)
+             #OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1), AFCase, AFCtrl))
+            }
+	   if(IsOutputNinCaseCtrl){
+             OUTvec=c(OUTvec, NCase.sub, NCtrl.sub)
            }
+	   OUT = rbind(OUT, OUTvec)
+		OUTvec=NULL
 	  }
          }else if(traitType == "quantitative"){
 
@@ -798,15 +820,20 @@ SPAGMMATtest = function(dosageFile = "",
 
   	 if(traitType == "binary"){
            out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+	   OUTvec=c(rowHeader, N,unlist(out1))
 
-
-    	   if(!IsOutputAFinCaseCtrl){
-	     OUT = rbind(OUT, c(rowHeader, N,unlist(out1)))	     
-    	   }else{
+    	   if(IsOutputAFinCaseCtrl){	     	
       	     AFCase = sum(G0[y1Index])/(2*NCase)
       	     AFCtrl = sum(G0[y0Index])/(2*NCtrl)
-             OUT = rbind(OUT, c(rowHeader, N, unlist(out1), AFCase, AFCtrl))
+		OUTvec=c(OUTvec, AFCase, AFCtrl)
+
            }
+	   if(IsOutputNinCaseCtrl){
+	     OUTvec=c(OUTvec, NCase, NCtrl)
+           }
+	   OUT = rbind(OUT, OUTvec)
+	   OUTvec=NULL
+
          }else if(traitType == "quantitative"){
 
            out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.glmm.null$obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
@@ -850,7 +877,7 @@ SPAGMMATtest = function(dosageFile = "",
            headerline = c("markerID", "AC", "AF", "N", "BETA", "SE", "Tstat", "p.value","Pvalue_singleGCadjust","varT","varTstar") 
          }
 	 if(traitType=="binary"){
-	   headerline = c(headerline, "AF.Cases", "AF.Controls")	
+	   headerline = c(headerline, "AF.Cases", "AF.Controls", "N.Cases", "N.Controls")	
 	 }	
        write(headerline,file = SAIGEOutputFile_single, ncolumns = length(headerline))
      }
@@ -1132,6 +1159,11 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio,
     idx_no0<-which(G0>0)
     #cat("length(idx_no0): ", length(idx_no0), "\n")
     #cat("maf: ", maf, "\n")
+   
+
+
+
+
     g1<-G0[idx_no0]/sqrt(AC2)
     A1<-obj.noK$XVX_inv_XV[idx_no0,]
     X1<-obj.noK$X1[idx_no0,]
@@ -1195,15 +1227,26 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio,
 Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
   # mu=mu.a; mu2= mu2.a; G=G0; obj.null=obj.noK
   idx_no0<-which(G>0)
+  #print(obj.null$X1)
   #print(G[1:10])
   #print(idx_no0)
   g1<-G[idx_no0]
-  A1<-obj.null$XVX_inv_XV[idx_no0,]
-
   noCov = FALSE
+  #if(is.null(dim(obj.null$X1))){
+  #  noCov = TRUE
+  #  obj.null$X1 = matrix(obj.null$X1, ncol=1)
+  #}else{
   if(dim(obj.null$X1)[2] == 1){
-   noCov = TRUE 
+    noCov = TRUE 
   }
+  #}
+
+
+  #if(!noCov){
+    A1<-obj.null$XVX_inv_XV[idx_no0,]
+  #}else{
+  #  A1<-obj.null$XVX_inv_XV[idx_no0]
+  #}
 
   X1<-obj.null$X1[idx_no0,]
   mu21<-mu2[idx_no0]
@@ -1510,16 +1553,29 @@ scoreTest_SAIGE_quantitativeTrait_sparseSigma=function(G0, obj.noK, AC, AF, y, m
 if(maf < 0.05){
 #  cat("HERE2a\n")
     idx_no0<-which(G0>0)
+    noCov = FALSE
+    #if(is.null(dim(obj.null$X1))){
+    #  noCov = TRUE
+    #  obj.null$X1 = matrix(obj.null$X1)
+    #  obj.noK$XVX_inv_XV = matrix(obj.noK$XVX_inv_XV)
+    #}else{
+      if(dim(obj.noK$X1)[2] == 1){
+        noCov = TRUE
+      }
+    #}
+
+
+
     g1<-G0[idx_no0]
     A1<-obj.noK$XVX_inv_XV[idx_no0,]
     X1<-obj.noK$X1[idx_no0,]
     mu1<-mu[idx_no0]
     y1<-obj.noK$y[idx_no0]
 
-    noCov = FALSE
-    if(dim(obj.noK$X1)[2] == 1){
-     noCov = TRUE
-    }
+    #noCov = FALSE
+    #if(dim(obj.noK$X1)[2] == 1){
+    # noCov = TRUE
+    #}
 
 ## V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv
     if(length(idx_no0) > 1){
@@ -1579,20 +1635,20 @@ if(isCondition){
   T2stat = OUT_cond[,2]
   #m_all = nrow(GratioMatrixall)
  
-  cat("Tstat: ", Tstat, "\n")
+#  cat("Tstat: ", Tstat, "\n")
   G1tilde_P_G2tilde = matrix(G1tilde_P_G2tilde,nrow=1)
   #Tstat_c = Tstat - covM[1,c(2:m_all)] %*% (solve(covM[c(2:m_all),c(2:m_all)])) %*% T2stat
   Tstat_c = Tstat - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% T2stat
 #  cat("G1tilde_P_G2tilde: ", G1tilde_P_G2tilde, "\n")
 #  print(dim(G1tilde_P_G2tilde))
 #  print(dim(G2tilde_P_G2tilde_inv))
-  cat("G2tilde_P_G2tilde_inv: ", G2tilde_P_G2tilde_inv, "\n")
+#  cat("G2tilde_P_G2tilde_inv: ", G2tilde_P_G2tilde_inv, "\n")
 #  cat("T2stat: ", T2stat, "\n")
 
   #var1_c = var1 - (covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
   var1_c = var1 - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
 #  cat("var1: ", var1, "\n")
-  cat("var1_c: ", var1_c, "\n")
+#  cat("var1_c: ", var1_c, "\n")
 #  cat("G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde): ", G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde), "\n")
 #(covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
 
@@ -1817,6 +1873,20 @@ subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
         if(!is.null(obj.glmm.null.sub$P)){
                 obj.glmm.null.sub$P = obj.glmm.null.sub$P[missingind, missingind]
         }
+	noCov = FALSE
+  if(is.null(dim(obj.glmm.null.sub$obj.noK$X1))){
+	noCov = TRUE
+  }else{
+    if(dim(obj.glmm.null.sub$obj.noK$X1)[2] == 1){
+      noCov = TRUE
+    }
+  }
+
+	#if(noCov){
+    	#	obj.glmm.null.sub$obj.noK$X1 = as.matrix(obj.glmm.null.sub$obj.noK$X1)
+	#	obj.glmm.null.sub$obj.noK$XXVX_inv = as.matrix(obj.glmm.null.sub$obj.noK$XXVX_inv)
+	#	obj.glmm.null.sub$obj.noK$XVX_inv_XV = as.matrix(obj.glmm.null.sub$obj.noK$XVX_inv_XV)
+	#}
 
         obj.glmm.null.sub$obj.noK$X1 = obj.glmm.null.sub$obj.noK$X1[missingind,]
         obj.glmm.null.sub$obj.noK$XXVX_inv = obj.glmm.null.sub$obj.noK$XXVX_inv[missingind,]
@@ -1837,8 +1907,17 @@ subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
 #        }
 
 	obj.glmm.null.sub$obj.glm.null$y = obj.glmm.null.sub$obj.glm.null$y[missingind]
-	obj.glmm.null.sub$obj.noK$S_a = colSums(obj.glmm.null.sub$obj.noK$X1 * (obj.glmm.null.sub$obj.glm.null$y -  mu.a.sub))
+	if(!is.null(dim(obj.glmm.null.sub$obj.noK$X1))){
+	  obj.glmm.null.sub$obj.noK$S_a = colSums(obj.glmm.null.sub$obj.noK$X1 * (obj.glmm.null.sub$obj.glm.null$y -  mu.a.sub))
+	}else{
+          obj.glmm.null.sub$obj.noK$S_a = sum(obj.glmm.null.sub$obj.noK$X1 * (obj.glmm.null.sub$obj.glm.null$y -  mu.a.sub))
+        }
 #	 obj.glmm.null.sub$residuals = obj.glmm.null.sub$residuals[missingind]
+	if(noCov){
+                obj.glmm.null.sub$obj.noK$X1 = as.matrix(obj.glmm.null.sub$obj.noK$X1)
+                obj.glmm.null.sub$obj.noK$XXVX_inv = as.matrix(obj.glmm.null.sub$obj.noK$XXVX_inv)
+                obj.glmm.null.sub$obj.noK$XVX_inv_XV = as.matrix(obj.glmm.null.sub$obj.noK$XVX_inv_XV)
+        }
 
         return(subsertforMissingResult = list(obj.glmm.null.sub = obj.glmm.null.sub, mu.sub = mu.sub, mu.a.sub = mu.a.sub, mu2.a.sub = mu2.a.sub))
 }
@@ -1996,7 +2075,7 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                         #OUT_single = rbind(OUT_single, c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1$var1), as.numeric(out1$var2)))
                   }
 		  if(obj.glmm.null$traitType == "binary"){
-			outsingle = c(outsingle, freqinCase, freqinCtrl)
+			outsingle = c(outsingle, freqinCase, freqinCtrl, numofCase, numofCtrl)
 		  }
 
 		 OUT_single = rbind(OUT_single, outsingle)
