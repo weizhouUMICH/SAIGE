@@ -2230,7 +2230,13 @@ Rcpp::List getCoefficients(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,
   	}
 
   	arma::fmat Xmatt = Xmat.t();
-  	arma::fmat cov = inv_sympd(Xmatt * Sigma_iX);
+	arma::fmat cov;
+	try {
+	  cov = arma::inv_sympd(Xmatt * Sigma_iX);
+	} catch (const std::exception& e) {
+	  cov = arma::pinv(Xmatt * Sigma_iX);
+	  cout << "inv_sympd failed, inverted with pinv" << endl;
+	}
  	arma::fmat Sigma_iXt = Sigma_iX.t();
   	arma::fvec SigmaiXtY = Sigma_iXt * Yvec;
   	arma::fvec alpha = cov * SigmaiXtY;
