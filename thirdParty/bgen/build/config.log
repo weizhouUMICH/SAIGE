@@ -1,4 +1,4 @@
-# project bgen (1.1.4) configured on Tue Aug 13 15:15:01 2019 by
+# project bgen (1.1.4) configured on Tue Aug 27 14:32:43 2019 by
 # waf 2.0.6 (abi 20, python 2070ff0 on linux2)
 # using ./waf configure
 #
@@ -528,12 +528,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_a9fccb15be22bb7144a01462a5fc281d/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_69a37bf5dcfef9070a5cec0bbb595f25/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_a9fccb15be22bb7144a01462a5fc281d/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_a9fccb15be22bb7144a01462a5fc281d/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_69a37bf5dcfef9070a5cec0bbb595f25/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_69a37bf5dcfef9070a5cec0bbb595f25/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_a9fccb15be22bb7144a01462a5fc281d/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lz']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_69a37bf5dcfef9070a5cec0bbb595f25/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lz']
 yes
 ----------------------------------------
 rt
@@ -545,12 +545,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_2a2cb1d72fefa0aece076fc327458bad/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_8d863c5093c793272e6fcb98f006f82d/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_2a2cb1d72fefa0aece076fc327458bad/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_2a2cb1d72fefa0aece076fc327458bad/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_8d863c5093c793272e6fcb98f006f82d/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_8d863c5093c793272e6fcb98f006f82d/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_2a2cb1d72fefa0aece076fc327458bad/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_8d863c5093c793272e6fcb98f006f82d/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt']
 yes
 ----------------------------------------
 pthread
@@ -562,12 +562,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_cb7979d1e5ccc5441deda0707d74150a/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_aa7b6c45a120d91c54863cfb47365504/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_cb7979d1e5ccc5441deda0707d74150a/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_cb7979d1e5ccc5441deda0707d74150a/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_aa7b6c45a120d91c54863cfb47365504/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_aa7b6c45a120d91c54863cfb47365504/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_cb7979d1e5ccc5441deda0707d74150a/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_aa7b6c45a120d91c54863cfb47365504/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread']
 yes
 ----------------------------------------
 dl
@@ -579,10 +579,10 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_8ef61eff4507c568230d9868728cfa5a/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_556edcb02378fdc20b445cdc1b9e0111/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_8ef61eff4507c568230d9868728cfa5a/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_8ef61eff4507c568230d9868728cfa5a/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_556edcb02378fdc20b445cdc1b9e0111/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_556edcb02378fdc20b445cdc1b9e0111/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_8ef61eff4507c568230d9868728cfa5a/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-ldl']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE/thirdParty/bgen/build/.conf_check_556edcb02378fdc20b445cdc1b9e0111/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-ldl']
 yes

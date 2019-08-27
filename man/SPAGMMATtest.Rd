@@ -16,13 +16,14 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
   maxMAFforGroupTest = 0.5, minInfo = 0, GMMATmodelFile = "",
   varianceRatioFile = "", SPAcutoff = 2, SAIGEOutputFile = "",
   numLinesOutput = 10000, IsSparse = TRUE,
-  IsOutputAFinCaseCtrl = FALSE, LOCO = FALSE, condition = "",
-  sparseSigmaFile = "", groupFile = "", kernel = "linear.weighted",
-  method = "optimal.adj", weights.beta = c(1, 25), r.corr = 0,
-  IsSingleVarinGroupTest = TRUE, cateVarRatioMinMACVecExclude = c(0.5,
-  1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
-  cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
-  singleGClambda = 1, IsOutputPvalueNAinGroupTestforBinary = FALSE)
+  IsOutputAFinCaseCtrl = FALSE, IsOutputNinCaseCtrl = FALSE,
+  LOCO = FALSE, condition = "", sparseSigmaFile = "",
+  groupFile = "", kernel = "linear.weighted", method = "optimal.adj",
+  weights.beta = c(1, 25), r.corr = 0, IsSingleVarinGroupTest = TRUE,
+  cateVarRatioMinMACVecExclude = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 10.5,
+  20.5), cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5,
+  20.5), singleGClambda = 1,
+  IsOutputPvalueNAinGroupTestforBinary = FALSE)
 }
 \arguments{
 \item{dosageFile}{character. Path to dosage file. Each line contains dosages for a marker to be tested}
@@ -88,6 +89,8 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 \item{IsSparse}{logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE}
 
 \item{IsOutputAFinCaseCtrl}{logical. Whether to output allele frequency in cases and controls. By default, FALSE}
+
+\item{IsOutputNinCaseCtrl}{logical. Whether to output sample sizes in cases and controls. By default, FALSE}
 
 \item{LOCO}{logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE}
 

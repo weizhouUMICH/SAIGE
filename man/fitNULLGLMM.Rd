@@ -19,7 +19,8 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
   20.5), cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5,
   20.5), isCovariateTransform = TRUE, isDiagofKinSetAsOne = FALSE,
   useSparseSigmaConditionerforPCG = FALSE,
-  useSparseSigmaforInitTau = FALSE, minMAFforGRM = 0.01)
+  useSparseSigmaforInitTau = FALSE, minCovariateCount = -1,
+  minMAFforGRM = 0.01)
 }
 \arguments{
 \item{plinkFile}{character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM). Genetic markers are also randomly selected from the plink file to estimate the variance ratios}
@@ -91,6 +92,8 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
 \item{useSparseSigmaConditionerforPCG}{logical. Whether to use sparse GRM to construct a conditoner for PCG. By default, FALSE. Current this option is deactivated.}
 
 \item{useSparseSigmaforInitTau}{logical. Whether to use sparse GRM to estimate the initial values for fitting the null GLMM. By default, FALSE}
+
+\item{minCovariateCount}{integer. If binary covariates have a count less than this, they will be excluded from the model to avoid convergence issues. By default, -1 (no covariates will be excluded)}
 
 \item{minMAFforGRM}{numeric. Minimum MAF for markers (in the Plink file) used for construcing the sparse GRM. By default, 0.01}
 }
