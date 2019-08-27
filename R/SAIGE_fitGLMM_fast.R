@@ -606,6 +606,7 @@ solveSpMatrixUsingArma = function(sparseGRMtest){
 #' @param isDiagofKinSetAsOne logical. Whether to set the diagnal elements in GRM to be 1. By default, FALSE
 #' @param useSparseSigmaforInitTau logical. Whether to use sparse GRM to estimate the initial values for fitting the null GLMM. By default, FALSE
 #' @param useSparseSigmaConditionerforPCG logical. Whether to use sparse GRM to construct a conditoner for PCG. By default, FALSE. Current this option is deactivated.   
+#' @param minCovariateCount integer. If binary covariates have a count less than this, they will be excluded from the model to avoid convergence issues. By default, -1 (no covariates will be excluded)
 #' @param minMAFforGRM numeric. Minimum MAF for markers (in the Plink file) used for construcing the sparse GRM. By default, 0.01
 #' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio values, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
 #' @export
@@ -644,7 +645,8 @@ fitNULLGLMM = function(plinkFile = "",
 		isCovariateTransform = TRUE,
 		isDiagofKinSetAsOne = FALSE,
 		useSparseSigmaConditionerforPCG = FALSE,
-		useSparseSigmaforInitTau = FALSE, 
+		useSparseSigmaforInitTau = FALSE,
+		minCovariateCount = -1, 
 		minMAFforGRM = 0.01){
 
   setminMAFforGRM(minMAFforGRM)
@@ -853,7 +855,7 @@ fitNULLGLMM = function(plinkFile = "",
 
   #check for perfect separation
   if(traitType == "binary" & (length(covarColList) > 0)){
-    out_checksep = checkPerfectSep(formula.null, data=dataMerge_sort)
+	out_checksep = checkPerfectSep(formula.null, data=dataMerge_sort, minCovariateCount)
     covarColList <- covarColList[!(covarColList %in% out_checksep)]
     formula = paste0(phenoCol,"~", paste0(covarColList,collapse="+"))
     formula.null = as.formula(formula)
@@ -2325,7 +2327,7 @@ getsubGRM = function(sparseGRMFile=NULL,
 }
 
 
-checkPerfectSep<-function(formula, data){
+checkPerfectSep<-function(formula, data, minCovariateCount){
   X1<-model.matrix(formula,data=data)
   X_name = colnames(X1)
   X1 = as.matrix(X1[,-1])
@@ -2338,10 +2340,15 @@ checkPerfectSep<-function(formula, data){
   for(i in 1:q){
     if (length(unique(X1[,i])) == 2){
       sumTable = table(Y, X1[,i])
-      if(sum(sumTable == 0) > 0){
+      if(sum(sumTable < minCovariateCount) > 0){
         colnamesDelete = c(colnamesDelete, X_name[i])
-        cat("perfect seperation is detected! ", X_name[i], " will be excluded in the model\n")
-      }
+	cat("less than ", minCovariateCount, " samples in a covariate  detected! ", X_name[i], " will be excluded in the model\n")
+      }  
+
+    #if(sum(sumTable == 0) > 0){
+    #    colnamesDelete = c(colnamesDelete, X_name[i])
+    #    cat("perfect seperation is detected! ", X_name[i], " will be excluded in the model\n")
+    #  }
     }
   }
 
