@@ -2642,15 +2642,15 @@ Rcpp::List getAIScore_q_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVe
         }
 
 
-        arma::fmat Sigma_iX1t = Sigma_iX1.t();
+        //rma::fmat Sigma_iX1t = Sigma_iX1.t();
         arma::fmat Xmatt = Xmat.t();
 
         //arma::fmat cov1 = inv_sympd(Xmatt * Sigma_iX1);
         arma::fmat cov1;
         try {
-          cov1 = arma::inv_sympd(arma::symmatu(Xmatt * Sigma_iX));
+          cov1 = arma::inv_sympd(arma::symmatu(Xmatt * Sigma_iX1));
         } catch (const std::exception& e) {
-          cov1 = arma::pinv(arma::symmatu(Xmatt * Sigma_iX));
+          cov1 = arma::pinv(arma::symmatu(Xmatt * Sigma_iX1));
           cout << "inv_sympd failed, inverted with pinv" << endl;
         }
 
