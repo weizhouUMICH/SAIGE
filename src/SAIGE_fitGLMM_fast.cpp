@@ -2265,7 +2265,16 @@ Rcpp::List getCoefficients(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,
   	}
 
   	arma::fmat Xmatt = Xmat.t();
-  	arma::fmat cov = inv_sympd(Xmatt * Sigma_iX);
+  	//arma::fmat cov = inv_sympd(Xmatt * Sigma_iX);
+	arma::fmat cov;
+	try {
+	  cov = arma::inv_sympd(arma::symmatu(Xmatt * Sigma_iX));
+	} catch (const std::exception& e) {
+	  cov = arma::pinv(arma::symmatu(Xmatt * Sigma_iX));
+	  cout << "inv_sympd failed, inverted with pinv" << endl;
+	}
+
+
  	arma::fmat Sigma_iXt = Sigma_iX.t();
   	arma::fvec SigmaiXtY = Sigma_iXt * Yvec;
   	arma::fvec alpha = cov * SigmaiXtY;
@@ -2293,7 +2302,15 @@ Rcpp::List getCoefficients_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& 
         }
 
         arma::fmat Xmatt = Xmat.t();
-        arma::fmat cov = inv_sympd(Xmatt * Sigma_iX);
+        //arma::fmat cov = inv_sympd(Xmatt * Sigma_iX);
+        arma::fmat cov;
+        try {
+          cov = arma::inv_sympd(arma::symmatu(Xmatt * Sigma_iX));
+        } catch (const std::exception& e) {
+          cov = arma::pinv(arma::symmatu(Xmatt * Sigma_iX));
+          cout << "inv_sympd failed, inverted with pinv" << endl;
+        }
+
         arma::fmat Sigma_iXt = Sigma_iX.t();
         arma::fvec SigmaiXtY = Sigma_iXt * Yvec;
         arma::fvec alpha = cov * SigmaiXtY;
@@ -2321,7 +2338,14 @@ Rcpp::List getCoefficients_q_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec
         }
 
         arma::fmat Xmatt = Xmat.t();
-        arma::fmat cov = inv_sympd(Xmatt * Sigma_iX);
+        //arma::fmat cov = inv_sympd(Xmatt * Sigma_iX);
+        arma::fmat cov;
+        try {
+          cov = arma::inv_sympd(arma::symmatu(Xmatt * Sigma_iX));
+        } catch (const std::exception& e) {
+          cov = arma::pinv(arma::symmatu(Xmatt * Sigma_iX));
+          cout << "inv_sympd failed, inverted with pinv" << endl;
+        }
         arma::fmat Sigma_iXt = Sigma_iX.t();
         arma::fvec SigmaiXtY = Sigma_iXt * Yvec;
         arma::fvec alpha = cov * SigmaiXtY;
@@ -2542,8 +2566,17 @@ int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff){
   	arma::fmat Sigma_iXt = Sigma_iX.t();
   	arma::fmat Xmatt = Xmat.t();
 
-  	arma::fmat cov1 = inv_sympd(Xmatt * Sigma_iX);
-  	arma::fvec PY1 = Sigma_iY - Sigma_iX * (cov * (Sigma_iXt * Yvec));
+  	//arma::fmat cov1 = inv_sympd(Xmatt * Sigma_iX);
+        arma::fmat cov1;
+        try {
+          cov1 = arma::inv_sympd(arma::symmatu(Xmatt * Sigma_iX));
+        } catch (const std::exception& e) {
+          cov1 = arma::pinv(arma::symmatu(Xmatt * Sigma_iX));
+          cout << "inv_sympd failed, inverted with pinv" << endl;
+        }
+
+
+  	arma::fvec PY1 = Sigma_iY - Sigma_iX * (cov1 * (Sigma_iXt * Yvec));
   	arma::fvec APY = getCrossprodMatAndKin(PY1);
 
   	float YPAPY = dot(PY1, APY);
@@ -2554,17 +2587,17 @@ int nrun, int maxiterPCG, float tolPCG, float traceCVcutoff){
   	float YPA0PY = dot(PY1, A0PY); ////Quantitative
 
 
-  	arma::fvec Trace = GetTrace_q(Sigma_iX, Xmat, wVec, tauVec, cov, nrun, maxiterPCG, tolPCG, traceCVcutoff);
+  	arma::fvec Trace = GetTrace_q(Sigma_iX, Xmat, wVec, tauVec, cov1, nrun, maxiterPCG, tolPCG, traceCVcutoff);
 
   	arma::fmat AI(2,2);
   	arma::fvec PA0PY_1 = getPCG1ofSigmaAndVector(wVec, tauVec, A0PY, maxiterPCG, tolPCG);
-  	arma::fvec PA0PY = PA0PY_1 - Sigma_iX * (cov * (Sigma_iXt * PA0PY_1));
+  	arma::fvec PA0PY = PA0PY_1 - Sigma_iX * (cov1 * (Sigma_iXt * PA0PY_1));
 
   	AI(0,0) =  dot(A0PY, PA0PY);
 
   	//cout << "A1(0,0) " << AI(0,0)  << endl;
   	arma::fvec PAPY_1 = getPCG1ofSigmaAndVector(wVec, tauVec, APY, maxiterPCG, tolPCG);
-  	arma::fvec PAPY = PAPY_1 - Sigma_iX * (cov * (Sigma_iXt * PAPY_1));
+  	arma::fvec PAPY = PAPY_1 - Sigma_iX * (cov1 * (Sigma_iXt * PAPY_1));
   	AI(1,1) = dot(APY, PAPY);
 
   	AI(0,1) = dot(A0PY, PAPY);
@@ -2612,7 +2645,15 @@ Rcpp::List getAIScore_q_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVe
         arma::fmat Sigma_iX1t = Sigma_iX1.t();
         arma::fmat Xmatt = Xmat.t();
 
-        arma::fmat cov1 = inv_sympd(Xmatt * Sigma_iX1);
+        //arma::fmat cov1 = inv_sympd(Xmatt * Sigma_iX1);
+        arma::fmat cov1;
+        try {
+          cov1 = arma::inv_sympd(arma::symmatu(Xmatt * Sigma_iX));
+        } catch (const std::exception& e) {
+          cov1 = arma::pinv(arma::symmatu(Xmatt * Sigma_iX));
+          cout << "inv_sympd failed, inverted with pinv" << endl;
+        }
+
 
         //cout << "cov " << cov1 << endl;
 
