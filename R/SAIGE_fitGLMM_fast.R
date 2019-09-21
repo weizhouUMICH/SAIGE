@@ -608,6 +608,7 @@ solveSpMatrixUsingArma = function(sparseGRMtest){
 #' @param useSparseSigmaConditionerforPCG logical. Whether to use sparse GRM to construct a conditoner for PCG. By default, FALSE. Current this option is deactivated.   
 #' @param minCovariateCount integer. If binary covariates have a count less than this, they will be excluded from the model to avoid convergence issues. By default, -1 (no covariates will be excluded)
 #' @param minMAFforGRM numeric. Minimum MAF for markers (in the Plink file) used for construcing the sparse GRM. By default, 0.01
+#' @param includeNonautoMarkersforVarRatio logical. Whether to allow for non-autosomal markers for variance ratio. By default, FALSE
 #' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio values, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
 #' @export
 fitNULLGLMM = function(plinkFile = "", 
@@ -647,7 +648,8 @@ fitNULLGLMM = function(plinkFile = "",
 		useSparseSigmaConditionerforPCG = FALSE,
 		useSparseSigmaforInitTau = FALSE,
 		minCovariateCount = -1, 
-		minMAFforGRM = 0.01){
+		minMAFforGRM = 0.01,
+		includeNonautoMarkersforVarRatio=FALSE){
 
   setminMAFforGRM(minMAFforGRM)
   if(minMAFforGRM > 0){
@@ -1101,7 +1103,8 @@ fitNULLGLMM = function(plinkFile = "",
 							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
                 cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
 		minMAFforGRM = minMAFforGRM,
-		isDiagofKinSetAsOne = isDiagofKinSetAsOne)
+		isDiagofKinSetAsOne = isDiagofKinSetAsOne,
+		includeNonautoMarkersforVarRatio = includeNonautoMarkersforVarRatio)
     closeGenoFile_plink()
 
   }else if(traitType == "quantitative"){
@@ -1186,7 +1189,8 @@ fitNULLGLMM = function(plinkFile = "",
 							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
                 cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
 		minMAFforGRM = minMAFforGRM,
-		isDiagofKinSetAsOne = isDiagofKinSetAsOne)
+		isDiagofKinSetAsOne = isDiagofKinSetAsOne,
+		includeNonautoMarkersforVarRatio = includeNonautoMarkersforVarRatio)
     closeGenoFile_plink()
   }
 }
@@ -1217,7 +1221,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 						    cateVarRatioMinMACVecExclude,
 						    cateVarRatioMaxMACVecInclude,
 						    minMAFforGRM,
-							isDiagofKinSetAsOne){
+							isDiagofKinSetAsOne,
+						includeNonautoMarkersforVarRatio){
 
 
   if(file.exists(testOut)){file.remove(testOut)}
@@ -1371,9 +1376,12 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
           NAset = which(G0==0)
           AC = sum(G0)
 
-         if (CHR < 1 | CHR > 22){
-           indexInMarkerList = indexInMarkerList + 1
-         }else{
+
+         #if (CHR < 1 | CHR > 22){
+         #  indexInMarkerList = indexInMarkerList + 1
+
+         #}else{
+	if((CHR >= 1 & CHR <= 22) | includeNonautoMarkersforVarRatio){
           AF = AC/(2*Nnomissing)
           G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted
           g = G/sqrt(AC)
@@ -1458,8 +1466,11 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
           write.table(OUT, testOut, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
           OUT = NULL
         }
+      }else{
+        indexInMarkerList = indexInMarkerList + 1
       }
 
+	
       if(indexInMarkerList-1 == length(listOfMarkersForVarRatio[[k]])){
         numTestedMarker = numMarkers0
       }
@@ -1544,7 +1555,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 							cateVarRatioMinMACVecExclude,
                                                         cateVarRatioMaxMACVecInclude,
 							minMAFforGRM,
-							isDiagofKinSetAsOne){	
+							isDiagofKinSetAsOne,
+						includeNonautoMarkersforVarRatio){	
 
 
   if(file.exists(testOut)){file.remove(testOut)}
@@ -1689,9 +1701,15 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
           cat("G0", G0[1:10], "\n")
           AC = sum(G0)
           CHR = bimPlink[i,1]
-         if (CHR < 1 | CHR > 22){
-           indexInMarkerList = indexInMarkerList + 1
-         }else{
+
+
+
+         #if (CHR < 1 | CHR > 22){
+         #  indexInMarkerList = indexInMarkerList + 1
+         #}else{
+	 if((CHR >= 1 & CHR <= 22) | includeNonautoMarkersforVarRatio){
+
+
           AF = AC/(2*Nnomissing)
           G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted 
           g = G/sqrt(AC)
@@ -1775,7 +1793,10 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
           write.table(OUT, testOut, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
           OUT = NULL
         }
-      }
+      }else{
+	  indexInMarkerList = indexInMarkerList + 1
+	}
+
 
       if(indexInMarkerList-1 == length(listOfMarkersForVarRatio[[k]])){
         numTestedMarker = numMarkers0
