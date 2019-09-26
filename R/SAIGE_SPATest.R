@@ -92,8 +92,13 @@ SPAGMMATtest = function(dosageFile = "",
 		 cateVarRatioMinMACVecExclude=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5), 
 		 cateVarRatioMaxMACVecInclude=c(1.5,2.5,3.5,4.5,5.5,10.5,20.5),
 		 singleGClambda = 1,
-		 IsOutputPvalueNAinGroupTestforBinary = FALSE){
-#		 adjustCCratioinGroupTest=FALSE){
+		 IsOutputPvalueNAinGroupTestforBinary = FALSE,
+		 analysisType = "additive"){
+#		 adjustCCratioinGroupTest=FALSE,
+
+  if (analysisType != "additive" & analysisType != "recessive" & analysisType != "dominant") {
+    stop("Unknown analysis type (supported 'additive', 'recessive', and 'dominant': ", analysisType)
+  }
 
   # if group file is specified, the region-based test will be performed, otherwise, the single-variant assoc test will be performed. 
   adjustCCratioinGroupTest=FALSE
@@ -571,7 +576,7 @@ SPAGMMATtest = function(dosageFile = "",
         ranges_to_include = data.frame(chromosome = NULL, start = NULL, end = NULL)
       }
 
-      Mtest = setgenoTest_bgenDosage(bgenFile,bgenFileIndex, ranges_to_exclude = ranges_to_exclude, ranges_to_include = ranges_to_include, ids_to_exclude= ids_to_exclude, ids_to_include=ids_to_include)
+      Mtest = setgenoTest_bgenDosage(bgenFile,bgenFileIndex, ranges_to_exclude = ranges_to_exclude, ranges_to_include = ranges_to_include, ids_to_exclude= ids_to_exclude, ids_to_include=ids_to_include, analysis_type=analysisType)
       if(Mtest == 0){
         isVariant = FALSE
         stop("ERROR! Failed to open ", bgenFile, "\n")
