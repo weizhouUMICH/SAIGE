@@ -94,7 +94,10 @@ option_list <- list(
   make_option("--singleGClambda",type="numeric", default=1,
     help="GC lambda values that can be used to adjust the gene-based tests results. This value is usually estimated based on the single-variant assoc test results. [default=1]"),
   make_option("--IsOutputPvalueNAinGroupTestforBinary", type="logical",default=FALSE,
-    help="whether to output p value if not account for case-control imbalance when performing group test (only for binary traits). [default=FALSE]")	
+    help="whether to output p value if not account for case-control imbalance when performing group test (only for binary traits). [default=FALSE]"),
+  make_option("--analysisType", type="character", default='additive',
+    help="'additive' (default), 'recessive' (het probability set to 0), or 'dominant' (hom alt probability set to 0)")
+
 )
 
 parser <- OptionParser(usage="%prog [options]", option_list=option_list)
@@ -156,7 +159,8 @@ SPAGMMATtest(dosageFile=opt$dosageFile,
              cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude,
              cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,
 	     singleGClambda=opt$singleGClambda,
-		IsOutputPvalueNAinGroupTestforBinary=opt$IsOutputPvalueNAinGroupTestforBinary
+		IsOutputPvalueNAinGroupTestforBinary=opt$IsOutputPvalueNAinGroupTestforBinary,
+ 	        analysisType = opt$analysisType
 )
 
 
