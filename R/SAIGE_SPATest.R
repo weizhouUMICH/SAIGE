@@ -92,11 +92,21 @@ SPAGMMATtest = function(dosageFile = "",
 		 cateVarRatioMinMACVecExclude=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5), 
 		 cateVarRatioMaxMACVecInclude=c(1.5,2.5,3.5,4.5,5.5,10.5,20.5),
 		 singleGClambda = 1,
-		 IsOutputPvalueNAinGroupTestforBinary = FALSE){
+		 IsOutputPvalueNAinGroupTestforBinary = FALSE,
+		 IsAccountforCasecontrolImbalanceinGroupTest = TRUE){
 #		 adjustCCratioinGroupTest=FALSE){
 
+  
+  adjustCCratioinGroupTest=TRUE
+  if(!IsAccountforCasecontrolImbalanceinGroupTest){
+    IsOutputPvalueNAinGroupTestforBinary = TRUE
+    adjustCCratioinGroupTest = FALSE
+  }
+
   # if group file is specified, the region-based test will be performed, otherwise, the single-variant assoc test will be performed. 
-  adjustCCratioinGroupTest=FALSE
+
+
+
   if(groupFile == ""){
     isGroupTest = FALSE
     cat("single-variant association test will be performed\n")
@@ -905,7 +915,7 @@ SPAGMMATtest = function(dosageFile = "",
      }else if(traitType == "binary"){
        cat("It is a binary trait\n")
        #cat("WARNING!!!! Gene-based tests do not work for binary traits with unbalanced case-control ratios (disease prevalence < 20%)! \n")	
-       adjustCCratioinGroupTest = TRUE
+       #adjustCCratioinGroupTest = TRUE
        if(isCondition){	
 	adjustCCratioinGroupTest = FALSE
        	cat("WARNING!!!! Case-control imbalance is not adjusted for binary traits to perform conditional analysis. Do not specify condition= if needs to account for case-control imbalance\n")	
@@ -913,9 +923,11 @@ SPAGMMATtest = function(dosageFile = "",
 	adjustCCratioinGroupTest = FALSE
 	cat("WARNING!!!! Case-control imbalance is not adjusted for binary traits to perform GC lambda adjustion. Do not specify singleGClambda if needs to account for case-control imbalance\n")
        }else{
-        cat("Case-control imbalance is adjusted for binary traits.\n")		
+	if(adjustCCratioinGroupTest){
+          cat("Case-control imbalance is adjusted for binary traits.\n")		
+	}
 	if(IsOutputPvalueNAinGroupTestforBinary){
-	  cat("P-values without case-control imbalance will be output too.\n")
+	  cat("P-values without case-control imbalance will be output.\n")
 	}
 
 	obj.glmm.null$obj_cc = SKAT::SKAT_Null_Model(obj.glmm.null$obj.glm.null$y ~ obj.glmm.null$obj.noK$X1-1, out_type="D", Adjustment = FALSE)
