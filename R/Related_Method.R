@@ -99,7 +99,101 @@ SPA_ER_kernel_related<-function(G,obj,  obj.noK, Cutoff=2, Phi,  weight,VarRatio
 	return(outlist) ;
 }
 
-Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff, Cutoff=2, weights.beta=c(1,25), IsOutputPvalueNAinGroupTestforBinary=FALSE){
+SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,VarRatio_Vec, mu.a){
+	zscore.all_1<-matrix(rep(0, ncol(G)), ncol=ncol(G))
+	VarS=c()	
+	g.sum=0
+	q.sum=0
+	#p.old=c()
+	p.new=c()
+	MAFsum=colSums(G)
+	for (jj in 1:ncol(G)){
+		n.g<-sum(G[,jj])
+		NAset<-which(G[,jj]==0)
+		G1<-G[,jj]  - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G[,jj]) ####equal to G[,jj] in terms of score statistics.
+		q<-(t(G1) %*% (obj.noK$y)) 
+		g=G1 
+		mu.qtemp=mu.a; g.qtemp=g   
+		mu1 <- sum(mu.qtemp * g.qtemp)
+		var1<-Phi[jj, jj]/weight[jj]^2
+ 		stat.qtemp<-(q - mu1)^2/var1
+    		p_temp1<-pchisq(stat.qtemp, lower.tail = FALSE, df = 1)  
+		p.old[jj]=p_temp1
+		zscore.all_0[,jj]=(q-mu1)  ##sum(G[,jj]*(obj.noK$y-mu.a))  		
+		id1<-which(stat.qtemp > Cutoff^2) 
+		if (MAFsum[jj]<=10){
+			if (length(id1)>0 ){
+				G_temp=G[,jj]
+				G_temp[which(G_temp<=0.2)]=0
+				p_temp1=SKAT::SKATBinary(as.matrix(G_temp),obj, method.bin="Hybrid")$p.value
+			}
+	
+		}else {
+			if (length( id1)>0){  				
+    				p_temp1 = scoreTest_SPAGMMAT_binaryTrait(g, n.g, NAset, obj.noK$y, mu.a, varRatio=VarRatio_Vec[jj], Cutoff = Cutoff)$p.value
+			}
+		}	
+		
+		p.new[jj]=p_temp1
+		if (Phi[jj,jj]<=0){zscore.all_1[,jj]=0} else{
+			zscore.all_1[,jj]=qnorm(p_temp1/2, mean = 0, sd =sqrt( Phi[jj,jj]),lower.tail = FALSE, log.p = FALSE)*sign(q-mu1)
+		}
+		if (p_temp1>0){
+			VarS[jj]= zscore.all_0[,jj]^2/qchisq(p_temp1, 1, ncp = 0, lower.tail = FALSE, log.p = FALSE)
+		} else {
+			VarS[jj]= zscore.all_0[,jj]^2/500 
+		}
+		if (p_temp1<1){        
+			g.sum = g.sum + g.qtemp * weight[jj] 
+        		q.sum = q.sum + q * weight[jj] 
+		}
+	}##for every col of G
+
+	VarS = VarS*weight^2
+	zscore.all_1 = zscore.all_0 * weight
+
+	VarS_org=diag(Phi)		
+	vars_inf=which(VarS==Inf)
+	if (length(vars_inf)>0){
+		VarS[vars_inf] = 0
+		zscore.all_1[vars_inf]=0
+		Phi[vars_inf,]=0
+		Phi[,vars_inf]=0
+	}
+
+	if(length(VarS) > 1){
+	G2_adj_n=as.matrix(Phi)%*%diag(VarS/VarS_org)	
+	}else{
+	G2_adj_n=as.matrix(Phi)%*%(VarS/VarS_org)
+	}
+	#mu =out_kernel$mu
+	#g.sum =out_kernel$g.sum
+	#q.sum=out_kernel$q.sum
+	p.value_burden<-SPAtest:::Saddle_Prob(q.sum , mu=mu, g=g.sum, Cutoff=2,alpha=2.5*10^-6)$p.value
+	v1=rep(1,dim(G2_adj_n)[1])
+	VarQ=t(v1)%*%G2_adj_n %*%v1
+	p.m<-dim(G)[2]
+	Q_b=p.m^2 * rowMeans(zscore.all_1)^2
+	VarQ_2=Q_b/qchisq(p.value_burden, df=1, ncp = 0, lower.tail = FALSE, log.p = FALSE)
+	if (VarQ_2== 0) {r=1} else {r=VarQ/VarQ_2}
+	r=min(r,1)
+	Phi_ccadj=as.matrix(G2_adj_n%*%diag(rep(1/r,dim(G2_adj_n)[2])))
+	outlist=list();
+	outlist$Phi_ccadj = Phi_ccadj
+	#outlist$zscore.all_0=zscore.all_0
+	#outlist$mu=mu.qtemp
+	#outlist$g.sum=g.sum
+	#outlist$q.sum=q.sum
+	#outlist$p.old=p.old
+	#outlist$p.new=p.new
+	#outlist$zscore.all_1=zscore.all_1
+	return(outlist);
+}
+
+
+
+
+Related_ER<-function(G, MAF, MACvec_indVec, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff, Cutoff=2, weights.beta=c(1,25), IsOutputPvalueNAinGroupTestforBinary=FALSE, adjustCCratioinGroupTest = TRUE){
 	#if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
     	#for (gi in 1:dim(G)[2]){
 	#	temp_gi=which(G[,gi]==9 | G[,gi]==NA)
@@ -108,6 +202,11 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	#		cat("The missing values in column", gi," are imputed by the mean genotype value. \n")
     	#	}
     	#}
+
+	if(!adjustCCratioinGroupTest){
+		IsOutputPvalueNAinGroupTestforBinary=TRUE
+	}
+
 	mu.a=obj.noK$mu
 	mu2.a=obj.noK$V
     	#MAF_0 = which(colSums(G)==0)
@@ -117,28 +216,28 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	#} 
 	#if (length(G)==0) {stop("WARNING: no-variantion in the whole genotype matrix!\n")}
 	#mac_cutoff=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5)
-	for (jj in 1:ncol(G)){
-		n.g<-sum(G[,jj])
-		if(n.g/(2*length(G[,jj]))>0.5)
-		{
-			G[,jj]<-2-G[,jj]
-			n.g<-sum(G[,jj])
-		}
+	#for (jj in 1:ncol(G)){
+	#	n.g<-sum(G[,jj])
+	#	if(n.g/(2*length(G[,jj]))>0.5)
+	#	{
+	#		G[,jj]<-2-G[,jj]
+	#		n.g<-sum(G[,jj])
+	#	}
 
-	}
+	#}
 
-	MAF=colMeans(G)/2
-	MAFsum=colSums(G)
-	VarRatio_Vec=rep(0,length(MAFsum))
-	for (G_k in 1:length(MAFsum)){
-		for (mac_k in 1:(length(mac_cutoff)-1)){
-			if (MAFsum[G_k]>=mac_cutoff[mac_k] & MAFsum[G_k]<mac_cutoff[mac_k+1]){
-				VarRatio_Vec[G_k]=ratioVec[mac_k]
-			} 
-		}
-		if (MAFsum[G_k]>=mac_cutoff[length(mac_cutoff)]){VarRatio_Vec[G_k]=ratioVec[length(mac_cutoff)]}
-	}
-	MACvec_indVec = getCateVarRatio_indVec(G, mac_cutoff, mac_cutoff[2:length(mac_cutoff)])
+	#MAF=colMeans(G)/2
+	#MAFsum=colSums(G)
+	#VarRatio_Vec=rep(0,length(MAFsum))
+	#for (G_k in 1:length(MAFsum)){
+	#	for (mac_k in 1:(length(mac_cutoff)-1)){
+	#		if (MAFsum[G_k]>=mac_cutoff[mac_k] & MAFsum[G_k]<mac_cutoff[mac_k+1]){
+	#			VarRatio_Vec[G_k]=ratioVec[mac_k]
+	#		} 
+	#	}
+	#	if (MAFsum[G_k]>=mac_cutoff[length(mac_cutoff)]){VarRatio_Vec[G_k]=ratioVec[length(mac_cutoff)]}
+	#}
+	#MACvec_indVec = getCateVarRatio_indVec(G, mac_cutoff, mac_cutoff[2:length(mac_cutoff)])
 	#markerNumbyMAC = NULL
         #for(i in 1:length(mac_cutoff)){
         #  markerNumbyMAC = c(markerNumbyMAC, sum(MACvec_indVec == i))
@@ -174,7 +273,7 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 		VarRatio_12m=Matrix(diag(sqrt(VarRatio_Vec)), sparse=TRUE)
 		Phi=as.matrix(VarRatio_12m %*% G1_tilde_Ps_G1_tilde %*% VarRatio_12m)
 	}else{
-		Phi = as.matrix(VarRatio_Vec[1] * G1_tilde_Ps_G1_tilde)
+		Phi=as.matrix(VarRatio_Vec[1] * G1_tilde_Ps_G1_tilde)
 	}
 
 	#check if variance for each marker is negative, remove the variant
@@ -194,11 +293,22 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
           markerNumbyMAC = c(markerNumbyMAC, sum(MACvec_indVec == i))
         }
 
-	out_kernel=SPA_ER_kernel_related(G,obj, obj.noK, Cutoff=Cutoff, Phi, weight,VarRatio_Vec, mu.a);
-	zscore.all_1=out_kernel$zscore.all_0* weight
-	VarS=out_kernel$VarS*weight^2
-	gc()
-
+	if(adjustCCratioinGroupTest){
+		out_kernel=SPA_ER_kernel_related(G,obj, obj.noK, Cutoff=Cutoff, Phi, weight,VarRatio_Vec, mu.a);
+		zscore.all_1=out_kernel$zscore.all_0* weight
+		VarS=out_kernel$VarS*weight^2
+		zscore.all_0=out_kernel$zscore.all_0
+		gc()
+	}else{
+		G1 = G -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G)
+		zscore.all_0=sum(t(G1)*(obj.noK$y-mu.a))
+	}
+        #m = ncol(G)
+        #n = nrow(G)
+        #method="optimal.adj"
+	#out.method<-SKAT:::SKAT_Check_Method(method,0, n=n, m=m)
+	#r.corr=out.method$r.corr
+	#r.all = r.corr
 	r.all = c(0, 0.1^2, 0.2^2, 0.3^2, 0.5^2, 0.5, 1)
 	r.corr = c(0, 0.1^2, 0.2^2, 0.3^2, 0.5^2, 0.5, 1)
 	IDX<-which(r.all >= 0.999)
@@ -208,7 +318,12 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	list_myfun=list();
 	if(IsOutputPvalueNAinGroupTestforBinary){
 		#cat("test here \n")
-		out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_1, Phi=as.matrix(Phi), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)
+		out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_0, Phi=as.matrix(Phi), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)
+		print("Score in ER: ")
+		print(zscore.all_1)
+		print("Phi in ER")
+		print(Phi)
+
 		list_myfun$p_skato_old=out$p.value
 	#list_myfun$p_each_old=out$param$p.val.each
 		if(!is.na(out$param[[1]][1])){
@@ -218,6 +333,8 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 			list_myfun$p_each_old = c(NA, NA)
 		}
 	}
+
+	if(adjustCCratioinGroupTest){
 
 
 	VarS_org=diag(Phi)		
@@ -264,13 +381,20 @@ Related_ER<-function(G, obj, obj.noK, ratioVec=ratioVec,sparseSigma, mac_cutoff,
 	}
 
 	list_myfun$r=r		
+	p_new=out_kernel$p.new
+
+	}
 
 	list_myfun$indexNeg=indexNeg
 	list_myfun$markerNumbyMAC = markerNumbyMAC
 	list_myfun$m =ncol(G)
 
-	p_old=out_kernel$p.old
-	p_new=out_kernel$p.new
+	if(IsOutputPvalueNAinGroupTestforBinary){
+
+		p_old=out_kernel$p.old
+
+	}
+
 
 		
 	if (flag==2) {list_myfun$rare_n=0; list_myfun$common_n=length(MAF); list_myfun$rare_mac=0;list_myfun$common_mac=sum(G);}
