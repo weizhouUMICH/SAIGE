@@ -100,13 +100,18 @@ SPA_ER_kernel_related<-function(G,obj,  obj.noK, Cutoff=2, Phi,  weight,VarRatio
 }
 
 SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,VarRatio_Vec, mu.a){
+	zscore.all_0<-matrix(rep(0, ncol(G)), ncol=ncol(G))
 	zscore.all_1<-matrix(rep(0, ncol(G)), ncol=ncol(G))
 	VarS=c()	
 	g.sum=0
 	q.sum=0
-	#p.old=c()
+	p.old=c()
 	p.new=c()
 	MAFsum=colSums(G)
+	print(MAFsum)
+	print("Phi")
+	print(Phi)
+
 	for (jj in 1:ncol(G)){
 		n.g<-sum(G[,jj])
 		NAset<-which(G[,jj]==0)
@@ -115,9 +120,20 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 		g=G1 
 		mu.qtemp=mu.a; g.qtemp=g   
 		mu1 <- sum(mu.qtemp * g.qtemp)
+		print("Phi[jj, jj]")	
+		print(Phi[jj, jj])
+		print("weight[jj]")
+                print(weight[jj])
 		var1<-Phi[jj, jj]/weight[jj]^2
+		print("var1")	
+		print(var1)	
+
  		stat.qtemp<-(q - mu1)^2/var1
     		p_temp1<-pchisq(stat.qtemp, lower.tail = FALSE, df = 1)  
+
+		#print(jj)
+		#print(stat.qtemp)
+
 		p.old[jj]=p_temp1
 		zscore.all_0[,jj]=(q-mu1)  ##sum(G[,jj]*(obj.noK$y-mu.a))  		
 		id1<-which(stat.qtemp > Cutoff^2) 
@@ -148,6 +164,7 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
         		q.sum = q.sum + q * weight[jj] 
 		}
 	}##for every col of G
+	print("TEST")
 
 	VarS = VarS*weight^2
 	zscore.all_1 = zscore.all_0 * weight
@@ -160,16 +177,21 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 		Phi[vars_inf,]=0
 		Phi[,vars_inf]=0
 	}
-
 	if(length(VarS) > 1){
-	G2_adj_n=as.matrix(Phi)%*%diag(VarS/VarS_org)	
+	G2_adj_n=as.matrix(Phi)%*%diag(VarS/VarS_org)
+	scaleFactor = diag(sqrt(VarS/VarS_org))	
 	}else{
 	G2_adj_n=as.matrix(Phi)%*%(VarS/VarS_org)
+	scaleFactor = sqrt(VarS/VarS_org)
 	}
 	#mu =out_kernel$mu
 	#g.sum =out_kernel$g.sum
 	#q.sum=out_kernel$q.sum
-	p.value_burden<-SPAtest:::Saddle_Prob(q.sum , mu=mu, g=g.sum, Cutoff=2,alpha=2.5*10^-6)$p.value
+	print("TEST1")
+	p.value_burden<-SPAtest:::Saddle_Prob(q.sum , mu=mu.a, g=g.sum, Cutoff=2,alpha=2.5*10^-6)$p.value
+
+	print("TEST2")
+
 	v1=rep(1,dim(G2_adj_n)[1])
 	VarQ=t(v1)%*%G2_adj_n %*%v1
 	p.m<-dim(G)[2]
@@ -179,7 +201,13 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 	r=min(r,1)
 	Phi_ccadj=as.matrix(G2_adj_n%*%diag(rep(1/r,dim(G2_adj_n)[2])))
 	outlist=list();
-	outlist$Phi_ccadj = Phi_ccadj
+	outlist$val = Phi_ccadj
+	if(length(VarS) > 1){
+		scaleFactor = scaleFactor %*% diag(rep(1/sqrt(r),dim(G2_adj_n)[2]))
+	}else{
+		scaleFactor = scaleFactor * diag(rep(1/sqrt(r),dim(G2_adj_n)[2]))
+	}
+	outlist$scaleFactor = scaleFactor
 	#outlist$zscore.all_0=zscore.all_0
 	#outlist$mu=mu.qtemp
 	#outlist$g.sum=g.sum
