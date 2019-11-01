@@ -14,31 +14,33 @@ getGenoOfGene_bgen = function(bgenFile,bgenFileIndex,marker_group_line, minMAF=0
   markerAFs = NULL
   cnt = 0
   result = list()
-
+  MACs = NULL
   if(Mtest > 0){    
     for(i in 1:Mtest){
       Gx = getDosage_bgen_withquery()
       AF = Gx$variants$AF
+      AC = Gx$variants$AC
       markerInfo = getMarkerInfo()
       if(AF >= 0.5){
         MAF = 1 - AF
+        MAC = 1 - AC
       }else{
         MAF = AF
+        MAC = AC
       }
-      if(MAF >= minMAF & MAF < maxMAF & markerInfo >= minInfo){
+    if(MAF >= minMAF & MAF < maxMAF & markerInfo >= minInfo){
         Gvec = c(Gvec, Gx$dosages)
         markerIDs = c(markerIDs, Gx$variants$rsid)
         markerAFs = c(markerAFs, MAF)
+        MACs = c(MACs, MAC)
         cnt = cnt + 1
       }
     }
     result$dosages = Gvec
     result$markerIDs = markerIDs
     result$markerAFs = markerAFs
+    result$MACs = MACs
     result$cnt = cnt
-    #print("results")	
-    #print(result$markerIDs)
-    #print(result$markerAFs)	
   }else{
     result$cnt = 0
   }
