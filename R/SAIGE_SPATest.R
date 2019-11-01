@@ -1,10 +1,5 @@
 #' Run single variant score tests with SPA based on the logistic mixed model.
 #'
-#' @param dosageFile character. Path to dosage file. Each line contains dosages for a marker to be tested
-#' @param dosageFileNrowSkip integer(>=0). Number of lines to be skiped in the dosage file. By default, 0
-#' @param dosageFileNcolSkip integer(>=0). Number of columns to be skiped in the dosage file. By default, 0
-#' @param dosageFilecolnamesSkip vector of characters. The column names of the skipped columns. By default: c("SNPID", "CHR", "POS", "Allele0", "Allele1")
-#' @param dosageFileChrCol string. The column name for the chromosome column. Must be in the dosageFilecolnamesSkip. Required If LOCO = TRUE and chrom ="". By default, "CHR" 
 #' @param bgenFile character. Path to bgen file. Currently version 1.2 with 8 bit compression is supported
 #' @param bgenFileIndex character. Path to the .bgi file (index of the bgen file)
 #' @param vcfFile character. Path to vcf file
@@ -39,20 +34,19 @@
 #' @param groupFile character. Path to the file containing the group information for gene-based tests. Each line is for one gene/set of variants. The first element is for gene/set name. The rest of the line is for variant ids included in this gene/set. For vcf/sav, the genetic marker ids are in the format chr:pos_ref/alt. For bgen, the genetic marker ids should match the ids in the bgen file. Each element in the line is seperated by tab. 
 #' @param kernel character. For gene-based test. By default, "linear.weighted". More options can be seen in the SKAT library 
 #' @param method character. method for gene-based test p-values. By default, "optimal.adj". More options can be seen in the SKAT library
-#' @param weights.beta vector of numeric. parameters for the beta distribution to weight genetic markers in gene-based tests. By default, "c(1,25)". More options can be seen in the SKAT library
+#' @param weights.beta.rare vector of numeric. parameters for the beta distribution to weight genetic markers with MAF <= weightMAFcutoff in gene-based tests.By default, "c(1,25)". More options can be seen in the SKAT library
+#' @param weights.beta.common vector of numeric. parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests.By default, "c(0.5,0.5)". More options can be seen in the SKAT library 
+#' @param weightMAFcutoff numeric. Between 0 and 0.5. See document above for weights.beta.rare and weights.beta.common. By default, 0.01
 #' @param r.corr numeric. bewteen 0 and 1. parameters for gene-based tests.  By default, 0.  More options can be seen in the SKAT library
 #' @param IsSingleVarinGroupTest logical. Whether to perform single-variant assoc tests for genetic markers included in the gene-based tests. By default, FALSE
 #' @param cateVarRatioMinMACVecExclude vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. By default, c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5). If groupFile="", only one variance ratio corresponding to MAC >= 20 is used 
 #' @param cateVarRatioMaxMACVecInclude vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. By default, c(1.5,2.5,3.5,4.5,5.5,10.5,20.5). If groupFile="", only one variance ratio corresponding to MAC >= 20 is used
-#' @param singleGClambda numeric. GC lambda values that can be used to adjust the gene-based tests results. This value is usually estimated based on the single-variant assoc test results. By default, 1 
+#' @param dosageZerodCutoff numeric. In gene- or region-based tests, for each variants with MAC <= 10, dosages <= dosageZerodCutoff with be set to 0. By default, 0.2. 
+#' @param IsOutputPvalueNAinGroupTestforBinary logical. In gene- or region-based tests for binary traits. if IsOutputPvalueNAinGroupTestforBinary is TRUE, p-values without accounting for case-control imbalance will be output. By default, FALSE 
+#' @param IsAccountforCasecontrolImbalanceinGroupTest logical. In gene- or region-based tests for binary traits. If IsAccountforCasecontrolImbalanceinGroupTest is TRUE, p-values after accounting for case-control imbalance will be output. By default, TRUE
 #' @return SAIGEOutputFile
 #' @export
-SPAGMMATtest = function(dosageFile = "",
-                 dosageFileNrowSkip = 0, 
-                 dosageFileNcolSkip = 0,
-                 dosageFilecolnamesSkip = c("SNPID", "CHR", "POS", "Allele0", "Allele1"),
-		 dosageFileChrCol = "CHR",   ##for LOCO
-		 bgenFile = "",
+SPAGMMATtest = function(bgenFile = "",
 		 bgenFileIndex = "", 
 		 vcfFile = "",
                  vcfFileIndex = "",
@@ -88,16 +82,19 @@ SPAGMMATtest = function(dosageFile = "",
 		 method="optimal.adj",
 		 weights.beta.rare = c(1,25), 
 		 weights.beta.common = c(0.5,0.5), 
-		 weightMAFcuroff = 0.01,
+		 weightMAFcutoff = 0.01,
 		 r.corr=0,
 		 IsSingleVarinGroupTest = TRUE,
 		 cateVarRatioMinMACVecExclude=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5), 
 		 cateVarRatioMaxMACVecInclude=c(1.5,2.5,3.5,4.5,5.5,10.5,20.5),
-		 singleGClambda = 1,
 		 dosageZerodCutoff = 0.2,	
 		 IsOutputPvalueNAinGroupTestforBinary = FALSE,
 		 IsAccountforCasecontrolImbalanceinGroupTest = TRUE){
-#		 adjustCCratioinGroupTest=FALSE){
+
+
+  if(weightMAFcutoff < 0 | weightMAFcutoff > 0.5){
+    stop("weightMAFcutoff needs to be between 0 and 0.5\n")
+  }
 
   if(dosageZerodCutoff < 0){
     dosageZerodCutoff = 0
@@ -240,18 +237,7 @@ SPAGMMATtest = function(dosageFile = "",
   }
 
   ##Needs to check the number of columns and the number of samples in sample file
-  if(dosageFile != ""){
-
-    if(!file.exists(dosageFile)){
-      stop("ERROR! dosageFile ", dosageFile, " does not exsit\n")
-    }else{
-      if(dosageFileNrowSkip < 0 | dosageFileNcolSkip < 0){
-        stop("ERROR! dosageFileNrowSkip or dosageFileNcolSkip can't be less than zero\n")
-      }
-    }
-    dosageFileType = "plain"
-
-  }else if(bgenFile != ""){ 
+  if(bgenFile != ""){ 
     if(!file.exists(bgenFile)){
       stop("ERROR! bgenFile ", bgenFile, " does not exsit\n")
     }
@@ -286,14 +272,7 @@ SPAGMMATtest = function(dosageFile = "",
 
 
   if(IsDropMissingDosages){
-#    if(isGroupTest){
-#      stop("Samples with missing dosages have been set to be dropped from the analysis, which is not feasible for gene-based tests.\n Please set IsDropMissingDosages = false for gene-based tests\n")
-#    }else{
      cat("Samples with missing dosages will be dropped from the analysis\n")
-     if(dosageFileType == "plain"){
-        stop("ERROR! plain text dosages are not supported for missing dosages\n")
-     }
-#    }    
   }else{
     cat("Missing dosages will be mean imputed for the analysis\n")
   }
@@ -311,8 +290,6 @@ SPAGMMATtest = function(dosageFile = "",
       dosageFilecolnamesSkip = c("CHR","POS","rsid","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
     }else if(dosageFileType == "vcf"){
       dosageFilecolnamesSkip = c("CHR","POS","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
-    }else{
-      dosageFilecolnamesSkip = c(dosageFilecolnamesSkip, "AC", "AF")
     }
   }
 
@@ -323,12 +300,6 @@ SPAGMMATtest = function(dosageFile = "",
   }
 
   cat("isCondition is ", isCondition, "\n")
-
-  if(singleGClambda != 1){
-   cat("singleGClambda is ", singleGClambda, " not 1, so conditional analysis won't be performed!\n")
-   isCondition = FALSE
-  }
-
 
   if(isCondition){
     condition_original=unlist(strsplit(condition,","))
@@ -533,20 +504,7 @@ SPAGMMATtest = function(dosageFile = "",
   if(!isGroupTest){
 
     isVariant = TRUE
-    if(dosageFileType == "plain"){
-      Mtest = setgenoTest_plainDosage(dosageFile, dosageFileNrowSkip, dosageFileNcolSkip)
-      if(Mtest == 0){
-        isVariant = FALSE
-        stop("ERROR! Failed to open ", dosageFile, "\n")
-      }
-      SetSampleIdx_plainDosage(sampleIndex, N)
-
-      nsamplesinPlain = getSampleSizeinPlain()
-    if(nrow(sampleListinDosage) != nsamplesinPlain){
-        stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the plain dosage file\nPlease check again. Please note that the sample file needs to have no header.")
-    }
-
-    }else if (dosageFileType == "bgen"){
+    if (dosageFileType == "bgen"){
       if(idstoExcludeFile != ""){
         idsExclude = data.table:::fread(idstoExcludeFile, header=F,sep=" ", stringsAsFactors=FALSE, colClasses=c("character"))
         idsExclude = data.frame(idsExclude)
@@ -615,23 +573,7 @@ SPAGMMATtest = function(dosageFile = "",
 
     while(isVariant){
       mth = mth + 1
-      if(dosageFileType == "plain"){
-        G0 = getGenoOfnthVar_plainDosage(mth, dosageFileNrowSkip)
-        markerInfo = 1 
-	cat("markerInfo is not provided\n")
-        AC = sum(G0)
-        AF = AC/(2*N)
-        rowHeader=getrowHeaderVec_plainDosage()
-        rowHeader = c(rowHeader, AC, AF, markerInfo)
-        if(indChromCheck){      
-          CHR = rowHeader[which(dosageFilecolnamesSkip == dosageFileChrCol)]
-          cat("CHR ", CHR , "\n")
-        }
-
-        if(Mtest == mth){isVariant = FALSE}
-        indexforMissing = NULL
-
-      }else if (dosageFileType == "bgen"){
+      if (dosageFileType == "bgen"){
         if(isQuery){
           Gx = getDosage_bgen_withquery()
         }else{
@@ -884,24 +826,13 @@ SPAGMMATtest = function(dosageFile = "",
      if(IsSingleVarinGroupTest){
        SAIGEOutputFile_single = paste0(SAIGEOutputFile, "_single")
      
-	 if(singleGClambda == 1){
-           headerline = c("markerID", "AC", "AF", "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar") 
-	 }else{
-           headerline = c("markerID", "AC", "AF", "N", "BETA", "SE", "Tstat", "p.value","Pvalue_singleGCadjust","varT","varTstar") 
-         }
+       headerline = c("markerID", "AC", "AF", "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar") 
 	 if(traitType=="binary"){
 	   headerline = c(headerline, "AF.Cases", "AF.Controls", "N.Cases", "N.Controls")	
 	 }	
        write(headerline,file = SAIGEOutputFile_single, ncolumns = length(headerline))
      }
     	 
-     if(isCondition){
-       if(dosageFileType == "plain"){
-         isCondition = FALSE
-	 cat("WARNING: plain dosage format does not work for conditional analysis\n")
-       }
-     }
-
      if(dosageFileType == "bgen"){
        SetSampleIdx(sampleIndex, N)
      }else if(dosageFileType == "vcf"){
@@ -925,10 +856,6 @@ SPAGMMATtest = function(dosageFile = "",
 #	adjustCCratioinGroupTest = FALSE
 #       	cat("WARNING!!!! Case-control imbalance is not adjusted for binary traits to perform conditional analysis. Do not specify condition= if needs to account for case-control imbalance\n")	
  #      }else 
-       if(singleGClambda != 1){
-#	adjustCCratioinGroupTest = FALSE
-	cat("WARNING!!!! Case-control imbalance is not adjusted for binary traits to perform GC lambda adjustion. Do not specify singleGClambda if needs to account for case-control imbalance\n")
-       }else{
 	if(adjustCCratioinGroupTest){
           cat("Case-control imbalance is adjusted for binary traits.\n")		
 	}
@@ -937,15 +864,12 @@ SPAGMMATtest = function(dosageFile = "",
 	}
 
 	obj.glmm.null$obj_cc = SKAT::SKAT_Null_Model(obj.glmm.null$obj.glm.null$y ~ obj.glmm.null$obj.noK$X1-1, out_type="D", Adjustment = FALSE)
-
-       }	
      }
 
 
        mth = 0
        MACcateNumHeader = paste0("Nmarker_MACCate_", seq(1,length(cateVarRatioMinMACVecExclude)))
        if(!isCondition){
-	 #if(singleGClambda == 1){
 	  if(adjustCCratioinGroupTest){	
            resultHeader = c("Gene", "Pvalue", MACcateNumHeader ,"markerIDs","markerAFs")
 	   if(method=="optimal.adj"){
@@ -966,12 +890,6 @@ SPAGMMATtest = function(dosageFile = "",
              }	
 	   }
 	 }
-         #}else{
-	 #  resultHeader = c("Gene", "Pvalue", "Pvalue_singleGCadjust", MACcateNumHeader , "markerIDs","markerAFs")
-	 #  if(method=="optimal.adj"){
-	 #    resultHeader = c("Gene", "Pvalue", "Pvalue_singleGCadjust", MACcateNumHeader , "markerIDs","markerAFs","Pvalue_Burden","Pvalue_SKAT","Pvalue_Burden_singleGCadjust","Pvalue_SKAT_singleGCadjust")		
-	 #  }
-         #}
        }else{
 	 if(adjustCCratioinGroupTest){
            resultHeader = c("Gene", "Pvalue", "Pvalue_cond", MACcateNumHeader ,"markerIDs","markerAFs")
@@ -1143,13 +1061,13 @@ SPAGMMATtest = function(dosageFile = "",
 	    if(cntMarker > 0){
 		if(IsDropMissingDosages & length(indexforMissing) > 0){
 		  cat("isCondition is ", isCondition, "\n")
-		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcuroff = weightMAFcuroff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, singleGClambda = singleGClambda, mu.a = mu.a.sub, mu2.a = mu2.a.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary)
+		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, mu.a = mu.a.sub, mu2.a = mu2.a.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary)
 	      }else{#if(IsDropMissingDosages & length(indexforMissing) > 0){	
 		cat("isCondition is ", isCondition, "\n")
 		Gmat0 = as.matrix(Gmat)
 		write.table(Gmat0, "/net/hunt/disk2/zhowei/project/SAIGE_SKAT/typeIError_simuUsingRealData/quantitative/SAIGE/step2/C1orf122_seed256Phneo.geno.txt", col.names=F, row.names=F, quote=F)	
 		#Gmat = round(Gmat)
-		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcuroff = weightMAFcuroff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu.a = mu.a, mu2.a = mu2.a, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary)	
+		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, mu.a = mu.a, mu2.a = mu2.a, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary)	
 	     }
 	    outVec = groupTestResult$outVec
 	    OUT = rbind(OUT, outVec)
@@ -1194,11 +1112,7 @@ SPAGMMATtest = function(dosageFile = "",
  
 }#if(groupTest)
 
-#gc(verbose=T, reset = TRUE, full=T)
-#close the dosage file after tests
-  if(dosageFileType == "plain"){
-    closetestGenoFile_plainDosage()  
-  }else if (dosageFileType == "bgen"){
+  if (dosageFileType == "bgen"){
     closetestGenoFile_bgenDosage()
   }else if(dosageFileType == "vcf"){
     closetestGenoFile_vcfDosage()
@@ -2005,9 +1919,9 @@ getCovMandOUT_cond = function(G0, dosage_cond, cateVarRatioMinMACVecExclude, cat
 
 
 
-groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta.rare, weights.beta.common, weightMAFcuroff, r.corr, max_maf, sparseSigma, singleGClambda, mu.a, mu2.a, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary){
+groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta.rare, weights.beta.common, weightMAFcutoff, r.corr, max_maf, sparseSigma, mu.a, mu2.a, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary){
 
-        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcuroff = weightMAFcuroff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu2 = mu2.a, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = mu.a, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary)})
+        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, mu2 = mu2.a, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = mu.a, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary)})
 	
         if(is.null(G2_cond)){
                 isCondition = FALSE
@@ -2046,29 +1960,19 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                  MAC = min(AC, 2*length(G0_single)-AC)
                  MAF = MAC/(2*N)
                  varRatio = getVarRatio(G0_single, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
-                 varRatio_single = varRatio * singleGClambda
 
                  if(obj.glmm.null$traitType == "quantitative"){
                    out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.glmm.null$obj.noK, AC, AF, y = obj.glmm.null$obj.glm.null$y, mu = mu.a, varRatio, tauVec = obj.glmm.null$theta, sparseSigma=sparseSigma)
-                   if(singleGClambda != 1){
-                     out1b = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.glmm.null$obj.noK, AC, AF, obj.glmm.null$obj.glm.null$y, mu = mu.a, varRatio_single, tauVec = obj.glmm.null$theta, sparseSigma=sparseSigma)
-                   }
 
                   }else if(obj.glmm.null$traitType == "binary"){
 		    freqinCase = sum(G0_single[caseIndex])/(2*numofCase)
 		    freqinCtrl = sum(G0_single[ctrlIndex])/(2*numofCtrl)
                     out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a = mu.a, mu2.a = mu2.a, obj.glmm.null$obj.glm.null$y,varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma)
 
-                    if(singleGClambda != 1){
-                      out1b = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a = mu.a, mu2.a = mu2.a, obj.glmm.null$obj.glm.null$y,varRatio_single, Cutoff, rowHeader, sparseSigma=sparseSigma)
-                    }
                   }
 
-                  if(singleGClambda != 1){
-			outsingle = c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1b$p.value), as.numeric(out1$var1), as.numeric(out1$var2))
-                  }else{
-			outsingle = c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1$var1), as.numeric(out1$var2))
-                  }
+		outsingle = c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1$var1), as.numeric(out1$var2))
+
 		  if(obj.glmm.null$traitType == "binary"){
 			outsingle = c(outsingle, freqinCase, freqinCtrl, numofCase, numofCtrl)
 		  }
