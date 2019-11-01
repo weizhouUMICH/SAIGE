@@ -94,11 +94,17 @@ SPAGMMATtest = function(dosageFile = "",
 		 cateVarRatioMinMACVecExclude=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5), 
 		 cateVarRatioMaxMACVecInclude=c(1.5,2.5,3.5,4.5,5.5,10.5,20.5),
 		 singleGClambda = 1,
+		 dosageZerodCutoff = 0.2,	
 		 IsOutputPvalueNAinGroupTestforBinary = FALSE,
 		 IsAccountforCasecontrolImbalanceinGroupTest = TRUE){
 #		 adjustCCratioinGroupTest=FALSE){
 
-  
+  if(dosageZerodCutoff < 0){
+    dosageZerodCutoff = 0
+  }else if(dosageZerodCutoff >= 0 ){
+    cat("Any dosages <= ", dosageZerodCutoff, " for genetic variants with MAC <= 10 are set to be 0\n")
+  }
+
   adjustCCratioinGroupTest=TRUE
   if(!IsAccountforCasecontrolImbalanceinGroupTest){
     IsOutputPvalueNAinGroupTestforBinary = TRUE
@@ -142,13 +148,7 @@ SPAGMMATtest = function(dosageFile = "",
     sampleInModel = data.frame(sampleInModel)
     sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
     cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
-    #print(sampleInModel$IID[1:10])
-#    print("HERERERE")
-  #  gc(full=T, verbose=T)
-    #obj.glm.null = obj.glmm.null$obj.glm.null
-    #obj.noK = obj.glmm.null$obj.noK   
     traitType = obj.glmm.null$traitType
-#    gc(full=T, verbose=T)
     if(!LOCO | is.null(obj.glmm.null$LOCO)){
       obj.glmm.null$LOCO = FALSE
       cat("obj.glmm.null$LOCO: ", obj.glmm.null$LOCO, "\n")
@@ -351,16 +351,10 @@ SPAGMMATtest = function(dosageFile = "",
       setMAFcutoffs(0, 0.5)
       isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
-      #Gx_cond = getGenoOfGene_vcf(conditionlist, minInfo)
       Gx_cond = getGenoOfGene_vcf(conditionlist, 0)
-    #print("HERE")
-    #print(Gx_cond)	
       if(Gx_cond$cnt > 0){
         dosage_cond = Matrix:::sparseMatrix(i = as.vector(Gx_cond$iIndex), j = as.vector(Gx_cond$jIndex), x = as.vector(Gx_cond$dosages), symmetric = FALSE, dims = c(N, Gx_cond$cnt))
       }
-    #print(dim(Gx_cond))	
-      #Gmat = matrix(Gx$dosages, byrow=F, ncol = cntMarker)
-      #Gmat = as(Gmat, "sparseMatrix")
 
     }else if(dosageFileType == "bgen"){
       SetSampleIdx(sampleIndex, N)
@@ -373,19 +367,14 @@ SPAGMMATtest = function(dosageFile = "",
       stop("ERROR: conditional analysis can only work for dosageFileType vcf, sav or bgen\n")
     }
 
-    #print(Gx_cond)
     cat("conditioning on ", unlist(Gx_cond$markerIDs), "\n")
-    #G0 = Gx_cond$dosages
     cntMarker = Gx_cond$cnt
 
     cat("isCondition is ", isCondition, "\n")
 
     if(cntMarker == 0){
         
-      #dosage_cond = matrix(Gx_cond$dosages, byrow=F, ncol = cntMarker)
-    #}else{    #if(cntMarker > 0){
       cat("WARNING: conditioning markers are not found in the provided dosage file \n")
-      #print(dim(dosage_cond))
       isCondition = FALSE
       dosage_cond = NULL
     }
@@ -627,7 +616,7 @@ SPAGMMATtest = function(dosageFile = "",
     while(isVariant){
       mth = mth + 1
       if(dosageFileType == "plain"){
-        G0 = getGenoOfnthVar_plainDosage(mth, dosageFileNrowSkip, dosageFileNcolSkip)
+        G0 = getGenoOfnthVar_plainDosage(mth, dosageFileNrowSkip)
         markerInfo = 1 
 	cat("markerInfo is not provided\n")
         AC = sum(G0)
@@ -686,8 +675,15 @@ SPAGMMATtest = function(dosageFile = "",
         MAC = 2*N - AC
         MAF = 1 - AF
       }
-     
-  
+     if(dosageZerodCutoff > 0){
+	if(MAC <= 10){
+     		G0[which(G0 <= dosageZerodCutoff)] = 0
+		MAC = sum(G0)
+		MAF = MAC/(2*length(G0))
+		cat("Any dosages <= ", dosageZerodCutoff, " are set to be 0")
+	}
+     }  
+
       if(MAF >= testMinMAF & markerInfo >= minInfo){
          numPassMarker = numPassMarker + 1
          varRatio = getVarRatio(G0, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
@@ -878,11 +874,9 @@ SPAGMMATtest = function(dosageFile = "",
          write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
          OUT = NULL
        }
-       #if(mth == 100){break}
      } ####end of while(isVariant)
 
    }else{ #end if(!isGroupTest){
-#	 gc(verbose=T, full=T)	
    #########Group Test
 
    
@@ -1035,8 +1029,6 @@ SPAGMMATtest = function(dosageFile = "",
 	    stop("no marker IDs are found for gene ", geneID, ". Please make sure the group file is tab delimited.", "\n")
 	   }
 
-	   #print(lsos())
-	   #print(memory.profile())
            if(dosageFileType == "vcf"){
              Gx = getGenoOfGene_vcf(marker_group_line, minInfo)
 
@@ -1045,9 +1037,6 @@ SPAGMMATtest = function(dosageFile = "",
 	     cat("genetic variants with ", testMinMAF, "<= MAF <= ", maxMAFforGroupTest, "are included for gene-based tests\n") 
              Gx = getGenoOfGene_bgen(bgenFile,bgenFileIndex, marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)
            }
-#	   print(object.size(Gx))	
-	   #print(length(Gx$dosages))
-           #G0 = Gx$dosages
            cntMarker = Gx$cnt
            cat("cntMarker: ", cntMarker, "\n")
            if(cntMarker > 0){
@@ -1055,13 +1044,12 @@ SPAGMMATtest = function(dosageFile = "",
 	     #Gx$dosages = NULL	
 
 		if(dosageFileType == "vcf"){
-			#print(Gx$jIndex)
-			#print(Gx$iIndex)
 			Gmat = Matrix:::sparseMatrix(i = as.vector(Gx$iIndex), j = as.vector(Gx$jIndex), x = as.vector(Gx$dosages), symmetric = FALSE, dims = c(N, cntMarker))
 		}else{
 			Gmat = matrix(Gx$dosages, byrow=F, ncol = cntMarker)
 			Gmat = as(Gmat, "sparseMatrix")	
 		}
+
 
 
 		if(isCondition){
@@ -1113,13 +1101,56 @@ SPAGMMATtest = function(dosageFile = "",
 			OUT_cond.sub = NULL
 		}
 
+              } #if(IsDropMissingDosages & length(indexforMissing) > 0){ 
+
+
+	      rmMarkerIndex = NULL
+	      if(dosageZerodCutoff > 0 & sum(Gx$MACs <= 10) > 0){
+		zerodIndex = which(Gx$MACs <= 10)
+		for(z in zerodIndex){
+			cat("z is ", z, "\n")
+			cat("dim(Gmat) is ", dim(Gmat), "\n")
+			if(dim(Gmat)[2] > 1){
+				replaceindex = which(Gmat[,z] <= dosageZerodCutoff)
+				if(length(replaceindex) > 0){	
+					Gmat[replaceindex,z] = 0 
+					cat("dim(Gmat) is ", dim(Gmat), "\n")
+					if(sum(Gmat[,z])/(2*nrow(Gmat)) < testMinMAF){rmMarkerIndex = c(rmMarkerIndex, z)}
+				}
+			}else{
+				Gmat[which(Gmat <= dosageZerodCutoff)] = 0
+				if(sum(Gmat)/(2*length(Gmat)) < testMinMAF){rmMarkerIndex = c(rmMarkerIndex, z)} 
+				Gmat = matrix(Gmat, ncol=1)
+				Gmat = as(Gmat, "sparseMatrix")
+			}
+		}
+		cat("length(rmMarkerIndex): ", length(rmMarkerIndex), "\n")
+		if(length(rmMarkerIndex) > 0){
+			cntMarker = cntMarker - length(rmMarkerIndex)
+			if(cntMarker > 0){
+				Gmat = Gmat[,-rmMarkerIndex]
+				cntMarker = cntMarker - length(rmMarkerIndex)
+				Gx$markerIDs = Gx$markerIDs[-rmMarkerIndex]
+				Gx$markerAFs = Gx$markerAFs[-rmMarkerIndex]
+			}
+		}
+		Gmat = as(Gmat, "sparseMatrix")		
+	     }
+         
+          }#if(cntMarker > 0){
+
+
+	    if(cntMarker > 0){
+		if(IsDropMissingDosages & length(indexforMissing) > 0){
 		  cat("isCondition is ", isCondition, "\n")
 		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcuroff = weightMAFcuroff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, singleGClambda = singleGClambda, mu.a = mu.a.sub, mu2.a = mu2.a.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary)
-
-	     }else{#if(IsDropMissingDosages & length(indexforMissing) > 0){	
-		  cat("isCondition is ", isCondition, "\n")
+	      }else{#if(IsDropMissingDosages & length(indexforMissing) > 0){	
+		cat("isCondition is ", isCondition, "\n")
+		Gmat0 = as.matrix(Gmat)
+		write.table(Gmat0, "/net/hunt/disk2/zhowei/project/SAIGE_SKAT/typeIError_simuUsingRealData/quantitative/SAIGE/step2/C1orf122_seed256Phneo.geno.txt", col.names=F, row.names=F, quote=F)	
+		#Gmat = round(Gmat)
 		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcuroff = weightMAFcuroff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu.a = mu.a, mu2.a = mu2.a, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary)	
-	}
+	     }
 	    outVec = groupTestResult$outVec
 	    OUT = rbind(OUT, outVec)
 	    if(IsSingleVarinGroupTest){
@@ -1137,11 +1168,6 @@ SPAGMMATtest = function(dosageFile = "",
               write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
               OUT = NULL
 	      if(IsSingleVarinGroupTest){	
-		#print(OUT_single)
-		#cat("OUT_single\n")
-	        #OUT_single = as.data.frame(groupTestResult$OUT_single)
-                #print(OUT_single)
-                #cat("OUT_single\n")
 	        write.table(OUT_single, SAIGEOutputFile_single, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)	
 	        OUT_single = NULL
               }	
@@ -1290,26 +1316,14 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio,
 Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
   # mu=mu.a; mu2= mu2.a; G=G0; obj.null=obj.noK
   idx_no0<-which(G>0)
-  #print(obj.null$X1)
-  #print(G[1:10])
-  #print(idx_no0)
   g1<-G[idx_no0]
   noCov = FALSE
-  #if(is.null(dim(obj.null$X1))){
-  #  noCov = TRUE
-  #  obj.null$X1 = matrix(obj.null$X1, ncol=1)
-  #}else{
   if(dim(obj.null$X1)[2] == 1){
     noCov = TRUE 
   }
-  #}
 
 
-  #if(!noCov){
     A1<-obj.null$XVX_inv_XV[idx_no0,]
-  #}else{
-  #  A1<-obj.null$XVX_inv_XV[idx_no0]
-  #}
 
   X1<-obj.null$X1[idx_no0,]
   mu21<-mu2[idx_no0]
@@ -1535,8 +1549,6 @@ scoreTest_SPAGMMAT_binaryTrait_cond=function(g, AC, NAset, y, mu, varRatio, Cuto
 
 
   ##condition
-  #print(OUT_cond[,1])
-  #print(covM[1,2:ncol(covM)]) 
   Tstat1c = Tstat*sqrt(AC) - innerProduct(as.vector(OUT_cond[,1]), covariateVec)
 
   if(ncol(covM) > 2){
@@ -1544,27 +1556,12 @@ scoreTest_SPAGMMAT_binaryTrait_cond=function(g, AC, NAset, y, mu, varRatio, Cuto
   diag(G2_tildeG2_tilde1_v1) = 0
   G2_tildeG2_tilde = G2_tildeG2_tilde1_v1 + covM[2:ncol(covM),2:ncol(covM)]
 
-  #print(covM)
-#  print(dim(covM[1,2:ncol(covM)]))
-#  print(dim(solve(G2_tildeG2_tilde)))
-#  print(dim(t(covM[1,2:ncol(covM)])))
 
   covMsub = matrix(as.vector(covM[1,2:ncol(covM)]), nrow=1)
-#  var1c = var1*AC - varRatio*covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub)
   var1c = varRatio*covM[1,1] - varRatio*covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub)
   }else{
     G2_tildeG2_tilde = covM[2:ncol(covM),2:ncol(covM)]
     covMsub = matrix(as.vector(covM[1,2:ncol(covM)]), nrow=1)
-    #print(covM)
-    cat("covMsub ", covMsub, "\n")
-    cat("G2_tildeG2_tilde ", G2_tildeG2_tilde, "\n")
-    cat("var1 ", var1, "\n")
-    cat("var1*AC ", var1*sqrt(AC), "\n")
-    cat("varRatio: ", varRatio, "\n")
-    cat("t(covMsub): ", t(covMsub), "\n")
-    cat("var1*AC: ", var1*AC, "\n")
-    cat("covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub): ", covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub), "\n")
-#    var1c = var1*AC - varRatio*(covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub))
     var1c = varRatio*covM[1,1] - varRatio*(covMsub %*% solve(G2_tildeG2_tilde) %*% t(covMsub))
   }
   #var1c = var1 - varRatio*(covM[1,2:ncol(covM)])%*% solve(G2_tildeG2_tilde) %*% t(covM[1,2:ncol(covM)])
@@ -1682,12 +1679,9 @@ if(maf < 0.05){
 
 if(!is.null(sparseSigma)){
   XVG0 = eigenMapMatMult(obj.noK$XV, G0)
-  #print(which(G0!=0))
   g = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
-  #pcginvSigma<-pcg(sparseSigma, g)
   pcginvSigma<-solve(sparseSigma, g, sparse=T)
   var2 = as.matrix(t(g) %*% pcginvSigma) 
-  #cat("var2 is ", var2, "\n")
   var1 = var2 * varRatio 
 
 }
@@ -1702,18 +1696,7 @@ if(isCondition){
   G1tilde_P_G2tilde = matrix(G1tilde_P_G2tilde,nrow=1)
   #Tstat_c = Tstat - covM[1,c(2:m_all)] %*% (solve(covM[c(2:m_all),c(2:m_all)])) %*% T2stat
   Tstat_c = Tstat - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% T2stat
-#  cat("G1tilde_P_G2tilde: ", G1tilde_P_G2tilde, "\n")
-#  print(dim(G1tilde_P_G2tilde))
-#  print(dim(G2tilde_P_G2tilde_inv))
-#  cat("G2tilde_P_G2tilde_inv: ", G2tilde_P_G2tilde_inv, "\n")
-#  cat("T2stat: ", T2stat, "\n")
-
-  #var1_c = var1 - (covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
   var1_c = var1 - G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde)
-#  cat("var1: ", var1, "\n")
-#  cat("var1_c: ", var1_c, "\n")
-#  cat("G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde): ", G1tilde_P_G2tilde %*% G2tilde_P_G2tilde_inv %*% t(G1tilde_P_G2tilde), "\n")
-#(covM[1,c(2:m_all)]*(GratioMatrixall[1,c(2:m_all)])) %*% solve(covM[c(2:m_all),c(2:m_all)]*(GratioMatrixall[c(2:m_all),c(2:m_all)])) %*% (t(covM[1,c(2:m_all)]) * t(GratioMatrixall[1,c(2:m_all)]))
 
 }
 
@@ -1787,14 +1770,7 @@ if(!isCondition){
          #out.score["Tstat"][1] = (-1)*out.score["Tstat"][1]
        }
 
-       #OUT = rbind(OUT, c(rowHeader, N, unlist(out.score)))
-       #outVec = c(rowHeader, N, unlist(out.score))
-       #print("OKKK0")
-#       print(out.score)
        outVec = list(BETA = out.score$BETA, SE = out.score$SE, Tstat = out.score$Tstat, p.value = out.score$pval.noadj, p.value.NA = out.score$pval.noadj, Is.converge = 1, var1 = out.score$var1, var2 = out.score$var2)
-       #NSparse=NSparse+1
-       #print("OKKK4")
-       #print(outVec)	
        Run1=FALSE
 
      }
@@ -1815,11 +1791,6 @@ if(!isCondition){
 #      out1$Tstat = (-1)*out1$Tstat
 #    }
     out1 = scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma(g, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
-   
-
-    #out1 = unlist(out1)
-    #print("OKKKK1")
-    #print(out1)
 
     if(isCondition){
      outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], p.value.NA = out1["p.value.NA"], Is.converge=out1["Is.converge"], var1 = out1["var1"], var2 = out1["var2"], Tstat_c = out1["Tstat_c"], p.value.c = out1["p.value.c"], var1_c = out1["var1_c"], BETA_c = out1["BETA_c"], SE_c = out1["SE_c"]) 
@@ -1830,17 +1801,8 @@ if(!isCondition){
    }
 
 
-#   if(!isCondition){
-
-#      outVec = c(rowHeader, N, out1["BETA"], out1["SE"], out1["Tstat"], out1["p.value"], out1["p.value.NA"], out1["Is.converge"], out1["var1"], out1["var2"])
-#    }else{
-#      outVec = c(rowHeader, N, out1["BETA"], out1["SE"], out1["Tstat"], out1["p.value"], out1["p.value.NA"], out1["Is.converge"], out1["var1"], out1["var2"], out1["BETA_c"],  out1["SE_c"], out1["Tstat_c"], out1["p.value.c"], out1["p.value.NA.c"], out1["var1_c"], out1["var2_c"])
-#    }
   }
 
-#  print("before output")
-#  print(outVec)
-#  print("after output")
   return(outVec)
 }
 
@@ -1885,10 +1847,6 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
   }
 
 
-  #print("out1")
-  #print(out1)
-  #out1 = c(out1, var1 = var1)
-  #out1 = c(out1, var2 = var2)
   out1$var1 = var1
   out1$var2 = var2
 
@@ -1922,8 +1880,6 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
 
   }
 
-  #print("out1")
-  #print(out1)
 
   return(out1)
 }
@@ -2007,9 +1963,7 @@ getCovMandOUT_cond_pre = function(dosage_cond, cateVarRatioMinMACVecExclude, cat
                         OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
 
                 }else if(obj.glmm.null$traitType == "quantitative"){
-                        #print("TEST")
                         out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.glmm.null$obj.noK, AC, AF, obj.glmm.null$obj.glm.null$y, mu, varRatio, tauVec = obj.glmm.null$theta, sparseSigma=sparseSigma)
-                        #print("TEST2")
                         OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
                 }
 
@@ -2021,17 +1975,6 @@ getCovMandOUT_cond_pre = function(dosage_cond, cateVarRatioMinMACVecExclude, cat
 
         covMsub = getCovM_nopcg(G1 = dosage_cond, G2 = dosage_cond, obj.glmm.null$obj.noK$XV, obj.glmm.null$obj.noK$XXVX_inv, sparseSigma=sparseSigma, mu2 = mu2.a)
 
-	#print("obj.glmm.null$obj.noK$X1")
-	#print(obj.glmm.null$obj.noK$X1)
-	#covMsubnew = getCovM_nopcg_new(G1 = dosage_cond, G2 = dosage_cond, obj.glmm.null$obj.noK$X1,  sparseSigma=sparseSigma, mu2 = mu2.a)
-
-	#print("covMsub")
-	#print(covMsub)
-
-	#print("covMsubnew")
-	#print(covMsubnew)
-
-        print("TEST3")
         covM[2:(Mcond+1), 2:(Mcond+1)] = covMsub
         GratioMatrix_cond = getVarRatio(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
         G2tilde_P_G2tilde_inv = solve(covMsub * GratioMatrix_cond)
@@ -2055,8 +1998,6 @@ getCovMandOUT_cond = function(G0, dosage_cond, cateVarRatioMinMACVecExclude, cat
         G0_v2 = matrix(G0_v2, ncol=1)
 
         covM[1,2:ncol(covM)] = getCovM_nopcg(G1 = G0_v2, G2 = dosage_cond, obj.glmm.null$obj.noK$XV, obj.glmm.null$obj.noK$XXVX_inv, sparseSigma=sparseSigma, mu2 = mu2.a)
-        #print("covM")
-        #print(covM)
         G1tilde_P_G2tilde = covM[1,c(2:ncol(covM))]*(GratioMatrixall[1,c(2:ncol(covM))])
         return(condpre2 = list(covM = covM, GratioMatrixall = GratioMatrixall, G1tilde_P_G2tilde = G1tilde_P_G2tilde))
 }
@@ -2067,7 +2008,6 @@ getCovMandOUT_cond = function(G0, dosage_cond, cateVarRatioMinMACVecExclude, cat
 groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta.rare, weights.beta.common, weightMAFcuroff, r.corr, max_maf, sparseSigma, singleGClambda, mu.a, mu2.a, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary){
 
         testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcuroff = weightMAFcuroff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu2 = mu2.a, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = mu.a, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary)})
-	#print(saigeskatTest)
 	
         if(is.null(G2_cond)){
                 isCondition = FALSE
@@ -2077,16 +2017,8 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
 
         }
 
-	#if(adjustCCratioinGroupTest){
-	#	isCondition=FALSE
-	#	singleGClambda=1
-	#}
-
-
-
         OUT_single = NULL
 
-#       testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=dosage_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta = weights.beta, r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, singleGClambda = singleGClambda, mu2 = mu2)})
         cat("time for SAIGE_SKAT_withRatioVec\n")
         print(testtime)
         if(length(saigeskatTest$indexNeg) > 0){
@@ -2136,7 +2068,6 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
 			outsingle = c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1b$p.value), as.numeric(out1$var1), as.numeric(out1$var2))
                   }else{
 			outsingle = c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1$var1), as.numeric(out1$var2))
-                        #OUT_single = rbind(OUT_single, c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1$var1), as.numeric(out1$var2)))
                   }
 		  if(obj.glmm.null$traitType == "binary"){
 			outsingle = c(outsingle, freqinCase, freqinCtrl, numofCase, numofCtrl)
@@ -2149,33 +2080,21 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
             }# if(length(Gx$markerIDs > 0)){
 
 
-	print("HERE111111")
-	print(isCondition)
-	print(saigeskatTest$m)
-	print(adjustCCratioinGroupTest)		
-	print("HERE444444")
-
-
             if(isCondition){
                if(saigeskatTest$m > 0){
 
 		if(adjustCCratioinGroupTest){
-			print("HERE22222")
-			print(saigeskatTest$Out_ccadj$p.value)
-			print(saigeskatTest$condOut_ccadj$p.value)
-			print("HERE22223")
-			
 
 			outVec = c(geneID, saigeskatTest$Out_ccadj$p.value, saigeskatTest$condOut_ccadj$p.value, saigeskatTest$markerNumbyMAC, paste(markerIDs, collapse=";"), paste(markerAFs, collapse=";"))
 			if(method=="optimal.adj" & saigeskatTest$m > 0){
                         	if(saigeskatTest$m > 1){
-                                	if(!is.na(saigeskatTest$Out_ccadj$param[[1]][1])){
+                                	if(!is.null(saigeskatTest$Out_ccadj$p.val.each)){
 
                                         	p.val.vec.ccadj = saigeskatTest$Out_ccadj$param$p.val.each
                                         	rho.val.vec.ccadj = saigeskatTest$Out_ccadj$param$rho
                                         	outVec = c(outVec, p.val.vec.ccadj[which(rho.val.vec.ccadj == 1)], p.val.vec.ccadj[which(rho.val.vec.ccadj == 0)])
 
-                                        	if(!is.na(saigeskatTest$condOut_ccadj$param[1])){
+                                        	if(!is.null(saigeskatTest$condOut_ccadj$param$p.val.each)){
                                                 	p.val.cond.vec.ccadj = saigeskatTest$condOut_ccadj$param$p.val.each
 							print("p.val.cond.vec.ccadj")
 							print(p.val.cond.vec.ccadj)
@@ -2206,13 +2125,13 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
 			}
                 	if(method=="optimal.adj" & saigeskatTest$m > 0){
                         	if(saigeskatTest$m > 1){
-                                	if(!is.na(saigeskatTest$param[[1]][1])){
+                                	if(!is.null(saigeskatTest$param$p.val.each)){
 
                                         	p.val.vec = saigeskatTest$param$p.val.each
                                         	rho.val.vec = saigeskatTest$param$rho
                                         	outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
 
-                                        	if(!is.na(saigeskatTest$condOut$param[1])){
+                                        	if(!is.null(saigeskatTest$condOut$param$p.val.each)){
 
                                                 	p.val.cond.vec = saigeskatTest$condOut$param$p.val.each
                                                 	rho.val.cond.vec = saigeskatTest$condOut$param$rho
@@ -2264,10 +2183,10 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                 if(saigeskatTest$m > 0){
 
 			if(adjustCCratioinGroupTest){
-                        outVec = c(geneID, saigeskatTest$Out_ccadj$p.value, saigeskatTest$markerNumbyMAC, paste(markerIDs, collapse=";"), paste(markerAFs, collapse=";"))
-                        if(method=="optimal.adj" & saigeskatTest$m > 0){
-                                if(saigeskatTest$m > 1){
-                                        if(!is.na(saigeskatTest$Out_ccadj$param[[1]][1])){
+	                        outVec = c(geneID, saigeskatTest$Out_ccadj$p.value, saigeskatTest$markerNumbyMAC, paste(markerIDs, collapse=";"), paste(markerAFs, collapse=";"))
+        	                if(method=="optimal.adj" & saigeskatTest$m > 0){
+                	                if(saigeskatTest$m > 1){
+                                        	if(!is.null(saigeskatTest$Out_ccadj$param$p.val.each)){
 
                                                 p.val.vec.ccadj = saigeskatTest$Out_ccadj$param$p.val.each
                                                 rho.val.vec.ccadj = saigeskatTest$Out_ccadj$param$rho
@@ -2291,7 +2210,7 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                         }
                         if(method=="optimal.adj" & saigeskatTest$m > 0){
                                 if(saigeskatTest$m > 1){
-                                        if(!is.na(saigeskatTest$param[[1]][1])){
+                                        if(!is.null(saigeskatTest$param$p.val.each)){
 
                                                 p.val.vec = saigeskatTest$param$p.val.each
                                                 rho.val.vec = saigeskatTest$param$rho
@@ -2310,11 +2229,6 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
 
 	
 
-                        #if(singleGClambda == 1){
-                        #        outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$markerNumbyMAC, paste(markerIDs, collapse=";"), paste(markerAFs, collapse=";"))
-                        #}else{
-                        #        outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$P_singlGCadj, saigeskatTest$markerNumbyMAC, paste(markerIDs, collapse=";"), paste(markerAFs, collapse=";"))
-                        #}
 
                 }else{#end of if(saigeskatTest$m > 0){
         
@@ -2344,18 +2258,8 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
             }
 
 
-	                #if(singleGClambda == 1){
-                        #        outVec = c(geneID, NA, saigeskatTest$markerNumbyMAC, NA, NA)
-
-                        #}else{
-                        #        outVec = c(geneID, NA, NA, saigeskatTest$markerNumbyMAC, NA, NA)
-                        #}
            } # end of }else{ #end of if(isCondition){
 
-
-	#if(adjustCCratioinGroupTest){
-	#	outVec = c(outVec, saigeskatTest$p_skato_old2, saigeskatTest$p_each_old2, saigeskatTest$p_skato2,  saigeskatTest$p_each2, saigeskatTest$p_skato_2_2, saigeskatTest$p_each_2_2)
-	#}
 
       return(groupTestResult = list(OUT_single = OUT_single, outVec = outVec))
 
