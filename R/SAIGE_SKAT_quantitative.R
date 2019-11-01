@@ -2,7 +2,7 @@
 #G1 is genotypes for testing gene, which contains m markers
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
-SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcuroff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE){
+SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE){
 
         #check the input genotype G1
         obj.noK = obj$obj.noK
@@ -37,12 +37,12 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 	#print(MAF)
 	if(length(MAF) > 1){
 		weights=rep(0,length(MAF))
-		index1 = which(MAF<=weightMAFcuroff)
-		if(length(index1) > 0) {weights[which(MAF<=weightMAFcuroff)] = SKAT:::Beta.Weights(MAF[which(MAF<=weightMAFcuroff)],weights.beta.rare)}
-		index2 = which(MAF>weightMAFcuroff)
-		if(length(index2) > 0) {weights[which(MAF>weightMAFcuroff)] = SKAT:::Beta.Weights(MAF[which(MAF>weightMAFcuroff)],weights.beta.common)}	
+		index1 = which(MAF<=weightMAFcutoff)
+		if(length(index1) > 0) {weights[which(MAF<=weightMAFcutoff)] = SKAT:::Beta.Weights(MAF[which(MAF<=weightMAFcutoff)],weights.beta.rare)}
+		index2 = which(MAF>weightMAFcutoff)
+		if(length(index2) > 0) {weights[which(MAF>weightMAFcutoff)] = SKAT:::Beta.Weights(MAF[which(MAF>weightMAFcutoff)],weights.beta.common)}	
 	}else{
-		if(MAF<=weightMAFcuroff){
+		if(MAF<=weightMAFcutoff){
 			weights = SKAT:::Beta.Weights(MAF,weights.beta.rare)
 		}else{
 			weights = SKAT:::Beta.Weights(MAF,weights.beta.common)
