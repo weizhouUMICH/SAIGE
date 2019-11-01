@@ -303,6 +303,9 @@ public:
 		if(size(m_DiagStd)[0] != Nnomissing){
 			m_DiagStd.zeros(Nnomissing);
 			for(size_t i=0; i< M; i++){
+				if(alleleFreqVec[i] >= minMAFtoConstructGRM && alleleFreqVec[i] <= 1-minMAFtoConstructGRM){
+
+
 				Get_OneSNP_StdGeno(i, temp);
 
 				/*if(i == 0){
@@ -315,6 +318,8 @@ public:
 				}
 				*/
 				m_DiagStd = m_DiagStd + (*temp) % (*temp);
+
+				}
 			}
 		
 		}
@@ -565,7 +570,8 @@ public:
 
 		
 			lengthIndexNA = indexNA.size();
-      			freq = sum(m_OneSNP_Geno)/(2*(Nnomissing-lengthIndexNA));
+      			freq = sum(m_OneSNP_Geno)/float((2*(Nnomissing-lengthIndexNA)));
+			//if(lengthIndexNA > 0){std::cout << "freq " << freq << std::endl;}
 
 
 //			cout << "setgeno mark3" << endl;
@@ -596,10 +602,17 @@ public:
 
 
 			}
+
+			
+
 			
 			//cout << "setgeno mark4" << endl;
 
 			freq = float(sum(m_OneSNP_Geno))/(2*Nnomissing);
+
+			//if(lengthIndexNA > 0){std::cout << "freq " << freq << std::endl;}
+
+
       			Std = std::sqrt(2*freq*(1-freq));
       			if(Std == 0){
       				invStd= 0;
@@ -614,6 +627,8 @@ public:
 				if(freq >= minMAFtoConstructGRM && freq <= (1-minMAFtoConstructGRM)){
 					numberofMarkerswithMAFge_minMAFtoConstructGRM = numberofMarkerswithMAFge_minMAFtoConstructGRM + 1;
 				}
+			}else{
+				numberofMarkerswithMAFge_minMAFtoConstructGRM = M;
 			}
 			
 			if(freq > 0.5){
@@ -659,6 +674,10 @@ public:
   	int getM() const{
     		return(M);
   	}
+
+	int getnumberofMarkerswithMAFge_minMAFtoConstructGRM() const{
+		return(numberofMarkerswithMAFge_minMAFtoConstructGRM);
+	}
  
 	//int getMmafge1perc() const{
 	//	return(Mmafge1perc);
@@ -851,6 +870,9 @@ void initKinValueVecFinal(int ni){
 int getNnomissingOut(){
 	return(geno.getNnomissing());
 }
+
+
+
 
 //  // [[Rcpp::export]]
 //int getMmafge1perc(){
@@ -1539,15 +1561,18 @@ arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
   
 	int Nnomissing = geno.getNnomissing();
 	int M = geno.getM();
-	
-	//cout << "N=" << N << endl;
+	int MminMAF = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
+	cout << "MminMAF=" << MminMAF << endl;
+	cout << "M=" << M << endl;
 	arma::fvec diagVec(Nnomissing);
 	float diagElement;
 	float floatBuffer;
   	//float minvElement;
   
   	if(!(geno.setKinDiagtoOne)){ 
-	  diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno()) /M + tauVec(0)/wVec;
+	  //diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno()) /M + tauVec(0)/wVec;
+	  diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno()) /MminMAF + tauVec(0)/wVec;
+
 
 	}else{
 	  diagVec = tauVec(1) + tauVec(0)/wVec;
@@ -3411,11 +3436,15 @@ arma::vec gen_spsolve_inR(const arma::sp_mat& a, arma::vec & y) {
 arma::fvec get_DiagofKin(){
     int M = geno.getM();
     int Nnomissing = geno.getNnomissing();
+    int MminMAF = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
+        cout << "MminMAF=" << MminMAF << endl;
+        cout << "M=" << M << endl; 
+
 
     arma::fvec x(Nnomissing);
 
     if(!(geno.setKinDiagtoOne)){
-           x  = (*geno.Get_Diagof_StdGeno()) /M; 
+           x  = (*geno.Get_Diagof_StdGeno()) /MminMAF; 
     }else{
 	   x  = arma::ones<arma::fvec>(Nnomissing);	
     }	
@@ -3924,7 +3953,10 @@ double wall3in = get_wall_time();
 // [[Rcpp::export]]
 arma::fvec get_GRMdiagVec(){
   int mMarker = gettotalMarker(); 
-  arma::fvec diagGRMVec = (*geno.Get_Diagof_StdGeno())/mMarker;
+  int MminMAF = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
+        cout << "MminMAF=" << MminMAF << endl;
+
+  arma::fvec diagGRMVec = (*geno.Get_Diagof_StdGeno())/MminMAF;
   return(diagGRMVec);
 }
 
