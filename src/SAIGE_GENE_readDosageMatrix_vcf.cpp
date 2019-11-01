@@ -86,8 +86,10 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
     float AC = 0;
     std::vector<std::string> markerIDs;
     std::vector<float> markerAFs;
+    std::vector<float> MACs;
     markerIDs.clear();
     markerAFs.clear();
+    MACs.clear();
     for ( ; it != end; ++it)
     {
 
@@ -136,16 +138,19 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
       float AF = (float)(AC) / 2 / (float)(genetest_samplesize_vcfDosage - missing_cnt) ;
       //check if the AF of the marker is within the required range
       float MAF;
+      float MAC;
       if(AF >= 0.5){
         MAF = 1 - AF;
+        MAC = (float)(genetest_samplesize_vcfDosage - missing_cnt) *2 - AC;
       }else{
         MAF = AF;
+	MAC = AC;
       }
       if(MAF >= minMAF && MAF <= maxMAF && markerInfo >= minInfo){
         if(missing_cnt > 0){
 	  std::cout << "missing_cnt > 0!" << std::endl;
           float imputeDosage = 2*AF;
-          for (unsigned int i = 0; i < indexforMissing.size(); i++){
+          for (unsigned int i = 0; i < indexforMissing.size(); i++){			
 		dosagesforOneMarker.push_back(imputeDosage);
 		jIndexforOneMarker.push_back(cnt+1);
 		iIndexforOneMarker.push_back(indexforMissing[i]+1);
@@ -164,6 +169,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
         cnt = cnt + 1;
         markerIDs.push_back(marker_id);
         markerAFs.push_back(AF);
+        MACs.push_back(MAC);
         //std::cout << "MAF: " << MAF << " minMAF: " << minMAF << " maxMAF: " << maxMAF << std::endl;
 	//std::cout << "marker_id: " << marker_id << std::endl;
       }
