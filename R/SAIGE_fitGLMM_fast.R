@@ -348,58 +348,11 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 
   tau0 = tau
   cat("initial tau is ", tau,"\n")
-  #bvtest = rep(3.08474, n)
-#  A = NULL
-#  for(i in c(1:n)){
-#  	bvtest = rep(0, n)
-#  	bvtest[i] = 1
-#  	a = getCrossprodMatAndKin(bvtest)
-#  	A = c(A, a[i])
-#  }
-#  A = matrix(A, ncol=1)
-#  write.table(A, "/net/hunt/disk2/zhowei/project/SAIGE_SKAT/simulation_08_2018/jobs/SAIGE_SKATO/step1/jobs/diagOfKin.txt", quote=F, row.names=F, col.names=F)
-
-  #bvtest = rep(0.05, n)
-  #a = getCrossprodMatAndKin(bvtest)
-  #print(a)
-
-  #bvtest = rep(5, n)
-  #a = getCrossprodMatAndKin(bvtest)
-  #print(a)
-
-
-  #bvtest = rep(1, n)
-  #a = getCrossprodMatAndKin(bvtest)
-  #print(a)
-
   re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
 
   re = getAIScore_q(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG,tolPCG = tolPCG, traceCVcutoff = traceCVcutoff)
-#  cat(names(re))
-#  cat("X\n")
-#  print(X)
-#  cat("Sigma_iX:\n")
-#  print(re$Sigma_iX[1:20,])
-#  cat("PY\n")
-#  print(re$PY)
-#  cat("Trace\n")
-#  print(re$Trace)
-#  cat("YPAPY:\n")
-#  print(re$YPAPY)
-#  cat("YPA0PY:\n")
-#  print(re$YPA0PY)
-  #print(sum((re$PY/W)^2))
   tau[2] = max(0, tau0[2] + tau0[2]^2 * (re$YPAPY - re$Trace[2])/n)
   tau[1] = max(0, tau0[1] + tau0[1]^2 * (re$YPA0PY - re$Trace[1])/n)
-  #tau[1] = max(0, tau0[1] + tau0[1]^2 * (sum((re$PY/W)^2) - re$Trace[1])/n) #try 
-  #testVec=rep(1,100)
-  #testVec[50] = 1
-  #testVecResult=getCrossprodMatAndKin(testVec)
-  #cat("testVecResult\n")
-
-  #print(testVecResult)
-  #cat("tauv3 ",tau,"\n")
-
 
   if(verbose) {
     cat("Variance component estimates:\n")
@@ -1687,6 +1640,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
           cat(i, "th marker\n")
           G0 = Get_OneSNP_Geno(i-1)
           cat("G0", G0[1:10], "\n")
+
           AC = sum(G0)
           CHR = bimPlink[i,1]
          if (CHR < 1 | CHR > 22){
@@ -1761,6 +1715,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
         Tv1 = (q-m1)/tauVecNew[1]
         p.value = pchisq(Tv1^2/var1, lower.tail = FALSE, df=1)
         p.value.NA = pchisq(Tv1^2/var2, lower.tail = FALSE, df=1)
+	
         OUT = rbind(OUT, c(i, p.value, p.value.NA, var1, var2, Tv1, Nnomissing, AC, AF))
 
         indexInMarkerList = indexInMarkerList + 1
@@ -2193,8 +2148,6 @@ createSparseKinParallel = function(nblocks, ncore, relatednessCutoff){
 #  diagKin = rep(1, Nval)
   diagKin = get_DiagofKin()
   sparseKinList$kinValue = c(sparseKinList$kinValue, diagKin)
-#  rm(diagKin)
-
   #sparseKinList = refineKin(indexVec, relatednessCutoff, W, tauVecNew)
   #GRMvec = refineKinPar(indexVec, relatednessCutoff = relatednessCutoff, W = W, tauVecNew = tauVecNew, nblocks = nblocks, verbose = TRUE, ncore= nblocks) 
   #sparseKinList = shortenList(indexVec-1, GRMvec, relatednessCutoff, W, tauVecNew)

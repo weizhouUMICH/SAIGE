@@ -2,7 +2,7 @@
 #G1 is genotypes for testing gene, which contains m markers
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
-SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcuroff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, singleGClambda = 1, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE){
+SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcuroff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE){
 
         #check the input genotype G1
         obj.noK = obj$obj.noK
@@ -16,7 +16,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 	}
 
 	MAF = colMeans(G1)/2
-	#print(MAF)
         id_include<-1:n
         out.method<-SKAT:::SKAT_Check_Method(method,r.corr, n=n, m=m)
         method=out.method$method
@@ -35,7 +34,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
          MAF = c(MAF, MAF_G2_cond)
        }
 
-	print(MAF)
+	#print(MAF)
 	if(length(MAF) > 1){
 		weights=rep(0,length(MAF))
 		index1 = which(MAF<=weightMAFcuroff)
@@ -52,16 +51,10 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 	}
 
 
-
-
-
-
-
-
-
 	cat("weights : ", weights, "\n")	
 	indexNeg = NULL
 
+        G1_org = G1
         #if more than 1 marker is left, continue the test
         if(m  >  0){
                 if(!is.null(G2_cond)){
@@ -77,7 +70,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                         }
                         Zall = G1
                 }
-
+		
 		MACvec_indVec_Zall = getCateVarRatio_indVec(Zall, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
 		rm(Zall)
 		GratioMatrixall = getGratioMatrix(MACvec_indVec_Zall, ratioVec)
@@ -112,6 +105,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                 	#if no P is provides, use sparseSigma or identity Sigma
                 	if(is.null(obj$P)){
 				G1_tilde_Ps_G1_tilde = getCovM_nopcg(G1=G1, G2=G1, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
+
 				#check if variance for any marker is negative, remove the variant
                         	if(!is.null(G2_cond)){
                                 	G2_tilde_Ps_G2_tilde = getCovM_nopcg(G1=G2_cond, G2=G2_cond, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
@@ -129,18 +123,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
                 	}
 		}
-		#else{ #if(is.null(obj$P)){
-
-		#	G1_tilde<- G1  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G1)
-                #        if(!is.null(G2_cond)){
-		#		G2_cond_tilde<- G2_cond  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G2_cond)
-                 #               G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv = (t(G1_tilde) %*% (obj$P %*% G2_cond_tilde)) %*% getcovM(G2_cond_tilde, G2_cond_tilde, obj$P)
-                  #              Score_cond = Score - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% T2
-                 #               Phi_cond = t(G1_tilde) %*% (obj$P %*% G1_tilde) - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% (t(G2_cond_tilde) %*% (obj$P %*% G1_tilde))
-                #	}
-                #        	Phi = t(G1_tilde) %*% (obj$P %*% G1_tilde)
-                #} #end of else if(is.null(obj$P)){
-
 
 		if(adjustCCratioinGroupTest){
 			y = obj$obj.glm.null$y	
@@ -181,26 +163,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
                         	}#if(!is.null(G2_cond)){
 
-                #}else{ #if(is.null(obj$P)){
-
-		#	G1_tilde<- G1  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G1)
-
-		#	Phi_ccadj = SPA_ER_kernel_related_Phiadj(G1_org, obj_cc, obj.noK, Cutoff=2, Phi, weights[1:m], VarRatio_Vec = as.vector(GratioMatrixall[1:m,1]), mu)
-
-                 #       if(!is.null(G2_cond)){
-		#		G2_cond_tilde<- G2_cond  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G2_cond)
-                #                G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv = (t(G1_tilde) %*% (obj$P %*% G2_cond_tilde)) %*% getcovM(G2_cond_tilde, G2_cond_tilde, obj$P)
-                #                Score_cond = Score - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% T2
-                #                Phi_cond = t(G1_tilde) %*% (obj$P %*% G1_tilde) - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv %*% (t(G2_cond_tilde) %*% (obj$P %*% G1_tilde))
-
-				
-
-
-
-		#	 }
-                #                Phi = t(G1_tilde) %*% (obj$P %*% G1_tilde)
-                #} #end of else if(is.null(obj$P)){
-
 			}
 		}
 
@@ -227,10 +189,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 		
 
 		if(IsOutputPvalueNAinGroupTestforBinary){
-                	#if(!is.null(G2_cond)){
-                        #	T2 = as.vector(t(G2_cond) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
-                	#}
-
 			#check if variance for each marker is negative, remove the variant
 			if(length(indexNeg) > 0){
 			# 	Phi = Phi[-indexNeg, -indexNeg]
@@ -240,13 +198,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 					Phi_cond = Phi_cond[-indexNeg, -indexNeg]
 					Score_cond = Score_cond[-indexNeg]
 				}
-			#	MACvec_indVec = MACvec_indVec[-indexNeg]
-			#	m = m - length(indexNeg)
-			#	markerNumbyMAC = NULL
-                	#	for(i in 1:length(cateVarRatioMinMACVecExclude)){
-                        #		markerNumbyMAC = c(markerNumbyMAC, sum(MACvec_indVec == i))
-                	#	}
-			#	cat("WARNING: ", indexNeg, " th marker(s) are excluded because of negative variance\n")		
 			}
 
 		}
@@ -259,13 +210,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                         Phi_cond_ccadj = Phi_cond_ccadj[-indexNeg, -indexNeg]
                                         Score_cond_ccadj = Score_cond_ccadj[-indexNeg]
                                 }
-                         #       MACvec_indVec = MACvec_indVec[-indexNeg]
-                         #       m = m - length(indexNeg)
-                         #       markerNumbyMAC = NULL
-                         #       for(i in 1:length(cateVarRatioMinMACVecExclude)){
-                         #               markerNumbyMAC = c(markerNumbyMAC, sum(MACvec_indVec == i))
-                         #       }
-                         #       cat("WARNING: ", indexNeg, " th marker(s) are excluded because of negative variance\n")
                         }
 
 		}
@@ -280,16 +224,24 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                         	re = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
 
                                         }else{
-                                                re = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
+                                                re = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL))
+						if(class(re) == "try-error"){
+							re = list(p.value = NA)
+						}	
                                         }
                          	}else{# if(m_new == 1){
-                                	re = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
+
+					
+                                	re = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
+)
+					if(class(re) == "try-error"){
+                                                        re = list(p.value = NA)
+                                                }					
+
                                 }
 
-				print("HERE HERE HERE")
 
                          }
-		print("OK OK OK")
 
 
 			if(adjustCCratioinGroupTest){
@@ -298,12 +250,12 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                         if(sum(diag(Phi_ccadj$val) < (.Machine$double.xmin)^(1/4)) > 0){
 
 						if(!IsOutputPvalueNAinGroupTestforBinary){
-							Out_ccadj = list(p.value_cc = 1, param = NULL)
+							Out_ccadj = list(p.value = 1, param = NULL)
 							#re=list(p.value_cc = 1, param.ccadj=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
 							re = list(Out_ccadj = Out_ccadj)
 
 						}else{
-							Out_ccadj = list(p.value_cc = 1)
+							Out_ccadj = list(p.value = 1)
 							re$Out_ccadj = Out_ccadj
 
 						}
@@ -313,35 +265,20 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 							re = list()
 						}
 
-                                                        re_ccadj = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi_ccadj$val, r.corr=r.corr, method=method, Score.Resampling=NULL)
+                                                        re_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi_ccadj$val, r.corr=r.corr, method=method, Score.Resampling=NULL))
+							if(class(re_ccadj) == "try-error"){
+								re_ccadj = list(p.value = NA)
+							}	
 							re$Out_ccadj = re_ccadj
-							#re$p.value_ccadj = re$p.value
-							#re$param.ccadj = re$param
-
-			
-
-                                                #}else{
-						#	re_ccadj = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi_ccadj$val, r.corr=r.corr, method=method, Score.Resampling=NULL)
-                                                #        re$p.value_ccadj = re_ccadj$p.value
-						#	re$param.ccadj = re_ccadj$param
-                                                #}
                                         }
                                 }else{# if(m_new == 1){
 					if(!IsOutputPvalueNAinGroupTestforBinary){
                                         	re = list()
                                         }
-					#if(!IsOutputPvalueNAinGroupTestforBinary){
-                                                re_ccadj = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi_ccadj$val, r.corr=r.corr, method=method, Score.Resampling=NULL)
-                                        #        re$p.value_ccadj = re$p.value
-					#	re$param.ccadj = re$param
-                                        #}else{
-	
-		#print(Phi_ccadj)
-                                        #	re_ccadj = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi_ccadj$val, r.corr=r.corr, method=method, Score.Resampling=NULL)
-                                        #	re$p.value_ccadj = re_ccadj$p.value
-					#	re$param.ccadj = re_ccadj$param
-
-                                        #}
+                                                re_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi_ccadj$val, r.corr=r.corr, method=method, Score.Resampling=NULL))
+						if(class(re_ccadj) == "try-error"){
+							re_ccadj = list(p.value=NA)
+						}	
 						re$Out_ccadj = re_ccadj
 
                                 }
@@ -359,10 +296,16 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 							re_cond = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
 
                         			}else{
-	                       				re_cond = SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL)
+	                       				re_cond = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL))
+							  if(class(re_cond) == "try-error"){
+                                                        re_cond = list(p.value=NA)
+                                                	}
                         			}
 					}else{# if(m_new == 1){
-						re_cond = SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL)
+						re_cond = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL))
+						if(class(re_cond) == "try-error"){
+                                                        re_cond = list(p.value=NA)
+                                                 }
 					}
 					re$condOut = re_cond
 
@@ -377,100 +320,29 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                                         re_cond_ccadj = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
 
                                                 }else{
-                                                        re_cond_ccadj = SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL)
+                                                        re_cond_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond_ccadj, Phi=Phi_cond_ccadj, r.corr=r.corr, method=method, Score.Resampling=NULL))
+							if(class(re_cond_ccadj) == "try-error"){
+                                                        re_cond_ccadj = list(p.value=NA)
+                                                 	}
                                                 }
                                         }else{# if(m_new == 1){
-                                                re_cond_ccadj = SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond_ccadj, Phi=Phi_cond_ccadj, r.corr=r.corr, method=method, Score.Resampling=NULL)
+                                                re_cond_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond_ccadj, Phi=Phi_cond_ccadj, r.corr=r.corr, method=method, Score.Resampling=NULL))
+						if(class(re_cond_ccadj) == "try-error"){
+                                                        re_cond_ccadj = list(p.value=NA)
+                                                }
                                         }
 
 					re$condOut_ccadj = re_cond_ccadj
 
 				}
                 	}	
-
-
 		
-			#if(singleGClambda == 1){
-  
-                	#	Phi = Phi * singleGClambda
-		  	#	Phi = as.matrix(Phi)
-			#	if(m_new == 1){
-                 	#		if(sum(diag(Phi) < (.Machine$double.xmin)^(1/4)) > 0){
-                         #   			re = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
-			#		}else{	
-                  	 #   			re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
-			#			}
-			#	}else{#if(m_new == 1)
-			#		re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)	
-				
-			#	}
-
-
-			#}else{
-
-			#	if(m_new == 1){
-			#		if(sum(diag(Phi) < (.Machine$double.xmin)^(1/4)) > 0){
-			#			re = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, p.value.cond=NA, P_singlGCadj=NA, GCadjOut=NA)
-			#		}else{	
-			#			re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
-			#		}
-			#	}else{#if(m_new == 1){
-
-			#		re =  SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
-			#	}
-			#		Phi = Phi * singleGClambda
-			#		Phi = as.matrix(Phi)
-			#		if(m_new	 == 1){	
-			#			if(sum(diag(Phi) < (.Machine$double.xmin)^(1/4)) > 0){
-			#				re$P_singlGCadj = 1
-			#				re$GCadjOut = NA							
-			#			}else{
-			#				re_GCadj = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)					
-			#				re$P_singlGCadj = re_GCadj$p.value
-			#				re$GCadjOut = re_GCadj
-			#			}
-
-			#		}else{
-
-		  	#			re_GCadj = SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
-		  	#			re$P_singlGCadj = re_GCadj$p.value
-		  	#			re$GCadjOut = re_GCadj	
-
-			#		}
-
-			#}
-			#}
-
-                	#if(!is.null(G2_cond)){
-
-			#	if(IsOutputPvalueNAinGroupTestforBinary){
-                        #		re$p.value.cond = re_cond$p.value
-			#		re$condOut = re_cond
-			#	}
-
-			#	if(adjustCCratioinGroupTest){
-			#		re$p.value.cond_ccadj = re_cond_ccadj$p.value
-			#		re$condOut_ccadj = re_cond_ccadj
-			#	}
-
-
-                	#}else{
-			#	if(IsOutputPvalueNAinGroupTestforBinary){
-                        #		re$p.value.cond = NA
-			#	}
-
-			#	if(adjustCCratioinGroupTest){
-			#		re$p.value.cond_ccadj = NA
-			#	}
-
-                	#}
 			m = length(Score)
 	   	}else{ #if(length(Score) > 0){
 		 		#else: no marker is left for test, m = 0
 			
                 	re = list(p.value = NA, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, p.value.cond=NA, p.value.cond.ccadj=NA)
 			re =list()	
-                	#markerNumbyMAC = c(0,0,0,0,0,0)
                 	markerNumbyMAC = rep(0, length(cateVarRatioMinMACVecExclude))
 			m = 0	
 	  	}
@@ -491,9 +363,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 	re$m = m
 	re$indexNeg = indexNeg
 
-	#xt1 <- proc.time()
-	#print(xt1 - xt)
-	#cat("re!\n")
         print(re)
         return(re)
 

@@ -20,7 +20,7 @@ Beta_Weight<-function(MAF,weights.beta){
 
 
 
-SPA_ER_kernel_related<-function(G,obj,  obj.noK, Cutoff=2, Phi,  weight,VarRatio_Vec, mu.a){
+SPA_ER_kernel_related<-function(G,obj, obj.noK, Cutoff=2, Phi, weight, VarRatio_Vec, mu.a){
 
 	zscore.all_0<-matrix(rep(0, ncol(G)), ncol=ncol(G))
 	zscore.all_1<-matrix(rep(0, ncol(G)), ncol=ncol(G))
@@ -47,27 +47,18 @@ SPA_ER_kernel_related<-function(G,obj,  obj.noK, Cutoff=2, Phi,  weight,VarRatio
  		stat.qtemp<-(q - mu1)^2/var1
     		p_temp1<-pchisq(stat.qtemp, lower.tail = FALSE, df = 1)  
 		p.old[jj]=p_temp1
-
 		zscore.all_0[,jj]=(q-mu1)  ##sum(G[,jj]*(obj.noK$y-mu.a))  
 		
 		id1<-which(stat.qtemp > Cutoff^2) 
-#		print("test5")	
 		if (MAFsum[jj]<=10){
 			if (length(id1)>0 ){
 				G_temp=G[,jj]
-				G_temp[which(G_temp<=0.2)]=0
-#		print("test6")	
-#		print(dim(as.matrix(G_temp)))	
-#		print(obj$res)
-				p_temp1=SKAT::SKATBinary(as.matrix(G_temp),obj, method.bin="Hybrid")$p.value
-#		print("test7")	
-										
+				p_temp1=SKAT::SKATBinary(as.matrix(G_temp),obj, method.bin="Hybrid")$p.value								
 			}
 	
 		}else {
-			if (length( id1)>0){  				
+			if (length(id1)>0){  				
     				p_temp1 = scoreTest_SPAGMMAT_binaryTrait(g, n.g, NAset, obj.noK$y, mu.a, varRatio=VarRatio_Vec[jj], Cutoff = Cutoff)$p.value
-#		print("test8")	
 			}
 		}	
 		
@@ -85,7 +76,6 @@ SPA_ER_kernel_related<-function(G,obj,  obj.noK, Cutoff=2, Phi,  weight,VarRatio
         		q.sum = q.sum + q * weight[jj] 
 		}
 	}##for every col of G
-#		print("test9")	
 	outlist=list();
 	
 	outlist$zscore.all_0=zscore.all_0
@@ -108,9 +98,6 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 	p.old=c()
 	p.new=c()
 	MAFsum=colSums(G)
-	print(MAFsum)
-	print("Phi")
-	print(Phi)
 
 	for (jj in 1:ncol(G)){
 		n.g<-sum(G[,jj])
@@ -120,19 +107,10 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 		g=G1 
 		mu.qtemp=mu.a; g.qtemp=g   
 		mu1 <- sum(mu.qtemp * g.qtemp)
-		print("Phi[jj, jj]")	
-		print(Phi[jj, jj])
-		print("weight[jj]")
-                print(weight[jj])
 		var1<-Phi[jj, jj]/weight[jj]^2
-		print("var1")	
-		print(var1)	
 
  		stat.qtemp<-(q - mu1)^2/var1
     		p_temp1<-pchisq(stat.qtemp, lower.tail = FALSE, df = 1)  
-
-		#print(jj)
-		#print(stat.qtemp)
 
 		p.old[jj]=p_temp1
 		zscore.all_0[,jj]=(q-mu1)  ##sum(G[,jj]*(obj.noK$y-mu.a))  		
@@ -140,12 +118,11 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 		if (MAFsum[jj]<=10){
 			if (length(id1)>0 ){
 				G_temp=G[,jj]
-				G_temp[which(G_temp<=0.2)]=0
 				p_temp1=SKAT::SKATBinary(as.matrix(G_temp),obj, method.bin="Hybrid")$p.value
 			}
 	
 		}else {
-			if (length( id1)>0){  				
+			if (length( id1)>0){  
     				p_temp1 = scoreTest_SPAGMMAT_binaryTrait(g, n.g, NAset, obj.noK$y, mu.a, varRatio=VarRatio_Vec[jj], Cutoff = Cutoff)$p.value
 			}
 		}	
@@ -164,7 +141,7 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
         		q.sum = q.sum + q * weight[jj] 
 		}
 	}##for every col of G
-	print("TEST")
+	#print("TEST")
 
 	VarS = VarS*weight^2
 	zscore.all_1 = zscore.all_0 * weight
@@ -184,13 +161,8 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 	G2_adj_n=as.matrix(Phi)%*%(VarS/VarS_org)
 	scaleFactor = sqrt(VarS/VarS_org)
 	}
-	#mu =out_kernel$mu
-	#g.sum =out_kernel$g.sum
-	#q.sum=out_kernel$q.sum
-	print("TEST1")
 	p.value_burden<-SPAtest:::Saddle_Prob(q.sum , mu=mu.a, g=g.sum, Cutoff=2,alpha=2.5*10^-6)$p.value
 
-	print("TEST2")
 
 	v1=rep(1,dim(G2_adj_n)[1])
 	VarQ=t(v1)%*%G2_adj_n %*%v1
@@ -347,10 +319,10 @@ Related_ER<-function(G, MAF, MACvec_indVec, obj, obj.noK, ratioVec=ratioVec,spar
 	if(IsOutputPvalueNAinGroupTestforBinary){
 		#cat("test here \n")
 		out=SKAT:::Met_SKAT_Get_Pvalue(Score=zscore.all_0, Phi=as.matrix(Phi), r.corr=r.all, method="optimal.adj",Score.Resampling=NULL)
-		print("Score in ER: ")
-		print(zscore.all_1)
-		print("Phi in ER")
-		print(Phi)
+		#print("Score in ER: ")
+		#print(zscore.all_1)
+		#print("Phi in ER")
+		#print(Phi)
 
 		list_myfun$p_skato_old=out$p.value
 	#list_myfun$p_each_old=out$param$p.val.each
