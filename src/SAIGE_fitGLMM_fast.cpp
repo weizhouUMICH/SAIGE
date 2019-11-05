@@ -1579,8 +1579,8 @@ arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
 	int Nnomissing = geno.getNnomissing();
 	int M = geno.getM();
 	int MminMAF = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
-	cout << "MminMAF=" << MminMAF << endl;
-	cout << "M=" << M << endl;
+	//cout << "MminMAF=" << MminMAF << endl;
+	//cout << "M=" << M << endl;
 	arma::fvec diagVec(Nnomissing);
 	float diagElement;
 	float floatBuffer;
@@ -3463,8 +3463,8 @@ arma::fvec get_DiagofKin(){
     int M = geno.getM();
     int Nnomissing = geno.getNnomissing();
     int MminMAF = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
-        cout << "MminMAF=" << MminMAF << endl;
-        cout << "M=" << M << endl; 
+        //cout << "MminMAF=" << MminMAF << endl;
+        //cout << "M=" << M << endl; 
 
 
     arma::fvec x(Nnomissing);
@@ -3978,7 +3978,7 @@ double wall3in = get_wall_time();
 arma::fvec get_GRMdiagVec(){
   int mMarker = gettotalMarker(); 
   int MminMAF = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
-        cout << "MminMAF=" << MminMAF << endl;
+        //cout << "MminMAF=" << MminMAF << endl;
 
   arma::fvec diagGRMVec = (*geno.Get_Diagof_StdGeno())/MminMAF;
   return(diagGRMVec);

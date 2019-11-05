@@ -3,7 +3,7 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
-library(SAIGE)
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.35.8.8")
 require(optparse) #install.packages("optparse")
 
 print(sessionInfo())
@@ -11,7 +11,7 @@ print(sessionInfo())
 ## set list of cmd line arguments
 option_list <- list(
   make_option("--plinkFile", type="character",default="",
-    help="path to plink file for creating the genetic relationship matrix (GRM)"),
+    help="path to plink file for creating the genetic relationship matrix (GRM). minMAFforGRM can be used to specify the minimum MAF of markers in he plink file to be use for constructing GRM."),
   make_option("--phenoFile", type="character", default="",
     help="path to the phenotype file. The file can be either tab or space delimited"),
   make_option("--phenoCol", type="character", default="",
