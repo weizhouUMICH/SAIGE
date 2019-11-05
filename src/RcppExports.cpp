@@ -1230,73 +1230,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// setgenoTest_plainDosage
-int setgenoTest_plainDosage(std::string testGenoFile, int testGenofileNrowSkip, int testGenofileNcolSkip);
-RcppExport SEXP _SAIGE_setgenoTest_plainDosage(SEXP testGenoFileSEXP, SEXP testGenofileNrowSkipSEXP, SEXP testGenofileNcolSkipSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type testGenoFile(testGenoFileSEXP);
-    Rcpp::traits::input_parameter< int >::type testGenofileNrowSkip(testGenofileNrowSkipSEXP);
-    Rcpp::traits::input_parameter< int >::type testGenofileNcolSkip(testGenofileNcolSkipSEXP);
-    rcpp_result_gen = Rcpp::wrap(setgenoTest_plainDosage(testGenoFile, testGenofileNrowSkip, testGenofileNcolSkip));
-    return rcpp_result_gen;
-END_RCPP
-}
-// closetestGenoFile_plainDosage
-void closetestGenoFile_plainDosage();
-RcppExport SEXP _SAIGE_closetestGenoFile_plainDosage() {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    closetestGenoFile_plainDosage();
-    return R_NilValue;
-END_RCPP
-}
-// getGenoOfnthVar_plainDosage
-arma::fvec getGenoOfnthVar_plainDosage(int mth, int testGenofileNrowSkip, int testGenofileNcolSkip);
-RcppExport SEXP _SAIGE_getGenoOfnthVar_plainDosage(SEXP mthSEXP, SEXP testGenofileNrowSkipSEXP, SEXP testGenofileNcolSkipSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type mth(mthSEXP);
-    Rcpp::traits::input_parameter< int >::type testGenofileNrowSkip(testGenofileNrowSkipSEXP);
-    Rcpp::traits::input_parameter< int >::type testGenofileNcolSkip(testGenofileNcolSkipSEXP);
-    rcpp_result_gen = Rcpp::wrap(getGenoOfnthVar_plainDosage(mth, testGenofileNrowSkip, testGenofileNcolSkip));
-    return rcpp_result_gen;
-END_RCPP
-}
-// getrowHeaderVec_plainDosage
-std::vector<std::string> getrowHeaderVec_plainDosage();
-RcppExport SEXP _SAIGE_getrowHeaderVec_plainDosage() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getrowHeaderVec_plainDosage());
-    return rcpp_result_gen;
-END_RCPP
-}
-// SetSampleIdx_plainDosage
-int SetSampleIdx_plainDosage(Rcpp::IntegerVector sample_idx, int Ntest);
-RcppExport SEXP _SAIGE_SetSampleIdx_plainDosage(SEXP sample_idxSEXP, SEXP NtestSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type sample_idx(sample_idxSEXP);
-    Rcpp::traits::input_parameter< int >::type Ntest(NtestSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetSampleIdx_plainDosage(sample_idx, Ntest));
-    return rcpp_result_gen;
-END_RCPP
-}
-// getSampleSizeinPlain
-int getSampleSizeinPlain();
-RcppExport SEXP _SAIGE_getSampleSizeinPlain() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getSampleSizeinPlain());
-    return rcpp_result_gen;
-END_RCPP
-}
 // SetSampleIdx_vcfDosage
 void SetSampleIdx_vcfDosage(Rcpp::IntegerVector sample_idx, int Ntest);
 RcppExport SEXP _SAIGE_SetSampleIdx_vcfDosage(SEXP sample_idxSEXP, SEXP NtestSEXP) {
@@ -1557,12 +1490,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_closetestGenoFile_bgenDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_bgenDosage, 0},
     {"_SAIGE_setgenoTest_bgenDosage_v2", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage_v2, 6},
     {"_SAIGE_getSampleSizeinBgen", (DL_FUNC) &_SAIGE_getSampleSizeinBgen, 0},
-    {"_SAIGE_setgenoTest_plainDosage", (DL_FUNC) &_SAIGE_setgenoTest_plainDosage, 3},
-    {"_SAIGE_closetestGenoFile_plainDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_plainDosage, 0},
-    {"_SAIGE_getGenoOfnthVar_plainDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_plainDosage, 3},
-    {"_SAIGE_getrowHeaderVec_plainDosage", (DL_FUNC) &_SAIGE_getrowHeaderVec_plainDosage, 0},
-    {"_SAIGE_SetSampleIdx_plainDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_plainDosage, 2},
-    {"_SAIGE_getSampleSizeinPlain", (DL_FUNC) &_SAIGE_getSampleSizeinPlain, 0},
     {"_SAIGE_SetSampleIdx_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_vcfDosage, 2},
     {"_SAIGE_setTestField", (DL_FUNC) &_SAIGE_setTestField, 1},
     {"_SAIGE_setgenoTest_vcfDosage", (DL_FUNC) &_SAIGE_setgenoTest_vcfDosage, 8},

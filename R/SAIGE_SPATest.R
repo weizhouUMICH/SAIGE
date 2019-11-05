@@ -96,11 +96,6 @@ SPAGMMATtest = function(bgenFile = "",
     stop("weightMAFcutoff needs to be between 0 and 0.5\n")
   }
 
-  if(dosageZerodCutoff < 0){
-    dosageZerodCutoff = 0
-  }else if(dosageZerodCutoff >= 0 ){
-    cat("Any dosages <= ", dosageZerodCutoff, " for genetic variants with MAC <= 10 are set to be 0\n")
-  }
 
   adjustCCratioinGroupTest=TRUE
   if(!IsAccountforCasecontrolImbalanceinGroupTest){
@@ -117,6 +112,12 @@ SPAGMMATtest = function(bgenFile = "",
     cat("single-variant association test will be performed\n")
   }else{
     cat("group-based test will be performed\n")
+    
+  if(dosageZerodCutoff < 0){
+    dosageZerodCutoff = 0
+  }else if(dosageZerodCutoff >= 0 ){
+    cat("Any dosages <= ", dosageZerodCutoff, " for genetic variants with MAC <= 10 are set to be 0 in group tests\n")
+  }
     if(!file.exists(groupFile)){
       stop("ERROR! groupFile ", groupFile, " does not exsit\n")
     }else{
@@ -617,14 +618,14 @@ SPAGMMATtest = function(bgenFile = "",
         MAC = 2*N - AC
         MAF = 1 - AF
       }
-     if(dosageZerodCutoff > 0){
-	if(MAC <= 10){
-     		G0[which(G0 <= dosageZerodCutoff)] = 0
-		MAC = sum(G0)
-		MAF = MAC/(2*length(G0))
-		cat("Any dosages <= ", dosageZerodCutoff, " are set to be 0")
-	}
-     }  
+     #if(dosageZerodCutoff > 0){
+     # 	if(MAC <= 10){
+     #		G0[which(G0 <= dosageZerodCutoff)] = 0
+     #		MAC = sum(G0)
+     #		MAF = MAC/(2*length(G0))
+     # 		cat("Any dosages <= ", dosageZerodCutoff, " are set to be 0")
+     #	}
+     #}  
 
       if(MAF >= testMinMAF & markerInfo >= minInfo){
          numPassMarker = numPassMarker + 1
@@ -1064,8 +1065,8 @@ SPAGMMATtest = function(bgenFile = "",
 		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, mu.a = mu.a.sub, mu2.a = mu2.a.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary)
 	      }else{#if(IsDropMissingDosages & length(indexforMissing) > 0){	
 		cat("isCondition is ", isCondition, "\n")
-		Gmat0 = as.matrix(Gmat)
-		write.table(Gmat0, "/net/hunt/disk2/zhowei/project/SAIGE_SKAT/typeIError_simuUsingRealData/quantitative/SAIGE/step2/C1orf122_seed256Phneo.geno.txt", col.names=F, row.names=F, quote=F)	
+		#Gmat0 = as.matrix(Gmat)
+		#write.table(Gmat0, "/net/hunt/disk2/zhowei/project/SAIGE_SKAT/typeIError_simuUsingRealData/quantitative/SAIGE/step2/C1orf122_seed256Phneo.geno.txt", col.names=F, row.names=F, quote=F)	
 		#Gmat = round(Gmat)
 		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, mu.a = mu.a, mu2.a = mu2.a, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary)	
 	     }

@@ -2186,7 +2186,7 @@ getSparseSigma = function(plinkFile = plinkFile,
     minMAFforGRM = minMAFforGRM, 
     isSetGeno = FALSE,
     isWritetoFiles = FALSE)
-    sparseGRMLarge = sparseGRMList$sparseGRM
+    sparseGRM = sparseGRMList$sparseGRM
     sparseGRMSampleID = data.frame(sampleID = sparseGRMList$sparseGRMSampleID)
     colnames(sparseGRMSampleID) = c("sampleID") 
     rm(sparseGRMList)
@@ -2209,9 +2209,11 @@ getSparseSigma = function(plinkFile = plinkFile,
     }else{#end of if(sparseSigmaSampleIDFile != "")
       stop("ERROR! sparseSigmaSampleIDFile is not specified\n")
     }
-  }
+  #}
 
-      sparseGRMSampleID$IndexGRM = seq(1,nrow(sparseGRMSampleID), by=1)
+      sparseGRMSampleID$IndexGRM = c(1:nrow(sparseGRMSampleID))
+	cat("length(sparseGRMSampleID$IndexGRM): ", length(sparseGRMSampleID$IndexGRM), "\n")
+	cat("nrow(sparseGRMSampleID): ", nrow(sparseGRMSampleID), "\n")
       sampleInModel = NULL
       sampleInModel$IID = obj.glmm.null$sampleID
       sampleInModel = data.frame(sampleInModel)
@@ -2219,11 +2221,14 @@ getSparseSigma = function(plinkFile = plinkFile,
       cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
       mergeID = merge(sampleInModel, sparseGRMSampleID, by.x="IID", by.y = "sampleID")
       mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
+      print(dim(mergeID))
+      print(head(mergeID))
       indexIDofGRM=mergeID$IndexGRM
+      cat("indexIDofGRM = ", indexIDofGRM, "\n")
       #cat("Subset sparse GRM to be ", indexIDofSigma," by ", indexIDofSigma, "\n")
       sparseGRM = sparseGRMLarge[indexIDofGRM, indexIDofGRM]
       rm(sparseGRMLarge)
-
+}
   #sparseGRMFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff, "_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseGRM.subset.mtx")
   #cat("write sparse GRM to ", sparseGRMFile ,"\n")
   #Matrix:::writeMM(sparseGRM, sparseGRMFile)

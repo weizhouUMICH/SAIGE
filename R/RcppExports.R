@@ -401,30 +401,6 @@ getSampleSizeinBgen <- function() {
     .Call('_SAIGE_getSampleSizeinBgen', PACKAGE = 'SAIGE')
 }
 
-setgenoTest_plainDosage <- function(testGenoFile, testGenofileNrowSkip, testGenofileNcolSkip) {
-    .Call('_SAIGE_setgenoTest_plainDosage', PACKAGE = 'SAIGE', testGenoFile, testGenofileNrowSkip, testGenofileNcolSkip)
-}
-
-closetestGenoFile_plainDosage <- function() {
-    invisible(.Call('_SAIGE_closetestGenoFile_plainDosage', PACKAGE = 'SAIGE'))
-}
-
-getGenoOfnthVar_plainDosage <- function(mth, testGenofileNrowSkip, testGenofileNcolSkip) {
-    .Call('_SAIGE_getGenoOfnthVar_plainDosage', PACKAGE = 'SAIGE', mth, testGenofileNrowSkip, testGenofileNcolSkip)
-}
-
-getrowHeaderVec_plainDosage <- function() {
-    .Call('_SAIGE_getrowHeaderVec_plainDosage', PACKAGE = 'SAIGE')
-}
-
-SetSampleIdx_plainDosage <- function(sample_idx, Ntest) {
-    .Call('_SAIGE_SetSampleIdx_plainDosage', PACKAGE = 'SAIGE', sample_idx, Ntest)
-}
-
-getSampleSizeinPlain <- function() {
-    .Call('_SAIGE_getSampleSizeinPlain', PACKAGE = 'SAIGE')
-}
-
 SetSampleIdx_vcfDosage <- function(sample_idx, Ntest) {
     invisible(.Call('_SAIGE_SetSampleIdx_vcfDosage', PACKAGE = 'SAIGE', sample_idx, Ntest))
 }
