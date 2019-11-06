@@ -171,13 +171,18 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 	VarQ_2=Q_b/qchisq(p.value_burden, df=1, ncp = 0, lower.tail = FALSE, log.p = FALSE)
 	if (VarQ_2== 0) {r=1} else {r=VarQ/VarQ_2}
 	r=min(r,1)
+        if(dim(G2_adj_n)[2] > 1){
 	Phi_ccadj=as.matrix(G2_adj_n%*%diag(rep(1/r,dim(G2_adj_n)[2])))
+	}else{
+	Phi_ccadj=as.matrix(G2_adj_n * 1/r)
+	}
+
 	outlist=list();
 	outlist$val = Phi_ccadj
 	if(length(VarS) > 1){
 		scaleFactor = scaleFactor %*% diag(rep(1/sqrt(r),dim(G2_adj_n)[2]))
 	}else{
-		scaleFactor = scaleFactor * diag(rep(1/sqrt(r),dim(G2_adj_n)[2]))
+		scaleFactor = scaleFactor * (1/sqrt(r))
 	}
 	outlist$scaleFactor = scaleFactor
 	#outlist$zscore.all_0=zscore.all_0
