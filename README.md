@@ -11,14 +11,13 @@ Table of Contents
 # Introduction
 
 
-## PLEASE CHECK THE BRANCH SAIGE_GENE_casecontrol_imbalace for most recent version (Current version is 0.35.8.7)
+## Current version is 0.35.8.8
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
 SAIGE performs single-variant association tests for binary traits and quantitative taits. For binary traits, SAIGE uses the saddlepoint approximation (SPA)(mhof, J. P. , 1961; Kuonen, D. 1999; Dey, R. et.al 2017) to account for case-control imbalance.
 
-SAIGE-GENE (implemented in the SAIGE R package) performs gene- or region-based association tests (Burde, SKAT, SKAT-O) for binary traits and quantitative traits. Note: SAIGE-GENE does not yet account for case-control imbalance. We recommend using SAIGE-GENE for binary traits with prevalence >= 20%.    
- 
+SAIGE-GENE (implemented in the SAIGE R package) performs gene- or region-based association tests (Burde, SKAT, SKAT-O) for binary traits and quantitative traits. Note: SAIGE-GENE accounts for case-control imbalance in gene-based tests (>= 0.35.8.5)
 
 *This R package is still under development
 
@@ -65,9 +64,11 @@ https://www.leelabsg.org/resources
 # Log for fixing bugs
 * 0.35.8.8: Fixes a matrix inversion issue in the null model and adds an optional argument for the null computation to remove binary covariates with low counts by juhis
 
+* 0.35.8.8 (August-27-2019): Fixes a matrix inversion issue in the null model and adds an optional argument for the null computation to remove binary covariates with low counts by juhis
+
 * 0.35.8.7 (August-15-2019): fixed the bug when there is no covariate specified, added an argument IsOutputNinCaseCtrl for step 2 to allow for output sample sizes in cases and controls for binary traits in the output file, fixed the out of boundary bug for LOCO
 
-* 0.35.8.6 (August-13-2019): fixed the output bug when the genotype matrix has rank 1 for binary phenotypes and add an argument minMAFtoConstructGRM for step 0 and step 1 to allow users to specify the minumum MAF of markers used to construct GRM.
+* 0.35.8.6 (August-13-2019): fixed the output bug when the genotype matrix has rank 1 for binary phenotypes and add an argument minMAFtoConstructGRM for step 0 and step 1 to allow users to specify the minumum MAF of markers used to construct GRM (default: 1%)
 
 * 0.35.8.5 (June-29-2019): account for case control imbalance for binary traits in gene-based tests
 
