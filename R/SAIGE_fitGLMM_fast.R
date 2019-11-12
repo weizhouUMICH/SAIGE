@@ -524,7 +524,7 @@ solveSpMatrixUsingArma = function(sparseGRMtest){
 
 #' Fit the null logistic/linear mixed model and estimate the variance ratios by randomly selected variants 
 #'
-#' @param plinkFile character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM). Genetic markers are also randomly selected from the plink file to estimate the variance ratios
+#' @param plinkFile character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM). minMAFforGRM can be used to specify the minimum MAF of markers in he plink file to be used for constructing GRM. Genetic markers are also randomly selected from the plink file to estimate the variance ratios
 #' @param phenoFile character. Path to the phenotype file. The phenotype file has a header and contains at least two columns. One column is for phentoype and the other column is for sample IDs. Additional columns can be included in the phenotype file for covariates in the null GLMM. Please note that covariates to be used in the NULL GLMM need to specified using the argument covarColList.
 #' @param phenoCol character. Column name for the phenotype in phenoFile e.g. "CAD"
 #' @param traitType character. e.g. "binary" or "quantitative". By default, "binary"
@@ -2224,7 +2224,7 @@ getSparseSigma = function(plinkFile = plinkFile,
       print(dim(mergeID))
       print(head(mergeID))
       indexIDofGRM=mergeID$IndexGRM
-      cat("indexIDofGRM = ", indexIDofGRM, "\n")
+      #cat("indexIDofGRM = ", indexIDofGRM, "\n")
       #cat("Subset sparse GRM to be ", indexIDofSigma," by ", indexIDofSigma, "\n")
       sparseGRM = sparseGRMLarge[indexIDofGRM, indexIDofGRM]
       rm(sparseGRMLarge)

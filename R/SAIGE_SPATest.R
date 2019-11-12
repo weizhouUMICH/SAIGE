@@ -23,7 +23,7 @@
 #' @param GMMATmodelFile character. Path to the input file containing the glmm model, which is output from previous step. Will be used by load()
 #' @param varianceRatioFile character. Path to the input file containing the variance ratio, which is output from the previous step
 #' @param SPAcutoff by default = 2 (SPA test would be used when p value < 0.05 under the normal approximation)
-#' @param SAIGEOutputFile character. Path to the output file containing the assoc test results
+#' @param SAIGEOutputFile character. Path to the output file containing assoc test results
 #' @param numLinesOutput numeric. Number of  markers to be output each time. By default, 10000   
 #' @param IsSparse logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE 
 #' @param IsOutputAFinCaseCtrl logical. Whether to output allele frequency in cases and controls. By default, FALSE
