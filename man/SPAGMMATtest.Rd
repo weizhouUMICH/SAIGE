@@ -4,10 +4,7 @@
 \alias{SPAGMMATtest}
 \title{Run single variant score tests with SPA based on the logistic mixed model.}
 \usage{
-SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
-  dosageFileNcolSkip = 0, dosageFilecolnamesSkip = c("SNPID", "CHR",
-  "POS", "Allele0", "Allele1"), dosageFileChrCol = "CHR",
-  bgenFile = "", bgenFileIndex = "", vcfFile = "",
+SPAGMMATtest(bgenFile = "", bgenFileIndex = "", vcfFile = "",
   vcfFileIndex = "", vcfField = "DS", savFile = "",
   savFileIndex = "", sampleFile = "", idstoExcludeFile = "",
   idstoIncludeFile = "", rangestoExcludeFile = "",
@@ -19,23 +16,15 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
   IsOutputAFinCaseCtrl = FALSE, IsOutputNinCaseCtrl = FALSE,
   LOCO = FALSE, condition = "", sparseSigmaFile = "",
   groupFile = "", kernel = "linear.weighted", method = "optimal.adj",
-  weights.beta = c(1, 25), r.corr = 0, IsSingleVarinGroupTest = TRUE,
+  weights.beta.rare = c(1, 25), weights.beta.common = c(0.5, 0.5),
+  weightMAFcutoff = 0.01, r.corr = 0, IsSingleVarinGroupTest = TRUE,
   cateVarRatioMinMACVecExclude = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 10.5,
   20.5), cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5,
-  20.5), singleGClambda = 1,
-  IsOutputPvalueNAinGroupTestforBinary = FALSE)
+  20.5), dosageZerodCutoff = 0.2,
+  IsOutputPvalueNAinGroupTestforBinary = FALSE,
+  IsAccountforCasecontrolImbalanceinGroupTest = TRUE)
 }
 \arguments{
-\item{dosageFile}{character. Path to dosage file. Each line contains dosages for a marker to be tested}
-
-\item{dosageFileNrowSkip}{integer(>=0). Number of lines to be skiped in the dosage file. By default, 0}
-
-\item{dosageFileNcolSkip}{integer(>=0). Number of columns to be skiped in the dosage file. By default, 0}
-
-\item{dosageFilecolnamesSkip}{vector of characters. The column names of the skipped columns. By default: c("SNPID", "CHR", "POS", "Allele0", "Allele1")}
-
-\item{dosageFileChrCol}{string. The column name for the chromosome column. Must be in the dosageFilecolnamesSkip. Required If LOCO = TRUE and chrom ="". By default, "CHR"}
-
 \item{bgenFile}{character. Path to bgen file. Currently version 1.2 with 8 bit compression is supported}
 
 \item{bgenFileIndex}{character. Path to the .bgi file (index of the bgen file)}
@@ -104,7 +93,11 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{method}{character. method for gene-based test p-values. By default, "optimal.adj". More options can be seen in the SKAT library}
 
-\item{weights.beta}{vector of numeric. parameters for the beta distribution to weight genetic markers in gene-based tests. By default, "c(1,25)". More options can be seen in the SKAT library}
+\item{weights.beta.rare}{vector of numeric. parameters for the beta distribution to weight genetic markers with MAF <= weightMAFcutoff in gene-based tests.By default, "c(1,25)". More options can be seen in the SKAT library}
+
+\item{weights.beta.common}{vector of numeric. parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests.By default, "c(0.5,0.5)". More options can be seen in the SKAT library}
+
+\item{weightMAFcutoff}{numeric. Between 0 and 0.5. See document above for weights.beta.rare and weights.beta.common. By default, 0.01}
 
 \item{r.corr}{numeric. bewteen 0 and 1. parameters for gene-based tests.  By default, 0.  More options can be seen in the SKAT library}
 
@@ -114,7 +107,11 @@ SPAGMMATtest(dosageFile = "", dosageFileNrowSkip = 0,
 
 \item{cateVarRatioMaxMACVecInclude}{vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. By default, c(1.5,2.5,3.5,4.5,5.5,10.5,20.5). If groupFile="", only one variance ratio corresponding to MAC >= 20 is used}
 
-\item{singleGClambda}{numeric. GC lambda values that can be used to adjust the gene-based tests results. This value is usually estimated based on the single-variant assoc test results. By default, 1}
+\item{dosageZerodCutoff}{numeric. In gene- or region-based tests, for each variants with MAC <= 10, dosages <= dosageZerodCutoff with be set to 0. By default, 0.2.}
+
+\item{IsOutputPvalueNAinGroupTestforBinary}{logical. In gene- or region-based tests for binary traits. if IsOutputPvalueNAinGroupTestforBinary is TRUE, p-values without accounting for case-control imbalance will be output. By default, FALSE}
+
+\item{IsAccountforCasecontrolImbalanceinGroupTest}{logical. In gene- or region-based tests for binary traits. If IsAccountforCasecontrolImbalanceinGroupTest is TRUE, p-values after accounting for case-control imbalance will be output. By default, TRUE}
 }
 \value{
 SAIGEOutputFile
