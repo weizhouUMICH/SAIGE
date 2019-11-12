@@ -11,7 +11,7 @@ Table of Contents
 # Introduction
 
 
-## Current version is 0.35.8.8
+## Current version is 0.36.1
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
@@ -62,7 +62,12 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
-* 0.36 (November-8-2019): Bugs fixed: 1. fixed the freq calculation for mean impute for missing genotypes in  plinkFile 2. Diagonal elements of GRM are now estimated using markers in plinkFile with MAF >= minMAFforGRM 3. Conditional analysis for gene- or region-based test for binary traits is now accounting for case-control imbalance 4. plain dosage files are no longer supported for step 2 so no external boost_iostream library is needed 
+* 0.36.1 (November-12-2019): 
+
+** Note: in v0.36.1, plain text dosage files are no longer allowed as input in step 2 to get rid of the dependence of the boost_iostream library
+
+Bugs fixed: 1. fixed the freq calculation for mean impute for missing genotypes in  plinkFile 2. Diagonal elements of GRM are now estimated using markers in plinkFile with MAF >= minMAFforGRM 3. Conditional analysis for gene- or region-based test for binary traits is now accounting for case-control imbalance 4. plain dosage files are no longer supported for step 2 so no external boost_iostream library is needed
+
 ** minMAFforGRM is added as a parameter in step 0 and 1, so only markers in the plinkFile with MAF >= minMAFforGRM will be used for GRM
 ** weights.beta.rare, weights.beta.common, weightMAFcutoff, dosageZerodCutoff, IsOutputPvalueNAinGroupTestforBinary, IsAccountforCasecontrolImbalanceinGroupTest are added as new parameters in step 2
 
