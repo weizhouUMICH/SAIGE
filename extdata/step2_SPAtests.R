@@ -79,7 +79,7 @@ option_list <- list(
   make_option("--weights.beta.rare", type="character", default="1,25",
     help="parameters for the beta distribution to weight genetic markers with MAF <= weightMAFcutoff in gene-based tests. More options can be seen in the SKAT library"),
   make_option("--weights.beta.common", type="character", default="0.5,0.5",
-    help="parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests. More options can be seen in the SKAT library"),
+    help="parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests. More options can be seen in the SKAT library. NOTE: this argument is not fully developed. currently, weights.beta.common is euqal to weights.beta.rare"),
   make_option("--weightMAFcutoff", type="numeric", default="0.01",
     help="See document above for weights.beta.rare and weights.beta.common"),
   make_option("--r.corr", type="character", default=0,

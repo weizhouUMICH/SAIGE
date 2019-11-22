@@ -35,7 +35,7 @@
 #' @param kernel character. For gene-based test. By default, "linear.weighted". More options can be seen in the SKAT library 
 #' @param method character. method for gene-based test p-values. By default, "optimal.adj". More options can be seen in the SKAT library
 #' @param weights.beta.rare vector of numeric. parameters for the beta distribution to weight genetic markers with MAF <= weightMAFcutoff in gene-based tests.By default, "c(1,25)". More options can be seen in the SKAT library
-#' @param weights.beta.common vector of numeric. parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests.By default, "c(0.5,0.5)". More options can be seen in the SKAT library 
+#' @param weights.beta.common vector of numeric. parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests.By default, "c(1,25)". More options can be seen in the SKAT library. NOTE: this argument is not fully developed. currently, weights.beta.common is euqal to weights.beta.rare 
 #' @param weightMAFcutoff numeric. Between 0 and 0.5. See document above for weights.beta.rare and weights.beta.common. By default, 0.01
 #' @param r.corr numeric. bewteen 0 and 1. parameters for gene-based tests.  By default, 0.  More options can be seen in the SKAT library
 #' @param IsSingleVarinGroupTest logical. Whether to perform single-variant assoc tests for genetic markers included in the gene-based tests. By default, FALSE
@@ -81,7 +81,7 @@ SPAGMMATtest = function(bgenFile = "",
 		 kernel="linear.weighted",
 		 method="optimal.adj",
 		 weights.beta.rare = c(1,25), 
-		 weights.beta.common = c(0.5,0.5), 
+		 weights.beta.common = c(1,25), 
 		 weightMAFcutoff = 0.01,
 		 r.corr=0,
 		 IsSingleVarinGroupTest = TRUE,
@@ -103,9 +103,13 @@ SPAGMMATtest = function(bgenFile = "",
     adjustCCratioinGroupTest = FALSE
   }
 
+  if(sum(weights.beta.rare!=weights.beta.common) > 0){
+    cat("WARNING:The option for weights.beta.common is not fully developed\n")
+    cat("weights.beta.common is set to be equal to weights.beta.rare\n")
+    weights.beta.common = weights.beta.rare		
+  }
+
   # if group file is specified, the region-based test will be performed, otherwise, the single-variant assoc test will be performed. 
-
-
 
   if(groupFile == ""){
     isGroupTest = FALSE
