@@ -226,7 +226,13 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                         }else{
                                                 re = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL))
 						if(class(re) == "try-error"){
-							re = list(p.value = NA)
+							re_btemp = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=1, method=method, Score.Resampling=NULL))
+							re_stemp = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=0, method=method, Score.Resampling=NULL))
+							if(class(re_btemp) == "try-error" | class(re_stemp) == "try-error"){	
+								re = list(p.value = NA)
+							}else{
+								re = list(p.value = 2*min(re_btemp$p.value, re_stemp$p.value, 0.5))
+							}
 						}	
                                         }
                          	}else{# if(m_new == 1){
@@ -235,8 +241,15 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                 	re = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
 )
 					if(class(re) == "try-error"){
-                                                        re = list(p.value = NA)
-                                                }					
+                                        	re_btemp = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=1, method=method, Score.Resampling=NULL) 
+                                                re_stemp = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=0, method=method, Score.Resampling=NULL) 
+
+                                                if(class(re_btemp) == "try-error" | class(re_stemp) == "try-error"){
+                                                	re = list(p.value = NA)
+                                                }else{
+                                                	re = list(p.value = 2*min(re_btemp$p.value, re_stemp$p.value, 0.5))
+                                                }
+                                        }					
 
                                 }
 
@@ -266,9 +279,20 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 						}
 
                                                         re_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi_ccadj$val, r.corr=r.corr, method=method, Score.Resampling=NULL))
+
 							if(class(re_ccadj) == "try-error"){
-								re_ccadj = list(p.value = NA)
-							}	
+								re_btemp_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi_ccadj$val, r.corr=1, method=method, Score.Resampling=NULL)) 
+								re_stemp_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi_ccadj$val, r.corr=0, method=method, Score.Resampling=NULL)) 
+
+                                                        	if(class(re_btemp_ccadj) == "try-error" | class(re_stemp_ccadj) == "try-error"){
+                                                                	re_ccadj = list(p.value = NA)
+                                                        	}else{
+                                                                	re_ccadj = list(p.value = 2*min(re_btemp_ccadj$p.value, re_stemp_ccadj$p.value, 0.5))
+                                                        	}
+
+							}
+
+	
 							re$Out_ccadj = re_ccadj
                                         }
                                 }else{# if(m_new == 1){
@@ -277,7 +301,15 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                         }
                                                 re_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi_ccadj$val, r.corr=r.corr, method=method, Score.Resampling=NULL))
 						if(class(re_ccadj) == "try-error"){
-							re_ccadj = list(p.value=NA)
+							re_btemp_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi_ccadj$val, r.corr=1, method=method, Score.Resampling=NULL))
+                                                	re_stemp_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi_ccadj$val, r.corr=0, method=method, Score.Resampling=NULL))
+
+                                                        if(class(re_btemp_ccadj) == "try-error" | class(re_stemp_ccadj) == "try-error"){
+                                                        	re_ccadj = list(p.value = NA)
+                                                        }else{
+                                                                re_ccadj = list(p.value = 2*min(re_btemp_ccadj$p.value, re_stemp_ccadj$p.value, 0.5))
+                                                        }
+
 						}	
 						re$Out_ccadj = re_ccadj
 
@@ -297,14 +329,29 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
                         			}else{
 	                       				re_cond = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL))
-							  if(class(re_cond) == "try-error"){
-                                                        re_cond = list(p.value=NA)
+							if(class(re_cond) == "try-error"){
+                                                        	re_btemp_cond = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=1, method=method, Score.Resampling=NULL)) 
+								re_stemp_cond = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=0, method=method, Score.Resampling=NULL))
+
+                                                        	if(class(re_btemp_cond) == "try-error" | class(re_stemp_cond) == "try-error"){
+                                                                	re_cond = list(p.value = NA)
+                                                        	}else{
+                                                                	re_cond = list(p.value = 2*min(re_btemp_cond$p.value, re_stemp_cond$p.value, 0.5))
+                                                        	}
                                                 	}
                         			}
 					}else{# if(m_new == 1){
 						re_cond = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=r.corr, method=method, Score.Resampling=NULL))
 						if(class(re_cond) == "try-error"){
-                                                        re_cond = list(p.value=NA)
+							re_btemp_cond = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=1, method=method, Score.Resampling=NULL))
+                                                        re_stemp_cond = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond, Phi=Phi_cond, r.corr=0, method=method, Score.Resampling=NULL))
+
+                                                        if(class(re_btemp_cond) == "try-error" | class(re_stemp_cond) == "try-error"){
+                                                        	re_cond = list(p.value = NA)
+                                                        }else{
+                                                                re_cond = list(p.value = 2*min(re_btemp_cond$p.value, re_stemp_cond$p.value, 0.5))
+                                                        }
+
                                                  }
 					}
 					re$condOut = re_cond
@@ -322,13 +369,30 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                                 }else{
                                                         re_cond_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond_ccadj, Phi=Phi_cond_ccadj, r.corr=r.corr, method=method, Score.Resampling=NULL))
 							if(class(re_cond_ccadj) == "try-error"){
-                                                        re_cond_ccadj = list(p.value=NA)
+								re_btemp_cond_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond_ccadj, Phi=Phi_cond_ccadj, r.corr=1, method=method, Score.Resampling=NULL))
+                                                        	re_stemp_cond_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond_ccadj, Phi=Phi_cond_ccadj, r.corr=0, method=method, Score.Resampling=NULL))
+
+                                                        	if(class(re_btemp_cond_ccadj) == "try-error" | class(re_stemp_cond_ccadj) == "try-error"){
+                                                                	re_cond_ccadj = list(p.value = NA)
+                                                        	}else{
+                                                                	re_cond_ccadj = list(p.value = 2*min(re_btemp_cond_ccadj$p.value, re_stemp_cond_ccadj$p.value, 0.5))
+                                                        	}
+
                                                  	}
                                                 }
                                         }else{# if(m_new == 1){
                                                 re_cond_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond_ccadj, Phi=Phi_cond_ccadj, r.corr=r.corr, method=method, Score.Resampling=NULL))
 						if(class(re_cond_ccadj) == "try-error"){
-                                                        re_cond_ccadj = list(p.value=NA)
+							if(class(re_cond_ccadj) == "try-error"){
+                                                                re_btemp_cond_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond_ccadj, Phi=Phi_cond_ccadj, r.corr=1, method=method, Score.Resampling=NULL))
+                                                                re_stemp_cond_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond_ccadj, Phi=Phi_cond_ccadj, r.corr=0, method=method, Score.Resampling=NULL))
+
+                                                                if(class(re_btemp_cond_ccadj) == "try-error" | class(re_stemp_cond_ccadj) == "try-error"){
+                                                                        re_cond_ccadj = list(p.value = NA)
+                                                                }else{
+                                                                        re_cond_ccadj = list(p.value = 2*min(re_btemp_cond_ccadj$p.value, re_stemp_cond_ccadj$p.value, 0.5))
+                                                                }
+                                                        }	
                                                 }
                                         }
 
