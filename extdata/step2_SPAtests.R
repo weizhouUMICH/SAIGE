@@ -1,7 +1,8 @@
 rm(list=ls())
 
 options(stringsAsFactors=F)
-library(SAIGE)
+#library(SAIGE)
+library(SAIGE, lib.loc="/home/wei/install_dir/")
 print(sessionInfo())
 
 
@@ -78,7 +79,7 @@ option_list <- list(
     help="Method for gene-based test p-values. Methods other than optimal.adj have not been extensively tested. More options can be seen in the SKAT library"),
   make_option("--weights.beta.rare", type="character", default="1,25",
     help="parameters for the beta distribution to weight genetic markers with MAF <= weightMAFcutoff in gene-based tests. More options can be seen in the SKAT library"),
-  make_option("--weights.beta.common", type="character", default="0.5,0.5",
+  make_option("--weights.beta.common", type="character", default="1,25",
     help="parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests. More options can be seen in the SKAT library. NOTE: this argument is not fully developed. currently, weights.beta.common is euqal to weights.beta.rare"),
   make_option("--weightMAFcutoff", type="numeric", default="0.01",
     help="See document above for weights.beta.rare and weights.beta.common"),
@@ -95,7 +96,12 @@ option_list <- list(
   make_option("--IsOutputPvalueNAinGroupTestforBinary", type="logical",default=FALSE,
     help="Whether to output p value if not account for case-control imbalance when performing group test (only for binary traits). [default=FALSE]"),
   make_option("--IsAccountforCasecontrolImbalanceinGroupTest", type="logical",default=TRUE,
-    help="Whether to account for unbalanced case-control ratios for binary tratis in gene- or region-based tests. [default=TRUE]")	
+    help="Whether to account for unbalanced case-control ratios for binary tratis in gene- or region-based tests. [default=TRUE]"),
+  make_option("--weightsIncludeinGroupFile", type="logical",default=FALSE,
+    help="Whether to specify customized weight for makers in gene- or region-based tests. If TRUE, weights are included in the group file. For vcf/sav, the genetic marker ids and weights are in the format chr:pos_ref/alt;weight. For bgen, the genetic marker ids should match the ids in the bgen filE, e.g. SNPID;weight. Each element in the line is seperated by tab. [default=FALSE]"
+),
+  make_option("--weights_for_G2_cond",type="character", default=NULL, 
+    help="vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. e.g. '1,2,3")	
 )
 
 
@@ -104,14 +110,27 @@ parser <- OptionParser(usage="%prog [options]", option_list=option_list)
 args <- parse_args(parser, positional_arguments = 0)
 opt <- args$options
 print(opt)
-weights.beta.rare <- as.numeric(strsplit(opt$weights.beta.rare,",")[[1]])
-weights.beta.common <- as.numeric(strsplit(opt$weights.beta.common,",")[[1]])
 
-cateVarRatioMinMACVecExclude <- as.numeric(strsplit(opt$cateVarRatioMinMACVecExclude,",")[[1]])
-cateVarRatioMaxMACVecInclude <- as.numeric(strsplit(opt$cateVarRatioMaxMACVecInclude,",")[[1]])
-#set seed
-print(cateVarRatioMinMACVecExclude)
-print(cateVarRatioMaxMACVecInclude)
+
+convertoNumeric = function(x,stringOutput){
+	y= tryCatch(expr = as.numeric(x),warning = function(w) {return(NULL)})
+	if(is.null(y)){
+		stop(stringOutput, " is not numeric\n")
+	}else{
+		cat(stringOutput, " is ", y, "\n")
+	}
+	return(y)	
+}
+
+
+#weights.beta.rare <- as.numeric(strsplit(opt$weights.beta.rare,",")[[1]])
+weights.beta.rare <- convertoNumeric(x=strsplit(opt$weights.beta.rare,",")[[1]], "weights.beta.rare")
+weights.beta.common <- convertoNumeric(x=strsplit(opt$weights.beta.common,",")[[1]], "weights.beta.common")
+if(sum(weights.beta.common!=weights.beta.rare) > 0){stop("weights.beta.common option is not functioning, so weights.beta.common needs to be equal to weights.beta.rare")}
+cateVarRatioMinMACVecExclude <- convertoNumeric(x=strsplit(opt$cateVarRatioMinMACVecExclude,",")[[1]], "cateVarRatioMinMACVecExclude")
+cateVarRatioMaxMACVecInclude <- convertoNumeric(x=strsplit(opt$cateVarRatioMaxMACVecInclude,",")[[1]], "cateVarRatioMaxMACVecInclude")
+weights_for_G2_cond <- convertoNumeric(x=strsplit(opt$weights_for_G2_cond,",")[[1]], "weights_for_G2_cond")
+
 
 
 #try(if(length(which(opt == "")) > 0) stop("Missing arguments"))
@@ -156,5 +175,7 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 	     weights.beta.rare=weights.beta.rare,
 	     weights.beta.common=weights.beta.common,
 	     weightMAFcutoff=opt$weightMAFcutoff,
-	     r.corr=opt$r.corr	
+	     r.corr=opt$r.corr,
+	     weightsIncludeinGroupFile=opt$weightsIncludeinGroupFile,
+	     weights_for_G2_cond=weights_for_G2_cond	
 )

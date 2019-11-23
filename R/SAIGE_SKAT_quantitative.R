@@ -2,7 +2,7 @@
 #G1 is genotypes for testing gene, which contains m markers
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
-SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE){
+SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE, weights_specified = NULL, weights_for_G2_cond = NULL, weightsIncludeinGroupFile = FALSE){
 
         #check the input genotype G1
         obj.noK = obj$obj.noK
@@ -35,23 +35,35 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
        }
 
 	#print(MAF)
-	if(length(MAF) > 1){
-		weights=rep(0,length(MAF))
-		index1 = which(MAF<=weightMAFcutoff)
-		if(length(index1) > 0) {weights[which(MAF<=weightMAFcutoff)] = SKAT:::Beta.Weights(MAF[which(MAF<=weightMAFcutoff)],weights.beta.rare)}
-		index2 = which(MAF>weightMAFcutoff)
-		if(length(index2) > 0) {weights[which(MAF>weightMAFcutoff)] = SKAT:::Beta.Weights(MAF[which(MAF>weightMAFcutoff)],weights.beta.common)}	
-	}else{
-		if(MAF<=weightMAFcutoff){
-			weights = SKAT:::Beta.Weights(MAF,weights.beta.rare)
+	if(!weightsIncludeinGroupFile){
+		if(length(MAF) > 1){
+			weights=rep(0,length(MAF))
+			index1 = which(MAF<=weightMAFcutoff)
+			if(length(index1) > 0) {weights[which(MAF<=weightMAFcutoff)] = SKAT:::Beta.Weights(MAF[which(MAF<=weightMAFcutoff)],weights.beta.rare)}
+			index2 = which(MAF>weightMAFcutoff)
+			if(length(index2) > 0) {weights[which(MAF>weightMAFcutoff)] = SKAT:::Beta.Weights(MAF[which(MAF>weightMAFcutoff)],weights.beta.common)}	
 		}else{
-			weights = SKAT:::Beta.Weights(MAF,weights.beta.common)
+			if(MAF<=weightMAFcutoff){
+				weights = SKAT:::Beta.Weights(MAF,weights.beta.rare)
+			}else{
+				weights = SKAT:::Beta.Weights(MAF,weights.beta.common)
 			
+			}
+		}
+	}else{
+		weights = weights_specified
+		cat("weights is specified in the group file.\n")
+
+		if(!is.null(G2_cond)){
+			if(!is.null(weights_for_G2_cond)){
+				weights = c(weights, weights_for_G2_cond)
+			}else{
+				stop("weights is not specified for the conditioning marker(s)\n")
+			} 
 		}
 	}
 
-
-	cat("weights : ", weights, "\n")	
+	cat("weights: ", weights, "\n")	
 	indexNeg = NULL
 
         G1_org = G1
@@ -79,7 +91,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 		}else{
 			MACvec_indVec = MACvec_indVec_Zall
 		}
-
                 ##summaize the number of markers falling in each MAC category
 		markerNumbyMAC = NULL
 		for(i in 1:length(cateVarRatioMinMACVecExclude)){
@@ -231,7 +242,9 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 							if(class(re_btemp) == "try-error" | class(re_stemp) == "try-error"){	
 								re = list(p.value = NA)
 							}else{
-								re = list(p.value = 2*min(re_btemp$p.value, re_stemp$p.value, 0.5))
+								re = list(p.value = 2*min(re_btemp$p.value, re_stemp$p.value, 0.5), param = list())
+								re$param = list(p.val.each = c(re_btemp$p.value, re_stemp$p.value), rho=c(1,0))
+
 							}
 						}	
                                         }
@@ -241,13 +254,16 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                 	re = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL)
 )
 					if(class(re) == "try-error"){
-                                        	re_btemp = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=1, method=method, Score.Resampling=NULL) 
-                                                re_stemp = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=0, method=method, Score.Resampling=NULL) 
+                                        	re_btemp = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=1, method=method, Score.Resampling=NULL)) 
+                                                re_stemp = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=0, method=method, Score.Resampling=NULL)) 
 
                                                 if(class(re_btemp) == "try-error" | class(re_stemp) == "try-error"){
                                                 	re = list(p.value = NA)
                                                 }else{
-                                                	re = list(p.value = 2*min(re_btemp$p.value, re_stemp$p.value, 0.5))
+                                                	re = list(p.value = 2*min(re_btemp$p.value, re_stemp$p.value, 0.5), param=list())
+							re$param = list(p.val.each = c(re_btemp$p.value, re_stemp$p.value), rho=c(1,0))
+
+
                                                 }
                                         }					
 
@@ -287,7 +303,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                                         	if(class(re_btemp_ccadj) == "try-error" | class(re_stemp_ccadj) == "try-error"){
                                                                 	re_ccadj = list(p.value = NA)
                                                         	}else{
-                                                                	re_ccadj = list(p.value = 2*min(re_btemp_ccadj$p.value, re_stemp_ccadj$p.value, 0.5))
+                                                                	re_ccadj = list(p.value = 2*min(re_btemp_ccadj$p.value, re_stemp_ccadj$p.value, 0.5), param=list())
+									re_ccadj$param = list(p.val.each = c(re_btemp_ccadj$p.value, re_stemp_ccadj$p.value), rho=c(1,0))
                                                         	}
 
 							}
@@ -307,7 +324,9 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                                         if(class(re_btemp_ccadj) == "try-error" | class(re_stemp_ccadj) == "try-error"){
                                                         	re_ccadj = list(p.value = NA)
                                                         }else{
-                                                                re_ccadj = list(p.value = 2*min(re_btemp_ccadj$p.value, re_stemp_ccadj$p.value, 0.5))
+                                                                re_ccadj = list(p.value = 2*min(re_btemp_ccadj$p.value, re_stemp_ccadj$p.value, 0.5), param=list())
+								re_ccadj$param = list(p.val.each = c(re_btemp_ccadj$p.value, re_stemp_ccadj$p.value), rho=c(1,0))
+
                                                         }
 
 						}	
@@ -315,7 +334,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 
                                 }
 			}
-
 
 
 
@@ -336,7 +354,10 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                                         	if(class(re_btemp_cond) == "try-error" | class(re_stemp_cond) == "try-error"){
                                                                 	re_cond = list(p.value = NA)
                                                         	}else{
-                                                                	re_cond = list(p.value = 2*min(re_btemp_cond$p.value, re_stemp_cond$p.value, 0.5))
+                                                                	re_cond = list(p.value = 2*min(re_btemp_cond$p.value, re_stemp_cond$p.value, 0.5), param=list())
+									re_cond$param = list(p.val.each = c(re_btemp_cond$p.value, re_stemp_cond$p.value), rho=c(1,0))
+
+
                                                         	}
                                                 	}
                         			}
@@ -349,7 +370,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                                         if(class(re_btemp_cond) == "try-error" | class(re_stemp_cond) == "try-error"){
                                                         	re_cond = list(p.value = NA)
                                                         }else{
-                                                                re_cond = list(p.value = 2*min(re_btemp_cond$p.value, re_stemp_cond$p.value, 0.5))
+                                                                re_cond = list(p.value = 2*min(re_btemp_cond$p.value, re_stemp_cond$p.value, 0.5), param=list())
+								re_cond$param = list(p.val.each = c(re_btemp_cond$p.value, re_stemp_cond$p.value), rho=c(1,0))
                                                         }
 
                                                  }
@@ -375,14 +397,14 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                                         	if(class(re_btemp_cond_ccadj) == "try-error" | class(re_stemp_cond_ccadj) == "try-error"){
                                                                 	re_cond_ccadj = list(p.value = NA)
                                                         	}else{
-                                                                	re_cond_ccadj = list(p.value = 2*min(re_btemp_cond_ccadj$p.value, re_stemp_cond_ccadj$p.value, 0.5))
+                                                                	re_cond_ccadj = list(p.value = 2*min(re_btemp_cond_ccadj$p.value, re_stemp_cond_ccadj$p.value, 0.5), param=list())
+									re_cond_ccadj$param = list(p.val.each = c(re_btemp_cond_ccadj$p.value, re_stemp_cond_ccadj$p.value), rho=c(1,0))
                                                         	}
 
                                                  	}
                                                 }
                                         }else{# if(m_new == 1){
                                                 re_cond_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond_ccadj, Phi=Phi_cond_ccadj, r.corr=r.corr, method=method, Score.Resampling=NULL))
-						if(class(re_cond_ccadj) == "try-error"){
 							if(class(re_cond_ccadj) == "try-error"){
                                                                 re_btemp_cond_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond_ccadj, Phi=Phi_cond_ccadj, r.corr=1, method=method, Score.Resampling=NULL))
                                                                 re_stemp_cond_ccadj = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_cond_ccadj, Phi=Phi_cond_ccadj, r.corr=0, method=method, Score.Resampling=NULL))
@@ -390,12 +412,11 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                                                 if(class(re_btemp_cond_ccadj) == "try-error" | class(re_stemp_cond_ccadj) == "try-error"){
                                                                         re_cond_ccadj = list(p.value = NA)
                                                                 }else{
-                                                                        re_cond_ccadj = list(p.value = 2*min(re_btemp_cond_ccadj$p.value, re_stemp_cond_ccadj$p.value, 0.5))
+                                                                        re_cond_ccadj = list(p.value = 2*min(re_btemp_cond_ccadj$p.value, re_stemp_cond_ccadj$p.value, 0.5), param = list())
+									re_cond_ccadj$param = list(p.val.each = c(re_btemp_cond_ccadj$p.value, re_stemp_cond_ccadj$p.value), rho=c(1,0)) 
                                                                 }
                                                         }	
-                                                }
                                         }
-
 					re$condOut_ccadj = re_cond_ccadj
 
 				}
