@@ -873,6 +873,13 @@ SPAGMMATtest = function(bgenFile = "",
 
    }else{ #end if(!isGroupTest){
    #########Group Test
+    if(LOCO | obj.glmm.null$LOCO){
+      #obj.glmm.null$LOCO = FALSE
+      #LOCO=FALSE	
+      stop("Leave-one-chromosome-out is specified but gene- or region-based tests are not working with LOCO\n")
+    }
+
+
 
    
      OUT_single = NULL

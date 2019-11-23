@@ -3,7 +3,7 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
-library(SAIGE)
+library(SAIGE, lib.loc="~/install_dir")
 require(optparse) #install.packages("optparse")
 
 print(sessionInfo())
@@ -92,9 +92,21 @@ opt <- args$options
 print(opt)
 
 covars <- strsplit(opt$covarColList,",")[[1]]
-tauInit <- as.numeric(strsplit(opt$tauInit, ",")[[1]])
-cateVarRatioMinMACVecExclude <- as.numeric(strsplit(opt$cateVarRatioMinMACVecExclude,",")[[1]])
-cateVarRatioMaxMACVecInclude <- as.numeric(strsplit(opt$cateVarRatioMaxMACVecInclude,",")[[1]])
+
+convertoNumeric = function(x,stringOutput){
+        y= tryCatch(expr = as.numeric(x),warning = function(w) {return(NULL)})
+        if(is.null(y)){
+                stop(stringOutput, " is not numeric\n")
+        }else{
+                cat(stringOutput, " is ", y, "\n")
+        }
+        return(y)
+}
+
+tauInit <- convertoNumeric(strsplit(opt$tauInit, ",")[[1]], "tauInit")
+cateVarRatioMinMACVecExclude <- convertoNumeric(x=strsplit(opt$cateVarRatioMinMACVecExclude,",")[[1]], "cateVarRatioMinMACVecExclude")
+cateVarRatioMaxMACVecInclude <- convertoNumeric(x=strsplit(opt$cateVarRatioMaxMACVecInclude,",")[[1]], "cateVarRatioMaxMACVecInclude")
+
 
 #set seed
 set.seed(1)

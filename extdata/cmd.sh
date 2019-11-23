@@ -1,7 +1,8 @@
 #binary
 #For single-variant association tests. 
 #Not use sparse GRM and not use categorical variance ratios#
-#randomly selected markers with MAC >= 20 are used to estimate the variance ratio
+#randomly selected markers with MAC >= 20 in the plink file are used to estimate the variance ratio
+#--minMAFforGRM can be used for specify the minimum MAF of markers in the plink file used for GRM, by default=0.01
 #step 1: fit the NULL glmm 
 Rscript step1_fitNULLGLMM.R     \
         --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
@@ -11,8 +12,9 @@ Rscript step1_fitNULLGLMM.R     \
         --sampleIDColinphenoFile=IID \
         --traitType=binary        \
         --outputPrefix=./output/example_binary \
-        --nThreads=4 \
-        --LOCO=FALSE
+        --nThreads=4	\
+	--LOCO=FALSE	\
+	--minMAFforGRM=0.01
 
 #step 2: perform the single-variant association tests
 Rscript step2_SPAtests.R	\
@@ -280,6 +282,7 @@ Rscript step2_SPAtests.R \
 ###--isCateVarianceRatio=TRUE categorical variance ratios for different MAC categories need to be calculated 
 ###NOTE:Please store the single variance ratio for single-variant assoc test before this step. e.g rename the file, since the variance ratio file will contain categorical variance ratios if --isCateVarianceRatio=TRUE
 
+##quantitative traits
 Rscript step1_fitNULLGLMM.R     \
 	--plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
         --phenoFile=./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt \
@@ -411,4 +414,32 @@ Rscript step2_SPAtests.R \
         --IsSingleVarinGroupTest=TRUE   \
         --IsOutputPvalueNAinGroupTestforBinary=TRUE     \
         --IsAccountforCasecontrolImbalanceinGroupTest=TRUE	\
-	--condition=chr1:32302_A/C	
+	--condition=chr1:32302_A/C
+
+
+
+####Specify customized weights for markers in the gene- or region-based tests
+#weightsIncludeinGroupFile logical. Whether to specify customized weight for makers in gene- or region-based tests. If TRUE, weights are included in the group file. For vcf/sav, the genetic marker ids and weights are in the format chr:pos_ref/alt;weight. For bgen, the genetic marker ids should match the ids in the bgen filE, e.g. SNPID;weight. Each element in the line is seperated by tab. By default, FALSE
+#weights_for_G2_cond vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma.
+Rscript step2_SPAtests.R \
+        --vcfFile=./input/seedNumLow_126001_seedNumHigh_127000_nfam_1000_nindep_0.sav \
+        --vcfFileIndex=./input/seedNumLow_126001_seedNumHigh_127000_nfam_1000_nindep_0.sav.s1r \
+        --vcfField=DS \
+        --chrom=chr1 \
+        --minMAF=0 \
+        --minMAC=0.5 \
+        --maxMAFforGroupTest=0.01       \
+        --sampleFile=./input/samplelist.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary_cate_v2.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.gene_conditional_withspecifiedWeights.txt \
+        --numLinesOutput=1 \
+        --groupFile=./input/groupFile_geneBasedtest_withWeights.txt    \
+        --sparseSigmaFile=./output/example_binary_cate_v2.varianceRatio.txt_relatednessCutoff_0.125.sparseSigma.mtx       \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsSingleVarinGroupTest=TRUE   \
+        --IsOutputPvalueNAinGroupTestforBinary=TRUE     \
+        --IsAccountforCasecontrolImbalanceinGroupTest=TRUE      \
+	--weightsIncludeinGroupFile=TRUE	\
+	--weights_for_G2_cond=3,1	\
+	--condition=chr1:32302_A/C,chr1:32304_A/C	

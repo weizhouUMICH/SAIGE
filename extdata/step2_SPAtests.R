@@ -127,10 +127,14 @@ convertoNumeric = function(x,stringOutput){
 weights.beta.rare <- convertoNumeric(x=strsplit(opt$weights.beta.rare,",")[[1]], "weights.beta.rare")
 weights.beta.common <- convertoNumeric(x=strsplit(opt$weights.beta.common,",")[[1]], "weights.beta.common")
 if(sum(weights.beta.common!=weights.beta.rare) > 0){stop("weights.beta.common option is not functioning, so weights.beta.common needs to be equal to weights.beta.rare")}
+
 cateVarRatioMinMACVecExclude <- convertoNumeric(x=strsplit(opt$cateVarRatioMinMACVecExclude,",")[[1]], "cateVarRatioMinMACVecExclude")
 cateVarRatioMaxMACVecInclude <- convertoNumeric(x=strsplit(opt$cateVarRatioMaxMACVecInclude,",")[[1]], "cateVarRatioMaxMACVecInclude")
-weights_for_G2_cond <- convertoNumeric(x=strsplit(opt$weights_for_G2_cond,",")[[1]], "weights_for_G2_cond")
-
+if(is.null(opt$weights_for_G2_cond)){
+	weights_for_G2_cond=NULL
+}else{
+	weights_for_G2_cond <- convertoNumeric(x=strsplit(opt$weights_for_G2_cond,",")[[1]], "weights_for_G2_cond")
+}
 
 
 #try(if(length(which(opt == "")) > 0) stop("Missing arguments"))
