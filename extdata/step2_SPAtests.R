@@ -1,4 +1,4 @@
-rm(list=ls())
+#!/usr/bin/env Rscript
 
 options(stringsAsFactors=F)
 #library(SAIGE)
