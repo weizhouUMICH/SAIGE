@@ -4,26 +4,49 @@
 \alias{fitNULLGLMM}
 \title{Fit the null logistic/linear mixed model and estimate the variance ratios by randomly selected variants}
 \usage{
-fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
-  traitType = "binary", invNormalize = FALSE, covarColList = NULL,
-  qCovarCol = NULL, sampleIDColinphenoFile = "", tol = 0.02,
-  maxiter = 20, tolPCG = 1e-05, maxiterPCG = 500, nThreads = 1,
-  SPAcutoff = 2, numMarkers = 30, skipModelFitting = FALSE,
-  memoryChunk = 2, tauInit = c(0, 0), LOCO = FALSE,
-  traceCVcutoff = 0.0025, ratioCVcutoff = 0.001, outputPrefix = "",
-  outputPrefix_varRatio = NULL, IsSparseKin = FALSE,
-  sparseGRMFile = NULL, sparseGRMSampleIDFile = NULL,
-  numRandomMarkerforSparseKin = 1000, relatednessCutoff = 0.125,
-  isCateVarianceRatio = FALSE, cateVarRatioIndexVec = NULL,
-  cateVarRatioMinMACVecExclude = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 10.5,
-  20.5), cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5,
-  20.5), isCovariateTransform = TRUE, isDiagofKinSetAsOne = FALSE,
+fitNULLGLMM(
+  plinkFile = "",
+  phenoFile = "",
+  phenoCol = "",
+  traitType = "binary",
+  invNormalize = FALSE,
+  covarColList = NULL,
+  qCovarCol = NULL,
+  sampleIDColinphenoFile = "",
+  tol = 0.02,
+  maxiter = 20,
+  tolPCG = 1e-05,
+  maxiterPCG = 500,
+  nThreads = 1,
+  SPAcutoff = 2,
+  numMarkers = 30,
+  skipModelFitting = FALSE,
+  memoryChunk = 2,
+  tauInit = c(0, 0),
+  LOCO = FALSE,
+  traceCVcutoff = 0.0025,
+  ratioCVcutoff = 0.001,
+  outputPrefix = "",
+  outputPrefix_varRatio = NULL,
+  IsSparseKin = FALSE,
+  sparseGRMFile = NULL,
+  sparseGRMSampleIDFile = NULL,
+  numRandomMarkerforSparseKin = 1000,
+  relatednessCutoff = 0.125,
+  isCateVarianceRatio = FALSE,
+  cateVarRatioIndexVec = NULL,
+  cateVarRatioMinMACVecExclude = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
+  cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
+  isCovariateTransform = TRUE,
+  isDiagofKinSetAsOne = FALSE,
   useSparseSigmaConditionerforPCG = FALSE,
-  useSparseSigmaforInitTau = FALSE, minCovariateCount = -1,
-  minMAFforGRM = 0.01)
+  useSparseSigmaforInitTau = FALSE,
+  minCovariateCount = -1,
+  minMAFforGRM = 0.01
+)
 }
 \arguments{
-\item{plinkFile}{character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM). Genetic markers are also randomly selected from the plink file to estimate the variance ratios}
+\item{plinkFile}{character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM). minMAFforGRM can be used to specify the minimum MAF of markers in he plink file to be used for constructing GRM. Genetic markers are also randomly selected from the plink file to estimate the variance ratios}
 
 \item{phenoFile}{character. Path to the phenotype file. The phenotype file has a header and contains at least two columns. One column is for phentoype and the other column is for sample IDs. Additional columns can be included in the phenotype file for covariates in the null GLMM. Please note that covariates to be used in the NULL GLMM need to specified using the argument covarColList.}
 

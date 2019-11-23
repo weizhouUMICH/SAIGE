@@ -2,27 +2,56 @@
 % Please edit documentation in R/SAIGE_SPATest.R
 \name{SPAGMMATtest}
 \alias{SPAGMMATtest}
-\title{Run single variant score tests with SPA based on the logistic mixed model.}
+\title{Run single variant or gene- or region-based score tests with SPA based on the linear/logistic mixed model.}
 \usage{
-SPAGMMATtest(bgenFile = "", bgenFileIndex = "", vcfFile = "",
-  vcfFileIndex = "", vcfField = "DS", savFile = "",
-  savFileIndex = "", sampleFile = "", idstoExcludeFile = "",
-  idstoIncludeFile = "", rangestoExcludeFile = "",
-  rangestoIncludeFile = "", chrom = "", start = 1, end = 2.5e+08,
-  IsDropMissingDosages = FALSE, minMAC = 0.5, minMAF = 0,
-  maxMAFforGroupTest = 0.5, minInfo = 0, GMMATmodelFile = "",
-  varianceRatioFile = "", SPAcutoff = 2, SAIGEOutputFile = "",
-  numLinesOutput = 10000, IsSparse = TRUE,
-  IsOutputAFinCaseCtrl = FALSE, IsOutputNinCaseCtrl = FALSE,
-  LOCO = FALSE, condition = "", sparseSigmaFile = "",
-  groupFile = "", kernel = "linear.weighted", method = "optimal.adj",
-  weights.beta.rare = c(1, 25), weights.beta.common = c(0.5, 0.5),
-  weightMAFcutoff = 0.01, r.corr = 0, IsSingleVarinGroupTest = TRUE,
-  cateVarRatioMinMACVecExclude = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 10.5,
-  20.5), cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5,
-  20.5), dosageZerodCutoff = 0.2,
+SPAGMMATtest(
+  bgenFile = "",
+  bgenFileIndex = "",
+  vcfFile = "",
+  vcfFileIndex = "",
+  vcfField = "DS",
+  savFile = "",
+  savFileIndex = "",
+  sampleFile = "",
+  idstoExcludeFile = "",
+  idstoIncludeFile = "",
+  rangestoExcludeFile = "",
+  rangestoIncludeFile = "",
+  chrom = "",
+  start = 1,
+  end = 2.5e+08,
+  IsDropMissingDosages = FALSE,
+  minMAC = 0.5,
+  minMAF = 0,
+  maxMAFforGroupTest = 0.5,
+  minInfo = 0,
+  GMMATmodelFile = "",
+  varianceRatioFile = "",
+  SPAcutoff = 2,
+  SAIGEOutputFile = "",
+  numLinesOutput = 10000,
+  IsSparse = TRUE,
+  IsOutputAFinCaseCtrl = FALSE,
+  IsOutputNinCaseCtrl = FALSE,
+  LOCO = FALSE,
+  condition = "",
+  sparseSigmaFile = "",
+  groupFile = "",
+  kernel = "linear.weighted",
+  method = "optimal.adj",
+  weights.beta.rare = c(1, 25),
+  weights.beta.common = c(1, 25),
+  weightMAFcutoff = 0.01,
+  weightsIncludeinGroupFile = FALSE,
+  weights_for_G2_cond = NULL,
+  r.corr = 0,
+  IsSingleVarinGroupTest = TRUE,
+  cateVarRatioMinMACVecExclude = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
+  cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
+  dosageZerodCutoff = 0.2,
   IsOutputPvalueNAinGroupTestforBinary = FALSE,
-  IsAccountforCasecontrolImbalanceinGroupTest = TRUE)
+  IsAccountforCasecontrolImbalanceinGroupTest = TRUE
+)
 }
 \arguments{
 \item{bgenFile}{character. Path to bgen file. Currently version 1.2 with 8 bit compression is supported}
@@ -71,7 +100,7 @@ SPAGMMATtest(bgenFile = "", bgenFileIndex = "", vcfFile = "",
 
 \item{SPAcutoff}{by default = 2 (SPA test would be used when p value < 0.05 under the normal approximation)}
 
-\item{SAIGEOutputFile}{character. Path to the output file containing the assoc test results}
+\item{SAIGEOutputFile}{character. Path to the output file containing assoc test results}
 
 \item{numLinesOutput}{numeric. Number of  markers to be output each time. By default, 10000}
 
@@ -95,9 +124,13 @@ SPAGMMATtest(bgenFile = "", bgenFileIndex = "", vcfFile = "",
 
 \item{weights.beta.rare}{vector of numeric. parameters for the beta distribution to weight genetic markers with MAF <= weightMAFcutoff in gene-based tests.By default, "c(1,25)". More options can be seen in the SKAT library}
 
-\item{weights.beta.common}{vector of numeric. parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests.By default, "c(0.5,0.5)". More options can be seen in the SKAT library}
+\item{weights.beta.common}{vector of numeric. parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests.By default, "c(1,25)". More options can be seen in the SKAT library. NOTE: this argument is not fully developed. currently, weights.beta.common is euqal to weights.beta.rare}
 
 \item{weightMAFcutoff}{numeric. Between 0 and 0.5. See document above for weights.beta.rare and weights.beta.common. By default, 0.01}
+
+\item{weightsIncludeinGroupFile}{logical. Whether to specify customized weight for makers in gene- or region-based tests. If TRUE, weights are included in the group file. For vcf/sav, the genetic marker ids and weights are in the format chr:pos_ref/alt;weight. For bgen, the genetic marker ids should match the ids in the bgen filE, e.g. SNPID;weight. Each element in the line is seperated by tab. By default, FALSE}
+
+\item{weights_for_G2_cond}{vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. By default, "c(1,2)"}
 
 \item{r.corr}{numeric. bewteen 0 and 1. parameters for gene-based tests.  By default, 0.  More options can be seen in the SKAT library}
 
@@ -117,5 +150,5 @@ SPAGMMATtest(bgenFile = "", bgenFileIndex = "", vcfFile = "",
 SAIGEOutputFile
 }
 \description{
-Run single variant score tests with SPA based on the logistic mixed model.
+Run single variant or gene- or region-based score tests with SPA based on the linear/logistic mixed model.
 }
