@@ -2,7 +2,7 @@
 
 options(stringsAsFactors=F)
 #library(SAIGE)
-library(SAIGE, lib.loc="/home/wei/install_dir/")
+library(SAIGE)
 print(sessionInfo())
 
 
