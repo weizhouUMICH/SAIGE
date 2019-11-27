@@ -79,7 +79,9 @@ option_list <- list(
   make_option("--useSparseSigmaforInitTau", type="logical", default=FALSE,
     help="Whether to use sparse Sigma to estiamte initial tau [default='FALSE']."),
   make_option("--minMAFforGRM", type="numeric", default=0.01,
-    help="minimum MAF of markers used for GRM")	
+    help="minimum MAF of markers used for GRM"),
+  make_option("--minCovariateCount", type="integer", default=-1,
+    help="Binary covariates with less than this number of cases or controls will be excluded from the model. Defaults to -1 (no covariates will be excluded) [default=-1]")
 )
 
 
@@ -134,4 +136,5 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
             isDiagofKinSetAsOne = opt$isDiagofKinSetAsOne,
 	    useSparseSigmaConditionerforPCG = opt$useSparseSigmaConditionerforPCG,
 	    useSparseSigmaforInitTau = opt$useSparseSigmaforInitTau,
-	     minMAFforGRM = opt$minMAFforGRM)	
+	    minMAFforGRM = opt$minMAFforGRM,
+	    minCovariateCount = opt$minCovariateCount)
