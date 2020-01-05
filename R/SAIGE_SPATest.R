@@ -93,7 +93,8 @@ SPAGMMATtest = function(bgenFile = "",
 		 cateVarRatioMaxMACVecInclude=c(1.5,2.5,3.5,4.5,5.5,10.5,20.5),
 		 dosageZerodCutoff = 0.2,	
 		 IsOutputPvalueNAinGroupTestforBinary = FALSE,
-		 IsAccountforCasecontrolImbalanceinGroupTest = TRUE){
+		 IsAccountforCasecontrolImbalanceinGroupTest = TRUE,
+		 IsOutputBETASEinBurdenTest = FALSE){
 
 
   if(weightMAFcutoff < 0 | weightMAFcutoff > 0.5){
@@ -933,7 +934,11 @@ SPAGMMATtest = function(bgenFile = "",
 	  if(adjustCCratioinGroupTest){	
            resultHeader = c("Gene", "Pvalue", MACcateNumHeader ,"markerIDs","markerAFs")
 	   if(method=="optimal.adj"){
-	     resultHeader = c("Gene", "Pvalue", MACcateNumHeader ,"markerIDs","markerAFs" , "Pvalue_Burden","Pvalue_SKAT")	
+	     if(IsOutputBETASEinBurdenTest){
+	       resultHeader = c("Gene", "Pvalue", MACcateNumHeader ,"markerIDs","markerAFs" , "Pvalue_Burden","Pvalue_SKAT", "BETA_Burden", "SE_Burden")
+	     }else{
+	       resultHeader = c("Gene", "Pvalue", MACcateNumHeader ,"markerIDs","markerAFs" , "Pvalue_Burden","Pvalue_SKAT")	
+	     }	
 	   }
 	  }
 
@@ -941,12 +946,23 @@ SPAGMMATtest = function(bgenFile = "",
            if(!adjustCCratioinGroupTest){
              resultHeader = c("Gene", "Pvalue", MACcateNumHeader ,"markerIDs","markerAFs")
              if(method=="optimal.adj"){
-               resultHeader = c("Gene", "Pvalue", MACcateNumHeader ,"markerIDs","markerAFs" , "Pvalue_Burden","Pvalue_SKAT")
+	       if(IsOutputBETASEinBurdenTest){
+                 resultHeader = c("Gene", "Pvalue", MACcateNumHeader ,"markerIDs","markerAFs" , "Pvalue_Burden","Pvalue_SKAT", "BETA_Burden", "SE_Burden")
+	       }else{
+		resultHeader = c("Gene", "Pvalue", MACcateNumHeader ,"markerIDs","markerAFs" , "Pvalue_Burden","Pvalue_SKAT")
+	       }
+
+
              }
            }else{
              resultHeader = c(resultHeader, "Pvalue.NA")
 	     if(method=="optimal.adj"){
-               resultHeader = c(resultHeader, "Pvalue_Burden.NA","Pvalue_SKAT.NA")
+		if(IsOutputBETASEinBurdenTest){
+                  resultHeader = c(resultHeader, "Pvalue_Burden.NA","Pvalue_SKAT.NA", "BETA_Burden.NA", "SE_Burden.NA")
+		}else{
+		  resultHeader = c(resultHeader, "Pvalue_Burden.NA","Pvalue_SKAT.NA")	
+		}
+
              }	
 	   }
 	 }
@@ -954,7 +970,11 @@ SPAGMMATtest = function(bgenFile = "",
 	 if(adjustCCratioinGroupTest){
            resultHeader = c("Gene", "Pvalue", "Pvalue_cond", MACcateNumHeader ,"markerIDs","markerAFs")
            if(method=="optimal.adj"){
-             resultHeader = c("Gene", "Pvalue", "Pvalue_cond", MACcateNumHeader ,"markerIDs","markerAFs" , "Pvalue_Burden","Pvalue_Burden_cond","Pvalue_SKAT","Pvalue_SKAT_cond")
+	     if(IsOutputBETASEinBurdenTest){
+             	resultHeader = c("Gene", "Pvalue", "Pvalue_cond", MACcateNumHeader ,"markerIDs","markerAFs" , "Pvalue_Burden","Pvalue_Burden_cond","Pvalue_SKAT","Pvalue_SKAT_cond", "BETA_Burden", "SE_Burden", "BETA_Burden_cond", "SE_Burden_cond")
+	     }else{	
+		resultHeader = c("Gene", "Pvalue", "Pvalue_cond", MACcateNumHeader ,"markerIDs","markerAFs" , "Pvalue_Burden","Pvalue_Burden_cond","Pvalue_SKAT","Pvalue_SKAT_cond")
+	     }	
            }
           }
 
@@ -962,13 +982,20 @@ SPAGMMATtest = function(bgenFile = "",
            if(!adjustCCratioinGroupTest){
 	     resultHeader = c("Gene", "Pvalue", "Pvalue_cond", MACcateNumHeader ,"markerIDs","markerAFs")	
 		if(method=="optimal.adj"){
-
-	     resultHeader = c("Gene", "Pvalue", "Pvalue_cond", MACcateNumHeader ,"markerIDs","markerAFs", "Pvalue_Burden","Pvalue_Burden_cond","Pvalue_SKAT","Pvalue_SKAT_cond")	
+		  if(IsOutputBETASEinBurdenTest){
+	     	    resultHeader = c("Gene", "Pvalue", "Pvalue_cond", MACcateNumHeader ,"markerIDs","markerAFs", "Pvalue_Burden","Pvalue_Burden_cond","Pvalue_SKAT","Pvalue_SKAT_cond", "BETA_Burden", "SE_Burden", "BETA_Burden_cond", "SE_Burden_cond")
+		  }else{
+		    resultHeader = c("Gene", "Pvalue", "Pvalue_cond", MACcateNumHeader ,"markerIDs","markerAFs", "Pvalue_Burden","Pvalue_Burden_cond","Pvalue_SKAT","Pvalue_SKAT_cond")	
+		  }	
              }	
 	   }else{
 			resultHeader = c(resultHeader,"Pvalue.NA", "Pvalue.NA_cond")
 		if(method=="optimal.adj"){
-			resultHeader = c(resultHeader,"Pvalue_Burden.NA","Pvalue_Burden.NA_cond","Pvalue_SKAT.NA","Pvalue_SKAT.NA_cond")
+		  if(IsOutputBETASEinBurdenTest){
+		    resultHeader = c(resultHeader,"Pvalue_Burden.NA","Pvalue_Burden.NA_cond","Pvalue_SKAT.NA","Pvalue_SKAT.NA_cond", "BETA_Burden.NA", "SE_Burden.NA", "BETA_Burden.NA_cond", "SE_Burden.NA_cond")
+		  }else{
+		    resultHeader = c(resultHeader,"Pvalue_Burden.NA","Pvalue_Burden.NA_cond","Pvalue_SKAT.NA","Pvalue_SKAT.NA_cond")
+		  }
 		}
 	  }	
         } 
@@ -1138,13 +1165,13 @@ SPAGMMATtest = function(bgenFile = "",
 	    if(cntMarker > 0){
 		if(IsDropMissingDosages & length(indexforMissing) > 0){
 		  cat("isCondition is ", isCondition, "\n")
-		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, mu.a = mu.a.sub, mu2.a = mu2.a.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond_specified, weightsIncludeinGroupFile = weightsIncludeinGroupFile)
+		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, mu.a = mu.a.sub, mu2.a = mu2.a.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond_specified, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest = IsOutputBETASEinBurdenTest)
 	      }else{#if(IsDropMissingDosages & length(indexforMissing) > 0){	
 		cat("isCondition is ", isCondition, "\n")
 		#Gmat0 = as.matrix(Gmat)
 		#write.table(Gmat0, "/net/hunt/disk2/zhowei/project/SAIGE_SKAT/typeIError_simuUsingRealData/quantitative/SAIGE/step2/C1orf122_seed256Phneo.geno.txt", col.names=F, row.names=F, quote=F)	
 		#Gmat = round(Gmat)
-		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, mu.a = mu.a, mu2.a = mu2.a, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond_specified, weightsIncludeinGroupFile = weightsIncludeinGroupFile)	
+		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, mu.a = mu.a, mu2.a = mu2.a, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond_specified, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest = IsOutputBETASEinBurdenTest)	
 	     }
 	    outVec = groupTestResult$outVec
 	    OUT = rbind(OUT, outVec)
@@ -1991,9 +2018,9 @@ getCovMandOUT_cond = function(G0, dosage_cond, cateVarRatioMinMACVecExclude, cat
 
 
 
-groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta.rare, weights.beta.common, weightMAFcutoff, r.corr, max_maf, sparseSigma, mu.a, mu2.a, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary, weights_specified, weights_for_G2_cond, weightsIncludeinGroupFile){
+groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta.rare, weights.beta.common, weightMAFcutoff, r.corr, max_maf, sparseSigma, mu.a, mu2.a, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary, weights_specified, weights_for_G2_cond, weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest){
 
-        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, mu2 = mu2.a, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = mu.a, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond, weightsIncludeinGroupFile = weightsIncludeinGroupFile)})
+        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, mu2 = mu2.a, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = mu.a, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest=IsOutputBETASEinBurdenTest)})
 	
         if(is.null(G2_cond)){
                 isCondition = FALSE
@@ -2014,6 +2041,7 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                 markerAFs = markerAFs[-saigeskatTest$indexNeg]
         }
         cat("saigeskatTest$p.value: ", saigeskatTest$p.value, "\n")
+	print("OK1")
 
         if(ncol(Gmat) > 0){
 	     N = nrow(Gmat)
@@ -2069,28 +2097,50 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                                         	p.val.vec.ccadj = saigeskatTest$Out_ccadj$param$p.val.each
                                         	rho.val.vec.ccadj = saigeskatTest$Out_ccadj$param$rho
                                         	outVec = c(outVec, p.val.vec.ccadj[which(rho.val.vec.ccadj == 1)], p.val.vec.ccadj[which(rho.val.vec.ccadj == 0)])
+						if(IsOutputBETASEinBurdenTest){
+							BETA_Burden = saigeskatTest$Score_sum/(saigeskatTest$Phi_ccadj_sum)
+							SE_Burden = abs(BETA_Burden/qnorm(p.val.vec.ccadj[which(rho.val.vec.ccadj == 1)]/2)) 
+						}
+
 
                                         	if(!is.null(saigeskatTest$condOut_ccadj$param$p.val.each)){
                                                 	p.val.cond.vec.ccadj = saigeskatTest$condOut_ccadj$param$p.val.each
                                                 	rho.val.cond.vec.ccadj = saigeskatTest$condOut_ccadj$param$rho
                                                 	outVec = c(outVec, p.val.cond.vec.ccadj[which(rho.val.cond.vec.ccadj == 1)], p.val.cond.vec.ccadj[which(rho.val.cond.vec.ccadj == 0)])
+							if(IsOutputBETASEinBurdenTest){	
+								BETA_Burden_cond = saigeskatTest$Score_cond_ccadj_sum/(saigeskatTest$Phi_cond_ccadj_sum)
+								SE_Burden_cond = abs(BETA_Burden_cond/qnorm(p.val.cond.vec.ccadj[which(rho.val.cond.vec.ccadj == 1)]/2))
+								outVec = c(outVec, BETA_Burden, SE_Burden, BETA_Burden_cond, SE_Burden_cond)
+
+							}
                                         	}else{
                                                 	outVec = c(outVec, 1, 1)
+							if(IsOutputBETASEinBurdenTest){
+								outVec = c(outVec, BETA_Burden, SE_Burden, NA, NA)
+							}
+
                                         	}
 
                                 	}else{
                                         	outVec = c(outVec, NA, NA, NA, NA)
+						if(IsOutputBETASEinBurdenTest){
+							outVec = c(outVec, NA, NA, NA, NA)
+						}
 
                                 	}
                         	}else{
                                 	outVec = c(outVec, NA, NA, NA, NA)
-                        	}
+					if(IsOutputBETASEinBurdenTest){
+						outVec = c(outVec, NA, NA, NA, NA)
+					}
+                        	}				
                 	}
 		}
 		
 
 
 		if(IsOutputPvalueNAinGroupTestforBinary){
+
 			if(!adjustCCratioinGroupTest){
 				#saigeskatTest$Out_ccadj$p.value, saigeskatTest$condOut_ccadj$p.value
                			outVec = c(geneID, saigeskatTest$p.value, saigeskatTest$condOut$p.value, saigeskatTest$markerNumbyMAC, paste(markerIDs, collapse=";"), paste(markerAFs, collapse=";"))
@@ -2105,21 +2155,41 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                                         	rho.val.vec = saigeskatTest$param$rho
                                         	outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
 
+						if(IsOutputBETASEinBurdenTest){
+                                                        BETA_Burden = saigeskatTest$Score_sum/(saigeskatTest$Phi_sum)
+                                                        SE_Burden = abs(BETA_Burden/qnorm(p.val.vec[which(rho.val.vec == 1)]/2))
+								
+                                                }
+
+
                                         	if(!is.null(saigeskatTest$condOut$param$p.val.each)){
 
                                                 	p.val.cond.vec = saigeskatTest$condOut$param$p.val.each
                                                 	rho.val.cond.vec = saigeskatTest$condOut$param$rho
                                                 	outVec = c(outVec, p.val.cond.vec[which(rho.val.cond.vec == 1)], p.val.cond.vec[which(rho.val.cond.vec == 0)])
+							if(IsOutputBETASEinBurdenTest){	
+								BETA_Burden_cond =  saigeskatTest$Score_cond_sum/(saigeskatTest$Phi_cond_sum)
+                                                        	SE_Burden_cond = abs(BETA_Burden_cond/qnorm(p.val.cond.vec[which(rho.val.cond.vec == 1)]/2))
+								outVec = c(outVec, BETA_Burden, SE_Burden, BETA_Burden_cond, SE_Burden_cond)	
+							}	
                                         	}else{
                                                 	outVec = c(outVec, 1, 1)
+							if(IsOutputBETASEinBurdenTest){
+                                                                outVec = c(outVec, BETA_Burden, SE_Burden, NA, NA)
+                                                        }
                                         	}
 
                                 	}else{
                                         	outVec = c(outVec, NA, NA, NA, NA)
-
+						if(IsOutputBETASEinBurdenTest){
+                                                	outVec = c(outVec, NA, NA, NA, NA)
+                                                }
                                 	}
                         	}else{
                                 	outVec = c(outVec, NA, NA, NA, NA)
+					if(IsOutputBETASEinBurdenTest){
+                                                outVec = c(outVec, NA, NA, NA, NA)
+                                        }
                         	}
                 	}
 		}
@@ -2165,13 +2235,23 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                                                 p.val.vec.ccadj = saigeskatTest$Out_ccadj$param$p.val.each
                                                 rho.val.vec.ccadj = saigeskatTest$Out_ccadj$param$rho
                                                 outVec = c(outVec, p.val.vec.ccadj[which(rho.val.vec.ccadj == 1)], p.val.vec.ccadj[which(rho.val.vec.ccadj == 0)])
-
+						if(IsOutputBETASEinBurdenTest){
+							BETA_Burden = saigeskatTest$Score_sum/(saigeskatTest$Phi_ccadj_sum)
+							SE_Burden = abs(BETA_Burden/qnorm(p.val.vec.ccadj[which(rho.val.vec.ccadj == 1)]/2)) 
+							outVec = c(outVec, BETA_Burden, SE_Burden)
+						}
                                         }else{
                                                 outVec = c(outVec, NA, NA)
+						if(IsOutputBETASEinBurdenTest){
+							outVec = c(outVec, NA, NA)
+						}
 
                                         }
                                 }else{
                                         outVec = c(outVec, NA, NA)
+					if(IsOutputBETASEinBurdenTest){
+						outVec = c(outVec, NA, NA)
+					}
                                 }
                         	}
                 	}
@@ -2189,13 +2269,24 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                                                 p.val.vec = saigeskatTest$param$p.val.each
                                                 rho.val.vec = saigeskatTest$param$rho
                                                 outVec = c(outVec, p.val.vec[which(rho.val.vec == 1)], p.val.vec[which(rho.val.vec == 0)])
+						if(IsOutputBETASEinBurdenTest){
+							BETA_Burden.NA = saigeskatTest$Score_sum/(saigeskatTest$Phi_sum)
+							SE_Burden.NA = abs(BETA_Burden.NA/qnorm(p.val.vec[which(rho.val.vec == 1)]/2)) 
+							outVec = c(outVec, BETA_Burden.NA, SE_Burden.NA)
+						}
 
                                         }else{
                                                 outVec = c(outVec, NA, NA)
+						if(IsOutputBETASEinBurdenTest){
+							outVec = c(outVec, NA, NA)
+						}
 
                                         }
                                 }else{
                                         outVec = c(outVec, NA, NA)
+					if(IsOutputBETASEinBurdenTest){
+						outVec = c(outVec, NA, NA)
+					}
                                 }
                         }
                 	}
@@ -2210,6 +2301,9 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                         outVec = c(geneID, NA, saigeskatTest$markerNumbyMAC, NA, NA)
                         if(method=="optimal.adj"){
                                 outVec = c(outVec, NA, NA)
+				if(IsOutputBETASEinBurdenTest){
+					outVec = c(outVec, NA, NA)
+				}
                         }
 
                 }
@@ -2219,11 +2313,17 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                                 outVec = c(geneID, NA,  saigeskatTest$markerNumbyMAC, NA, NA)
                                 if(method=="optimal.adj"){
                                         outVec = c(outVec, NA, NA)
+					if(IsOutputBETASEinBurdenTest){
+						outVec = c(outVec, NA, NA)
+					}
                                 }
                         }else{
                                 outVec = c(outVec, NA)
                                 if(method=="optimal.adj"){
                                         outVec = c(outVec, NA, NA)
+					if(IsOutputBETASEinBurdenTest){
+						outVec = c(outVec, NA, NA)
+					}
                                 }
                         }
                 }

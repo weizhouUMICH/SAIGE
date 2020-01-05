@@ -176,7 +176,9 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 	}else{
 	Phi_ccadj=as.matrix(G2_adj_n * 1/r)
 	}
-
+	#cat("VarQ: ", VarQ, "\n")
+	#cat("VarQ_2: ", VarQ_2, "\n")
+	#cat("sum(Phi_ccadj): ", sum(Phi_ccadj), "\n")
 	outlist=list();
 	outlist$val = Phi_ccadj
 	if(length(VarS) > 1){
