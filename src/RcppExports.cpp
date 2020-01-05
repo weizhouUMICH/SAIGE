@@ -132,6 +132,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getMsub_MAFge_minMAFtoConstructGRM
+int getMsub_MAFge_minMAFtoConstructGRM();
+RcppExport SEXP _SAIGE_getMsub_MAFge_minMAFtoConstructGRM() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getMsub_MAFge_minMAFtoConstructGRM());
+    return rcpp_result_gen;
+END_RCPP
+}
 // Get_MultiMarkersBySample_StdGeno_Mat
 void Get_MultiMarkersBySample_StdGeno_Mat();
 RcppExport SEXP _SAIGE_Get_MultiMarkersBySample_StdGeno_Mat() {
@@ -1402,6 +1412,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getSubMarkerIndex", (DL_FUNC) &_SAIGE_getSubMarkerIndex, 0},
     {"_SAIGE_getSubMarkerNum", (DL_FUNC) &_SAIGE_getSubMarkerNum, 0},
     {"_SAIGE_getNnomissingOut", (DL_FUNC) &_SAIGE_getNnomissingOut, 0},
+    {"_SAIGE_getMsub_MAFge_minMAFtoConstructGRM", (DL_FUNC) &_SAIGE_getMsub_MAFge_minMAFtoConstructGRM, 0},
     {"_SAIGE_Get_MultiMarkersBySample_StdGeno_Mat", (DL_FUNC) &_SAIGE_Get_MultiMarkersBySample_StdGeno_Mat, 0},
     {"_SAIGE_Get_MultiMarkersBySample_StdGeno", (DL_FUNC) &_SAIGE_Get_MultiMarkersBySample_StdGeno, 2},
     {"_SAIGE_parallelCrossProd", (DL_FUNC) &_SAIGE_parallelCrossProd, 1},

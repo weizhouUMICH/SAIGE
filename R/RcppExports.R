@@ -49,6 +49,10 @@ getNnomissingOut <- function() {
     .Call('_SAIGE_getNnomissingOut', PACKAGE = 'SAIGE')
 }
 
+getMsub_MAFge_minMAFtoConstructGRM <- function() {
+    .Call('_SAIGE_getMsub_MAFge_minMAFtoConstructGRM', PACKAGE = 'SAIGE')
+}
+
 Get_MultiMarkersBySample_StdGeno_Mat <- function() {
     invisible(.Call('_SAIGE_Get_MultiMarkersBySample_StdGeno_Mat', PACKAGE = 'SAIGE'))
 }

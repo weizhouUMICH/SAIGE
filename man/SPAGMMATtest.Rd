@@ -50,7 +50,8 @@ SPAGMMATtest(
   cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
   dosageZerodCutoff = 0.2,
   IsOutputPvalueNAinGroupTestforBinary = FALSE,
-  IsAccountforCasecontrolImbalanceinGroupTest = TRUE
+  IsAccountforCasecontrolImbalanceinGroupTest = TRUE,
+  IsOutputBETASEinBurdenTest = FALSE
 )
 }
 \arguments{
@@ -145,6 +146,8 @@ SPAGMMATtest(
 \item{IsOutputPvalueNAinGroupTestforBinary}{logical. In gene- or region-based tests for binary traits. if IsOutputPvalueNAinGroupTestforBinary is TRUE, p-values without accounting for case-control imbalance will be output. By default, FALSE}
 
 \item{IsAccountforCasecontrolImbalanceinGroupTest}{logical. In gene- or region-based tests for binary traits. If IsAccountforCasecontrolImbalanceinGroupTest is TRUE, p-values after accounting for case-control imbalance will be output. By default, TRUE}
+
+\item{IsOutputBETASEinBurdenTest}{logical. Output effect size (BETA and SE) for burden tests. By default, FALSE}
 }
 \value{
 SAIGEOutputFile
