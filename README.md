@@ -11,7 +11,7 @@ Table of Contents
 # Introduction
 
 
-## Current version is 0.36.1
+## Current version is 0.36.2
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
@@ -62,6 +62,12 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.36.2 (November-23-2019):
+** Note: in v0.36.2, users can specify customized weights for markers in gene- or region-based tests by adding a weight for each marker in the group file
+
+Bugs filxed: 1. The option weights.beta.common is not fully correctly developed, so we make weights.beta.common equal to weights.beta.rare for now. 2. Instead of output NA for SKAT-O p values when the function SKAT:::Met_SKAT_Get_Pvalue failed, output 2*min(SKAT p, Burden p, 0.5).
+
+
 * 0.36.1 (November-12-2019): 
 
 ** Note: in v0.36.1, plain text dosage files are no longer allowed as input in step 2 to get rid of the dependence of the boost_iostream library
