@@ -101,7 +101,9 @@ option_list <- list(
     help="Whether to specify customized weight for makers in gene- or region-based tests. If TRUE, weights are included in the group file. For vcf/sav, the genetic marker ids and weights are in the format chr:pos_ref/alt;weight. For bgen, the genetic marker ids should match the ids in the bgen filE, e.g. SNPID;weight. Each element in the line is seperated by tab. [default=FALSE]"
 ),
   make_option("--weights_for_G2_cond",type="character", default=NULL, 
-    help="vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. e.g. '1,2,3")	
+    help="vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. e.g. '1,2,3"),
+  make_option("--IsOutputBETASEinBurdenTest", type="logical",default=FALSE,
+    help="Whether to output effect sizes for burden tests. [default=FALSE]")	
 )
 
 
@@ -181,5 +183,6 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 	     weightMAFcutoff=opt$weightMAFcutoff,
 	     r.corr=opt$r.corr,
 	     weightsIncludeinGroupFile=opt$weightsIncludeinGroupFile,
-	     weights_for_G2_cond=weights_for_G2_cond	
+	     weights_for_G2_cond=weights_for_G2_cond,
+		IsOutputBETASEinBurdenTest=opt$IsOutputBETASEinBurdenTest	
 )
