@@ -11,7 +11,7 @@ Table of Contents
 # Introduction
 
 
-## Current version is 0.36.3
+## Current version is 0.36.3.1
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
@@ -26,7 +26,7 @@ The SAIGE manuscript:
 Wei Zhou, Jonas B. Nielsen, Lars G. Fritsche, Maiken B. Elvestad, Brooke Wolford, Maoxuan Lin, Kristian Hveem, Hyun Min Kang, Goncalo R. Abecasis, Cristen J. Willer*, Seunggeun Lee* “Efficiently controlling for case-control imbalance and sample relatedness in large-scale genetic association studies.” Nature Genetics 50, 1335–1341 (2018)
 
 The SAIGE-GENE pre-print:
-https://www.biorxiv.org/content/10.1101/583278v1?rss=1
+https://www.biorxiv.org/content/10.1101/583278v2
 
 
 # How to install and run SAIGE and SAIGE-GENE
@@ -62,6 +62,9 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.36.3.1 (February-04-2020):
+** Note: in v0.36.3.1, uses SPAtest 3.0.2
+
 * 0.36.3 (January-05-2020):
 ** Note: in v0.36.3, an option IsOutputBETASEinBurdenTest in step 2 is added to output effect sizes for burden tests
 Bugs fixed: the header in output files from conditional analysis in gene or reigon-based tests is corrected.  
@@ -136,5 +139,6 @@ Bugs fixed: 1. fixed the freq calculation for mean impute for missing genotypes 
   vector::_M_range_check", try use a smaller memeoryChunk, such as 2
 4. IMPORTANT:In version <= 0.26, for binary traits, BETA is for alt allele and for quantitative traits, BETA is for minor allele 
 5. Please note that LOCO only works for autosomal genetic variants. For non-autosomal genetic variants, please leave LOCO=FALSE in step 2.
-
+6. SAIGE-GENE 0.36.3 and 0.36.3.1 now output an effect size for burden tests with the option IsOutputBETASEinBurdenTest in step2. Please note that the magnitude of the effect size is difficult to interpret. 
+7. We haven't throughly tested the program on a small sample size. All simulation studies were done using 10,000 samples. Similar to BOLT-LMM, SAIGE uses asymptotic approaches to for feasibility on large samples. Based on our previous real-data analysis, we saw the performance on 3,000 samples were fine. 
 
