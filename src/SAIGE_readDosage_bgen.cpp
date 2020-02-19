@@ -383,7 +383,7 @@ Rcpp::List getDosage_bgen_withquery()
         This function is revised based on the Parse function in BOLT-LMM v2.3 source code
 *************************************/
 
-double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint Nbgen,std::vector< double > & dosages, double & AC, double & AF, std::vector<int> & indexforMissing){
+double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint Nbgen,std::vector< double > & dosages, double & AC, double & AF, std::vector<int> & indexforMissing, double & homN, double & hetN){
 
     size_t destLen = bufLen;
 
@@ -457,12 +457,13 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
     dosages.reserve(gmtest_samplesize);
     dosages.resize(gmtest_samplesize);
     std::size_t missing_cnt = 0;
+    homN = 0;
+    hetN = 0;
 
    for (uint i = 0; i < N; i++) {
       p11 = lut[*bufAt]; bufAt++;
       p10 = lut[*bufAt]; bufAt++;
       dosage = 2*p11 + p10;
-
       if(!missingIdxVec[i]){
         eij = dosage;
         fij = 4*p11 + p10;
@@ -470,6 +471,8 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
         sum_fij_minus_eij2 += fij - eij*eij;
         if(gm_sample_idx[i] >= 0){
           dosages[gm_sample_idx[i]] = 2 - dosage;
+      	  hetN = hetN + p10;
+          homN = homN + (1-p10-p11);	
 	  sum_eij_sub += eij;
         }
      }else{
@@ -544,7 +547,7 @@ Rcpp::List getDosage_inner_bgen_withquery_new(){
   std::vector< std::string > alleles ;
   std::vector< std::vector< double > > probs ;
   std::vector< double > dosages;
-  double AC, AF; 
+  double AC, AF, homN, hetN; 
   //clock_t t1,t2;
   //t1=clock();
   isReadVariantBgen = genoToTest_bgenDosage->read_variant(&SNPID, &rsid, &chromosome, &position, &alleles ) ;
@@ -570,8 +573,8 @@ Rcpp::List getDosage_inner_bgen_withquery_new(){
   uint Nbgen = genoToTest_bgenDosage->number_of_samples();
   std::vector< int > indexforMissing;
 
-  AC=0; AF=0;
-  markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF, indexforMissing);
+  AC=0; AF=0; homN=0; hetN=0;
+  markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF, indexforMissing, homN, hetN);
 
   //t1=clock();
   //t2=clock();
@@ -590,7 +593,9 @@ Rcpp::List getDosage_inner_bgen_withquery_new(){
                 Named("allele1") = alleles[1],
                 _["stringsAsFactors"] = false,
 		Named("AC") = AC,
-                Named("AF") = AF
+                Named("AF") = AF,
+		Named("homN") = homN,
+                Named("hetN") = hetN
         ) ;
 
 
@@ -643,7 +648,7 @@ Rcpp::List getDosage_inner_bgen_noquery(){
   std::vector< byte_t > buffer1;
   std::vector< byte_t > buffer2;
   std::vector< double > dosages;
-  double AC, AF;
+  double AC, AF, homN, hetN;
 
   isReadVariantBgen = genfile::bgen::read_snp_identifying_data(
                         *gm_stream,
@@ -676,9 +681,9 @@ Rcpp::List getDosage_inner_bgen_noquery(){
 
   unsigned char * buf  = (unsigned char *) buffer2.data();
   uint Nbgen = gm_context.number_of_samples;
-  AC=0; AF=0;
+  AC=0; AF=0; homN=0; hetN=0;
   std::vector< int > indexforMissing;
-  markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF, indexforMissing);
+  markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF, indexforMissing, homN, hetN);
 
   DataFrame variants = DataFrame::create(
                 Named("chromosome") = chromosome,
@@ -690,7 +695,9 @@ Rcpp::List getDosage_inner_bgen_noquery(){
                 Named("allele1") = second_allele,
                 _["stringsAsFactors"] = false,
 		Named("AC") = AC,
-                Named("AF") = AF
+                Named("AF") = AF,
+		Named("homN") = homN,
+		Named("hetN") = hetN
         ) ;
 
   List result ;
