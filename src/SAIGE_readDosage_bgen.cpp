@@ -29,6 +29,9 @@ namespace {
 
 std::auto_ptr< std::istream > gm_stream;
 
+// 0 for additive, 1 for recessive, 2 for dominant
+int dosage_type;
+
 uint32_t  gm_offset ;
 genfile::bgen::Context gm_context ;
 bool gm_have_sample_ids ;
@@ -141,9 +144,21 @@ int setgenoTest_bgenDosage(std::string & filename,
 	Rcpp::DataFrame & ranges_to_include,
 	Rcpp::DataFrame & ranges_to_exclude,
 	std::vector< std::string > const& ids_to_include,
-	std::vector< std::string > const& ids_to_exclude
+        std::vector< std::string > const& ids_to_exclude,
+	std::string & analysis_type
 ){
 
+  if (analysis_type == "recessive") {
+    dosage_type = 1;
+    std::cout << "running recessive analysis" << std::endl;
+  } else if (analysis_type == "dominant") {
+    dosage_type = 2;
+    std::cout << "running dominant analysis" << std::endl;
+  } else {
+    dosage_type = 0;
+    std::cout << "running additive analysis" << std::endl;
+  }
+  
    //bgenMinMAF = bgenMinMaf;
    //bgenMinINFO = bgenMinInfo;
    int numMarkers;
@@ -452,7 +467,7 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
       lut[i] = i/255.0;
 
     double sum_eij = 0, sum_fij_minus_eij2 = 0, sum_eij_sub = 0, sum_fij_minus_eij2_sub = 0; // for INFO
-    double p11,p10,dosage,eij,fij, eijsub, fijsub;
+    double p11,p10,p00,dosage,eij,fij, eijsub, fijsub;
     dosages.clear();
     dosages.reserve(gmtest_samplesize);
     dosages.resize(gmtest_samplesize);
@@ -463,17 +478,24 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
    for (uint i = 0; i < N; i++) {
       p11 = lut[*bufAt]; bufAt++;
       p10 = lut[*bufAt]; bufAt++;
-      dosage = 2*p11 + p10;
+      p00 = 1 - p11 - p10;
+      if (dosage_type == 0) {
+	dosage = p10+p00*2;
+      } else if (dosage_type == 1) {
+        dosage = p00*2;
+      } else if (dosage_type == 2 ) {
+        dosage = p10+p00;
+      }      
       if(!missingIdxVec[i]){
-        eij = dosage;
-        fij = 4*p11 + p10;
+        eij = p10+p00*2;
+        fij = 4*p00 + p10;
         sum_eij += eij;
         sum_fij_minus_eij2 += fij - eij*eij;
         if(gm_sample_idx[i] >= 0){
-          dosages[gm_sample_idx[i]] = 2 - dosage;
+          dosages[gm_sample_idx[i]] = dosage;
       	  hetN = hetN + p10;
           homN = homN + (1-p10-p11);	
-	  sum_eij_sub += eij;
+	  sum_eij_sub += dosage;
         }
      }else{
         if(gm_sample_idx[i] >= 0){        
@@ -486,7 +508,7 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
     }
 
 
-     AC = 2* ((double) (gmtest_samplesize - missing_cnt)) - sum_eij_sub;
+     AC = sum_eij_sub;
      AF = AC/ 2/ ((double) (gmtest_samplesize - missing_cnt)) ;
 
 
@@ -495,6 +517,7 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
      1 - sum_fij_minus_eij2 / (2*N*thetaHat*(1-thetaHat));
 
      if(missing_cnt > 0){
+       std::cout << missing_cnt << ' samples missing' << std::endl;
        double imputeDosage = 2*AF;
        for (unsigned int i = 0; i < indexforMissing.size(); i++)
        {

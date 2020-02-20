@@ -932,6 +932,8 @@ fitNULLGLMM = function(plinkFile = "",
      #print("test memory 5")
      #gc(verbose=T)
       modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
+      modglmm$obj.glm.null$qr <- NULL
+      modglmm$obj.glm.null$data <- NULL
       for (x in names(modglmm$obj.glm.null)) {
         attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
       }

@@ -95,7 +95,12 @@ SPAGMMATtest = function(bgenFile = "",
 		 dosageZerodCutoff = 0.2,	
 		 IsOutputPvalueNAinGroupTestforBinary = FALSE,
 		 IsAccountforCasecontrolImbalanceinGroupTest = TRUE,
-		 IsOutputBETASEinBurdenTest = FALSE){
+		 IsOutputBETASEinBurdenTest = FALSE,
+		 analysisType = "additive"){
+
+  if (analysisType != "additive" & analysisType != "recessive" & analysisType != "dominant") {
+    stop("Unknown analysis type (supported 'additive', 'recessive', and 'dominant'): ", analysisType)
+  }
 
 
   if(weightMAFcutoff < 0 | weightMAFcutoff > 0.5){
@@ -592,7 +597,7 @@ SPAGMMATtest = function(bgenFile = "",
         ranges_to_include = data.frame(chromosome = NULL, start = NULL, end = NULL)
       }
 
-      Mtest = setgenoTest_bgenDosage(bgenFile,bgenFileIndex, ranges_to_exclude = ranges_to_exclude, ranges_to_include = ranges_to_include, ids_to_exclude= ids_to_exclude, ids_to_include=ids_to_include)
+      Mtest = setgenoTest_bgenDosage(bgenFile,bgenFileIndex, ranges_to_exclude = ranges_to_exclude, ranges_to_include = ranges_to_include, ids_to_exclude= ids_to_exclude, ids_to_include=ids_to_include, analysis_type=analysisType)
       if(Mtest == 0){
         isVariant = FALSE
         stop("ERROR! Failed to open ", bgenFile, "\n")

@@ -103,7 +103,9 @@ option_list <- list(
   make_option("--weights_for_G2_cond",type="character", default=NULL, 
     help="vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. e.g. '1,2,3"),
   make_option("--IsOutputBETASEinBurdenTest", type="logical",default=FALSE,
-    help="Whether to output effect sizes for burden tests. [default=FALSE]")	
+    help="Whether to output effect sizes for burden tests. [default=FALSE]"),
+  make_option("--analysisType", type="character", default='additive',
+    help="'additive' (default), 'recessive' (het probability set to 0), or 'dominant' (hom alt probability set to 0)")
 )
 
 
@@ -184,5 +186,6 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 	     r.corr=opt$r.corr,
 	     weightsIncludeinGroupFile=opt$weightsIncludeinGroupFile,
 	     weights_for_G2_cond=weights_for_G2_cond,
-		IsOutputBETASEinBurdenTest=opt$IsOutputBETASEinBurdenTest	
+	     IsOutputBETASEinBurdenTest=opt$IsOutputBETASEinBurdenTest,
+	     analysisType = opt$analysisType
 )
