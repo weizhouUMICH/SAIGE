@@ -3,7 +3,7 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
-library(SAIGE)
+library(SAIGE, lib.loc="/home/wei/install_dir/0.36.3.1_homN_hetN_surv")
 require(optparse) #install.packages("optparse")
 
 print(sessionInfo())
@@ -16,9 +16,15 @@ option_list <- list(
     help="Path to the phenotype file. The file can be either tab or space delimited. The phenotype file has a header and contains at least two columns. One column is for phentoype and the other column is for sample IDs. Additional columns can be included in the phenotype file for covariates in the null GLMM. Please note that covariates to be used in the NULL GLMM need to specified using the argument covarColList"),
   make_option("--phenoCol", type="character", default="",
     help="Coloumn name for phenotype to be tested in the phenotype file, e.g CAD"),
-    make_option("--traitType", type="character", default="binary",
-    help="binary/quantitative [default=binary]"),
-  make_option("--invNormalize", type="logical",default=FALSE,
+  make_option("--traitType", type="character", default="binary",
+    help="binary/quantitative/survival [default=binary]"),
+  make_option("--eventTimeCol", type="character", default="",
+    help="for survival analysis, coloumn name for event time in the phenotype file, e.g eventTime"),
+ make_option("--eventTimeBinSize", type="numeric", default=NULL,
+    help=" If specified, event time will be bin by eventTimeBinSize"),
+ make_option("--pcgforUhatforSurvAnalysis", type="logical",default=FALSE,
+    help="if survival, whether using pcg in the variance ratio estimation. if FALSE, the exact solve method will be used. Memory usage will be higher [default='TRUE']"),
+ make_option("--invNormalize", type="logical",default=FALSE,
     help="if quantitative, whether asking SAIGE to perform the inverse normalization for the phenotype [default='FALSE']"),
   make_option("--covarColList", type="character", default="",
     help="List of covariates (comma separated)"),
@@ -56,9 +62,9 @@ option_list <- list(
     help="Path and prefix of the output the variance ratio file [default=NULL]. if NULL, it will be the same as the outputPrefix"),
   make_option("--IsSparseKin", type="logical", default=FALSE,
     help="Whether to use sparse kinship for association test [default='FALSE']"),
-  make_option("--sparseGRMFile", type="character", default=NULL,
+  make_option("--sparseGRMFile", type="character", default="",
    help="Path to the pre-calculated sparse GRM file. If not specified and  IsSparseKin=TRUE, sparse GRM will be computed [default=NULL]"),
-  make_option("--sparseGRMSampleIDFile", type="character", default=NULL,
+  make_option("--sparseGRMSampleIDFile", type="character", default="",
    help="Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to sample IDs in the sparse GRM [default=NULL]"),
   make_option("--numRandomMarkerforSparseKin", type="integer", default=2000,
     help="Number of randomly selected markers to be used to identify related samples for sparse GRM [default=2000]"),
@@ -81,7 +87,9 @@ option_list <- list(
   make_option("--minMAFforGRM", type="numeric", default=0.01,
     help="Minimum MAF of markers used for GRM"),
   make_option("--minCovariateCount", type="numeric", default=-1,
-    help="If binary covariates have a count less than this, they will be excluded from the model to avoid convergence issues [default=-1] (no covariates will be excluded).")
+    help="If binary covariates have a count less than this, they will be excluded from the model to avoid convergence issues [default=-1] (no covariates will be excluded)."),
+  make_option("--useSparseGRMtoFitNULL", type="logical", default=FALSE,
+    help="Whether to sparse GRM to fit the NULL model. [default='FALSE'].")
 )
 
 
@@ -110,11 +118,13 @@ cateVarRatioMaxMACVecInclude <- convertoNumeric(x=strsplit(opt$cateVarRatioMaxMA
 
 #set seed
 set.seed(1)
-
+print(tauInit)
 
 fitNULLGLMM(plinkFile=opt$plinkFile,
             phenoFile = opt$phenoFile,
             phenoCol = opt$phenoCol,
+            eventTimeCol = opt$eventTimeCol,
+	    eventTimeBinSize = opt$eventTimeBinSize,
             traitType = opt$traitType,
             invNormalize = opt$invNormalize,
             covarColList = covars,
@@ -148,4 +158,5 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
 	    useSparseSigmaConditionerforPCG = opt$useSparseSigmaConditionerforPCG,
 	    useSparseSigmaforInitTau = opt$useSparseSigmaforInitTau,
 	    minMAFforGRM = opt$minMAFforGRM,
-	    minCovariateCount=opt$minCovariateCount)	
+	    minCovariateCount=opt$minCovariateCount,
+	    useSparseGRMtoFitNULL = opt$useSparseGRMtoFitNULL)	

@@ -1,3 +1,52 @@
+#survival
+#step 1: fit the NULL glmm
+Rscript step1_fitNULLGLMM.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --phenoFile=./input/pheno_1000samples_survival.txt \
+        --phenoCol=casecontrol \
+        --covarColList=X \
+	--eventTimeCol=AgeOfEventFinal \
+        --sampleIDColinphenoFile=IND_ID \
+        --traitType=survival        \
+        --outputPrefix=./output_test/example_survival \
+        --nThreads=4    \
+        --LOCO=FALSE    \
+        --minMAFforGRM=0.01	\
+	--skipModelFitting=FALSE	\
+	--tauInit=1,0	\
+	--pcgforUhatforSurvAnalysis=FALSE
+
+
+#use Sparse GRM to fit the NULL glmm
+Rscript createSparseGRM.R       \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --nThreads=4  \
+        --outputPrefix=./output/sparseGRM       \
+        --numRandomMarkerforSparseKin=1000      \
+        --relatednessCutoff=0.125
+
+
+
+Rscript step1_fitNULLGLMM.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --phenoFile=./input/pheno_1000samples_survival.txt \
+        --phenoCol=casecontrol \
+        --covarColList=X \
+        --eventTimeCol=AgeOfEventFinal \
+        --sampleIDColinphenoFile=IND_ID \
+        --traitType=survival        \
+        --outputPrefix=./output_test/example_survival_sparseGRM \
+        --nThreads=4    \
+        --LOCO=FALSE    \
+        --minMAFforGRM=0.01     \
+        --skipModelFitting=FALSE        \
+        --tauInit=1,0	\
+	--useSparseGRMtoFitNULL=TRUE	\
+	--sparseGRMFile=./output/sparseGRM_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseGRM.mtx	\
+	--sparseGRMSampleIDFile=./output/sparseGRM_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt	
+
+
+
 #binary
 #For single-variant association tests. 
 #Not use sparse GRM and not use categorical variance ratios#

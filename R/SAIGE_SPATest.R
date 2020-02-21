@@ -517,8 +517,71 @@ SPAGMMATtest = function(bgenFile = "",
       indChromCheck = TRUE
     }
 
+  }else if(traitType == "survival"){
+    cat("It is a survival trait\n")
+    if(!isGroupTest){
+      if(!isCondition){
+        resultHeader = c(dosageFilecolnamesSkip, "N", "BETA", "SE", "Tstat", "p.value", "p.value.NA", "Is.SPA.converge","varT","varTstar")
+      }else{
+        resultHeader = c(dosageFilecolnamesSkip, "N", "BETA", "SE", "Tstat", "p.value", "p.value.NA", "Is.SPA.converge","varT","varTstar", "Tstat_cond", "p.value_cond", "varT_cond", "BETA_cond", "SE_cond")
+      }
+
+      if(IsOutputAFinCaseCtrl){
+        resultHeader = c(resultHeader, "AF.Cases", "AF.Controls")
+      }
+      if(IsOutputNinCaseCtrl){
+        resultHeader = c(resultHeader, "N.Cases", "N.Controls")
+      }
+      write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
+    } #if(!isGroupTest){
+
+    if(SPAcutoff < 10^-2){
+      Cutoff=10^-2
+    }else{
+      Cutoff = SPAcutoff
+    }
+
+    y = obj.glmm.null$obj.glm.null$y
+    y1Index = which(y == 1)
+    NCase = length(y1Index)
+    y0Index = which(y == 0)
+    NCtrl = length(y0Index)
+
+    cat("Analyzing ", NCase, " events and ",NCtrl, " censored \n")
+    N = length(y)
+    obj.glmm.null$obj.noK$XVX_inv_XV = obj.glmm.null$obj.noK$XXVX_inv * obj.glmm.null$obj.noK$V
+    indChromCheck = FALSE
+    if(!obj.glmm.null$LOCO){
+      mu = obj.glmm.null$fitted.values
+      mu.a<-as.vector(mu)
+      #mu2.a<-mu.a *(1-mu.a)
+      mu2.a = mu.a
+      obj.glmm.null$obj.noK$XVX = t(obj.glmm.null$obj.noK$X1) %*% (obj.glmm.null$obj.noK$X1 * mu2.a)
+      obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
+
+    }else if(chrom != ""){
+      chrom_v2 = as.character(chrom)
+      chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
+      if(obj.glmm.null$LOCOResult[[chrom_v3]]$isLOCO){
+        mu = obj.glmm.null$LOCOResult[[chrom_v3]]$fitted.values
+        mu.a<-as.vector(mu)
+        #mu2.a<-mu.a *(1-mu.a)
+        mu2.a = mu.a
+      }else{
+        mu = obj.glmm.null$fitted.values
+        mu.a<-as.vector(mu)
+        #mu2.a<-mu.a *(1-mu.a)
+        mu2.a = mu.a
+      }
+      obj.glmm.null$obj.noK$XVX = t(obj.glmm.null$obj.noK$X1) %*% (obj.glmm.null$obj.noK$X1 * mu2.a)
+      obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
+    }else{
+      cat("WARNING: LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
+      indChromCheck = TRUE
+    }
+
   }else{
-    stop("ERROR! The type of the trait has to be either binary or quantitative\n")
+    stop("ERROR! The type of the trait has to be either binary, quantitative or survival\n")
   }
 
 
@@ -697,7 +760,9 @@ SPAGMMATtest = function(bgenFile = "",
                mu2.a<-mu.a *(1-mu.a)
 	     }else if(traitType == "quantitative"){
 		mu2.a = rep(1,N)
-	     }	
+	     }else if(traitType == "survival")  {
+                mu2.a = mu.a
+             }	
       	   }else{
              mu = obj.glmm.null$fitted.values
              mu.a<-as.vector(mu)
@@ -705,6 +770,8 @@ SPAGMMATtest = function(bgenFile = "",
                mu2.a<-mu.a *(1-mu.a)
 	     }else if(traitType == "quantitative"){
                 mu2.a = rep(1,N)
+             }else if(traitType == "survival")  {
+                mu2.a = mu.a
              }
            }
 
@@ -761,7 +828,7 @@ SPAGMMATtest = function(bgenFile = "",
           	GratioMatrixall.sub = condpre2.sub$GratioMatrixall
         }
 
-	if(traitType == "binary"){
+	if(traitType == "binary" | traitType == "survival"){
 	  if (NCase.sub == 0 | NCtrl.sub == 0) {	
 	   #out1 = c(rep(NA, 8), NCase.sub, NCtrl.sub)
 	   out1 = c(rep(NA, 8))
@@ -785,7 +852,12 @@ SPAGMMATtest = function(bgenFile = "",
 	   OUT = rbind(OUT, OUTvec)
 	   OUTvec=NULL
 	  }else{ #if (NCase.sub == 0 | NCtrl.sub == 0) {
-           out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
+		if(traitType == "binary"){
+           		out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
+		}else if(traitType == "survival"){
+			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub) 
+		}
+
 	  OUTvec=c(rowHeader, N.sub, unlist(out1))
 
 	   #if(!IsOutputAFinCaseCtrl){
@@ -801,7 +873,7 @@ SPAGMMATtest = function(bgenFile = "",
              OUTvec=c(OUTvec, NCase.sub, NCtrl.sub)
            }
 	   OUT = rbind(OUT, OUTvec)
-		OUTvec=NULL
+	   OUTvec=NULL
 	  }
          }else if(traitType == "quantitative"){
 
@@ -846,7 +918,24 @@ SPAGMMATtest = function(bgenFile = "",
 	   OUT = rbind(OUT, OUTvec)
 	   OUTvec=NULL
 
-         }else if(traitType == "quantitative"){
+         }else if(traitType == "survival"){
+           #print("OKKKKKK")
+           out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+           OUTvec=c(rowHeader, N,unlist(out1))
+
+           if(IsOutputAFinCaseCtrl){
+             AFCase = sum(G0[y1Index])/(2*NCase)
+             AFCtrl = sum(G0[y0Index])/(2*NCtrl)
+                OUTvec=c(OUTvec, AFCase, AFCtrl)
+
+           }
+           if(IsOutputNinCaseCtrl){
+             OUTvec=c(OUTvec, NCase, NCtrl)
+           }
+           OUT = rbind(OUT, OUTvec)
+           OUTvec=NULL
+
+        }else if(traitType == "quantitative"){
 
            out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.glmm.null$obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 
