@@ -16,6 +16,55 @@ Rscript step1_fitNULLGLMM.R     \
 	--tauInit=1,0	\
 	--pcgforUhatforSurvAnalysis=FALSE
 
+Rscript step1_fitNULLGLMM.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --phenoFile=./input/pheno_1000samples_survival.txt \
+        --phenoCol=casecontrol \
+        --covarColList=X \
+        --eventTimeCol=AgeOfEventFinal \
+        --sampleIDColinphenoFile=IND_ID \
+        --traitType=binary        \
+        --outputPrefix=./output_test/example_survival \
+        --nThreads=4    \
+        --LOCO=FALSE    \
+        --minMAFforGRM=0.01     \
+        --skipModelFitting=FALSE        \
+        --tauInit=1,0   \
+        --pcgforUhatforSurvAnalysis=FALSE
+
+Rscript step1_fitNULLGLMM.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --phenoFile=./input/pheno_1000samples_survival.50cases.txt \
+        --phenoCol=casecontrol \
+        --covarColList=X \
+        --eventTimeCol=AgeOfEventFinal \
+        --sampleIDColinphenoFile=IND_ID \
+        --traitType=survival        \
+        --outputPrefix=./output_test/example_survival.50cases \
+        --nThreads=4    \
+        --LOCO=FALSE    \
+        --minMAFforGRM=0.01     \
+        --skipModelFitting=FALSE        \
+        --tauInit=1,0   \
+        --pcgforUhatforSurvAnalysis=FALSE
+
+
+Rscript step1_fitNULLGLMM.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --phenoFile=./input/pheno_1000samples_survival.5cases.txt \
+        --phenoCol=casecontrol \
+        --covarColList=X \
+        --eventTimeCol=AgeOfEventFinal \
+        --sampleIDColinphenoFile=IND_ID \
+        --traitType=survival        \
+        --outputPrefix=./output_test/example_survival.5cases \
+        --nThreads=4    \
+        --LOCO=FALSE    \
+        --minMAFforGRM=0.01     \
+        --skipModelFitting=FALSE        \
+        --tauInit=1,0.5 \
+        --pcgforUhatforSurvAnalysis=FALSE
+
 
 #use Sparse GRM to fit the NULL glmm
 Rscript createSparseGRM.R       \

@@ -1574,7 +1574,8 @@ arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
 	}else{
 	  diagVec = tauVec(1) + tauVec(0)/wVec;
 	}
-
+	//cout << "wVec: " << endl;
+	//wVec.print();	
 	//std::cout << "M " << M << std::endl;
 	//std::cout << "tauVec(0) " << tauVec(0) << std::endl;
 	//std::cout << "tauVec(1) " << tauVec(1) << std::endl;
@@ -2853,7 +2854,13 @@ if(isUseSparseSigmaforInitTau){
 //    cout << "Wall Time 1= " << wall1 - wall0 << endl;
 //    cout << "CPU Time 1 = " << cpu1  - cpu0  << endl;
         if (!isUsePrecondM){
+	//arma::fvec diagVec = getDiagOfSigma(wVec, tauVec);
+        //cout<<"diagVec:" << endl;
+        //diagVec.print();
+
                 minvVec = 1/getDiagOfSigma(wVec, tauVec);
+	//cout<<"minvVec:" << endl;
+	//minvVec.print();
                 zVec = minvVec % rVec;
         }else{
 
@@ -2893,6 +2900,8 @@ if(isUseSparseSigmaforInitTau){
 */
         arma::fvec z1Vec(Nnomissing);
         arma::fvec pVec = zVec;
+	//std::cout << "pVec: " << std::endl;
+	//pVec.print();
         /*
         if(bVec[0] == 1 && bVec[2] == 1){
         for(int i = 0; i < 10; i++){
@@ -2904,9 +2913,14 @@ if(isUseSparseSigmaforInitTau){
         //xVec.zeros();
 
         int iter = 0;
+
+
+
         while (sumr2 > tolPCG && iter < maxiterPCG) {
                 iter = iter + 1;
                 arma::fcolvec ApVec = getCrossprod(pVec, wVec, tauVec);
+		//cout << "ApVec: " << endl;
+		//ApVec.print();
                 arma::fvec preA = (rVec.t() * zVec)/(pVec.t() * ApVec);
 
                 float a = preA(0);
@@ -2969,8 +2983,8 @@ if(isUseSparseSigmaforInitTau){
                 rVec = r1Vec;
 
                 sumr2 = sum(rVec % rVec);
-                //        std::cout << "sumr2: " << sumr2 << std::endl;
-                //        std::cout << "tolPCG: " << tolPCG << std::endl;
+                        //std::cout << "sumr2: " << sumr2 << std::endl;
+                        //std::cout << "tolPCG: " << tolPCG << std::endl;
 /*
                 if(bVec[0] == 1 && bVec[2] == 1){
                         std::cout << "sumr2: " << sumr2 << std::endl;
@@ -3997,6 +4011,13 @@ Rcpp::List getCoefficients(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,
 
   	arma::fmat Xmatt = Xmat.t();
   	//arma::fmat cov = inv_sympd(Xmatt * Sigma_iX);
+	//arma::fmat XSX = Xmatt * Sigma_iX;
+	//std::cout << "Sigma_iX: " << std::endl;
+	//Sigma_iX.print();
+	
+	//std::cout << "Xmatt * Sigma_iX: " << std::endl;
+	//XSX.print();
+
 	arma::fmat cov;
 	try {
 	  //cov = arma::inv_sympd(arma::symmatu(Xmatt * Sigma_iX));

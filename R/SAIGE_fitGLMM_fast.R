@@ -118,6 +118,8 @@ GetLambda0<-function(lin.pred,inC)
   lin.pred.new = lin.pred[inC$timedata$orgIndex]
   #cat("lin.pred.new: ", lin.pred.new, "\n")
   demonVec = GetdenominLambda0(inC$caseIndexwithTies, lin.pred.new, inC$timedata$newIndexWithTies) 
+  #cat("demonVec: ", demonVec, "\n")
+  #cat("inC$caseIndexwithTies: ", inC$caseIndexwithTies, "\n")
   #timeC = inC$timedata$time[inC$caseIndex]
   Lambda0<-rep(0,length(lin.pred))
   lambda0 = 0
@@ -125,6 +127,7 @@ GetLambda0<-function(lin.pred,inC)
   {
     j = inC$timedata$newIndexWithTies[i]
     lambda0 = sum(demonVec[which(inC$caseIndexwithTies <= j)])      
+    #cat("i: ", i, " j: ", j, " lambda0: ", lambda0, "\n")
     Lambda0[inC$timedata$orgIndex[i]] = lambda0
   } 
   return(Lambda0)
@@ -145,6 +148,8 @@ Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG
     cat("iGet_Coef: ", i, "\n")
     if(!is.null(inC)){
       Lambda0 = GetLambda0(eta, inC)
+      #print("Lambda0")
+      #print(Lambda0)	
       mu = Lambda0*exp(eta)
       Y = eta - offset + (y - mu)/mu
       W = as.vector(mu)
@@ -251,23 +256,24 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   alpha0 = fit0$coef
   eta0 = eta
 
+  
   #if(family$family %in% c("poisson", "binomial")) {
-  #  tau[1] = 1
-  #  fixtau[1] = 1
+    tau[1] = 1
+    fixtau[1] = 1
   #}
    
   #change, use 0.5 as a default value, and use Get_Coef before getAIScore
   q = 1
 
-  #if(tauInit[fixtau == 0] == 0){
-  #  tau[fixtau == 0] = 0.1
+  if(tauInit[fixtau == 0] == 0){
+    tau[fixtau == 0] = 0
     #tau[fixtau == 0] = var(Y)/2
-  #}else{
-  #  tau[fixtau == 0] = tauInit[fixtau == 0]
-  #}
+  }else{
+    tau[fixtau == 0] = tauInit[fixtau == 0]
+  }
+  #tauInit[1] = 1
   cat("inital tau is ", tau,"\n")
-  tau[1] = 1
-  tau0=tau
+  tau0=tauInit
 
   re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, inC = inC)
   re = getAIScore(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG,tolPCG = tolPCG, traceCVcutoff = traceCVcutoff)
@@ -754,6 +760,10 @@ fitNULLGLMM = function(plinkFile = "",
 		minMAFforGRM = 0.01,
 		useSparseGRMtoFitNULL=FALSE){
 
+  #if traitType != "survival", ignore eventTimeCol
+  if(traitType != "survival"){eventTimeCol = ""}
+
+
   setminMAFforGRM(minMAFforGRM)
   if(minMAFforGRM > 0){
     cat("Markers in the Plink file with MAF >= ", minMAFforGRM, " will be used to construct GRM\n")
@@ -979,8 +989,8 @@ fitNULLGLMM = function(plinkFile = "",
 
     cat("formula is ", formula,"\n")
     formula.null = as.formula(formula)
-    formula.null_withTime = as.formula(formula_withTime)
     if(eventTimeCol != ""){
+      formula.null_withTime = as.formula(formula_withTime)
       mmat = model.frame(formula.null_withTime, data, na.action=NULL)
     }else{ 	
       mmat = model.frame(formula.null, data, na.action=NULL)
@@ -994,9 +1004,9 @@ fitNULLGLMM = function(plinkFile = "",
       rmCensor = which(pheVec == 0 & mmat_nomissing[,eventTimeCol] < minTime)
     if(length(rmCensor) > 0){
       mmat_nomissing = mmat_nomissing[-rmCensor,]
-      cat("length(rmCensor) individuals that are censored before the first event is removed\n")
+      cat(length(rmCensor)," individuals that are censored before the first event is removed\n")
     }
-    mmat_nomissing = mmat[complete.cases(mmat),]
+    #mmat_nomissing = mmat[complete.cases(mmat),]
   }
 
     mmat_nomissing$IndexPheno = seq(1,nrow(mmat_nomissing), by=1)
