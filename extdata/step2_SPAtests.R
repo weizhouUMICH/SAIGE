@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 options(stringsAsFactors=F)
-library(SAIGE, lib.loc="/home/wei/install_dir/0.36.3.1_debug")
+library(SAIGE)
 print(sessionInfo())
 
 
