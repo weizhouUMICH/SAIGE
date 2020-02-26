@@ -121,7 +121,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                         	if(!is.null(G2_cond)){
                                 	G2_tilde_Ps_G2_tilde = getCovM_nopcg(G1=G2_cond, G2=G2_cond, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
                                 	G1_tilde_Ps_G2_tilde = getCovM_nopcg(G1=G1, G2=G2_cond, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
-					Phi12 = G1_tilde_Ps_G2_tilde * (GratioMatrixall[c((m+1):(m+m_cond)), 1:m])
+					#Phi12 = G1_tilde_Ps_G2_tilde * (GratioMatrixall[c((m+1):(m+m_cond)), 1:m])
+					Phi12 = G1_tilde_Ps_G2_tilde * (GratioMatrixall[1:m, c((m+1):(m+m_cond))])
                                 	G2_tilde_Ps_G1_tilde = t(G1_tilde_Ps_G2_tilde) 
 					Phi2 = G2_tilde_Ps_G2_tilde*(GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))])
                                 	G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv = (Phi12)%*%(solve(Phi2))
@@ -156,7 +157,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
                                 		G2_tilde_Ps_G2_tilde = getCovM_nopcg(G1=G2_cond, G2=G2_cond, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
 						Phi2 = G2_tilde_Ps_G2_tilde*(GratioMatrixall[c((m+1):(m+m_cond)),c((m+1):(m+m_cond))])
                                 		G1_tilde_Ps_G2_tilde = getCovM_nopcg(G1=G1, G2=G2_cond, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
-						Phi12 = G1_tilde_Ps_G2_tilde * (GratioMatrixall[c((m+1):(m+m_cond)), 1:m])
+						#Phi12 = G1_tilde_Ps_G2_tilde * (GratioMatrixall[c((m+1):(m+m_cond)), 1:m])
+						Phi12 = G1_tilde_Ps_G2_tilde * (GratioMatrixall[1:m, c((m+1):(m+m_cond))])
                                 		G2_tilde_Ps_G1_tilde = t(G1_tilde_Ps_G2_tilde)
 						G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv = (Phi12)%*%(solve(Phi2)) 
 
