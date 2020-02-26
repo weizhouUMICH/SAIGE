@@ -38,16 +38,35 @@ Rscript step2_SPAtests.R        \
         --vcfFile=./input/genotype_10markers.missingness.vcf.gz \
         --vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.tbi \
         --vcfField=GT \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype.dropmissing.txt \
         --chrom=1 \
         --minMAF=0.0001 \
         --minMAC=1 \
         --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output/example_binary.rda \
         --varianceRatioFile=./output/example_binary.varianceRatio.txt \
-        --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype.dropmissing.txt \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE	\
 	--IsDropMissingDosages=TRUE     
+
+
+
+Rscript step2_SPAtests.R        \
+	--bgenFile=./input/genotype_100markers.bgen	\
+	--bgenFileIndex=./input/genotype_100markers.bgen.bgi	\
+        --SAIGEOutputFile=./output/example_binary.SAIGE.bgen.genotype.dropmissing.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.bgen.genotype.dropmissing.txt \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/samplelist.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary.varianceRatio.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE	\
+	--IsDropMissingDosages=TRUE     
+
+
 
 	##conditional analysis
 	## --condition = Genetic marker ids (chr:pos_ref/alt) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for vcf/sav and bgen input.
