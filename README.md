@@ -63,7 +63,7 @@ R CMD INSTALL SAIGE
 4. Using a docker image (Thanks to Juha Karjalainen for sharing the Dockerfile). The docker image can be pulled
 
 ```
-docker pull wzhou88/saige:0.36.2
+docker pull wzhou88/saige:0.36.3.2
 ```
 [Dockerfile for creating a docker image for SAIGE](https://github.com/weizhouUMICH/Docker/tree/master/SAIGE)
 
