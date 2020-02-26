@@ -3,7 +3,7 @@ Table of Contents
 
    * [Introduction](#introduction)
    * [Citation](#citation)
-   * [How to install and run SAIGE and SAIGE-GENE](#how-to-install-and-run-saige-and-saige-gene)
+   * [How to install SAIGE and SAIGE-GENE](#how-to-install-and-run-saige-and-saige-gene)
    * [UK Biobank GWAS Results](#uk-biobank-gwas-results)
    * [Log for fixing bugs](#log-for-fixing-bugs)
    * [Notes for users before running jobs](#notes-for-users-before-running-jobs)
@@ -31,9 +31,93 @@ https://www.biorxiv.org/content/10.1101/583278v2
 
 # How to install and run SAIGE and SAIGE-GENE
 
-  https://github.com/weizhouUMICH/SAIGE/wiki/Genetic-association-tests-using-SAIGE
 
-## Examples
+## Install SAIGE/SAIGE-GENE
+
+SAIGE can be installed in 4 ways. The first 3 ways require installing dependencies first. 
+
+* R-3.6.1, gcc >= 5.4.0, cmake 3.14.1, [cget](https://cget.readthedocs.io/en/latest/src/intro.html#installing-cget)
+* R packages: "R.utils", "Rcpp", "RcppParallel", "RcppArmadillo", "data.table", "RcppEigen", "Matrix", "methods", "BH", "optparse", "SPAtest", "SKAT","MetaSKAT"
+* /extdata/install_packages.R can be used to install the R packages
+
+
+1. The binary install file can be downloaded from [SAIGE releases](https://github.com/weizhouUMICH/SAIGE/releases) or from the master branch. Then using the following command line to install SAIGE
+
+```
+R CMD INSTALL SAIGE_XX_R_x86_64-pc-linux-gnu.tar.gz
+```
+2. Installing using the R library devtools from github
+```
+devtools::install_github("weizhouUMICH/SAIGE") 
+
+```
+3. Installing from the source code. 
+```
+src_branch=master
+repo_src_url=https://github.com/weizhouUMICH/SAIGE
+git clone --depth 1 -b $src_branch $repo_src_url
+
+R CMD INSTALL SAIGE
+```
+
+4. Using a docker image (Thanks to Juha Karjalainen for sharing the Dockerfile). The docker image can be pulled
+
+```
+docker pull wzhou88/saige:0.36.2
+```
+[Dockerfile for creating a docker image for SAIGE](https://github.com/weizhouUMICH/Docker/tree/master/SAIGE)
+
+Functions can be called
+```
+step1_fitNULLGLMM.R --help
+step2_SPAtests.R --help
+createSparseGRM.R --help
+```
+
+5. Using a conda environment (Thanks to [Wallace(Minxian) Wang](https://github.com/weizhouUMICH/SAIGE/issues/118))
+
+a) create a conda environment using 
+ ([conda environment file](https://github.com/weizhouUMICH/SAIGE/blob/master/conda_env/environment-RSAIGE.yml)) 
+
+```
+conda env create -f environment-RSAIGE.yml
+conda activate RSAIGE
+FLAGPATH=`which python | sed 's|/bin/python$||'`
+export LDFLAGS="-L${FLAGPATH}/lib"
+export CPPFLAGS="-I${FLAGPATH}/include"
+```
+
+Note: [Here](https://github.com/weizhouUMICH/SAIGE/blob/master/conda_env/createCondaEnvSAIGE_steps.txt) are the steps to create the conda environment file 
+
+
+b) Using method 3
+Open R and install package MetaSKAT
+
+```
+install.packages('MetaSKAT')
+```
+
+exit R and run command
+```
+src_branch=master
+repo_src_url=https://github.com/weizhouUMICH/SAIGE
+git clone --depth 1 -b $src_branch $repo_src_url
+R CMD INSTALL SAIGE
+
+```
+
+c) Or using method 2
+Open R and run (choose 3 no update any packages): 
+```
+devtools::install_github("weizhouUMICH/SAIGE")
+```
+
+## Run SAIGE for single-variant association tests and SAIGE-GENE for gene- or region-based tests
+
+Here is a wiki page containg tutorial to run SAIGE and SAIGE-GENE
+  https://github.com/weizhouUMICH/SAIGE/wiki/Genetic-association-tests-using-SAIGE
+  
+### Examples
 
 Examplary data and script can be found in ./extdata. Run
 
@@ -62,6 +146,9 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.36.3.2 (February-25-2020)
+** Bug fixed: 1. fixed a bug for gene-based conditioning tests with multiple conditioning markers 2. add codes to re-check markers after dropping samples with missing dosages/genotypes in gene-based tests
+
 * 0.36.3.1 (February-04-2020):
 ** Note: in v0.36.3.1, uses SPAtest 3.0.2
 
