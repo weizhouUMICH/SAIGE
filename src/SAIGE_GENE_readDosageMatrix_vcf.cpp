@@ -107,6 +107,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
 
       std::string marker_id = it->chromosome() + ":" + std::to_string(it->position()) + "_" + it->ref() + "/" + it->alt();
       //std::cout << it->prop("R2") << std::endl; 
+      //std::cout << "marker_id: " << marker_id  << std::endl; 
       std::string markerInfo_str = it->prop("R2");
       float markerInfo = strtof((markerInfo_str).c_str(),0);
       for (auto dose_it = it->data().begin(); dose_it != it->data().end(); ++dose_it){
@@ -116,7 +117,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
         if(genetest_sample_idx_vcfDosage[i] >= 0) {
 	  //std::cout << "genetest_sample_idx_vcfDosage[i] " << genetest_sample_idx_vcfDosage[i] << std::endl;		
           if (std::isnan(*dose_it)) {
-
+		//std::cout << "here" << std::endl;
       //      dosagesforOneMarker[genetest_sample_idx_vcfDosage[i]] = float(1);
             ++missing_cnt;
             indexforMissing.push_back(genetest_sample_idx_vcfDosage[i]);
@@ -131,7 +132,8 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
 	    }	
 
           }
-        } 
+        }
+	//std::cout << "missing_cnt: " << missing_cnt << std::endl; 
       //group_matrix[cnt * sample_size + dose_it.offset()] = *dose_it;
       }
 
@@ -146,6 +148,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
         MAF = AF;
 	MAC = AC;
       }
+	//std::cout << "MAF: " << MAF <<  std::endl;
       if(MAF >= minMAF && MAF <= maxMAF && markerInfo >= minInfo){
         if(missing_cnt > 0){
 	  std::cout << "missing_cnt > 0!" << std::endl;

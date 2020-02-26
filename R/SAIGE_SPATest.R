@@ -286,7 +286,7 @@ SPAGMMATtest = function(bgenFile = "",
 
 
   if(IsDropMissingDosages){
-     cat("Samples with missing dosages will be dropped from the analysis\n")
+    cat("Samples with missing dosages will be dropped from the analysis\n")
   }else{
     cat("Missing dosages will be mean imputed for the analysis\n")
   }
@@ -1075,14 +1075,18 @@ SPAGMMATtest = function(bgenFile = "",
 			indexforMissing = unique(c(Gx$indexforMissing, Gx_cond$indexforMissing))
 		}else{
 			indexforMissing = unique(Gx$indexforMissing)
+
+			cat("indexforMissing: ", indexforMissing, "\n")
 		}
 		
 
 
 
 	     if(IsDropMissingDosages & length(indexforMissing) > 0){	
+		cat("Removing ", length(indexforMissing), " samples with missing dosages/genotypes in the gene\n")
 
 	        missingind = seq(1, nrow(Gmat))[-(indexforMissing + 1)]
+		#print("OK1")
 		subsetModelResult = subsetModelFileforMissing(obj.glmm.null, missingind, mu, mu.a ,mu2.a)
         	obj.glmm.null.sub = subsetModelResult$obj.glmm.null.sub
         	mu.a.sub = subsetModelResult$mu.a.sub
@@ -1091,10 +1095,13 @@ SPAGMMATtest = function(bgenFile = "",
         	rm(subsetModelResult)
 
 		y.sub = obj.glmm.null.sub$obj.glm.null$y
+		#print("OK2")
+		#print(y.sub)
 
-		obj.glmm.null.sub$obj_cc = SKAT::SKAT_Null_Model(y.sub ~ obj.glmm.null.sub$obj.noK$X1-1, out_type="D", Adjustment = FALSE)
+		#print("OK")
 
         	if(traitType == "binary"){
+			obj.glmm.null.sub$obj_cc = SKAT::SKAT_Null_Model(y.sub ~ obj.glmm.null.sub$obj.noK$X1-1, out_type="D", Adjustment = FALSE)
           		y1Index.sub = which(y.sub == 1)
           		NCase.sub = length(y1Index.sub)
           		y0Index.sub = which(y.sub == 0)
@@ -1104,6 +1111,9 @@ SPAGMMATtest = function(bgenFile = "",
         	sparseSigma.sub = sparseSigma
         	if(!is.null(sparseSigma)){sparseSigma.sub = sparseSigma[missingind, missingind]}
 	       	Gmat = Gmat[missingind,]
+		if(cntMarker == 1){
+			Gmat = matrix(Gmat, ncol=1)
+		}
 
 		if(isCondition){
                 	cat("Removing ", length(indexforMissing), " samples from the conditional marker\n")
@@ -1134,27 +1144,40 @@ SPAGMMATtest = function(bgenFile = "",
 				if(length(replaceindex) > 0){	
 					Gmat[replaceindex,z] = 0 
 					cat("dim(Gmat) is ", dim(Gmat), "\n")
-					if(sum(Gmat[,z])/(2*nrow(Gmat)) < testMinMAF){rmMarkerIndex = c(rmMarkerIndex, z)}
+					#i#if(sum(Gmat[,z])/(2*nrow(Gmat)) < testMinMAF){rmMarkerIndex = c(rmMarkerIndex, z)}
 				}
 			}else{
 				Gmat[which(Gmat <= dosageZerodCutoff)] = 0
-				if(sum(Gmat)/(2*length(Gmat)) < testMinMAF){rmMarkerIndex = c(rmMarkerIndex, z)} 
+				#if(sum(Gmat)/(2*length(Gmat)) < testMinMAF){rmMarkerIndex = c(rmMarkerIndex, z)} 
 				Gmat = matrix(Gmat, ncol=1)
-				Gmat = as(Gmat, "sparseMatrix")
+				#Gmat = as(Gmat, "sparseMatrix")
 			}
 		}
-		cat("length(rmMarkerIndex): ", length(rmMarkerIndex), "\n")
-		if(length(rmMarkerIndex) > 0){
-			cntMarker = cntMarker - length(rmMarkerIndex)
-			if(cntMarker > 0){
-				Gmat = Gmat[,-rmMarkerIndex]
-				cntMarker = cntMarker - length(rmMarkerIndex)
-				Gx$markerIDs = Gx$markerIDs[-rmMarkerIndex]
-				Gx$markerAFs = Gx$markerAFs[-rmMarkerIndex]
-			}
+	      }	
+
+	     #if(IsDropMissingDosages & length(indexforMissing) > 0){	
+	     cm = colMeans(Gmat)/2
+	     cm[which(cm > 0.5)] = 1 - cm[which(cm > 0.5)]	
+	     rmMarkerIndex = which(cm < testMinMAF | cm > maxMAFforGroupTest)	
+	     #}	
+
+	     #cat("length(rmMarkerIndex): ", length(rmMarkerIndex), "\n")
+	     if(length(rmMarkerIndex) > 0){
+		cat(length(rmMarkerIndex), " markers are further removed\n")
+		cntMarker = cntMarker - length(rmMarkerIndex)
+		if(cntMarker > 0){
+			Gmat = Gmat[,-rmMarkerIndex]
+				#cntMarker = cntMarker - length(rmMarkerIndex)
+			Gx$markerIDs = Gx$markerIDs[-rmMarkerIndex]
+			Gx$markerAFs = Gx$markerAFs[-rmMarkerIndex]
+			Gmat = as(Gmat, "sparseMatrix")		
 		}
+	     }else{
+			
 		Gmat = as(Gmat, "sparseMatrix")		
+
 	     }
+	     #}
          
           }#if(cntMarker > 0){
 
@@ -1195,7 +1218,10 @@ SPAGMMATtest = function(bgenFile = "",
 	        OUT_single = NULL
               }	
             }
-          }#if(cntMarker > 0){
+          }else{ ##if(cntMarker > 0){
+		print("No markers are left!")
+
+	  }	
       }#end of else for if(length(line) == 0 )
     } # end of while ( TRUE ) {
 
