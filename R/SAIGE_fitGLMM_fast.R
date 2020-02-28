@@ -1467,12 +1467,14 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
      #print("debug2")
      print(nrow(inC$timedata))
      print(length(inC$uniqTimeIndex))
+     RmatIndex = t(sapply(1:nrow(inC$timedata), Getrmat_indexvec_new, inC))
+     RmatIndex = RmatIndex[order(RmatIndex[,1]),]
+     RvecIndex =  RmatIndex[order(RmatIndex[,1]),2]
+     rm(RmatIndex)
+     DvecCumSum = cumsum(Dvec)
+     diagofWminusUinv = ((((exp(eta))^2) * (DvecCumSum[RvecIndex]))*(1/W) + 1)*(1/W) 
      if(pcgforUhatforSurvAnalysis == TRUE){
        WinvNvec = 1/(Lambda0)
-       RmatIndex = t(sapply(1:nrow(inC$timedata), Getrmat_indexvec_new, inC))
-       RmatIndex = RmatIndex[order(RmatIndex[,1]),]
-       RvecIndex =  RmatIndex[order(RmatIndex[,1]),2]
-       rm(RmatIndex)
        sqrtWinvNVec = sqrt(exp(eta))/(Lambda0)
      }else{
        Rmat = t(sapply(1:nrow(inC$timedata), Getrmat, inC))
@@ -1602,9 +1604,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
     Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
   }else{
     if(pcgforUhatforSurvAnalysis){
-      Sigma_iX_noLOCO = getSigma_X_Surv_new(W, tauVecNew, X1, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec,maxiterPCG, tolPCG)
+      Sigma_iX_noLOCO = getSigma_X_Surv_new(W, tauVecNew, X1, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, maxiterPCG, tolPCG)
     }else{
-      Sigma_iX_noLOCO = getSigma_X_Surv(W, tauVecNew, X1,WinvNRt, ACinv, maxiterPCG, tolPCG)
+      Sigma_iX_noLOCO = getSigma_X_Surv(W, tauVecNew, X1,WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG)
     }
   }
 
@@ -1654,9 +1656,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
     		Sigma_iG= getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
   	      }else{
 		if(pcgforUhatforSurvAnalysis){	
-    		  Sigma_iG = getSigma_G_Surv_new(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec,maxiterPCG, tolPCG)
+    		  Sigma_iG = getSigma_G_Surv_new(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, maxiterPCG, tolPCG)
 		}else{
-		  Sigma_iG = getSigma_G_Surv(W, tauVecNew, G, WinvNRt, ACinv, maxiterPCG, tolPCG)
+		  Sigma_iG = getSigma_G_Surv(W, tauVecNew, G, WinvNRt, ACinv, diagofWminusUinv,maxiterPCG, tolPCG)
 		}
   	      }	
 	      Sigma_iX = Sigma_iX_noLOCO
@@ -1672,9 +1674,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 	     if(obj.glmm.null$traitType == "survival"){
 		W = as.vector(mu)
 		if(pcgforUhatforSurvAnalysis){
-                  Sigma_iG = getSigma_G_Surv_new(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec,maxiterPCG, tolPCG)
+                  Sigma_iG = getSigma_G_Surv_new(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, maxiterPCG, tolPCG)
 		}else{
-		  Sigma_iG = getSigma_G_Surv(W, tauVecNew, G, WinvNRt, ACinv, maxiterPCG, tolPCG)	
+		  Sigma_iG = getSigma_G_Surv(W, tauVecNew, G, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG)	
 		}
 
 	     }	
@@ -1695,11 +1697,11 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 	     if(obj.glmm.null$traitType == "survival"){
 		W = as.vector(mu)
 		if(pcgforUhatforSurvAnalysis){
-		  Sigma_iX = getSigma_X_Surv_new_LOCO(W, tauVecNew, X1, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec,maxiterPCG, tolPCG)	
-                  Sigma_iG = getSigma_G_Surv_new_LOCO(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec,maxiterPCG, tolPCG) #not activated
+		  Sigma_iX = getSigma_X_Surv_new_LOCO(W, tauVecNew, X1, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, maxiterPCG, tolPCG)	
+                  Sigma_iG = getSigma_G_Surv_new_LOCO(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, maxiterPCG, tolPCG) #not activated
 		}else{
-		  Sigma_iX = getSigma_X_Surv_LOCO(W, tauVecNew, X1, WinvNRt, ACinv, maxiterPCG, tolPCG)
-		  Sigma_iG = getSigma_G_Surv_LOCO(W, tauVecNew, G, WinvNRt, ACinv, maxiterPCG, tolPCG)
+		  Sigma_iX = getSigma_X_Surv_LOCO(W, tauVecNew, X1, WinvNRt, ACinv,diagofWminusUinv, maxiterPCG, tolPCG)
+		  Sigma_iG = getSigma_G_Surv_LOCO(W, tauVecNew, G, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG)
 		}
 
              }

@@ -44,7 +44,7 @@ Rscript step1_fitNULLGLMM.R     \
         --nThreads=4    \
         --LOCO=FALSE    \
         --minMAFforGRM=0.01     \
-        --skipModelFitting=FALSE        \
+        --skipModelFitting=TRUE \
         --tauInit=1,0   \
         --pcgforUhatforSurvAnalysis=FALSE
 

@@ -121,6 +121,14 @@ getDiagOfSigma_LOCO <- function(wVec, tauVec) {
     .Call('_SAIGE_getDiagOfSigma_LOCO', PACKAGE = 'SAIGE', wVec, tauVec)
 }
 
+getDiagOfSigma_surv <- function(diagofWminusUinv, tauVec) {
+    .Call('_SAIGE_getDiagOfSigma_surv', PACKAGE = 'SAIGE', diagofWminusUinv, tauVec)
+}
+
+getDiagOfSigma_surv_LOCO <- function(diagofWminusUinv, tauVec) {
+    .Call('_SAIGE_getDiagOfSigma_surv_LOCO', PACKAGE = 'SAIGE', diagofWminusUinv, tauVec)
+}
+
 getCrossprod <- function(bVec, wVec, tauVec) {
     .Call('_SAIGE_getCrossprod', PACKAGE = 'SAIGE', bVec, wVec, tauVec)
 }
@@ -233,20 +241,20 @@ getPCG1ofSigmaAndVector <- function(wVec, tauVec, bVec, maxiterPCG, tolPCG) {
     .Call('_SAIGE_getPCG1ofSigmaAndVector', PACKAGE = 'SAIGE', wVec, tauVec, bVec, maxiterPCG, tolPCG)
 }
 
-getPCG1ofSigmaAndVector_Surv <- function(wVec, tauVec, bVec, WinvNRt, ACinv, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getPCG1ofSigmaAndVector_Surv', PACKAGE = 'SAIGE', wVec, tauVec, bVec, WinvNRt, ACinv, maxiterPCG, tolPCG)
+getPCG1ofSigmaAndVector_Surv <- function(wVec, tauVec, bVec, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getPCG1ofSigmaAndVector_Surv', PACKAGE = 'SAIGE', wVec, tauVec, bVec, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG)
 }
 
-getPCG1ofSigmaAndVector_Surv_LOCO <- function(wVec, tauVec, bVec, WinvNRt, ACinv, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getPCG1ofSigmaAndVector_Surv_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, bVec, WinvNRt, ACinv, maxiterPCG, tolPCG)
+getPCG1ofSigmaAndVector_Surv_LOCO <- function(wVec, tauVec, bVec, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getPCG1ofSigmaAndVector_Surv_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, bVec, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG)
 }
 
-getPCG1ofSigmaAndVector_Surv_new <- function(wVec, tauVec, bVec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getPCG1ofSigmaAndVector_Surv_new', PACKAGE = 'SAIGE', wVec, tauVec, bVec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, maxiterPCG, tolPCG)
+getPCG1ofSigmaAndVector_Surv_new <- function(wVec, tauVec, bVec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getPCG1ofSigmaAndVector_Surv_new', PACKAGE = 'SAIGE', wVec, tauVec, bVec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG)
 }
 
-getPCG1ofSigmaAndVector_Surv_new_LOCO <- function(wVec, tauVec, bVec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getPCG1ofSigmaAndVector_Surv_new_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, bVec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, maxiterPCG, tolPCG)
+getPCG1ofSigmaAndVector_Surv_new_LOCO <- function(wVec, tauVec, bVec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getPCG1ofSigmaAndVector_Surv_new_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, bVec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG)
 }
 
 getPCG1ofSigmaAndVector_old <- function(wVec, tauVec, bVec, maxiterPCG, tolPCG) {
@@ -301,20 +309,20 @@ getSigma_X <- function(wVec, tauVec, Xmat, maxiterPCG, tolPCG) {
     .Call('_SAIGE_getSigma_X', PACKAGE = 'SAIGE', wVec, tauVec, Xmat, maxiterPCG, tolPCG)
 }
 
-getSigma_X_Surv <- function(wVec, tauVec, Xmat, WinvNRt, ACinv, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getSigma_X_Surv', PACKAGE = 'SAIGE', wVec, tauVec, Xmat, WinvNRt, ACinv, maxiterPCG, tolPCG)
+getSigma_X_Surv <- function(wVec, tauVec, Xmat, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getSigma_X_Surv', PACKAGE = 'SAIGE', wVec, tauVec, Xmat, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG)
 }
 
-getSigma_X_Surv_LOCO <- function(wVec, tauVec, Xmat, WinvNRt, ACinv, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getSigma_X_Surv_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, Xmat, WinvNRt, ACinv, maxiterPCG, tolPCG)
+getSigma_X_Surv_LOCO <- function(wVec, tauVec, Xmat, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getSigma_X_Surv_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, Xmat, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG)
 }
 
-getSigma_X_Surv_new <- function(wVec, tauVec, Xmat, RvecIndex, sqrtWinvNVec, WinvN, Dvec, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getSigma_X_Surv_new', PACKAGE = 'SAIGE', wVec, tauVec, Xmat, RvecIndex, sqrtWinvNVec, WinvN, Dvec, maxiterPCG, tolPCG)
+getSigma_X_Surv_new <- function(wVec, tauVec, Xmat, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getSigma_X_Surv_new', PACKAGE = 'SAIGE', wVec, tauVec, Xmat, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG)
 }
 
-getSigma_X_Surv_new_LOCO <- function(wVec, tauVec, Xmat, RvecIndex, sqrtWinvNVec, WinvN, Dvec, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getSigma_X_Surv_new_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, Xmat, RvecIndex, sqrtWinvNVec, WinvN, Dvec, maxiterPCG, tolPCG)
+getSigma_X_Surv_new_LOCO <- function(wVec, tauVec, Xmat, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getSigma_X_Surv_new_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, Xmat, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG)
 }
 
 getSigma_X_LOCO <- function(wVec, tauVec, Xmat, maxiterPCG, tolPCG) {
@@ -325,20 +333,20 @@ getSigma_G <- function(wVec, tauVec, Gvec, maxiterPCG, tolPCG) {
     .Call('_SAIGE_getSigma_G', PACKAGE = 'SAIGE', wVec, tauVec, Gvec, maxiterPCG, tolPCG)
 }
 
-getSigma_G_Surv <- function(wVec, tauVec, Gvec, WinvNRt, ACinv, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getSigma_G_Surv', PACKAGE = 'SAIGE', wVec, tauVec, Gvec, WinvNRt, ACinv, maxiterPCG, tolPCG)
+getSigma_G_Surv <- function(wVec, tauVec, Gvec, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getSigma_G_Surv', PACKAGE = 'SAIGE', wVec, tauVec, Gvec, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG)
 }
 
-getSigma_G_Surv_LOCO <- function(wVec, tauVec, Gvec, WinvNRt, ACinv, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getSigma_G_Surv_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, Gvec, WinvNRt, ACinv, maxiterPCG, tolPCG)
+getSigma_G_Surv_LOCO <- function(wVec, tauVec, Gvec, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getSigma_G_Surv_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, Gvec, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG)
 }
 
-getSigma_G_Surv_new <- function(wVec, tauVec, Gvec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getSigma_G_Surv_new', PACKAGE = 'SAIGE', wVec, tauVec, Gvec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, maxiterPCG, tolPCG)
+getSigma_G_Surv_new <- function(wVec, tauVec, Gvec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getSigma_G_Surv_new', PACKAGE = 'SAIGE', wVec, tauVec, Gvec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG)
 }
 
-getSigma_G_Surv_new_LOCO <- function(wVec, tauVec, Gvec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, maxiterPCG, tolPCG) {
-    .Call('_SAIGE_getSigma_G_Surv_new_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, Gvec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, maxiterPCG, tolPCG)
+getSigma_G_Surv_new_LOCO <- function(wVec, tauVec, Gvec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG) {
+    .Call('_SAIGE_getSigma_G_Surv_new_LOCO', PACKAGE = 'SAIGE', wVec, tauVec, Gvec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG)
 }
 
 getSigma_G_LOCO <- function(wVec, tauVec, Gvec, maxiterPCG, tolPCG) {
