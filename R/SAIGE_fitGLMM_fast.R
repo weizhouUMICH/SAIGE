@@ -860,7 +860,7 @@ fitNULLGLMM = function(plinkFile = "",
   if(!file.exists(varRatioFile)){
     file.create(varRatioFile, showWarnings = TRUE)
   }else{
-    stop("WARNING: The variance ratio file ", varRatioFile, " already exists. The new variance ratios will be output to ", varRatioFile,". In order to avoid over-writting, please remove the ", varRatioFile, " or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s)\n")
+    cat("WARNING: The variance ratio file ", varRatioFile, " already exists. The new variance ratios will be output to ", varRatioFile,". In order to avoid over-writting, please remove the ", varRatioFile, " or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s)\n")
   }
 
 
