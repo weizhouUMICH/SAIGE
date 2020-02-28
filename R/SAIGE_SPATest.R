@@ -316,7 +316,7 @@ SPAGMMATtest = function(bgenFile = "",
 
   if(!isGroupTest){
     if(dosageFileType == "bgen"){
-      dosageFilecolnamesSkip = c("CHR","POS","rsid","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "homN_Allele2", "hetN_Allele2", "imputationInfo")
+      dosageFilecolnamesSkip = c("CHR","POS","rsid","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls", "imputationInfo")
     }else if(dosageFileType == "vcf"){
       dosageFilecolnamesSkip = c("CHR","POS","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
     }
@@ -381,7 +381,7 @@ SPAGMMATtest = function(bgenFile = "",
       }
 
     }else if(dosageFileType == "bgen"){
-      SetSampleIdx(sampleIndex, N)
+      SetSampleIdx(sampleIndex, obj.glmm.null$obj.glm.null$y, N)
       Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist, testMinMAF, 0.5, minInfo)
       if(Gx_cond$cnt > 0){
         dosage_cond = matrix(Gx_cond$dosages, byrow=F, ncol = Gx_cond$cnt)	
@@ -603,7 +603,7 @@ SPAGMMATtest = function(bgenFile = "",
         stop("ERROR! Failed to open ", bgenFile, "\n")
       }
       isQuery = getQueryStatus()
-      SetSampleIdx(sampleIndex, N)
+      SetSampleIdx(sampleIndex, obj.glmm.null$obj.glm.null$y, N)
 
 	
       nsamplesinBgen = getSampleSizeinBgen()
@@ -901,7 +901,7 @@ SPAGMMATtest = function(bgenFile = "",
      }
     	 
      if(dosageFileType == "bgen"){
-       SetSampleIdx(sampleIndex, N)
+       SetSampleIdx(sampleIndex, obj.glmm.null$obj.glm.null$y, N)
      }else if(dosageFileType == "vcf"){
        setMAFcutoffs(testMinMAF, maxMAFforGroupTest)
        cat("genetic variants with ", testMinMAF, "<= MAF <= ", maxMAFforGroupTest, "are included for gene-based tests\n")

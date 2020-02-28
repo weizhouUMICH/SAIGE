@@ -1195,14 +1195,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // SetSampleIdx
-int SetSampleIdx(Rcpp::IntegerVector sample_idx, int Ntest);
-RcppExport SEXP _SAIGE_SetSampleIdx(SEXP sample_idxSEXP, SEXP NtestSEXP) {
+int SetSampleIdx(Rcpp::IntegerVector sample_idx, Rcpp::IntegerVector cc_index, int Ntest);
+RcppExport SEXP _SAIGE_SetSampleIdx(SEXP sample_idxSEXP, SEXP cc_indexSEXP, SEXP NtestSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type sample_idx(sample_idxSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type cc_index(cc_indexSEXP);
     Rcpp::traits::input_parameter< int >::type Ntest(NtestSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetSampleIdx(sample_idx, Ntest));
+    rcpp_result_gen = Rcpp::wrap(SetSampleIdx(sample_idx, cc_index, Ntest));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1498,7 +1499,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getQueryStatus", (DL_FUNC) &_SAIGE_getQueryStatus, 0},
     {"_SAIGE_getisReadVariantBgen", (DL_FUNC) &_SAIGE_getisReadVariantBgen, 0},
     {"_SAIGE_getMarkerInfo", (DL_FUNC) &_SAIGE_getMarkerInfo, 0},
-    {"_SAIGE_SetSampleIdx", (DL_FUNC) &_SAIGE_SetSampleIdx, 2},
+    {"_SAIGE_SetSampleIdx", (DL_FUNC) &_SAIGE_SetSampleIdx, 3},
     {"_SAIGE_closetestGenoFile_bgenDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_bgenDosage, 0},
     {"_SAIGE_setgenoTest_bgenDosage_v2", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage_v2, 6},
     {"_SAIGE_getSampleSizeinBgen", (DL_FUNC) &_SAIGE_getSampleSizeinBgen, 0},

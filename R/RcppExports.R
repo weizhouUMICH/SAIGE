@@ -389,8 +389,8 @@ getMarkerInfo <- function() {
     .Call('_SAIGE_getMarkerInfo', PACKAGE = 'SAIGE')
 }
 
-SetSampleIdx <- function(sample_idx, Ntest) {
-    .Call('_SAIGE_SetSampleIdx', PACKAGE = 'SAIGE', sample_idx, Ntest)
+SetSampleIdx <- function(sample_idx, cc_index, Ntest) {
+    .Call('_SAIGE_SetSampleIdx', PACKAGE = 'SAIGE', sample_idx, cc_index, Ntest)
 }
 
 closetestGenoFile_bgenDosage <- function() {
