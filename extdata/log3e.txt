@@ -38,7 +38,7 @@ $eventTimeCol
 [1] "AgeOfEventFinal"
 
 $pcgforUhatforSurvAnalysis
-[1] FALSE
+[1] TRUE
 
 $invNormalize
 [1] FALSE
@@ -89,7 +89,7 @@ $ratioCVcutoff
 [1] 0.001
 
 $outputPrefix
-[1] "./output_test/example_survival.5cases"
+[1] "./output_test/example_survival.5cases.old"
 
 $IsSparseKin
 [1] FALSE
@@ -169,7 +169,7 @@ Null Deviance:	    1353
 Residual Deviance: 60.72 	AIC: 64.72
 Start fitting the NULL GLMM
    user  system elapsed 
-  1.348   0.193   1.412 
+  1.464   0.182   1.517 
 [1] "Start reading genotype plink file here"
 nbyte: 250
 nbyte: 244
@@ -182,7 +182,7 @@ setgeno mark2
 110821 markers with MAF >= 0.01 are used for GRM.
 setgeno mark5
 setgeno mark6
-time: 1936.34
+time: 1976.89
 [1] "Genotype reading is done"
 inital tau is  1 0.5 
 iGet_Coef:  1 
@@ -193,8 +193,8 @@ Tau:
 [1] 1.0 0.5
 Fixed-effect coefficients:
           [,1]
-[1,] 5.5422921
-[2,] 0.7984854
+[1,] 5.5422926
+[2,] 0.7984856
 iGet_Coef:  2 
 iter from getPCG1ofSigmaAndVector 3
 iter from getPCG1ofSigmaAndVector 2
@@ -203,8 +203,8 @@ Tau:
 [1] 1.0 0.5
 Fixed-effect coefficients:
           [,1]
-[1,] 5.5467057
-[2,] 0.8056521
+[1,] 5.5467067
+[2,] 0.8056526
 iter from getPCG1ofSigmaAndVector 2
 iter from getPCG1ofSigmaAndVector 2
 iter from getPCG1ofSigmaAndVector 2
@@ -248,9 +248,9 @@ iter from getPCG1ofSigmaAndVector 2
 Tau:
 [1] 1.0000000 0.4999632
 Fixed-effect coefficients:
-          [,1]
-[1,] 5.5422916
-[2,] 0.7984852
+         [,1]
+[1,] 5.542292
+[2,] 0.798485
 iter from getPCG1ofSigmaAndVector 2
 iter from getPCG1ofSigmaAndVector 2
 iter from getPCG1ofSigmaAndVector 2
@@ -296,14 +296,14 @@ Tau:
 Fixed-effect coefficients:
           [,1]
 [1,] 5.5448847
-[2,] 0.8008854
+[2,] 0.8008857
 dim(X1):  976 2 
 length(V):  976 
    user  system elapsed 
-122.913   0.464  63.709 
+123.883   0.505  64.317 
 t_end - t_begin, fitting the NULL model took
    user  system elapsed 
-121.565   0.271  62.297 
+122.419   0.323  62.800 
 Start estimating variance ratios
 
 Family: binomial 
@@ -315,7 +315,7 @@ Vcells 3431607 26.2    8388608  64.0  4615778  35.3
 [1] 976
 [1] 5
 Only one variance ratio will be estimated using randomly selected markers with MAC >= 20
-iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 5
 iter from getPCG1ofSigmaAndVector 6
 23631 th marker
 G0 0 0 0 0 0 0 0 0 0 0 
@@ -414,14 +414,14 @@ iter from getPCG1ofSigmaAndVector 4
 [1] "OK"
 [1] "OK1"
 [1] "OK2"
-CV for variance ratio estimate using  30  markers is  1.889391e-05  <  0.001 
+CV for variance ratio estimate using  30  markers is  1.889053e-05  <  0.001 
 varRatio 1.000194 
 [1] 1.000194
          [,1]
 [1,] 1.000194
          [,1]
 [1,] 1.000194
-[1] "./output_test/example_survival.5cases.varianceRatio.txt"
+[1] "./output_test/example_survival.5cases.old.varianceRatio.txt"
         V1
 1 1.000194
 closed the plinkFile!

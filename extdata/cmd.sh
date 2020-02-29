@@ -61,9 +61,64 @@ Rscript step1_fitNULLGLMM.R     \
         --nThreads=4    \
         --LOCO=FALSE    \
         --minMAFforGRM=0.01     \
+        --skipModelFitting=TRUE        \
+        --tauInit=1,0.5 \
+        --pcgforUhatforSurvAnalysis=FALSE > log3f.txt
+
+Rscript step1_fitNULLGLMM_old.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --phenoFile=./input/pheno_1000samples_survival.5cases.txt \
+        --phenoCol=casecontrol \
+        --covarColList=X \
+        --eventTimeCol=AgeOfEventFinal \
+        --sampleIDColinphenoFile=IND_ID \
+        --traitType=survival        \
+        --outputPrefix=./output_test/example_survival.5cases.old \
+        --nThreads=4    \
+        --LOCO=FALSE    \
+        --minMAFforGRM=0.01     \
+        --skipModelFitting=FALSE        \
+        --tauInit=1,0.5 \
+        --pcgforUhatforSurvAnalysis=TRUE > log3e.txt
+
+
+
+
+Rscript step1_fitNULLGLMM.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --phenoFile=./input/pheno_1000samples_survival.5cases.txt \
+        --phenoCol=casecontrol \
+        --covarColList=X \
+        --eventTimeCol=AgeOfEventFinal \
+        --sampleIDColinphenoFile=IND_ID \
+        --traitType=survival        \
+        --outputPrefix=./output_test/example_survival.5cases.old \
+        --nThreads=4    \
+        --LOCO=FALSE    \
+        --minMAFforGRM=0.01     \
         --skipModelFitting=FALSE        \
         --tauInit=1,0.5 \
         --pcgforUhatforSurvAnalysis=FALSE
+
+
+Rscript step1_fitNULLGLMM_new.R \
+	--plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --phenoFile=./input/pheno_1000samples_survival.5cases.txt \
+        --phenoCol=casecontrol \
+        --covarColList=X \
+        --eventTimeCol=AgeOfEventFinal \
+        --sampleIDColinphenoFile=IND_ID \
+        --traitType=survival        \
+        --outputPrefix=./output_test/example_survival.5cases.new \
+        --nThreads=4    \
+        --LOCO=FALSE    \
+        --minMAFforGRM=0.01     \
+        --skipModelFitting=FALSE        \
+        --tauInit=1,0.5 \
+        --pcgforUhatforSurvAnalysis=TRUE > log41.txt
+
+
+
 
 
 #use Sparse GRM to fit the NULL glmm

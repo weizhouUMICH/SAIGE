@@ -1,4 +1,4 @@
-# project bgen (1.1.4) configured on Fri Feb 21 16:53:48 2020 by
+# project bgen (1.1.4) configured on Fri Feb 28 19:49:53 2020 by
 # waf 2.0.6 (abi 20, python 2070cf0 on linux2)
 # using ./waf configure
 #
@@ -528,12 +528,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_0aedf798f78627d22947c9b03bf5f41e/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_0befc93e752aae99116259f4b61decd2/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_0aedf798f78627d22947c9b03bf5f41e/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_0aedf798f78627d22947c9b03bf5f41e/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_0befc93e752aae99116259f4b61decd2/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_0befc93e752aae99116259f4b61decd2/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_0aedf798f78627d22947c9b03bf5f41e/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lz']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_0befc93e752aae99116259f4b61decd2/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lz']
 yes
 ----------------------------------------
 rt
@@ -545,12 +545,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_4d5739533888673c27c6f7b75a11540c/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_9a636dd55dc27b3d8dacc0434d3c0ae5/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_4d5739533888673c27c6f7b75a11540c/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_4d5739533888673c27c6f7b75a11540c/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_9a636dd55dc27b3d8dacc0434d3c0ae5/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_9a636dd55dc27b3d8dacc0434d3c0ae5/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_4d5739533888673c27c6f7b75a11540c/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_9a636dd55dc27b3d8dacc0434d3c0ae5/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt']
 yes
 ----------------------------------------
 pthread
@@ -562,12 +562,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_dc1f769220481e5c7027bb0654620663/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_2f5f72f03aff980eaf1ba1a973ed7c03/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_dc1f769220481e5c7027bb0654620663/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_dc1f769220481e5c7027bb0654620663/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_2f5f72f03aff980eaf1ba1a973ed7c03/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_2f5f72f03aff980eaf1ba1a973ed7c03/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_dc1f769220481e5c7027bb0654620663/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_2f5f72f03aff980eaf1ba1a973ed7c03/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread']
 yes
 ----------------------------------------
 dl
@@ -579,10 +579,10 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_e0c21446051e315e30e9ed3fc68b2a9f/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_cf67281f830839f51ba868f3075d574f/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_e0c21446051e315e30e9ed3fc68b2a9f/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_e0c21446051e315e30e9ed3fc68b2a9f/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_cf67281f830839f51ba868f3075d574f/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_cf67281f830839f51ba868f3075d574f/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_e0c21446051e315e30e9ed3fc68b2a9f/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-ldl']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE_Poission_Survival_MergeToSAIGEnew/SAIGE/thirdParty/bgen/build/.conf_check_cf67281f830839f51ba868f3075d574f/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-ldl']
 yes

@@ -3,7 +3,8 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
-library(SAIGE, lib.loc="/home/wei/install_dir/0.36.3.1_homN_hetN_surv")
+#library(SAIGE, lib.loc="/home/wei/install_dir/0.36.3.1_homN_hetN_surv")
+library(SAIGE, lib.loc="/home/wei/install_dir/0.36.3.2_homN_hetN_surv")
 require(optparse) #install.packages("optparse")
 
 print(sessionInfo())
@@ -159,4 +160,5 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
 	    useSparseSigmaforInitTau = opt$useSparseSigmaforInitTau,
 	    minMAFforGRM = opt$minMAFforGRM,
 	    minCovariateCount=opt$minCovariateCount,
-	    useSparseGRMtoFitNULL = opt$useSparseGRMtoFitNULL)	
+	    useSparseGRMtoFitNULL = opt$useSparseGRMtoFitNULL,
+		pcgforUhatforSurvAnalysis = opt$pcgforUhatforSurvAnalysis)	

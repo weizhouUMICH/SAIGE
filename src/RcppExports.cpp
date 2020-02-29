@@ -379,6 +379,49 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// extractUvecforkthTime
+void extractUvecforkthTime(unsigned int kthtime, arma::fvec& RvecIndex, arma::fvec& NVec, arma::fvec& sqrtDVec, arma::fvec& kthVec);
+RcppExport SEXP _SAIGE_extractUvecforkthTime(SEXP kthtimeSEXP, SEXP RvecIndexSEXP, SEXP NVecSEXP, SEXP sqrtDVecSEXP, SEXP kthVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type kthtime(kthtimeSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type RvecIndex(RvecIndexSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type NVec(NVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type sqrtDVec(sqrtDVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type kthVec(kthVecSEXP);
+    extractUvecforkthTime(kthtime, RvecIndex, NVec, sqrtDVec, kthVec);
+    return R_NilValue;
+END_RCPP
+}
+// parallelCrossProd_UandbVec_surv
+arma::fvec parallelCrossProd_UandbVec_surv(arma::fcolvec& bVec, arma::fvec& RvecIndex, arma::fvec& NVec, arma::fvec& sqrtDVec);
+RcppExport SEXP _SAIGE_parallelCrossProd_UandbVec_surv(SEXP bVecSEXP, SEXP RvecIndexSEXP, SEXP NVecSEXP, SEXP sqrtDVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fcolvec& >::type bVec(bVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type RvecIndex(RvecIndexSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type NVec(NVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type sqrtDVec(sqrtDVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(parallelCrossProd_UandbVec_surv(bVec, RvecIndex, NVec, sqrtDVec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getProdWminusUb_Surv
+arma::fcolvec getProdWminusUb_Surv(arma::fcolvec& bVec, arma::fvec& RvecIndex, arma::fvec& NVec, arma::fvec& sqrtDVec, arma::fvec& wVec);
+RcppExport SEXP _SAIGE_getProdWminusUb_Surv(SEXP bVecSEXP, SEXP RvecIndexSEXP, SEXP NVecSEXP, SEXP sqrtDVecSEXP, SEXP wVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fcolvec& >::type bVec(bVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type RvecIndex(RvecIndexSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type NVec(NVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type sqrtDVec(sqrtDVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(getProdWminusUb_Surv(bVec, RvecIndex, NVec, sqrtDVec, wVec));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getCrossprod_Surv
 arma::fcolvec getCrossprod_Surv(arma::fcolvec& bVec, arma::fvec& wVec, arma::fvec& tauVec, arma::fmat& WinvNRt, arma::fmat& ACinv);
 RcppExport SEXP _SAIGE_getCrossprod_Surv(SEXP bVecSEXP, SEXP wVecSEXP, SEXP tauVecSEXP, SEXP WinvNRtSEXP, SEXP ACinvSEXP) {
@@ -614,6 +657,66 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getPCG1ofWminusUAndVector
+arma::fvec getPCG1ofWminusUAndVector(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& bVec, arma::fvec& RvecIndex, arma::fvec& NVec, arma::fvec& sqrtDVec, arma::fvec& diagofWminusUinv, arma::fvec& x0Vec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getPCG1ofWminusUAndVector(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP bVecSEXP, SEXP RvecIndexSEXP, SEXP NVecSEXP, SEXP sqrtDVecSEXP, SEXP diagofWminusUinvSEXP, SEXP x0VecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type bVec(bVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type RvecIndex(RvecIndexSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type NVec(NVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type sqrtDVec(sqrtDVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type x0Vec(x0VecSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
+    Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
+    rcpp_result_gen = Rcpp::wrap(getPCG1ofWminusUAndVector(wVec, tauVec, bVec, RvecIndex, NVec, sqrtDVec, diagofWminusUinv, x0Vec, maxiterPCG, tolPCG));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getCrossprod_Surv_new2
+arma::fcolvec getCrossprod_Surv_new2(arma::fcolvec& bVec, arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& RvecIndex, arma::fvec& NVec, arma::fvec& sqrtDVec, arma::fcolvec& diagofWminusUinv, unsigned int kuniqtime, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getCrossprod_Surv_new2(SEXP bVecSEXP, SEXP wVecSEXP, SEXP tauVecSEXP, SEXP RvecIndexSEXP, SEXP NVecSEXP, SEXP sqrtDVecSEXP, SEXP diagofWminusUinvSEXP, SEXP kuniqtimeSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fcolvec& >::type bVec(bVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type RvecIndex(RvecIndexSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type NVec(NVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type sqrtDVec(sqrtDVecSEXP);
+    Rcpp::traits::input_parameter< arma::fcolvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type kuniqtime(kuniqtimeSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
+    Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
+    rcpp_result_gen = Rcpp::wrap(getCrossprod_Surv_new2(bVec, wVec, tauVec, RvecIndex, NVec, sqrtDVec, diagofWminusUinv, kuniqtime, maxiterPCG, tolPCG));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getCrossprod_Surv_new2_LOCO
+arma::fcolvec getCrossprod_Surv_new2_LOCO(arma::fcolvec& bVec, arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& RvecIndex, arma::fvec& NVec, arma::fvec& sqrtDVec, arma::fcolvec& diagofWminusUinv, unsigned int kuniqtime, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getCrossprod_Surv_new2_LOCO(SEXP bVecSEXP, SEXP wVecSEXP, SEXP tauVecSEXP, SEXP RvecIndexSEXP, SEXP NVecSEXP, SEXP sqrtDVecSEXP, SEXP diagofWminusUinvSEXP, SEXP kuniqtimeSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fcolvec& >::type bVec(bVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type RvecIndex(RvecIndexSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type NVec(NVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type sqrtDVec(sqrtDVecSEXP);
+    Rcpp::traits::input_parameter< arma::fcolvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type kuniqtime(kuniqtimeSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
+    Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
+    rcpp_result_gen = Rcpp::wrap(getCrossprod_Surv_new2_LOCO(bVec, wVec, tauVec, RvecIndex, NVec, sqrtDVec, diagofWminusUinv, kuniqtime, maxiterPCG, tolPCG));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getCrossprod_Surv_new_LOCO
 arma::fcolvec getCrossprod_Surv_new_LOCO(arma::fcolvec& bVec, arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& NWinv, arma::fvec& Dvec, unsigned int kuniqtime, int maxiterPCG, float tolPCG);
 RcppExport SEXP _SAIGE_getCrossprod_Surv_new_LOCO(SEXP bVecSEXP, SEXP wVecSEXP, SEXP tauVecSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP NWinvSEXP, SEXP DvecSEXP, SEXP kuniqtimeSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
@@ -775,8 +878,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // getPCG1ofSigmaAndVector_Surv_new
-arma::fvec getPCG1ofSigmaAndVector_Surv_new(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& bVec, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& WinvN, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, int maxiterPCG, float tolPCG);
-RcppExport SEXP _SAIGE_getPCG1ofSigmaAndVector_Surv_new(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP bVecSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP WinvNSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+arma::fvec getPCG1ofSigmaAndVector_Surv_new(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& bVec, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& WinvN, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, arma::fvec& x0Vec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getPCG1ofSigmaAndVector_Surv_new(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP bVecSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP WinvNSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP x0VecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -788,15 +891,56 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::fvec& >::type WinvN(WinvNSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type Dvec(DvecSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type x0Vec(x0VecSEXP);
     Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
     Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
-    rcpp_result_gen = Rcpp::wrap(getPCG1ofSigmaAndVector_Surv_new(wVec, tauVec, bVec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG));
+    rcpp_result_gen = Rcpp::wrap(getPCG1ofSigmaAndVector_Surv_new(wVec, tauVec, bVec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, x0Vec, maxiterPCG, tolPCG));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getPCG1ofSigmaAndVector_Surv_new2
+arma::fvec getPCG1ofSigmaAndVector_Surv_new2(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& bVec, arma::fvec& RvecIndex, arma::fvec& NVec, arma::fvec& sqrtDvec, arma::fvec& diagofWminusUinv, arma::fvec& x0Vec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getPCG1ofSigmaAndVector_Surv_new2(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP bVecSEXP, SEXP RvecIndexSEXP, SEXP NVecSEXP, SEXP sqrtDvecSEXP, SEXP diagofWminusUinvSEXP, SEXP x0VecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type bVec(bVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type RvecIndex(RvecIndexSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type NVec(NVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type sqrtDvec(sqrtDvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type x0Vec(x0VecSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
+    Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
+    rcpp_result_gen = Rcpp::wrap(getPCG1ofSigmaAndVector_Surv_new2(wVec, tauVec, bVec, RvecIndex, NVec, sqrtDvec, diagofWminusUinv, x0Vec, maxiterPCG, tolPCG));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getPCG1ofSigmaAndVector_Surv_LOCO_new2
+arma::fvec getPCG1ofSigmaAndVector_Surv_LOCO_new2(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& bVec, arma::fvec& RvecIndex, arma::fvec& NVec, arma::fvec& sqrtDvec, arma::fvec& diagofWminusUinv, arma::fvec& x0Vec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getPCG1ofSigmaAndVector_Surv_LOCO_new2(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP bVecSEXP, SEXP RvecIndexSEXP, SEXP NVecSEXP, SEXP sqrtDvecSEXP, SEXP diagofWminusUinvSEXP, SEXP x0VecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type bVec(bVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type RvecIndex(RvecIndexSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type NVec(NVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type sqrtDvec(sqrtDvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type x0Vec(x0VecSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
+    Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
+    rcpp_result_gen = Rcpp::wrap(getPCG1ofSigmaAndVector_Surv_LOCO_new2(wVec, tauVec, bVec, RvecIndex, NVec, sqrtDvec, diagofWminusUinv, x0Vec, maxiterPCG, tolPCG));
     return rcpp_result_gen;
 END_RCPP
 }
 // getPCG1ofSigmaAndVector_Surv_new_LOCO
-arma::fvec getPCG1ofSigmaAndVector_Surv_new_LOCO(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& bVec, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& WinvN, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, int maxiterPCG, float tolPCG);
-RcppExport SEXP _SAIGE_getPCG1ofSigmaAndVector_Surv_new_LOCO(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP bVecSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP WinvNSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+arma::fvec getPCG1ofSigmaAndVector_Surv_new_LOCO(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& bVec, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& WinvN, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, arma::fvec& x0Vec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getPCG1ofSigmaAndVector_Surv_new_LOCO(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP bVecSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP WinvNSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP x0VecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -808,9 +952,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::fvec& >::type WinvN(WinvNSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type Dvec(DvecSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type x0Vec(x0VecSEXP);
     Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
     Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
-    rcpp_result_gen = Rcpp::wrap(getPCG1ofSigmaAndVector_Surv_new_LOCO(wVec, tauVec, bVec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG));
+    rcpp_result_gen = Rcpp::wrap(getPCG1ofSigmaAndVector_Surv_new_LOCO(wVec, tauVec, bVec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, x0Vec, maxiterPCG, tolPCG));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1049,8 +1194,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // getSigma_X_Surv_new
-arma::fmat getSigma_X_Surv_new(arma::fvec& wVec, arma::fvec& tauVec, arma::fmat& Xmat, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& WinvN, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, int maxiterPCG, float tolPCG);
-RcppExport SEXP _SAIGE_getSigma_X_Surv_new(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP XmatSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP WinvNSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+arma::fmat getSigma_X_Surv_new(arma::fvec& wVec, arma::fvec& tauVec, arma::fmat& Xmat, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& WinvN, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, arma::fvec& Nvec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getSigma_X_Surv_new(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP XmatSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP WinvNSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP NvecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1062,15 +1207,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::fvec& >::type WinvN(WinvNSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type Dvec(DvecSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Nvec(NvecSEXP);
     Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
     Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
-    rcpp_result_gen = Rcpp::wrap(getSigma_X_Surv_new(wVec, tauVec, Xmat, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG));
+    rcpp_result_gen = Rcpp::wrap(getSigma_X_Surv_new(wVec, tauVec, Xmat, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG));
     return rcpp_result_gen;
 END_RCPP
 }
 // getSigma_X_Surv_new_LOCO
-arma::fmat getSigma_X_Surv_new_LOCO(arma::fvec& wVec, arma::fvec& tauVec, arma::fmat& Xmat, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& WinvN, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, int maxiterPCG, float tolPCG);
-RcppExport SEXP _SAIGE_getSigma_X_Surv_new_LOCO(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP XmatSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP WinvNSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+arma::fmat getSigma_X_Surv_new_LOCO(arma::fvec& wVec, arma::fvec& tauVec, arma::fmat& Xmat, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& WinvN, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, arma::fvec& Nvec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getSigma_X_Surv_new_LOCO(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP XmatSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP WinvNSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP NvecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1082,9 +1228,48 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::fvec& >::type WinvN(WinvNSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type Dvec(DvecSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Nvec(NvecSEXP);
     Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
     Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
-    rcpp_result_gen = Rcpp::wrap(getSigma_X_Surv_new_LOCO(wVec, tauVec, Xmat, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG));
+    rcpp_result_gen = Rcpp::wrap(getSigma_X_Surv_new_LOCO(wVec, tauVec, Xmat, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getSigma_X_Surv_new2
+arma::fmat getSigma_X_Surv_new2(arma::fvec& wVec, arma::fvec& tauVec, arma::fmat& Xmat, arma::fvec& RvecIndex, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, arma::fvec& Nvec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getSigma_X_Surv_new2(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP XmatSEXP, SEXP RvecIndexSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP NvecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fmat& >::type Xmat(XmatSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type RvecIndex(RvecIndexSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Dvec(DvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Nvec(NvecSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
+    Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
+    rcpp_result_gen = Rcpp::wrap(getSigma_X_Surv_new2(wVec, tauVec, Xmat, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getSigma_X_Surv_new2_LOCO
+arma::fmat getSigma_X_Surv_new2_LOCO(arma::fvec& wVec, arma::fvec& tauVec, arma::fmat& Xmat, arma::fvec& RvecIndex, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, arma::fvec& Nvec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getSigma_X_Surv_new2_LOCO(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP XmatSEXP, SEXP RvecIndexSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP NvecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fmat& >::type Xmat(XmatSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type RvecIndex(RvecIndexSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Dvec(DvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Nvec(NvecSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
+    Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
+    rcpp_result_gen = Rcpp::wrap(getSigma_X_Surv_new2_LOCO(wVec, tauVec, Xmat, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1155,8 +1340,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // getSigma_G_Surv_new
-arma::fvec getSigma_G_Surv_new(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& Gvec, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& WinvN, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, int maxiterPCG, float tolPCG);
-RcppExport SEXP _SAIGE_getSigma_G_Surv_new(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP GvecSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP WinvNSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+arma::fvec getSigma_G_Surv_new(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& Gvec, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& WinvN, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, arma::fvec& Nvec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getSigma_G_Surv_new(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP GvecSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP WinvNSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP NvecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1168,15 +1353,54 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::fvec& >::type WinvN(WinvNSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type Dvec(DvecSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Nvec(NvecSEXP);
     Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
     Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
-    rcpp_result_gen = Rcpp::wrap(getSigma_G_Surv_new(wVec, tauVec, Gvec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG));
+    rcpp_result_gen = Rcpp::wrap(getSigma_G_Surv_new(wVec, tauVec, Gvec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getSigma_G_Surv_new2
+arma::fvec getSigma_G_Surv_new2(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& Gvec, arma::fvec& RvecIndex, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, arma::fvec& Nvec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getSigma_G_Surv_new2(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP GvecSEXP, SEXP RvecIndexSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP NvecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Gvec(GvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type RvecIndex(RvecIndexSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Dvec(DvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Nvec(NvecSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
+    Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
+    rcpp_result_gen = Rcpp::wrap(getSigma_G_Surv_new2(wVec, tauVec, Gvec, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getSigma_G_Surv_new2_LOCO
+arma::fvec getSigma_G_Surv_new2_LOCO(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& Gvec, arma::fvec& RvecIndex, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, arma::fvec& Nvec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getSigma_G_Surv_new2_LOCO(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP GvecSEXP, SEXP RvecIndexSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP NvecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fvec& >::type wVec(wVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type tauVec(tauVecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Gvec(GvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type RvecIndex(RvecIndexSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Dvec(DvecSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Nvec(NvecSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
+    Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
+    rcpp_result_gen = Rcpp::wrap(getSigma_G_Surv_new2_LOCO(wVec, tauVec, Gvec, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG));
     return rcpp_result_gen;
 END_RCPP
 }
 // getSigma_G_Surv_new_LOCO
-arma::fvec getSigma_G_Surv_new_LOCO(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& Gvec, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& WinvN, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, int maxiterPCG, float tolPCG);
-RcppExport SEXP _SAIGE_getSigma_G_Surv_new_LOCO(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP GvecSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP WinvNSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
+arma::fvec getSigma_G_Surv_new_LOCO(arma::fvec& wVec, arma::fvec& tauVec, arma::fvec& Gvec, arma::fvec& RvecIndex, arma::fvec& sqrtWinvNVec, arma::fvec& WinvN, arma::fvec& Dvec, arma::fvec& diagofWminusUinv, arma::fvec& Nvec, int maxiterPCG, float tolPCG);
+RcppExport SEXP _SAIGE_getSigma_G_Surv_new_LOCO(SEXP wVecSEXP, SEXP tauVecSEXP, SEXP GvecSEXP, SEXP RvecIndexSEXP, SEXP sqrtWinvNVecSEXP, SEXP WinvNSEXP, SEXP DvecSEXP, SEXP diagofWminusUinvSEXP, SEXP NvecSEXP, SEXP maxiterPCGSEXP, SEXP tolPCGSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1188,9 +1412,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::fvec& >::type WinvN(WinvNSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type Dvec(DvecSEXP);
     Rcpp::traits::input_parameter< arma::fvec& >::type diagofWminusUinv(diagofWminusUinvSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type Nvec(NvecSEXP);
     Rcpp::traits::input_parameter< int >::type maxiterPCG(maxiterPCGSEXP);
     Rcpp::traits::input_parameter< float >::type tolPCG(tolPCGSEXP);
-    rcpp_result_gen = Rcpp::wrap(getSigma_G_Surv_new_LOCO(wVec, tauVec, Gvec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, maxiterPCG, tolPCG));
+    rcpp_result_gen = Rcpp::wrap(getSigma_G_Surv_new_LOCO(wVec, tauVec, Gvec, RvecIndex, sqrtWinvNVec, WinvN, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1954,6 +2179,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getDiagOfSigma_surv_LOCO", (DL_FUNC) &_SAIGE_getDiagOfSigma_surv_LOCO, 2},
     {"_SAIGE_getCrossprod", (DL_FUNC) &_SAIGE_getCrossprod, 3},
     {"_SAIGE_extractVecatTimek", (DL_FUNC) &_SAIGE_extractVecatTimek, 3},
+    {"_SAIGE_extractUvecforkthTime", (DL_FUNC) &_SAIGE_extractUvecforkthTime, 5},
+    {"_SAIGE_parallelCrossProd_UandbVec_surv", (DL_FUNC) &_SAIGE_parallelCrossProd_UandbVec_surv, 4},
+    {"_SAIGE_getProdWminusUb_Surv", (DL_FUNC) &_SAIGE_getProdWminusUb_Surv, 5},
     {"_SAIGE_getCrossprod_Surv", (DL_FUNC) &_SAIGE_getCrossprod_Surv, 5},
     {"_SAIGE_getCrossprod_Surv_LOCO", (DL_FUNC) &_SAIGE_getCrossprod_Surv_LOCO, 5},
     {"_SAIGE_extractVecfornthSample", (DL_FUNC) &_SAIGE_extractVecfornthSample, 5},
@@ -1970,6 +2198,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getPCG1ofACinvAndVector", (DL_FUNC) &_SAIGE_getPCG1ofACinvAndVector, 8},
     {"_SAIGE_getProdRtb_Surv", (DL_FUNC) &_SAIGE_getProdRtb_Surv, 2},
     {"_SAIGE_getCrossprod_Surv_new", (DL_FUNC) &_SAIGE_getCrossprod_Surv_new, 10},
+    {"_SAIGE_getPCG1ofWminusUAndVector", (DL_FUNC) &_SAIGE_getPCG1ofWminusUAndVector, 10},
+    {"_SAIGE_getCrossprod_Surv_new2", (DL_FUNC) &_SAIGE_getCrossprod_Surv_new2, 10},
+    {"_SAIGE_getCrossprod_Surv_new2_LOCO", (DL_FUNC) &_SAIGE_getCrossprod_Surv_new2_LOCO, 10},
     {"_SAIGE_getCrossprod_Surv_new_LOCO", (DL_FUNC) &_SAIGE_getCrossprod_Surv_new_LOCO, 10},
     {"_SAIGE_getCrossprod_LOCO", (DL_FUNC) &_SAIGE_getCrossprod_LOCO, 3},
     {"_SAIGE_gen_sp_GRM", (DL_FUNC) &_SAIGE_gen_sp_GRM, 0},
@@ -1982,8 +2213,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getPCG1ofSigmaAndVector", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector, 5},
     {"_SAIGE_getPCG1ofSigmaAndVector_Surv", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_Surv, 8},
     {"_SAIGE_getPCG1ofSigmaAndVector_Surv_LOCO", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_Surv_LOCO, 8},
-    {"_SAIGE_getPCG1ofSigmaAndVector_Surv_new", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_Surv_new, 10},
-    {"_SAIGE_getPCG1ofSigmaAndVector_Surv_new_LOCO", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_Surv_new_LOCO, 10},
+    {"_SAIGE_getPCG1ofSigmaAndVector_Surv_new", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_Surv_new, 11},
+    {"_SAIGE_getPCG1ofSigmaAndVector_Surv_new2", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_Surv_new2, 10},
+    {"_SAIGE_getPCG1ofSigmaAndVector_Surv_LOCO_new2", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_Surv_LOCO_new2, 10},
+    {"_SAIGE_getPCG1ofSigmaAndVector_Surv_new_LOCO", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_Surv_new_LOCO, 11},
     {"_SAIGE_getPCG1ofSigmaAndVector_old", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_old, 5},
     {"_SAIGE_getPCG1ofSigmaAndVector_LOCO", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_LOCO, 5},
     {"_SAIGE_set_seed", (DL_FUNC) &_SAIGE_set_seed, 1},
@@ -1999,14 +2232,18 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getSigma_X", (DL_FUNC) &_SAIGE_getSigma_X, 5},
     {"_SAIGE_getSigma_X_Surv", (DL_FUNC) &_SAIGE_getSigma_X_Surv, 8},
     {"_SAIGE_getSigma_X_Surv_LOCO", (DL_FUNC) &_SAIGE_getSigma_X_Surv_LOCO, 8},
-    {"_SAIGE_getSigma_X_Surv_new", (DL_FUNC) &_SAIGE_getSigma_X_Surv_new, 10},
-    {"_SAIGE_getSigma_X_Surv_new_LOCO", (DL_FUNC) &_SAIGE_getSigma_X_Surv_new_LOCO, 10},
+    {"_SAIGE_getSigma_X_Surv_new", (DL_FUNC) &_SAIGE_getSigma_X_Surv_new, 11},
+    {"_SAIGE_getSigma_X_Surv_new_LOCO", (DL_FUNC) &_SAIGE_getSigma_X_Surv_new_LOCO, 11},
+    {"_SAIGE_getSigma_X_Surv_new2", (DL_FUNC) &_SAIGE_getSigma_X_Surv_new2, 9},
+    {"_SAIGE_getSigma_X_Surv_new2_LOCO", (DL_FUNC) &_SAIGE_getSigma_X_Surv_new2_LOCO, 9},
     {"_SAIGE_getSigma_X_LOCO", (DL_FUNC) &_SAIGE_getSigma_X_LOCO, 5},
     {"_SAIGE_getSigma_G", (DL_FUNC) &_SAIGE_getSigma_G, 5},
     {"_SAIGE_getSigma_G_Surv", (DL_FUNC) &_SAIGE_getSigma_G_Surv, 8},
     {"_SAIGE_getSigma_G_Surv_LOCO", (DL_FUNC) &_SAIGE_getSigma_G_Surv_LOCO, 8},
-    {"_SAIGE_getSigma_G_Surv_new", (DL_FUNC) &_SAIGE_getSigma_G_Surv_new, 10},
-    {"_SAIGE_getSigma_G_Surv_new_LOCO", (DL_FUNC) &_SAIGE_getSigma_G_Surv_new_LOCO, 10},
+    {"_SAIGE_getSigma_G_Surv_new", (DL_FUNC) &_SAIGE_getSigma_G_Surv_new, 11},
+    {"_SAIGE_getSigma_G_Surv_new2", (DL_FUNC) &_SAIGE_getSigma_G_Surv_new2, 9},
+    {"_SAIGE_getSigma_G_Surv_new2_LOCO", (DL_FUNC) &_SAIGE_getSigma_G_Surv_new2_LOCO, 9},
+    {"_SAIGE_getSigma_G_Surv_new_LOCO", (DL_FUNC) &_SAIGE_getSigma_G_Surv_new_LOCO, 11},
     {"_SAIGE_getSigma_G_LOCO", (DL_FUNC) &_SAIGE_getSigma_G_LOCO, 5},
     {"_SAIGE_GetTrace_q", (DL_FUNC) &_SAIGE_GetTrace_q, 9},
     {"_SAIGE_getAIScore_q", (DL_FUNC) &_SAIGE_getAIScore_q, 11},
