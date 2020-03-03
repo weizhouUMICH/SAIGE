@@ -1084,6 +1084,14 @@ SPAGMMATtest = function(bgenFile = "",
 
 	     if(IsDropMissingDosages & length(indexforMissing) > 0){	
 		cat("Removing ", length(indexforMissing), " samples with missing dosages/genotypes in the gene\n")
+		N_sub = N - length(indexforMissing) 
+	      }else{
+		N_sub = N
+	      }		
+
+	     if(N_sub > 0){
+
+		if(IsDropMissingDosages & length(indexforMissing) > 0){
 
 	        missingind = seq(1, nrow(Gmat))[-(indexforMissing + 1)]
 		#print("OK1")
@@ -1110,14 +1118,16 @@ SPAGMMATtest = function(bgenFile = "",
 
         	sparseSigma.sub = sparseSigma
         	if(!is.null(sparseSigma)){sparseSigma.sub = sparseSigma[missingind, missingind]}
-	       	Gmat = Gmat[missingind,]
-		if(cntMarker == 1){
-			Gmat = matrix(Gmat, ncol=1)
-		}
+	       	#Gmat = Gmat[missingind,]
+		Gmat = array(Gmat, dim = c(N, cntMarker))[missingind, , drop = FALSE]
+#		if(cntMarker == 1){
+#			Gmat = matrix(Gmat, ncol=1)
+#		}
 
 		if(isCondition){
                 	cat("Removing ", length(indexforMissing), " samples from the conditional marker\n")
-                	dosage_cond.sub = dosage_cond[missingind, ]
+                	#dosage_cond.sub = dosage_cond[missingind, ]
+			dosage_cond.sub = array(dosage_cond, dim = c(N, Gx_cond$cnt))[missingind, , drop = FALSE]
                 	dosage_cond.sub = as(dosage_cond.sub, "sparseMatrix")
 
 
@@ -1139,19 +1149,19 @@ SPAGMMATtest = function(bgenFile = "",
 		for(z in zerodIndex){
 			cat("z is ", z, "\n")
 			cat("dim(Gmat) is ", dim(Gmat), "\n")
-			if(dim(Gmat)[2] > 1){
-				replaceindex = which(Gmat[,z] <= dosageZerodCutoff)
-				if(length(replaceindex) > 0){	
-					Gmat[replaceindex,z] = 0 
-					cat("dim(Gmat) is ", dim(Gmat), "\n")
+			#if(dim(Gmat)[2] > 1){
+			replaceindex = which(Gmat[,z] <= dosageZerodCutoff)
+			if(length(replaceindex) > 0){	
+				Gmat[replaceindex,z] = 0 
+				cat("dim(Gmat) is ", dim(Gmat), "\n")
 					#i#if(sum(Gmat[,z])/(2*nrow(Gmat)) < testMinMAF){rmMarkerIndex = c(rmMarkerIndex, z)}
-				}
-			}else{
-				Gmat[which(Gmat <= dosageZerodCutoff)] = 0
-				#if(sum(Gmat)/(2*length(Gmat)) < testMinMAF){rmMarkerIndex = c(rmMarkerIndex, z)} 
-				Gmat = matrix(Gmat, ncol=1)
-				#Gmat = as(Gmat, "sparseMatrix")
 			}
+			#}else{
+			#	Gmat[which(Gmat <= dosageZerodCutoff)] = 0
+			#	#if(sum(Gmat)/(2*length(Gmat)) < testMinMAF){rmMarkerIndex = c(rmMarkerIndex, z)} 
+			#	Gmat = matrix(Gmat, ncol=1)
+			#	#Gmat = as(Gmat, "sparseMatrix")
+			#}
 		}
 	      }	
 
@@ -1163,10 +1173,13 @@ SPAGMMATtest = function(bgenFile = "",
 
 	     #cat("length(rmMarkerIndex): ", length(rmMarkerIndex), "\n")
 	     if(length(rmMarkerIndex) > 0){
-		cat(length(rmMarkerIndex), " markers are further removed\n")
+		cat(length(rmMarkerIndex), " marker(s) is(are) further removed\n")
 		cntMarker = cntMarker - length(rmMarkerIndex)
 		if(cntMarker > 0){
-			Gmat = Gmat[,-rmMarkerIndex]
+			print(dim(Gmat))
+			Gmat = array(Gmat, dim = c(nrow(Gmat), ncol(Gmat)))[,-rmMarkerIndex,drop = FALSE]
+			print(dim(Gmat))
+			#Gmat = Gmat[,-rmMarkerIndex]
 				#cntMarker = cntMarker - length(rmMarkerIndex)
 			Gx$markerIDs = Gx$markerIDs[-rmMarkerIndex]
 			Gx$markerAFs = Gx$markerAFs[-rmMarkerIndex]
@@ -1177,7 +1190,6 @@ SPAGMMATtest = function(bgenFile = "",
 		Gmat = as(Gmat, "sparseMatrix")		
 
 	     }
-	     #}
          
           }#if(cntMarker > 0){
 
@@ -1221,7 +1233,11 @@ SPAGMMATtest = function(bgenFile = "",
           }else{ ##if(cntMarker > 0){
 		print("No markers are left!")
 
-	  }	
+	  }
+
+	}else{ ##if(N_sub > 0){
+		print("No samples are left after removing samples with missing dosages/genotypes of variants in the gene")
+	}	
       }#end of else for if(length(line) == 0 )
     } # end of while ( TRUE ) {
 
@@ -2062,7 +2078,9 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
         cat("time for SAIGE_SKAT_withRatioVec\n")
         print(testtime)
         if(length(saigeskatTest$indexNeg) > 0){
-                Gmat = Gmat[,-saigeskatTest$indexNeg]
+                #Gmat = Gmat[,-saigeskatTest$indexNeg]
+		Gmat = array(a, dim = c(nrow(Gmat), ncol(Gmat)))[,-saigeskatTest$indexNeg, drop=F]
+                #Gmat = Gmat[,-saigeskatTest$indexNeg]
                 Gmat = as.matrix(Gmat)
                 markerIDs = markerIDs[-saigeskatTest$indexNeg]
                 markerAFs = markerAFs[-saigeskatTest$indexNeg]
