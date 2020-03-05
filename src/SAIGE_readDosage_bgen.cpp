@@ -483,7 +483,7 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
       if (dosage_type == 0) {
 	dosage = p10+p00*2;
       } else if (dosage_type == 1) {
-        dosage = p00*2;
+        dosage = p00;
       } else if (dosage_type == 2 ) {
         dosage = p10+p00;
       }      
