@@ -1473,6 +1473,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
      rm(RmatIndex)
      DvecCumSum = cumsum(Dvec)
      diagofWminusUinv = ((((exp(eta))^2) * (DvecCumSum[RvecIndex]))*(1/W) + 1)*(1/W) 
+     diagofWminusU = W - ((exp(eta))^2 * (DvecCumSum[RvecIndex]))
+     #getDiagofWminusU(diagofWminusU)
+ 
      Nvec = exp(eta)
      print(pcgforUhatforSurvAnalysis)
      if(pcgforUhatforSurvAnalysis){
@@ -1618,8 +1621,10 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
     Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
   }else{
     if(pcgforUhatforSurvAnalysis){
+	print("here")	
+	print(dim(X1))
       #Sigma_iX_noLOCO = getSigma_X_Surv_new(W, tauVecNew, X1, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)
-      Sigma_iX_noLOCO = getSigma_X_Surv_new2(W, tauVecNew, X1, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)	
+      Sigma_iX_noLOCO = getSigma_X_Surv_new2(W, tauVecNew, X1, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG, diagofWminusU)	
     }else{
       if(tauVecNew[2] != 0){		
       	Sigma_iX_noLOCO = getSigma_X_Surv(W, tauVecNew, X1,WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG)
@@ -1682,7 +1687,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
   	      }else{
 		if(pcgforUhatforSurvAnalysis){	
     		  #Sigma_iG = getSigma_G_Surv_new(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)
-    		  Sigma_iG = getSigma_G_Surv_new2(W, tauVecNew, G, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)
+    		  Sigma_iG = getSigma_G_Surv_new2(W, tauVecNew, G, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG, diagofWminusU)
 		  #cat("Sigma_iG ", Sigma_iG, "\n")
 		}else{
 		  if(tauVecNew[2] != 0){
@@ -1714,7 +1719,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 		W = as.vector(mu)
 		if(pcgforUhatforSurvAnalysis){
                   #Sigma_iG = getSigma_G_Surv_new(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)
-                  Sigma_iG = getSigma_G_Surv_new2(W, tauVecNew, G, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)
+                  Sigma_iG = getSigma_G_Surv_new2(W, tauVecNew, G, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG, diagofWminusU)
 		}else{
 		  if(tauVecNew[2] != 0){	
 		  Sigma_iG = getSigma_G_Surv(W, tauVecNew, G, WinvNRt, ACinv, diagofWminusUinv, maxiterPCG, tolPCG)	
@@ -1744,8 +1749,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 		if(pcgforUhatforSurvAnalysis){
 		  #Sigma_iX = getSigma_X_Surv_new_LOCO(W, tauVecNew, X1, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)	
                   #Sigma_iG = getSigma_G_Surv_new_LOCO(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG) #not activated
-		  Sigma_iX = getSigma_X_Surv_new2_LOCO(W, tauVecNew, X1, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)	
-                  Sigma_iG = getSigma_G_Surv_new2_LOCO(W, tauVecNew, G, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG) #not activated
+		  Sigma_iX = getSigma_X_Surv_new2_LOCO(W, tauVecNew, X1, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG, diagofWminusU)	
+                  Sigma_iG = getSigma_G_Surv_new2_LOCO(W, tauVecNew, G, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG, diagofWminusU) #not activated
 		}else{
 		  if(tauVecNew[2] != 0){
 		  Sigma_iX = getSigma_X_Surv_LOCO(W, tauVecNew, X1, WinvNRt, ACinv,diagofWminusUinv,maxiterPCG, tolPCG)
