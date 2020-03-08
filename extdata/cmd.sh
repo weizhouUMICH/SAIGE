@@ -49,6 +49,27 @@ Rscript step1_fitNULLGLMM.R     \
         --pcgforUhatforSurvAnalysis=FALSE
 
 
+
+
+Rscript step1_fitNULLGLMM_new.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --phenoFile=./input/pheno_1000samples_survival.50cases.txt \
+        --phenoCol=casecontrol \
+        --covarColList=X \
+        --eventTimeCol=AgeOfEventFinal \
+        --sampleIDColinphenoFile=IND_ID \
+        --traitType=survival        \
+        --outputPrefix=./output_test/example_survival.50cases.new \
+        --nThreads=4    \
+        --LOCO=FALSE    \
+        --minMAFforGRM=0.01     \
+        --skipModelFitting=TRUE \
+        --tauInit=1,0   \
+        --pcgforUhatforSurvAnalysis=TRUE > new_50cases.log
+
+
+
+
 Rscript step1_fitNULLGLMM.R     \
         --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
         --phenoFile=./input/pheno_1000samples_survival.5cases.txt \

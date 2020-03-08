@@ -1,0 +1,403 @@
+R version 3.6.1 (2019-07-05)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 16.04.6 LTS
+
+Matrix products: default
+BLAS/LAPACK: /usr/lib/libopenblasp-r0.2.18.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] optparse_1.6.4 SAIGE_0.36.3.4
+
+loaded via a namespace (and not attached):
+[1] compiler_3.6.1     Matrix_1.2-17      Rcpp_1.0.3         getopt_1.20.3     
+[5] grid_3.6.1         RcppParallel_4.4.4 lattice_0.20-38   
+$plinkFile
+[1] "./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly"
+
+$phenoFile
+[1] "./input/pheno_1000samples_survival.50cases.txt"
+
+$phenoCol
+[1] "casecontrol"
+
+$traitType
+[1] "survival"
+
+$eventTimeCol
+[1] "AgeOfEventFinal"
+
+$pcgforUhatforSurvAnalysis
+[1] TRUE
+
+$invNormalize
+[1] FALSE
+
+$covarColList
+[1] "X"
+
+$sampleIDColinphenoFile
+[1] "IND_ID"
+
+$tol
+[1] 0.02
+
+$maxiter
+[1] 20
+
+$tolPCG
+[1] 1e-05
+
+$maxiterPCG
+[1] 500
+
+$nThreads
+[1] 4
+
+$SPAcutoff
+[1] 2
+
+$numRandomMarkerforVarianceRatio
+[1] 30
+
+$skipModelFitting
+[1] TRUE
+
+$memoryChunk
+[1] 2
+
+$tauInit
+[1] "1,0"
+
+$LOCO
+[1] FALSE
+
+$traceCVcutoff
+[1] 0.0025
+
+$ratioCVcutoff
+[1] 0.001
+
+$outputPrefix
+[1] "./output_test/example_survival.50cases"
+
+$IsSparseKin
+[1] FALSE
+
+$sparseGRMFile
+[1] ""
+
+$sparseGRMSampleIDFile
+[1] ""
+
+$numRandomMarkerforSparseKin
+[1] 2000
+
+$isCateVarianceRatio
+[1] FALSE
+
+$relatednessCutoff
+[1] 0.125
+
+$cateVarRatioMinMACVecExclude
+[1] "0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$cateVarRatioMaxMACVecInclude
+[1] "1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$isCovariateTransform
+[1] TRUE
+
+$isDiagofKinSetAsOne
+[1] FALSE
+
+$useSparseSigmaConditionerforPCG
+[1] FALSE
+
+$useSparseSigmaforInitTau
+[1] FALSE
+
+$minMAFforGRM
+[1] 0.01
+
+$minCovariateCount
+[1] -1
+
+$useSparseGRMtoFitNULL
+[1] FALSE
+
+$help
+[1] FALSE
+
+tauInit  is  1 0 
+cateVarRatioMinMACVecExclude  is  0.5 1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+cateVarRatioMaxMACVecInclude  is  1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+[1] 1 0
+Markers in the Plink file with MAF >=  0.01  will be used to construct GRM
+4  threads are set to be used  
+WARNING: The variance ratio file  ./output_test/example_survival.50cases.varianceRatio.txt  already exists. The new variance ratios will be output to  ./output_test/example_survival.50cases.varianceRatio.txt . In order to avoid over-writting, please remove the  ./output_test/example_survival.50cases.varianceRatio.txt  or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s)
+1000  samples have genotypes
+formula is  casecontrol~X 
+1000  samples have non-missing phenotypes
+1000  samples will be used for analysis
+qr transformation has been performed on covariates
+colnames(data.new) is  Y minus1 X 
+out.transform$Param.transform$qrr:  2 2 
+casecontrol  is a binary trait
+Survival analysis will be performed
+glm:
+
+Call:  glm(formula = formula.new, family = binomial, data = data.new)
+
+Coefficients:
+minus1       X  
+3.1641  0.7046  
+
+Degrees of Freedom: 1000 Total (i.e. Null);  998 Residual
+Null Deviance:	    1386 
+Residual Deviance: 373.9 	AIC: 377.9
+Skip fitting the NULL GLMM
+nbyte: 250
+nbyte: 250
+reserve: 32474736
+
+M: 128868, N: 1000
+size of genoVecofPointers: 1
+setgeno mark1
+setgeno mark2
+111305 markers with MAF >= 0.01 are used for GRM.
+setgeno mark5
+setgeno mark6
+time: 1941.91
+Start estimating variance ratios
+
+Family: binomial 
+Link function: logit 
+
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1646449 88.0    2514678 134.3  2514678 134.3
+Vcells 3458613 26.4    8388608  64.0  5839650  44.6
+[1] "debug2"
+[1] 1000
+[1] 45
+[1] TRUE
+Only one variance ratio will be estimated using randomly selected markers with MAC >= 20
+[1] "here"
+[1] 1000    2
+XmatVecTemp1, 1st column in Xmat b
+i is 0
+xVec: 
+rVec: 
+HELL3: 
+sumr2: 38.0038
+sumr2: 0.0268032
+sumr2: 5.39552e-05
+sumr2: 4.5234e-05
+sumr2: 4.42404e-05
+sumr2: 3.65177e-05
+sumr2: 3.37555e-05
+sumr2: 3.12996e-05
+sumr2: 3.15416e-05
+sumr2: 2.97501e-05
+sumr2: 3.01898e-05
+sumr2: 3.12299e-05
+sumr2: 3.31581e-05
+sumr2: 3.80836e-05
+sumr2: 4.10482e-05
+sumr2: 4.64735e-05
+sumr2: 6.01074e-05
+sumr2: 6.76465e-05
+sumr2: 8.26431e-05
+sumr2: 9.79104e-05
+sumr2: 0.000112613
+sumr2: 0.000133573
+sumr2: 0.000168615
+sumr2: 0.000187842
+sumr2: 0.000222471
+sumr2: 0.000208229
+sumr2: 0.00021026
+sumr2: 0.000228965
+sumr2: 0.000265172
+sumr2: 0.000320027
+sumr2: 0.000394825
+sumr2: 0.000490771
+sumr2: 0.000608649
+sumr2: 0.000748436
+sumr2: 0.000908865
+sumr2: 0.00108702
+sumr2: 0.00124574
+sumr2: 0.00141083
+sumr2: 0.00157921
+sumr2: 0.00174783
+sumr2: 0.00191374
+sumr2: 0.00207405
+sumr2: 0.00222605
+sumr2: 0.00236715
+sumr2: 0.00241364
+sumr2: 0.0024299
+sumr2: 0.00241897
+sumr2: 0.00238451
+sumr2: 0.00233027
+sumr2: 0.00225975
+sumr2: 0.00217601
+sumr2: 0.00208159
+sumr2: 0.00197848
+sumr2: 0.00186825
+sumr2: 0.00175204
+sumr2: 0.00163074
+sumr2: 0.00150507
+sumr2: 0.00137573
+sumr2: 0.0012436
+sumr2: 0.00110995
+sumr2: 0.000976561
+sumr2: 0.000845939
+sumr2: 0.000721288
+sumr2: 0.000606417
+sumr2: 0.000485799
+sumr2: 0.000389163
+sumr2: 0.000318103
+sumr2: 0.000273669
+sumr2: 0.000256347
+sumr2: 0.000266056
+sumr2: 0.000302151
+sumr2: 0.00036345
+sumr2: 0.000448266
+sumr2: 0.000554451
+sumr2: 0.000679447
+sumr2: 0.000746781
+sumr2: 0.000805831
+sumr2: 0.00085583
+sumr2: 0.000896769
+sumr2: 0.0009291
+sumr2: 0.000953507
+sumr2: 0.000970745
+sumr2: 0.000981537
+sumr2: 0.000986535
+sumr2: 0.000986304
+sumr2: 0.000981333
+sumr2: 0.000972045
+sumr2: 0.000958809
+sumr2: 0.000941952
+sumr2: 0.000921765
+sumr2: 0.000898521
+sumr2: 0.00087248
+sumr2: 0.000856973
+sumr2: 0.000835086
+sumr2: 0.000807294
+sumr2: 0.000774182
+sumr2: 0.00073643
+sumr2: 0.000694803
+sumr2: 0.000650139
+sumr2: 0.000603337
+sumr2: 0.000555341
+sumr2: 0.000507126
+sumr2: 0.00045968
+sumr2: 0.000413985
+sumr2: 0.000379026
+sumr2: 0.00034794
+sumr2: 0.000320524
+sumr2: 0.000296485
+sumr2: 0.000275484
+sumr2: 0.000257173
+sumr2: 0.00021804
+sumr2: 0.000186409
+sumr2: 0.000163078
+sumr2: 0.000148551
+sumr2: 0.000143032
+sumr2: 0.000146423
+sumr2: 0.000158334
+sumr2: 0.0001781
+sumr2: 0.000204814
+sumr2: 0.000237358
+sumr2: 0.000274449
+sumr2: 0.00031469
+sumr2: 0.000356615
+sumr2: 0.000398749
+sumr2: 0.000439655
+sumr2: 0.00047798
+sumr2: 0.000512497
+sumr2: 0.000542135
+sumr2: 0.000566003
+sumr2: 0.000583404
+sumr2: 0.000593849
+sumr2: 0.000597058
+sumr2: 0.000592962
+sumr2: 0.0005817
+sumr2: 0.000563617
+sumr2: 0.000539256
+sumr2: 0.000509342
+sumr2: 0.000474773
+sumr2: 0.000436589
+sumr2: 0.000395947
+sumr2: 0.000354083
+sumr2: 0.000312272
+sumr2: 0.000271779
+sumr2: 0.000233818
+sumr2: 0.000199505
+sumr2: 0.000169821
+sumr2: 0.000145577
+sumr2: 0.000127388
+sumr2: 0.000115659
+sumr2: 0.000110573
+sumr2: 0.000112089
+sumr2: 0.000119951
+sumr2: 0.0001337
+sumr2: 0.000152694
+sumr2: 0.00017613
+sumr2: 0.000203084
+sumr2: 0.000232534
+sumr2: 0.000263409
+sumr2: 0.000294619
+sumr2: 0.000325097
+sumr2: 0.000353834
+sumr2: 0.000379905
+sumr2: 0.000402498
+sumr2: 0.00042093
+sumr2: 0.000434662
+sumr2: 0.000443305
+sumr2: 0.000446626
+sumr2: 0.000444545
+sumr2: 0.000437142
+sumr2: 0.000424645
+sumr2: 0.000407429
+sumr2: 0.000386006
+sumr2: 0.000361016
+sumr2: 0.000333206
+sumr2: 0.000303414
+sumr2: 0.000272539
+sumr2: 0.000241517
+sumr2: 0.00021128
+sumr2: 0.000182731
+sumr2: 0.000156709
+sumr2: 0.000133957
+sumr2: 0.0001151
+sumr2: 0.000100622
+sumr2: 9.08567e-05
+sumr2: 8.59736e-05
+sumr2: 8.59803e-05
+sumr2: 9.07238e-05
+sumr2: 9.99e-05
+sumr2: 0.000113067
+sumr2: 0.000129662
+sumr2: 0.000149025
+sumr2: 0.000170421
+sumr2: 0.000193069
+sumr2: 0.000216168
+sumr2: 0.000238926
+sumr2: 0.000260587
+sumr2: 0.00028045
+sumr2: 0.000297895
+sumr2: 0.00031239
+sumr2: 0.000323508
+sumr2: 0.000330933
+sumr2: 0.000334459

@@ -1,0 +1,4538 @@
+R version 3.6.1 (2019-07-05)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 16.04.6 LTS
+
+Matrix products: default
+BLAS/LAPACK: /usr/lib/libopenblasp-r0.2.18.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] optparse_1.6.4 SAIGE_0.36.3.4
+
+loaded via a namespace (and not attached):
+[1] compiler_3.6.1     Matrix_1.2-17      Rcpp_1.0.3         getopt_1.20.3     
+[5] grid_3.6.1         RcppParallel_4.4.4 lattice_0.20-38   
+$plinkFile
+[1] "./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly"
+
+$phenoFile
+[1] "./input/pheno_1000samples_survival.50cases.txt"
+
+$phenoCol
+[1] "casecontrol"
+
+$traitType
+[1] "survival"
+
+$eventTimeCol
+[1] "AgeOfEventFinal"
+
+$pcgforUhatforSurvAnalysis
+[1] TRUE
+
+$invNormalize
+[1] FALSE
+
+$covarColList
+[1] "X"
+
+$sampleIDColinphenoFile
+[1] "IND_ID"
+
+$tol
+[1] 0.02
+
+$maxiter
+[1] 20
+
+$tolPCG
+[1] 1e-05
+
+$maxiterPCG
+[1] 500
+
+$nThreads
+[1] 4
+
+$SPAcutoff
+[1] 2
+
+$numRandomMarkerforVarianceRatio
+[1] 30
+
+$skipModelFitting
+[1] TRUE
+
+$memoryChunk
+[1] 2
+
+$tauInit
+[1] "1,0"
+
+$LOCO
+[1] FALSE
+
+$traceCVcutoff
+[1] 0.0025
+
+$ratioCVcutoff
+[1] 0.001
+
+$outputPrefix
+[1] "./output_test/example_survival.50cases.new"
+
+$IsSparseKin
+[1] FALSE
+
+$sparseGRMFile
+[1] ""
+
+$sparseGRMSampleIDFile
+[1] ""
+
+$numRandomMarkerforSparseKin
+[1] 2000
+
+$isCateVarianceRatio
+[1] FALSE
+
+$relatednessCutoff
+[1] 0.125
+
+$cateVarRatioMinMACVecExclude
+[1] "0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$cateVarRatioMaxMACVecInclude
+[1] "1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$isCovariateTransform
+[1] TRUE
+
+$isDiagofKinSetAsOne
+[1] FALSE
+
+$useSparseSigmaConditionerforPCG
+[1] FALSE
+
+$useSparseSigmaforInitTau
+[1] FALSE
+
+$minMAFforGRM
+[1] 0.01
+
+$minCovariateCount
+[1] -1
+
+$useSparseGRMtoFitNULL
+[1] FALSE
+
+$help
+[1] FALSE
+
+tauInit  is  1 0 
+cateVarRatioMinMACVecExclude  is  0.5 1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+cateVarRatioMaxMACVecInclude  is  1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+[1] 1 0
+Markers in the Plink file with MAF >=  0.01  will be used to construct GRM
+4  threads are set to be used  
+WARNING: The variance ratio file  ./output_test/example_survival.50cases.new.varianceRatio.txt  already exists. The new variance ratios will be output to  ./output_test/example_survival.50cases.new.varianceRatio.txt . In order to avoid over-writting, please remove the  ./output_test/example_survival.50cases.new.varianceRatio.txt  or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s)
+1000  samples have genotypes
+formula is  casecontrol~X 
+1000  samples have non-missing phenotypes
+1000  samples will be used for analysis
+qr transformation has been performed on covariates
+colnames(data.new) is  Y minus1 X 
+out.transform$Param.transform$qrr:  2 2 
+casecontrol  is a binary trait
+Survival analysis will be performed
+glm:
+
+Call:  glm(formula = formula.new, family = binomial, data = data.new)
+
+Coefficients:
+minus1       X  
+3.1641  0.7046  
+
+Degrees of Freedom: 1000 Total (i.e. Null);  998 Residual
+Null Deviance:	    1386 
+Residual Deviance: 373.9 	AIC: 377.9
+Skip fitting the NULL GLMM
+nbyte: 250
+nbyte: 250
+reserve: 32474736
+
+M: 128868, N: 1000
+size of genoVecofPointers: 1
+setgeno mark1
+setgeno mark2
+111305 markers with MAF >= 0.01 are used for GRM.
+setgeno mark5
+setgeno mark6
+time: 1944.55
+Start estimating variance ratios
+
+Family: binomial 
+Link function: logit 
+
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1646449 88.0    2514678 134.3  2514678 134.3
+Vcells 3458613 26.4    8388608  64.0  5839650  44.6
+[1] "debug2"
+[1] 1000
+[1] 45
+[1] TRUE
+Only one variance ratio will be estimated using randomly selected markers with MAC >= 20
+[1] "here"
+[1] 1000    2
+XmatVecTemp1, 1st column in Xmat b
+i is 0
+xVec: 
+rVec: 
+HELL3: 
+pVec(0) is -0.113273
+ApVec is -4.49636
+sumr2: 38.0038
+pVec(0) is 0.00726092
+ApVec is 0.119028
+sumr2: 0.0268034
+pVec(0) is 1.01174e-05
+ApVec is 1.57631e-05
+sumr2: 5.39551e-05
+pVec(0) is 1.14797e-06
+ApVec is 3.66108e-06
+sumr2: 4.52339e-05
+pVec(0) is -3.77438e-06
+ApVec is -1.3081e-06
+sumr2: 4.42403e-05
+pVec(0) is -5.05943e-06
+ApVec is -1.8962e-06
+sumr2: 3.65179e-05
+pVec(0) is -1.52168e-06
+ApVec is 3.22461e-06
+sumr2: 3.37558e-05
+pVec(0) is -9.06474e-06
+ApVec is -3.59139e-06
+sumr2: 3.12999e-05
+pVec(0) is -8.75881e-06
+ApVec is -3.58937e-06
+sumr2: 3.15421e-05
+pVec(0) is 2.67546e-08
+ApVec is 2.19999e-07
+sumr2: 2.97508e-05
+pVec(0) is 8.34022e-06
+ApVec is 4.80652e-06
+sumr2: 3.01906e-05
+pVec(0) is 4.88901e-06
+ApVec is 4.07269e-06
+sumr2: 3.12308e-05
+pVec(0) is -9.04058e-06
+ApVec is -3.28266e-06
+sumr2: 3.31593e-05
+pVec(0) is -1.41532e-05
+ApVec is -2.92063e-06
+sumr2: 3.80851e-05
+pVec(0) is -1.71308e-05
+ApVec is 1.77143e-06
+sumr2: 4.10501e-05
+pVec(0) is -1.69048e-05
+ApVec is 7.55497e-07
+sumr2: 4.64759e-05
+pVec(0) is -2.09947e-05
+ApVec is -2.00743e-06
+sumr2: 6.01103e-05
+pVec(0) is -2.53473e-05
+ApVec is -3.35441e-06
+sumr2: 6.76505e-05
+pVec(0) is -1.65654e-05
+ApVec is 2.39756e-06
+sumr2: 8.26477e-05
+pVec(0) is -1.40141e-05
+ApVec is 8.04189e-06
+sumr2: 9.79162e-05
+pVec(0) is -2.83131e-05
+ApVec is 5.8861e-06
+sumr2: 0.00011262
+pVec(0) is -6.29536e-05
+ApVec is -4.59314e-06
+sumr2: 0.00013358
+pVec(0) is -9.07046e-05
+ApVec is -6.65327e-06
+sumr2: 0.000168624
+pVec(0) is -9.80581e-05
+ApVec is 9.54544e-07
+sumr2: 0.000187852
+pVec(0) is -0.000114253
+ApVec is -6.08599e-07
+sumr2: 0.000222483
+pVec(0) is -0.000153352
+ApVec is -0.0111844
+sumr2: 0.00020824
+pVec(0) is -0.00014835
+ApVec is -0.0110802
+sumr2: 0.000210271
+pVec(0) is -0.000140951
+ApVec is -0.0109517
+sumr2: 0.000228976
+pVec(0) is -0.000130808
+ApVec is -0.0107869
+sumr2: 0.000265183
+pVec(0) is -0.000117375
+ApVec is -0.0105639
+sumr2: 0.000320039
+pVec(0) is -9.99518e-05
+ApVec is -0.0102515
+sumr2: 0.000394839
+pVec(0) is -7.77586e-05
+ApVec is -0.0098108
+sumr2: 0.000490786
+pVec(0) is -5.00405e-05
+ApVec is -0.00919825
+sumr2: 0.000608667
+pVec(0) is -1.62087e-05
+ApVec is -0.00836957
+sumr2: 0.000748458
+pVec(0) is 2.39879e-05
+ApVec is -0.00728555
+sumr2: 0.000908891
+pVec(0) is 7.02783e-05
+ApVec is -0.0059191
+sumr2: 0.00108705
+pVec(0) is 0.00012171
+ApVec is 0.0010086
+sumr2: 0.00124578
+pVec(0) is 0.000167703
+ApVec is 0.00139137
+sumr2: 0.00141087
+pVec(0) is 0.00021273
+ApVec is 0.00176376
+sumr2: 0.00157925
+pVec(0) is 0.000256643
+ApVec is 0.00212989
+sumr2: 0.00174788
+pVec(0) is 0.000299304
+ApVec is 0.00249388
+sumr2: 0.0019138
+pVec(0) is 0.000340587
+ApVec is 0.00285976
+sumr2: 0.00207412
+pVec(0) is 0.000380371
+ApVec is 0.00323147
+sumr2: 0.00222612
+pVec(0) is 0.000418538
+ApVec is 0.00361285
+sumr2: 0.00236722
+pVec(0) is 0.00045497
+ApVec is 0.0109682
+sumr2: 0.00241372
+pVec(0) is 0.000457397
+ApVec is 0.0119565
+sumr2: 0.00242998
+pVec(0) is 0.000451375
+ApVec is 0.0126067
+sumr2: 0.00241906
+pVec(0) is 0.000438686
+ApVec is 0.0129613
+sumr2: 0.0023846
+pVec(0) is 0.000421161
+ApVec is 0.0130734
+sumr2: 0.00233036
+pVec(0) is 0.000400475
+ApVec is 0.0129993
+sumr2: 0.00225984
+pVec(0) is 0.000378027
+ApVec is 0.0127922
+sumr2: 0.0021761
+pVec(0) is 0.000354878
+ApVec is 0.0124981
+sumr2: 0.00208167
+pVec(0) is 0.000331745
+ApVec is 0.0121541
+sumr2: 0.00197856
+pVec(0) is 0.000309013
+ApVec is 0.0117872
+sumr2: 0.00186832
+pVec(0) is 0.000286765
+ApVec is 0.0114136
+sumr2: 0.00175212
+pVec(0) is 0.000264806
+ApVec is 0.0110393
+sumr2: 0.00163082
+pVec(0) is 0.000242693
+ApVec is 0.01066
+sumr2: 0.00150514
+pVec(0) is 0.000219747
+ApVec is 0.0102611
+sumr2: 0.00137579
+pVec(0) is 0.000195093
+ApVec is 0.00981882
+sumr2: 0.00124366
+pVec(0) is 0.0001677
+ApVec is 0.00930063
+sumr2: 0.00111
+pVec(0) is 0.000136461
+ApVec is 0.00866713
+sumr2: 0.000976612
+pVec(0) is 0.000100304
+ApVec is 0.00787511
+sumr2: 0.000845985
+pVec(0) is 5.83597e-05
+ApVec is 0.00688267
+sumr2: 0.00072133
+pVec(0) is 1.01663e-05
+ApVec is 0.00565756
+sumr2: 0.000606454
+pVec(0) is -4.40992e-05
+ApVec is -0.000475241
+sumr2: 0.000485829
+pVec(0) is -9.85292e-05
+ApVec is -0.000960101
+sumr2: 0.000389187
+pVec(0) is -0.000152151
+ApVec is -0.00142451
+sumr2: 0.000318122
+pVec(0) is -0.000204692
+ApVec is -0.0018729
+sumr2: 0.000273683
+pVec(0) is -0.000255881
+ApVec is -0.00230951
+sumr2: 0.000256357
+pVec(0) is -0.00030546
+ApVec is -0.00273834
+sumr2: 0.000266062
+pVec(0) is -0.00035318
+ApVec is -0.0031632
+sumr2: 0.000302154
+pVec(0) is -0.000398806
+ApVec is -0.00358776
+sumr2: 0.000363452
+pVec(0) is -0.00044212
+ApVec is -0.00401552
+sumr2: 0.000448267
+pVec(0) is -0.000482924
+ApVec is -0.0044498
+sumr2: 0.000554451
+pVec(0) is -0.000521038
+ApVec is -0.0048937
+sumr2: 0.000679447
+pVec(0) is -0.000556298
+ApVec is -0.0128198
+sumr2: 0.000746784
+pVec(0) is -0.000547227
+ApVec is -0.0133562
+sumr2: 0.000805836
+pVec(0) is -0.000532004
+ApVec is -0.0136077
+sumr2: 0.000855837
+pVec(0) is -0.000512961
+ApVec is -0.013642
+sumr2: 0.000896777
+pVec(0) is -0.000492043
+ApVec is -0.0135222
+sumr2: 0.00092911
+pVec(0) is -0.000470743
+ApVec is -0.0133019
+sumr2: 0.000953519
+pVec(0) is -0.000450108
+ApVec is -0.0130229
+sumr2: 0.000970758
+pVec(0) is -0.000430776
+ApVec is -0.0127152
+sumr2: 0.000981551
+pVec(0) is -0.000413033
+ApVec is -0.0123972
+sumr2: 0.00098655
+pVec(0) is -0.000396861
+ApVec is -0.0120767
+sumr2: 0.000986319
+pVec(0) is -0.000381984
+ApVec is -0.0117514
+sumr2: 0.000981349
+pVec(0) is -0.000367882
+ApVec is -0.0114099
+sumr2: 0.000972062
+pVec(0) is -0.000353811
+ApVec is -0.0110309
+sumr2: 0.000958827
+pVec(0) is -0.000338812
+ApVec is -0.0105845
+sumr2: 0.000941971
+pVec(0) is -0.000321737
+ApVec is -0.0100328
+sumr2: 0.000921785
+pVec(0) is -0.000301299
+ApVec is -0.00933245
+sumr2: 0.000898541
+pVec(0) is -0.000276173
+ApVec is -0.0084399
+sumr2: 0.0008725
+pVec(0) is -0.000245161
+ApVec is -0.00223666
+sumr2: 0.000856995
+pVec(0) is -0.000193858
+ApVec is -0.00170722
+sumr2: 0.000835109
+pVec(0) is -0.000141983
+ApVec is -0.00120145
+sumr2: 0.000807318
+pVec(0) is -8.97742e-05
+ApVec is -0.000714625
+sumr2: 0.000774206
+pVec(0) is -3.74632e-05
+ApVec is -0.000241893
+sumr2: 0.000736454
+pVec(0) is 1.47235e-05
+ApVec is 0.000221576
+sumr2: 0.000694827
+pVec(0) is 6.65607e-05
+ApVec is 0.000680516
+sumr2: 0.000650163
+pVec(0) is 0.000117821
+ApVec is 0.00113949
+sumr2: 0.000603361
+pVec(0) is 0.000168273
+ApVec is 0.00160285
+sumr2: 0.000555364
+pVec(0) is 0.000217677
+ApVec is 0.00207464
+sumr2: 0.000507148
+pVec(0) is 0.000265787
+ApVec is 0.00255855
+sumr2: 0.000459702
+pVec(0) is 0.000312349
+ApVec is 0.00305782
+sumr2: 0.000414005
+pVec(0) is 0.000357106
+ApVec is 0.00982394
+sumr2: 0.000379046
+pVec(0) is 0.000373707
+ApVec is 0.0105921
+sumr2: 0.000347958
+pVec(0) is 0.0003838
+ApVec is 0.0111118
+sumr2: 0.000320541
+pVec(0) is 0.000388962
+ApVec is 0.0114304
+sumr2: 0.000296502
+pVec(0) is 0.000390766
+ApVec is 0.0115991
+sumr2: 0.000275501
+pVec(0) is 0.00039063
+ApVec is 0.0116656
+sumr2: 0.000257189
+pVec(0) is 0.000389737
+ApVec is 0.00460769
+sumr2: 0.000218054
+pVec(0) is 0.000401522
+ApVec is 0.0048284
+sumr2: 0.000186421
+pVec(0) is 0.000409971
+ApVec is 0.00499216
+sumr2: 0.000163087
+pVec(0) is 0.000415051
+ApVec is 0.00509172
+sumr2: 0.000148558
+pVec(0) is 0.000416759
+ApVec is 0.00512254
+sumr2: 0.000143038
+pVec(0) is 0.000415124
+ApVec is 0.00508339
+sumr2: 0.000146428
+pVec(0) is 0.000410203
+ApVec is 0.00497651
+sumr2: 0.000158337
+pVec(0) is 0.000402081
+ApVec is 0.00480739
+sumr2: 0.000178102
+pVec(0) is 0.00039087
+ApVec is 0.00458408
+sumr2: 0.000204816
+pVec(0) is 0.000376704
+ApVec is 0.00431627
+sumr2: 0.00023736
+pVec(0) is 0.000359748
+ApVec is 0.00401434
+sumr2: 0.000274452
+pVec(0) is 0.000340185
+ApVec is 0.00368844
+sumr2: 0.000314693
+pVec(0) is 0.000318223
+ApVec is 0.00334779
+sumr2: 0.000356619
+pVec(0) is 0.000294088
+ApVec is 0.00300023
+sumr2: 0.000398754
+pVec(0) is 0.000268018
+ApVec is 0.00265201
+sumr2: 0.000439661
+pVec(0) is 0.000240261
+ApVec is 0.00230772
+sumr2: 0.000477987
+pVec(0) is 0.000211069
+ApVec is 0.00197038
+sumr2: 0.000512506
+pVec(0) is 0.00018069
+ApVec is 0.00164169
+sumr2: 0.000542146
+pVec(0) is 0.000149368
+ApVec is 0.00132214
+sumr2: 0.000566015
+pVec(0) is 0.000117337
+ApVec is 0.00101132
+sumr2: 0.000583418
+pVec(0) is 8.48202e-05
+ApVec is 0.00070813
+sumr2: 0.000593864
+pVec(0) is 5.20328e-05
+ApVec is 0.000410944
+sumr2: 0.000597075
+pVec(0) is 1.91822e-05
+ApVec is 0.000117858
+sumr2: 0.000592979
+pVec(0) is -1.35281e-05
+ApVec is -0.000173158
+sumr2: 0.000581718
+pVec(0) is -4.58944e-05
+ApVec is -0.000464078
+sumr2: 0.000563636
+pVec(0) is -7.77098e-05
+ApVec is -0.000756664
+sumr2: 0.000539275
+pVec(0) is -0.000108762
+ApVec is -0.00105229
+sumr2: 0.000509361
+pVec(0) is -0.000138831
+ApVec is -0.00135179
+sumr2: 0.000474792
+pVec(0) is -0.000167693
+ApVec is -0.00165527
+sumr2: 0.000436607
+pVec(0) is -0.000195118
+ApVec is -0.00196196
+sumr2: 0.000395965
+pVec(0) is -0.000220882
+ApVec is -0.00227002
+sumr2: 0.0003541
+pVec(0) is -0.000244765
+ApVec is -0.00257646
+sumr2: 0.000312288
+pVec(0) is -0.000266562
+ApVec is -0.00287699
+sumr2: 0.000271794
+pVec(0) is -0.000286086
+ApVec is -0.00316605
+sumr2: 0.000233831
+pVec(0) is -0.000303175
+ApVec is -0.00343692
+sumr2: 0.000199517
+pVec(0) is -0.000317694
+ApVec is -0.00368198
+sumr2: 0.000169831
+pVec(0) is -0.000329539
+ApVec is -0.00389317
+sumr2: 0.000145585
+pVec(0) is -0.000338634
+ApVec is -0.00406261
+sumr2: 0.000127395
+pVec(0) is -0.000344934
+ApVec is -0.00418334
+sumr2: 0.000115665
+pVec(0) is -0.000348421
+ApVec is -0.00425009
+sumr2: 0.000110577
+pVec(0) is -0.000349105
+ApVec is -0.00425989
+sumr2: 0.000112092
+pVec(0) is -0.000347018
+ApVec is -0.00421252
+sumr2: 0.000119954
+pVec(0) is -0.000342217
+ApVec is -0.00411055
+sumr2: 0.000133702
+pVec(0) is -0.00033478
+ApVec is -0.00395901
+sumr2: 0.000152695
+pVec(0) is -0.000324808
+ApVec is -0.00376488
+sumr2: 0.000176132
+pVec(0) is -0.000312422
+ApVec is -0.00353625
+sumr2: 0.000203085
+pVec(0) is -0.000297763
+ApVec is -0.0032816
+sumr2: 0.000232535
+pVec(0) is -0.000280989
+ApVec is -0.00300906
+sumr2: 0.00026341
+pVec(0) is -0.000262276
+ApVec is -0.00272592
+sumr2: 0.000294621
+pVec(0) is -0.000241813
+ApVec is -0.00243828
+sumr2: 0.0003251
+pVec(0) is -0.000219797
+ApVec is -0.0021509
+sumr2: 0.000353838
+pVec(0) is -0.000196431
+ApVec is -0.00186721
+sumr2: 0.000379909
+pVec(0) is -0.000171917
+ApVec is -0.0015894
+sumr2: 0.000402503
+pVec(0) is -0.000146455
+ApVec is -0.0013186
+sumr2: 0.000420937
+pVec(0) is -0.000120241
+ApVec is -0.001055
+sumr2: 0.00043467
+pVec(0) is -9.34614e-05
+ApVec is -0.000798119
+sumr2: 0.000443314
+pVec(0) is -6.62963e-05
+ApVec is -0.000546946
+sumr2: 0.000446635
+pVec(0) is -3.89207e-05
+ApVec is -0.000300118
+sumr2: 0.000444556
+pVec(0) is -1.15055e-05
+ApVec is -5.60846e-05
+sumr2: 0.000437153
+pVec(0) is 1.57785e-05
+ApVec is 0.00018675
+sumr2: 0.000424657
+pVec(0) is 4.27584e-05
+ApVec is 0.000429887
+sumr2: 0.000407441
+pVec(0) is 6.92567e-05
+ApVec is 0.000674599
+sumr2: 0.000386018
+pVec(0) is 9.50902e-05
+ApVec is 0.000921809
+sumr2: 0.000361028
+pVec(0) is 0.00012007
+ApVec is 0.00117195
+sumr2: 0.000333218
+pVec(0) is 0.000144004
+ApVec is 0.00142485
+sumr2: 0.000303426
+pVec(0) is 0.000166698
+ApVec is 0.00167958
+sumr2: 0.000272551
+pVec(0) is 0.000187963
+ApVec is 0.00193439
+sumr2: 0.000241528
+pVec(0) is 0.000207619
+ApVec is 0.00218656
+sumr2: 0.00021129
+pVec(0) is 0.000225499
+ApVec is 0.00243238
+sumr2: 0.000182741
+pVec(0) is 0.000241452
+ApVec is 0.0026672
+sumr2: 0.000156718
+pVec(0) is 0.000255352
+ApVec is 0.00288548
+sumr2: 0.000133965
+pVec(0) is 0.000267094
+ApVec is 0.0030811
+sumr2: 0.000115106
+pVec(0) is 0.000276599
+ApVec is 0.00324769
+sumr2: 0.000100628
+pVec(0) is 0.000283813
+ApVec is 0.00337914
+sumr2: 9.08613e-05
+pVec(0) is 0.000288705
+ApVec is 0.00347019
+sumr2: 8.59773e-05
+pVec(0) is 0.000291266
+ApVec is 0.00351702
+sumr2: 8.59831e-05
+pVec(0) is 0.000291511
+ApVec is 0.00351765
+sumr2: 9.07258e-05
+pVec(0) is 0.000289471
+ApVec is 0.00347229
+sumr2: 9.99014e-05
+pVec(0) is 0.000285197
+ApVec is 0.0033833
+sumr2: 0.000113068
+pVec(0) is 0.000278759
+ApVec is 0.00325494
+sumr2: 0.000129663
+pVec(0) is 0.000270243
+ApVec is 0.00309291
+sumr2: 0.000149025
+pVec(0) is 0.000259752
+ApVec is 0.00290372
+sumr2: 0.000170421
+pVec(0) is 0.000247406
+ApVec is 0.0026941
+sumr2: 0.000193069
+pVec(0) is 0.000233336
+ApVec is 0.0024705
+sumr2: 0.000216168
+pVec(0) is 0.000217689
+ApVec is 0.00223862
+sumr2: 0.000238926
+pVec(0) is 0.000200616
+ApVec is 0.00200323
+sumr2: 0.000260587
+pVec(0) is 0.00018228
+ApVec is 0.00176804
+sumr2: 0.000280452
+pVec(0) is 0.000162842
+ApVec is 0.00153567
+sumr2: 0.000297897
+pVec(0) is 0.000142465
+ApVec is 0.00130781
+sumr2: 0.000312393
+pVec(0) is 0.000121309
+ApVec is 0.00108527
+sumr2: 0.000323512
+pVec(0) is 9.95288e-05
+ApVec is 0.000868173
+sumr2: 0.000330936
+pVec(0) is 7.7275e-05
+ApVec is 0.00065609
+sumr2: 0.000334464
+pVec(0) is 5.46934e-05
+ApVec is 0.00044821
+sumr2: 0.000334006
+pVec(0) is 3.19273e-05
+ApVec is 0.000243465
+sumr2: 0.000329589
+pVec(0) is 9.11878e-06
+ApVec is 4.06611e-05
+sumr2: 0.000321352
+pVec(0) is -1.35886e-05
+ApVec is -0.000161402
+sumr2: 0.000309545
+pVec(0) is -3.6048e-05
+ApVec is -0.000363825
+sumr2: 0.000294517
+pVec(0) is -5.81078e-05
+ApVec is -0.000567502
+sumr2: 0.000276715
+pVec(0) is -7.96114e-05
+ApVec is -0.000773025
+sumr2: 0.000256668
+pVec(0) is -0.000100398
+ApVec is -0.000980582
+sumr2: 0.000234974
+pVec(0) is -0.000120305
+ApVec is -0.00118987
+sumr2: 0.000212284
+pVec(0) is -0.000139169
+ApVec is -0.00139998
+sumr2: 0.000189277
+pVec(0) is -0.000156835
+ApVec is -0.00160938
+sumr2: 0.000166643
+pVec(0) is -0.000173152
+ApVec is -0.00181577
+sumr2: 0.000145054
+pVec(0) is -0.000187985
+ApVec is -0.00201613
+sumr2: 0.00012514
+pVec(0) is -0.000201213
+ApVec is -0.00220671
+sumr2: 0.000107473
+pVec(0) is -0.000212736
+ApVec is -0.00238315
+sumr2: 9.25382e-05
+pVec(0) is -0.00022247
+ApVec is -0.00254066
+sumr2: 8.07277e-05
+pVec(0) is -0.000230355
+ApVec is -0.00267432
+sumr2: 7.2322e-05
+pVec(0) is -0.000236348
+ApVec is -0.00277946
+sumr2: 6.74857e-05
+pVec(0) is -0.000240426
+ApVec is -0.00285209
+sumr2: 6.62641e-05
+pVec(0) is -0.000242586
+ApVec is -0.00288931
+sumr2: 6.85842e-05
+pVec(0) is -0.000242839
+ApVec is -0.00288969
+sumr2: 7.42602e-05
+pVec(0) is -0.000241213
+ApVec is -0.00285342
+sumr2: 8.30016e-05
+pVec(0) is -0.000237752
+ApVec is -0.00278236
+sumr2: 9.44256e-05
+pVec(0) is -0.000232513
+ApVec is -0.00267982
+sumr2: 0.000108071
+pVec(0) is -0.000225568
+ApVec is -0.00255021
+sumr2: 0.000123418
+pVec(0) is -0.000217001
+ApVec is -0.00239861
+sumr2: 0.000139901
+pVec(0) is -0.000206908
+ApVec is -0.00223025
+sumr2: 0.000156938
+pVec(0) is -0.000195398
+ApVec is -0.00205019
+sumr2: 0.000173941
+pVec(0) is -0.000182587
+ApVec is -0.00186294
+sumr2: 0.000190342
+pVec(0) is -0.000168598
+ApVec is -0.00167227
+sumr2: 0.000205609
+pVec(0) is -0.000153559
+ApVec is -0.00148116
+sumr2: 0.000219259
+pVec(0) is -0.000137599
+ApVec is -0.00129174
+sumr2: 0.000230874
+pVec(0) is -0.000120848
+ApVec is -0.00110538
+sumr2: 0.000240109
+pVec(0) is -0.000103432
+ApVec is -0.000922801
+sumr2: 0.000246697
+pVec(0) is -8.54753e-05
+ApVec is -0.000744144
+sumr2: 0.000250455
+pVec(0) is -6.70995e-05
+ApVec is -0.000569141
+sumr2: 0.000251283
+pVec(0) is -4.84231e-05
+ApVec is -0.000397209
+sumr2: 0.000249169
+pVec(0) is -2.9564e-05
+ApVec is -0.00022757
+sumr2: 0.000244182
+pVec(0) is -1.06403e-05
+ApVec is -5.93506e-05
+sumr2: 0.000236475
+pVec(0) is 8.22721e-06
+ApVec is 0.000108321
+sumr2: 0.000226277
+pVec(0) is 2.69145e-05
+ApVec is 0.000276231
+sumr2: 0.000213889
+pVec(0) is 4.52932e-05
+ApVec is 0.000445002
+sumr2: 0.000199677
+pVec(0) is 6.32307e-05
+ApVec is 0.000615011
+sumr2: 0.000184061
+pVec(0) is 8.05914e-05
+ApVec is 0.000786324
+sumr2: 0.000167505
+pVec(0) is 9.72384e-05
+ApVec is 0.000958626
+sumr2: 0.000150501
+pVec(0) is 0.000113037
+ApVec is 0.00113116
+sumr2: 0.000133553
+pVec(0) is 0.000127855
+ApVec is 0.00130265
+sumr2: 0.000117162
+pVec(0) is 0.000141572
+ApVec is 0.00147132
+sumr2: 0.000101805
+pVec(0) is 0.000154074
+ApVec is 0.00163481
+sumr2: 8.79214e-05
+pVec(0) is 0.000165264
+ApVec is 0.00179024
+sumr2: 7.5898e-05
+pVec(0) is 0.000175059
+ApVec is 0.00193428
+sumr2: 6.60539e-05
+pVec(0) is 0.00018339
+ApVec is 0.0020633
+sumr2: 5.86326e-05
+pVec(0) is 0.000190208
+ApVec is 0.00217355
+sumr2: 5.37947e-05
+pVec(0) is 0.000195477
+ApVec is 0.00226146
+sumr2: 5.16145e-05
+pVec(0) is 0.000199179
+ApVec is 0.00232392
+sumr2: 5.20792e-05
+pVec(0) is 0.000201309
+ApVec is 0.00235865
+sumr2: 5.50917e-05
+pVec(0) is 0.000201874
+ApVec is 0.00236439
+sumr2: 6.04755e-05
+pVec(0) is 0.000200898
+ApVec is 0.00234112
+sumr2: 6.79822e-05
+pVec(0) is 0.000198412
+ApVec is 0.00229005
+sumr2: 7.73013e-05
+pVec(0) is 0.000194462
+ApVec is 0.00221353
+sumr2: 8.80717e-05
+pVec(0) is 0.000189104
+ApVec is 0.00211479
+sumr2: 9.98945e-05
+pVec(0) is 0.000182405
+ApVec is 0.00199762
+sumr2: 0.000112348
+pVec(0) is 0.00017444
+ApVec is 0.00186605
+sumr2: 0.000125
+pVec(0) is 0.000165295
+ApVec is 0.00172401
+sumr2: 0.000137425
+pVec(0) is 0.00015506
+ApVec is 0.00157509
+sumr2: 0.000149217
+pVec(0) is 0.000143833
+ApVec is 0.00142234
+sumr2: 0.000160001
+pVec(0) is 0.000131714
+ApVec is 0.00126824
+sumr2: 0.000169441
+pVec(0) is 0.000118804
+ApVec is 0.0011146
+sumr2: 0.000177253
+pVec(0) is 0.000105205
+ApVec is 0.000962669
+sumr2: 0.000183209
+pVec(0) is 9.10194e-05
+ApVec is 0.000813135
+sumr2: 0.000187139
+pVec(0) is 7.6345e-05
+ApVec is 0.000666259
+sumr2: 0.000188936
+pVec(0) is 6.12801e-05
+ApVec is 0.000521947
+sumr2: 0.000188557
+pVec(0) is 4.59215e-05
+ApVec is 0.000379848
+sumr2: 0.000186019
+pVec(0) is 3.03661e-05
+ApVec is 0.000239445
+sumr2: 0.000181402
+pVec(0) is 1.47121e-05
+ApVec is 0.000100137
+sumr2: 0.000174844
+pVec(0) is -9.39821e-07
+ApVec is -3.86881e-05
+sumr2: 0.000166539
+pVec(0) is -1.64856e-05
+ApVec is -0.000177583
+sumr2: 0.000156731
+pVec(0) is -3.18174e-05
+ApVec is -0.00031698
+sumr2: 0.000145706
+pVec(0) is -4.6824e-05
+ApVec is -0.000457135
+sumr2: 0.00013379
+pVec(0) is -6.1392e-05
+ApVec is -0.000598074
+sumr2: 0.000121333
+pVec(0) is -7.54069e-05
+ApVec is -0.000739541
+sumr2: 0.0001087
+pVec(0) is -8.87559e-05
+ApVec is -0.000880959
+sumr2: 9.62633e-05
+pVec(0) is -0.00010133
+ApVec is -0.00102139
+sumr2: 8.43825e-05
+pVec(0) is -0.000113028
+ApVec is -0.00115949
+sumr2: 7.3398e-05
+pVec(0) is -0.000123755
+ApVec is -0.00129354
+sumr2: 6.36172e-05
+pVec(0) is -0.000133429
+ApVec is -0.00142143
+sumr2: 5.53043e-05
+pVec(0) is -0.000141981
+ApVec is -0.00154068
+sumr2: 4.86723e-05
+pVec(0) is -0.000149351
+ApVec is -0.0016486
+sumr2: 4.38767e-05
+pVec(0) is -0.000155497
+ApVec is -0.00174236
+sumr2: 4.10113e-05
+pVec(0) is -0.000160387
+ApVec is -0.00181924
+sumr2: 4.01067e-05
+pVec(0) is -0.000164001
+ApVec is -0.00187679
+sumr2: 4.11309e-05
+pVec(0) is -0.000166333
+ApVec is -0.00191306
+sumr2: 4.39914e-05
+pVec(0) is -0.000167385
+ApVec is -0.00192687
+sumr2: 4.85398e-05
+pVec(0) is -0.000167172
+ApVec is -0.00191786
+sumr2: 5.4578e-05
+pVec(0) is -0.000165717
+ApVec is -0.00188663
+sumr2: 6.18651e-05
+pVec(0) is -0.000163052
+ApVec is -0.00183462
+sumr2: 7.01266e-05
+pVec(0) is -0.000159219
+ApVec is -0.00176404
+sumr2: 7.90639e-05
+pVec(0) is -0.000154268
+ApVec is -0.0016776
+sumr2: 8.83645e-05
+pVec(0) is -0.000148257
+ApVec is -0.00157829
+sumr2: 9.77126e-05
+pVec(0) is -0.000141248
+ApVec is -0.00146914
+sumr2: 0.000106799
+pVec(0) is -0.000133314
+ApVec is -0.001353
+sumr2: 0.000115331
+pVec(0) is -0.000124527
+ApVec is -0.0012324
+sumr2: 0.000123041
+pVec(0) is -0.000114966
+ApVec is -0.00110944
+sumr2: 0.000129693
+pVec(0) is -0.000104709
+ApVec is -0.000985742
+sumr2: 0.000135088
+pVec(0) is -9.38375e-05
+ApVec is -0.000862483
+sumr2: 0.000139071
+pVec(0) is -8.243e-05
+ApVec is -0.00074041
+sumr2: 0.000141529
+pVec(0) is -7.05662e-05
+ApVec is -0.000619907
+sumr2: 0.000142397
+pVec(0) is -5.83247e-05
+ApVec is -0.000501061
+sumr2: 0.000141655
+pVec(0) is -4.57844e-05
+ApVec is -0.000383735
+sumr2: 0.00013933
+pVec(0) is -3.30247e-05
+ApVec is -0.000267639
+sumr2: 0.000135493
+pVec(0) is -2.01266e-05
+ApVec is -0.000152396
+sumr2: 0.000130257
+pVec(0) is -7.17345e-06
+ApVec is -3.76007e-05
+sumr2: 0.000123776
+pVec(0) is 5.74821e-06
+ApVec is 7.71272e-05
+sumr2: 0.000116239
+pVec(0) is 1.85488e-05
+ApVec is 0.000192092
+sumr2: 0.000107866
+pVec(0) is 3.11357e-05
+ApVec is 0.000307479
+sumr2: 9.88996e-05
+pVec(0) is 4.34144e-05
+ApVec is 0.000423316
+sumr2: 8.96024e-05
+pVec(0) is 5.52895e-05
+ApVec is 0.000539434
+sumr2: 8.02441e-05
+pVec(0) is 6.66667e-05
+ApVec is 0.000655441
+sumr2: 7.10951e-05
+pVec(0) is 7.74548e-05
+ApVec is 0.000770685
+sumr2: 6.2417e-05
+pVec(0) is 8.75676e-05
+ApVec is 0.000884243
+sumr2: 5.44538e-05
+pVec(0) is 9.69256e-05
+ApVec is 0.0009949
+sumr2: 4.74237e-05
+pVec(0) is 0.000105458
+ApVec is 0.00110116
+sumr2: 4.15123e-05
+pVec(0) is 0.000113104
+ApVec is 0.00120128
+sumr2: 3.68665e-05
+pVec(0) is 0.000119811
+ApVec is 0.00129328
+sumr2: 3.35907e-05
+pVec(0) is 0.00012554
+ApVec is 0.00137509
+sumr2: 3.17441e-05
+pVec(0) is 0.000130259
+ApVec is 0.00144462
+sumr2: 3.13401e-05
+pVec(0) is 0.000133949
+ApVec is 0.00149991
+sumr2: 3.23466e-05
+pVec(0) is 0.000136598
+ApVec is 0.00153931
+sumr2: 3.46882e-05
+pVec(0) is 0.000138205
+ApVec is 0.00156161
+sumr2: 3.82498e-05
+pVec(0) is 0.000138774
+ApVec is 0.0015662
+sumr2: 4.28806e-05
+pVec(0) is 0.000138321
+ApVec is 0.00155311
+sumr2: 4.84003e-05
+pVec(0) is 0.000136865
+ApVec is 0.00152305
+sumr2: 5.46049e-05
+pVec(0) is 0.000134436
+ApVec is 0.00147734
+sumr2: 6.12741e-05
+pVec(0) is 0.000131069
+ApVec is 0.00141778
+sumr2: 6.81781e-05
+pVec(0) is 0.000126804
+ApVec is 0.00134647
+sumr2: 7.50859e-05
+pVec(0) is 0.00012169
+ApVec is 0.0012657
+sumr2: 8.17719e-05
+pVec(0) is 0.000115776
+ApVec is 0.00117769
+sumr2: 8.80232e-05
+pVec(0) is 0.000109121
+ApVec is 0.00108452
+sumr2: 9.36452e-05
+pVec(0) is 0.000101781
+ApVec is 0.000987994
+sumr2: 9.84674e-05
+pVec(0) is 9.38183e-05
+ApVec is 0.000889603
+sumr2: 0.000102347
+pVec(0) is 8.52942e-05
+ApVec is 0.000790485
+sumr2: 0.000105172
+pVec(0) is 7.62714e-05
+ApVec is 0.000691449
+sumr2: 0.000106863
+pVec(0) is 6.68126e-05
+ApVec is 0.000593006
+sumr2: 0.000107375
+pVec(0) is 5.69809e-05
+ApVec is 0.000495411
+sumr2: 0.000106698
+pVec(0) is 4.684e-05
+ApVec is 0.000398717
+sumr2: 0.000104854
+pVec(0) is 3.64543e-05
+ApVec is 0.000302831
+sumr2: 0.000101899
+pVec(0) is 2.58902e-05
+ApVec is 0.00020756
+sumr2: 9.79205e-05
+pVec(0) is 1.52161e-05
+ApVec is 0.000112665
+sumr2: 9.30341e-05
+pVec(0) is 4.50305e-06
+ApVec is 1.79034e-05
+sumr2: 8.73814e-05
+pVec(0) is -6.17496e-06
+ApVec is -7.69347e-05
+sumr2: 8.11258e-05
+pVec(0) is -1.67415e-05
+ApVec is -0.000171989
+sumr2: 7.4448e-05
+pVec(0) is -2.71181e-05
+ApVec is -0.0002673
+sumr2: 6.75406e-05
+pVec(0) is -3.72254e-05
+ApVec is -0.00036278
+sumr2: 6.06019e-05
+pVec(0) is -4.69846e-05
+ApVec is -0.000458189
+sumr2: 5.383e-05
+pVec(0) is -5.63184e-05
+ApVec is -0.000553116
+sumr2: 4.74158e-05
+pVec(0) is -6.51535e-05
+ApVec is -0.000646959
+sumr2: 4.15369e-05
+pVec(0) is -7.34213e-05
+ApVec is -0.000738914
+sumr2: 3.63519e-05
+pVec(0) is -8.10597e-05
+ApVec is -0.000827973
+sumr2: 3.19953e-05
+pVec(0) is -8.80138e-05
+ApVec is -2.68955e-05
+sumr2: 3.19352e-05
+pVec(0) is -9.48181e-05
+ApVec is -2.67888e-05
+sumr2: 3.19205e-05
+pVec(0) is -0.000101381
+ApVec is -2.69517e-05
+sumr2: 3.19742e-05
+pVec(0) is -0.000107916
+ApVec is -2.74362e-05
+sumr2: 3.21155e-05
+pVec(0) is -0.000114666
+ApVec is -2.82879e-05
+sumr2: 3.23594e-05
+pVec(0) is -0.000121883
+ApVec is -2.95436e-05
+sumr2: 3.27155e-05
+pVec(0) is -0.000129793
+ApVec is -0.00140989
+sumr2: 2.83203e-05
+pVec(0) is -0.000131573
+ApVec is -3.14279e-05
+sumr2: 2.87439e-05
+pVec(0) is -0.000136478
+ApVec is -3.25614e-05
+sumr2: 2.92681e-05
+pVec(0) is -0.000142166
+ApVec is -0.00152232
+sumr2: 2.61052e-05
+pVec(0) is -0.000141443
+ApVec is -3.39279e-05
+sumr2: 2.66132e-05
+pVec(0) is -0.000143215
+ApVec is -0.00150492
+sumr2: 2.4875e-05
+pVec(0) is -0.000140757
+ApVec is -3.39447e-05
+sumr2: 2.52783e-05
+pVec(0) is -0.000137995
+ApVec is -3.32383e-05
+sumr2: 2.56906e-05
+pVec(0) is -0.000135579
+ApVec is -3.24214e-05
+sumr2: 2.61019e-05
+pVec(0) is -0.000133344
+ApVec is -3.13966e-05
+sumr2: 2.65043e-05
+pVec(0) is -0.000131039
+ApVec is -0.00130251
+sumr2: 2.6114e-05
+pVec(0) is -0.000124478
+ApVec is -0.0012236
+sumr2: 2.71264e-05
+pVec(0) is -0.000117239
+ApVec is -0.00113876
+sumr2: 2.94888e-05
+pVec(0) is -0.00010937
+ApVec is -0.00104909
+sumr2: 3.31176e-05
+pVec(0) is -0.000100922
+ApVec is -0.00095563
+sumr2: 3.79003e-05
+pVec(0) is -9.19532e-05
+ApVec is -0.000859352
+sumr2: 4.36989e-05
+pVec(0) is -8.25231e-05
+ApVec is -0.000761133
+sumr2: 5.03539e-05
+pVec(0) is -7.26949e-05
+ApVec is -0.000661744
+sumr2: 5.76885e-05
+pVec(0) is -6.25334e-05
+ApVec is -0.000561844
+sumr2: 6.55135e-05
+pVec(0) is -5.21048e-05
+ApVec is -0.00046198
+sumr2: 7.36319e-05
+pVec(0) is -4.14752e-05
+ApVec is -0.000362586
+sumr2: 8.18444e-05
+pVec(0) is -3.07099e-05
+ApVec is -0.000263992
+sumr2: 8.99537e-05
+pVec(0) is -1.98726e-05
+ApVec is -0.000166429
+sumr2: 9.77694e-05
+pVec(0) is -9.02473e-06
+ApVec is -7.00467e-05
+sumr2: 0.000105112
+pVec(0) is 1.77509e-06
+ApVec is 2.50799e-05
+sumr2: 0.000111815
+pVec(0) is 1.24714e-05
+ApVec is 0.000118929
+sumr2: 0.000117732
+pVec(0) is 2.30117e-05
+ApVec is 0.000211517
+sumr2: 0.000122734
+pVec(0) is 3.33468e-05
+ApVec is 0.000302877
+sumr2: 0.000126714
+pVec(0) is 4.34302e-05
+ApVec is 0.000393039
+sumr2: 0.00012959
+pVec(0) is 5.32177e-05
+ApVec is 0.000482011
+sumr2: 0.000131302
+pVec(0) is 6.26669e-05
+ApVec is 0.000569751
+sumr2: 0.000131818
+pVec(0) is 7.17373e-05
+ApVec is 0.000656152
+sumr2: 0.000131127
+pVec(0) is 8.03889e-05
+ApVec is 0.000741021
+sumr2: 0.000129249
+pVec(0) is 8.85831e-05
+ApVec is 0.00082406
+sumr2: 0.000126224
+pVec(0) is 9.62815e-05
+ApVec is 0.000904856
+sumr2: 0.000122119
+pVec(0) is 0.000103447
+ApVec is 0.000982876
+sumr2: 0.000117024
+pVec(0) is 0.000110042
+ApVec is 0.00105746
+sumr2: 0.00011105
+pVec(0) is 0.000116031
+ApVec is 0.00112785
+sumr2: 0.000104327
+pVec(0) is 0.000121381
+ApVec is 0.00119317
+sumr2: 9.7001e-05
+pVec(0) is 0.000126061
+ApVec is 0.0012525
+sumr2: 8.92333e-05
+pVec(0) is 0.00013004
+ApVec is 0.00130489
+sumr2: 8.11934e-05
+pVec(0) is 0.000133294
+ApVec is 0.00134937
+sumr2: 7.30568e-05
+pVec(0) is 0.000135802
+ApVec is 0.00138508
+sumr2: 6.50006e-05
+pVec(0) is 0.000137545
+ApVec is 0.00141123
+sumr2: 5.71991e-05
+pVec(0) is 0.000138512
+ApVec is 0.0014272
+sumr2: 4.98198e-05
+pVec(0) is 0.000138695
+ApVec is 0.00143256
+sumr2: 4.30192e-05
+pVec(0) is 0.000138092
+ApVec is 0.0014271
+sumr2: 3.6939e-05
+pVec(0) is 0.000136705
+ApVec is 0.00141083
+sumr2: 3.17028e-05
+pVec(0) is 0.000134543
+ApVec is 3.49114e-05
+sumr2: 3.23826e-05
+pVec(0) is 0.000146547
+ApVec is 0.0015026
+sumr2: 2.8002e-05
+pVec(0) is 0.000142891
+ApVec is 0.00145799
+sumr2: 2.47073e-05
+pVec(0) is 0.000138506
+ApVec is 3.33505e-05
+sumr2: 2.52589e-05
+pVec(0) is 0.000142772
+ApVec is 0.00143878
+sumr2: 2.31001e-05
+pVec(0) is 0.00013687
+ApVec is 0.0013692
+sumr2: 2.21229e-05
+pVec(0) is 0.000130325
+ApVec is 0.00129259
+sumr2: 2.23262e-05
+pVec(0) is 0.000123172
+ApVec is 0.0012099
+sumr2: 2.36854e-05
+pVec(0) is 0.000115452
+ApVec is 0.00112207
+sumr2: 2.61525e-05
+pVec(0) is 0.000107208
+ApVec is 0.00103007
+sumr2: 2.9658e-05
+pVec(0) is 9.84892e-05
+ApVec is 0.000934817
+sumr2: 3.41123e-05
+pVec(0) is 8.93444e-05
+ApVec is 0.000837197
+sumr2: 3.94078e-05
+pVec(0) is 7.98263e-05
+ApVec is 0.000738016
+sumr2: 4.54218e-05
+pVec(0) is 6.99892e-05
+ApVec is 0.000638001
+sumr2: 5.20191e-05
+pVec(0) is 5.98886e-05
+ApVec is 0.000537791
+sumr2: 5.90552e-05
+pVec(0) is 4.95802e-05
+ApVec is 0.00043793
+sumr2: 6.63796e-05
+pVec(0) is 3.91197e-05
+ApVec is 0.000338866
+sumr2: 7.38391e-05
+pVec(0) is 2.85616e-05
+ApVec is 0.000240954
+sumr2: 8.12811e-05
+pVec(0) is 1.79593e-05
+ApVec is 0.00014446
+sumr2: 8.85565e-05
+pVec(0) is 7.36371e-06
+ApVec is 4.95661e-05
+sumr2: 9.55226e-05
+pVec(0) is -3.17641e-06
+ApVec is -4.36171e-05
+sumr2: 0.000102045
+pVec(0) is -1.3615e-05
+ApVec is -0.000135042
+sumr2: 0.000108002
+pVec(0) is -2.39089e-05
+ApVec is -0.000224708
+sumr2: 0.000113283
+pVec(0) is -3.40176e-05
+ApVec is -0.000312653
+sumr2: 0.000117791
+pVec(0) is -4.39029e-05
+ApVec is -0.000398933
+sumr2: 0.000121448
+pVec(0) is -5.3529e-05
+ApVec is -0.000483607
+sumr2: 0.000124188
+pVec(0) is -6.28621e-05
+ApVec is -0.000566724
+sumr2: 0.000125966
+pVec(0) is -7.18695e-05
+ApVec is -0.000648305
+sumr2: 0.000126751
+pVec(0) is -8.05198e-05
+ApVec is -0.000728328
+sumr2: 0.000126531
+pVec(0) is -8.8782e-05
+ApVec is -0.000806713
+sumr2: 0.000125313
+pVec(0) is -9.66258e-05
+ApVec is -0.000883311
+sumr2: 0.000123119
+pVec(0) is -0.000104021
+ApVec is -0.00095789
+sumr2: 0.000119991
+pVec(0) is -0.000110937
+ApVec is -0.00103014
+sumr2: 0.000115986
+pVec(0) is -0.000117345
+ApVec is -0.00109964
+sumr2: 0.000111177
+pVec(0) is -0.000123214
+ApVec is -0.0011659
+sumr2: 0.000105654
+pVec(0) is -0.000128518
+ApVec is -0.00122833
+sumr2: 9.95169e-05
+pVec(0) is -0.000133227
+ApVec is -0.00128629
+sumr2: 9.28805e-05
+pVec(0) is -0.000137317
+ApVec is -0.00133907
+sumr2: 8.58677e-05
+pVec(0) is -0.000140764
+ApVec is -0.00138591
+sumr2: 7.86089e-05
+pVec(0) is -0.000143547
+ApVec is -0.00142608
+sumr2: 7.12393e-05
+pVec(0) is -0.000145649
+ApVec is -0.00145884
+sumr2: 6.38962e-05
+pVec(0) is -0.000147056
+ApVec is -0.00148354
+sumr2: 5.67158e-05
+pVec(0) is -0.000147756
+ApVec is -0.00149958
+sumr2: 4.98308e-05
+pVec(0) is -0.000147745
+ApVec is -0.00150651
+sumr2: 4.33675e-05
+pVec(0) is -0.000147019
+ApVec is -0.00150399
+sumr2: 3.7443e-05
+pVec(0) is -0.000145582
+ApVec is -0.00149187
+sumr2: 3.21628e-05
+pVec(0) is -0.000143439
+ApVec is -0.00147015
+sumr2: 2.76189e-05
+pVec(0) is -0.000140602
+ApVec is -3.62113e-05
+sumr2: 2.82699e-05
+pVec(0) is -0.000152985
+ApVec is -0.00156335
+sumr2: 2.44953e-05
+pVec(0) is -0.000148714
+ApVec is -0.00151519
+sumr2: 2.16367e-05
+pVec(0) is -0.0001438
+ApVec is -0.00145871
+sumr2: 1.97308e-05
+pVec(0) is -0.000138267
+ApVec is -0.00139455
+sumr2: 1.8797e-05
+pVec(0) is -0.000132144
+ApVec is -0.00132345
+sumr2: 1.88367e-05
+pVec(0) is -0.000125461
+ApVec is -0.00124621
+sumr2: 1.98334e-05
+pVec(0) is -0.000118253
+ApVec is -0.00116367
+sumr2: 2.17534e-05
+pVec(0) is -0.000110559
+ApVec is -0.0010767
+sumr2: 2.45467e-05
+pVec(0) is -0.000102417
+ApVec is -0.000986175
+sumr2: 2.81477e-05
+pVec(0) is -9.38714e-05
+ApVec is -0.000892922
+sumr2: 3.24768e-05
+pVec(0) is -8.49658e-05
+ApVec is -0.000797739
+sumr2: 3.74426e-05
+pVec(0) is -7.57469e-05
+ApVec is -0.000701357
+sumr2: 4.29431e-05
+pVec(0) is -6.62621e-05
+ApVec is -0.000604441
+sumr2: 4.88684e-05
+pVec(0) is -5.65593e-05
+ApVec is -0.000507574
+sumr2: 5.51028e-05
+pVec(0) is -4.66866e-05
+ApVec is -0.000411255
+sumr2: 6.15274e-05
+pVec(0) is -3.66918e-05
+ApVec is -0.000315896
+sumr2: 6.80218e-05
+pVec(0) is -2.66213e-05
+ApVec is -0.000221826
+sumr2: 7.44671e-05
+pVec(0) is -1.65204e-05
+ApVec is -0.000129291
+sumr2: 8.07476e-05
+pVec(0) is -6.43245e-06
+ApVec is -3.84621e-05
+sumr2: 8.67528e-05
+pVec(0) is 3.60121e-06
+ApVec is 5.05593e-05
+sumr2: 9.23792e-05
+pVec(0) is 1.35416e-05
+ApVec is 0.000137729
+sumr2: 9.75317e-05
+pVec(0) is 2.3352e-05
+ApVec is 0.000223052
+sumr2: 0.000102125
+pVec(0) is 3.29981e-05
+ApVec is 0.000306569
+sumr2: 0.000106084
+pVec(0) is 4.24475e-05
+ApVec is 0.000388346
+sumr2: 0.000109346
+pVec(0) is 5.16698e-05
+ApVec is 0.000468458
+sumr2: 0.000111859
+pVec(0) is 6.0636e-05
+ApVec is 0.00054698
+sumr2: 0.000113585
+pVec(0) is 6.93184e-05
+ApVec is 0.000623972
+sumr2: 0.000114498
+pVec(0) is 7.769e-05
+ApVec is 0.000699463
+sumr2: 0.000114586
+pVec(0) is 8.57245e-05
+ApVec is 0.000773447
+sumr2: 0.000113847
+pVec(0) is 9.33957e-05
+ApVec is 0.000845863
+sumr2: 0.000112295
+pVec(0) is 0.000100677
+ApVec is 0.000916593
+sumr2: 0.000109958
+pVec(0) is 0.000107543
+ApVec is 0.00098545
+sumr2: 0.000106872
+pVec(0) is 0.000113968
+ApVec is 0.00105217
+sumr2: 0.000103089
+pVec(0) is 0.000119924
+ApVec is 0.00111643
+sumr2: 9.8672e-05
+pVec(0) is 0.000125387
+ApVec is 0.00117781
+sumr2: 9.36935e-05
+pVec(0) is 0.00013033
+ApVec is 0.00123583
+sumr2: 8.82364e-05
+pVec(0) is 0.000134731
+ApVec is 0.00128996
+sumr2: 8.23918e-05
+pVec(0) is 0.000138566
+ApVec is 0.0013396
+sumr2: 7.62577e-05
+pcg did not converge. You may increase maxiter number.
+iter from getPCG1ofSigmaAndVector 500
+i is 1
+xVec: 
+rVec: 
+HELL3: 
+pVec(0) is 0.177185
+ApVec is 4.07743
+sumr2: 1644.94
+pVec(0) is 0.0563622
+ApVec is -0.612063
+sumr2: 3.24577
+pVec(0) is 0.000191944
+ApVec is -0.00338363
+sumr2: 0.0382142
+pVec(0) is 0.000327469
+ApVec is 0.00312289
+sumr2: 0.000694657
+pVec(0) is 9.23225e-06
+ApVec is 6.83866e-06
+sumr2: 0.00061642
+pVec(0) is -7.0743e-07
+ApVec is 2.79083e-06
+sumr2: 0.000549713
+pVec(0) is -1.80273e-05
+ApVec is -2.17407e-05
+sumr2: 0.000520187
+pVec(0) is 1.80013e-05
+ApVec is -7.88065e-06
+sumr2: 0.000492613
+pVec(0) is 7.60596e-05
+ApVec is 2.53586e-05
+sumr2: 0.000563164
+pVec(0) is 7.3427e-05
+ApVec is 2.32722e-05
+sumr2: 0.000607675
+pVec(0) is 2.44415e-05
+ApVec is -2.76129e-07
+sumr2: 0.000689528
+pVec(0) is -3.79666e-05
+ApVec is -3.91317e-05
+sumr2: 0.000817906
+pVec(0) is -1.21364e-05
+ApVec is 0.00662279
+sumr2: 0.000601443
+pVec(0) is -5.15501e-06
+ApVec is 0.00602048
+sumr2: 0.000799292
+pVec(0) is -2.21268e-05
+ApVec is -0.000242518
+sumr2: 0.00129369
+pVec(0) is -3.58743e-05
+ApVec is -0.000341701
+sumr2: 0.00201818
+pVec(0) is -4.67008e-05
+ApVec is -0.000409098
+sumr2: 0.00275328
+pVec(0) is -5.43294e-05
+ApVec is -0.000460168
+sumr2: 0.00331216
+pVec(0) is -5.87483e-05
+ApVec is -0.000505973
+sumr2: 0.00357086
+pVec(0) is -6.004e-05
+ApVec is -0.000550851
+sumr2: 0.00347948
+pVec(0) is -5.82699e-05
+ApVec is -0.000589732
+sumr2: 0.00306531
+pVec(0) is -5.35412e-05
+ApVec is -0.00664273
+sumr2: 0.00233177
+pVec(0) is -2.16858e-05
+ApVec is -0.00576115
+sumr2: 0.00169485
+pVec(0) is 2.06994e-05
+ApVec is 0.000280324
+sumr2: 0.000993943
+pVec(0) is 5.8371e-05
+ApVec is 4.09349e-05
+sumr2: 0.00130368
+pVec(0) is 0.000128636
+ApVec is -0.0122758
+sumr2: 0.000955929
+pVec(0) is 8.05456e-05
+ApVec is -0.0120738
+sumr2: 0.000841501
+pVec(0) is 4.9472e-05
+ApVec is -0.011553
+sumr2: 0.000976793
+pVec(0) is 3.262e-05
+ApVec is -0.0106192
+sumr2: 0.00138055
+pVec(0) is 2.8348e-05
+ApVec is -0.00912809
+sumr2: 0.00205887
+pVec(0) is 3.52536e-05
+ApVec is -0.00695732
+sumr2: 0.00298509
+pVec(0) is 5.1059e-05
+ApVec is -0.00413536
+sumr2: 0.00408279
+pVec(0) is 7.18259e-05
+ApVec is 0.000508807
+sumr2: 0.00510347
+pVec(0) is 8.85917e-05
+ApVec is 0.000628404
+sumr2: 0.00617755
+pVec(0) is 0.000104352
+ApVec is 0.000748007
+sumr2: 0.0072524
+pVec(0) is 0.000119003
+ApVec is 0.00756227
+sumr2: 0.00798607
+pVec(0) is 0.000117745
+ApVec is 0.0107394
+sumr2: 0.00836852
+pVec(0) is 0.000100875
+ApVec is 0.0125682
+sumr2: 0.00842881
+pVec(0) is 6.98821e-05
+ApVec is 0.0132608
+sumr2: 0.00822684
+pVec(0) is 2.70956e-05
+ApVec is 0.0131078
+sumr2: 0.00782718
+pVec(0) is -2.58226e-05
+ApVec is 0.0123828
+sumr2: 0.00728578
+pVec(0) is -8.87007e-05
+ApVec is 0.0112867
+sumr2: 0.00664631
+pVec(0) is -0.000163069
+ApVec is 0.00992014
+sumr2: 0.00594187
+pVec(0) is -0.000251855
+ApVec is 0.00828087
+sumr2: 0.00519892
+pVec(0) is -0.00035844
+ApVec is 0.00628293
+sumr2: 0.00444172
+pVec(0) is -0.000484826
+ApVec is 0.00380374
+sumr2: 0.00369645
+pVec(0) is -0.000628826
+ApVec is 0.000772167
+sumr2: 0.002993
+pVec(0) is -0.000781241
+ApVec is -0.00268724
+sumr2: 0.00236263
+pVec(0) is -0.000925799
+ApVec is -0.00866928
+sumr2: 0.0018129
+pVec(0) is -0.0010133
+ApVec is -0.00934655
+sumr2: 0.00137952
+pVec(0) is -0.00108538
+ApVec is -0.00995581
+sumr2: 0.00108145
+pVec(0) is -0.00114112
+ApVec is -0.010507
+sumr2: 0.000929728
+pVec(0) is -0.00117979
+ApVec is -0.0140883
+sumr2: 0.000886338
+pVec(0) is -0.00114717
+ApVec is -0.0161761
+sumr2: 0.000904757
+pVec(0) is -0.00107154
+ApVec is -0.017509
+sumr2: 0.000950319
+pVec(0) is -0.000970656
+ApVec is -0.0179932
+sumr2: 0.00100469
+pVec(0) is -0.000861601
+ApVec is -0.0178118
+sumr2: 0.00106166
+pVec(0) is -0.000754768
+ApVec is -0.0171886
+sumr2: 0.00112144
+pVec(0) is -0.000653389
+ApVec is -0.0162714
+sumr2: 0.00118698
+pVec(0) is -0.000555178
+ApVec is -0.0150972
+sumr2: 0.00126211
+pVec(0) is -0.00045417
+ApVec is -0.0135915
+sumr2: 0.00135048
+pVec(0) is -0.000342457
+ApVec is -0.0115839
+sumr2: 0.00145452
+pVec(0) is -0.00021242
+ApVec is -0.00885921
+sumr2: 0.00157448
+pVec(0) is -6.0148e-05
+ApVec is -0.000429223
+sumr2: 0.00179525
+pVec(0) is 0.000107095
+ApVec is 0.0010772
+sumr2: 0.00200261
+pVec(0) is 0.000269886
+ApVec is 0.00252085
+sumr2: 0.00218463
+pVec(0) is 0.000426383
+ApVec is 0.00392892
+sumr2: 0.00233115
+pVec(0) is 0.000574916
+ApVec is 0.00532736
+sumr2: 0.00243418
+pVec(0) is 0.00071392
+ApVec is 0.00935571
+sumr2: 0.00244769
+pVec(0) is 0.000798599
+ApVec is 0.0117465
+sumr2: 0.0024277
+pVec(0) is 0.000847634
+ApVec is 0.0135111
+sumr2: 0.00238669
+pVec(0) is 0.000869362
+ApVec is 0.0146181
+sumr2: 0.00233304
+pVec(0) is 0.000875982
+ApVec is 0.015221
+sumr2: 0.00227031
+pVec(0) is 0.000879252
+ApVec is 0.0155303
+sumr2: 0.00219767
+pVec(0) is 0.000888112
+ApVec is 0.0157254
+sumr2: 0.00211099
+pVec(0) is 0.000907796
+ApVec is 0.0159096
+sumr2: 0.0020042
+pVec(0) is 0.000939612
+ApVec is 0.0160961
+sumr2: 0.00187094
+pVec(0) is 0.000980764
+ApVec is 0.016209
+sumr2: 0.0017065
+pVec(0) is 0.00102396
+ApVec is 0.0160896
+sumr2: 0.0015104
+pVec(0) is 0.00105722
+ApVec is 0.00980181
+sumr2: 0.0011313
+pVec(0) is 0.000963354
+ApVec is 0.00870353
+sumr2: 0.000829631
+pVec(0) is 0.000857078
+ApVec is 0.00761304
+sumr2: 0.000617952
+pVec(0) is 0.00074008
+ApVec is 0.00652333
+sumr2: 0.000503379
+pVec(0) is 0.000614236
+ApVec is 0.0054237
+sumr2: 0.000487348
+pVec(0) is 0.000481565
+ApVec is 0.00430071
+sumr2: 0.000565748
+pVec(0) is 0.000344157
+ApVec is 0.00313867
+sumr2: 0.000729395
+pVec(0) is 0.000204101
+ApVec is -0.00356605
+sumr2: 0.000911323
+pVec(0) is 5.20779e-05
+ApVec is -0.005733
+sumr2: 0.00112682
+pVec(0) is -7.63667e-05
+ApVec is -0.00725848
+sumr2: 0.0013566
+pVec(0) is -0.000181958
+ApVec is -0.00825475
+sumr2: 0.00158572
+pVec(0) is -0.000269855
+ApVec is -0.00887078
+sumr2: 0.00180337
+pVec(0) is -0.000346859
+ApVec is -0.00924146
+sumr2: 0.00200096
+pVec(0) is -0.000419353
+ApVec is -0.00945901
+sumr2: 0.00216958
+pVec(0) is -0.000491776
+ApVec is -0.00955792
+sumr2: 0.0022979
+pVec(0) is -0.000565311
+ApVec is -0.00951103
+sumr2: 0.00237142
+pVec(0) is -0.000636803
+ApVec is -0.00620958
+sumr2: 0.00231273
+pVec(0) is -0.000651361
+ApVec is -0.00617112
+sumr2: 0.00219055
+pVec(0) is -0.000655227
+ApVec is -0.0060765
+sumr2: 0.00201374
+pVec(0) is -0.000648569
+ApVec is -0.00593762
+sumr2: 0.00179428
+pVec(0) is -0.000631605
+ApVec is -0.0057594
+sumr2: 0.00154645
+pVec(0) is -0.000604609
+ApVec is -0.00554072
+sumr2: 0.00128604
+pVec(0) is -0.000567945
+ApVec is -0.00527566
+sumr2: 0.00102938
+pVec(0) is -0.000522124
+ApVec is -0.00495488
+sumr2: 0.000792337
+pVec(0) is -0.000467854
+ApVec is -0.0045671
+sumr2: 0.000589188
+pVec(0) is -0.00040607
+ApVec is 0.00225677
+sumr2: 0.000422129
+pVec(0) is -0.000314895
+ApVec is 0.00332467
+sumr2: 0.000318673
+pVec(0) is -0.000242329
+ApVec is 0.0039507
+sumr2: 0.000271881
+pVec(0) is -0.000187483
+ApVec is 0.00423933
+sumr2: 0.000274765
+pVec(0) is -0.000147511
+ApVec is 0.00425978
+sumr2: 0.000321524
+pVec(0) is -0.000119132
+ApVec is -0.00123428
+sumr2: 0.000398525
+pVec(0) is -8.30589e-05
+ApVec is -0.000836039
+sumr2: 0.000513398
+pVec(0) is -4.61175e-05
+ApVec is -0.000447654
+sumr2: 0.000654023
+pVec(0) is -9.10903e-06
+ApVec is -7.61075e-05
+sumr2: 0.000806909
+pVec(0) is 2.72008e-05
+ApVec is 0.000274753
+sumr2: 0.000958373
+pVec(0) is 6.21091e-05
+ApVec is 0.000603628
+sumr2: 0.00109562
+pVec(0) is 9.49942e-05
+ApVec is 0.000910987
+sumr2: 0.00120767
+pVec(0) is 0.00012532
+ApVec is 0.00119818
+sumr2: 0.00128595
+pVec(0) is 0.000152628
+ApVec is 0.00146646
+sumr2: 0.00132477
+pVec(0) is 0.000176519
+ApVec is 0.00171606
+sumr2: 0.00132151
+pVec(0) is 0.000196636
+ApVec is 0.00194531
+sumr2: 0.00127671
+pVec(0) is 0.000212659
+ApVec is 0.00215003
+sumr2: 0.00119398
+pVec(0) is 0.000224309
+ApVec is 0.00232341
+sumr2: 0.00107973
+pVec(0) is 0.000231365
+ApVec is 0.00245639
+sumr2: 0.000942669
+pVec(0) is 0.00023369
+ApVec is 0.00253883
+sumr2: 0.00079313
+pVec(0) is 0.000231252
+ApVec is -0.0032351
+sumr2: 0.000645048
+pVec(0) is 0.000226591
+ApVec is 0.0025134
+sumr2: 0.000503568
+pVec(0) is 0.000223345
+ApVec is 0.0024641
+sumr2: 0.00038078
+pVec(0) is 0.000215487
+ApVec is 0.00234925
+sumr2: 0.000284692
+pVec(0) is 0.000203267
+ApVec is 0.00217749
+sumr2: 0.000220827
+pVec(0) is 0.000187031
+ApVec is 0.00196011
+sumr2: 0.000191873
+pVec(0) is 0.000167211
+ApVec is 0.00170927
+sumr2: 0.000197575
+pVec(0) is 0.000144319
+ApVec is 0.00143655
+sumr2: 0.000234882
+pVec(0) is 0.000118933
+ApVec is 0.00115189
+sumr2: 0.000298323
+pVec(0) is 9.16829e-05
+ApVec is 0.000863201
+sumr2: 0.0003806
+pVec(0) is 6.32238e-05
+ApVec is 0.000576163
+sumr2: 0.000473301
+pVec(0) is 3.42086e-05
+ApVec is 0.000294409
+sumr2: 0.000567677
+pVec(0) is 5.26152e-06
+ApVec is 1.98293e-05
+sumr2: 0.000655356
+pVec(0) is -2.30415e-05
+ApVec is -0.000246944
+sumr2: 0.000728954
+pVec(0) is -5.01811e-05
+ApVec is -0.000505924
+sumr2: 0.000782544
+pVec(0) is -7.56915e-05
+ApVec is -0.000757028
+sumr2: 0.000811975
+pVec(0) is -9.91506e-05
+ApVec is -0.000999283
+sumr2: 0.000815082
+pVec(0) is -0.000120169
+ApVec is -0.00123006
+sumr2: 0.000791779
+pVec(0) is -0.000138385
+ApVec is -0.00144455
+sumr2: 0.000744039
+pVec(0) is -0.000153469
+ApVec is -0.00163563
+sumr2: 0.000675726
+pVec(0) is -0.000165136
+ApVec is -0.00179442
+sumr2: 0.000592278
+pVec(0) is -0.000173166
+ApVec is -0.00191147
+sumr2: 0.000500228
+pVec(0) is -0.000177421
+ApVec is -0.0019785
+sumr2: 0.000406621
+pVec(0) is -0.000177855
+ApVec is -0.00199021
+sumr2: 0.000318388
+pVec(0) is -0.000174517
+ApVec is -0.00194546
+sumr2: 0.000241757
+pVec(0) is -0.000167546
+ApVec is -0.00184762
+sumr2: 0.000181758
+pVec(0) is -0.000157164
+ApVec is -0.00170381
+sumr2: 0.000141851
+pVec(0) is -0.000143666
+ApVec is -0.00152353
+sumr2: 0.000123707
+pVec(0) is -0.000127416
+ApVec is -0.00131707
+sumr2: 0.00012715
+pVec(0) is -0.000108834
+ApVec is -0.00109419
+sumr2: 0.000150249
+pVec(0) is -8.83932e-05
+ApVec is -0.000863243
+sumr2: 0.000189562
+pVec(0) is -6.65989e-05
+ApVec is -0.000630735
+sumr2: 0.000240515
+pVec(0) is -4.39733e-05
+ApVec is -0.000401239
+sumr2: 0.000297849
+pVec(0) is -2.10322e-05
+ApVec is -0.000177546
+sumr2: 0.000356106
+pVec(0) is 1.73496e-06
+ApVec is 3.90243e-05
+sumr2: 0.00041008
+pVec(0) is 2.38792e-05
+ApVec is 0.000248193
+sumr2: 0.000455191
+pVec(0) is 4.49975e-05
+ApVec is 0.000450193
+sumr2: 0.000487779
+pVec(0) is 6.47289e-05
+ApVec is 0.000645159
+sumr2: 0.000505298
+pVec(0) is 8.27462e-05
+ApVec is 0.000832479
+sumr2: 0.000506449
+pVec(0) is 9.87476e-05
+ApVec is 0.00101019
+sumr2: 0.000491228
+pVec(0) is 0.000112453
+ApVec is 0.00117455
+sumr2: 0.000460922
+pVec(0) is 0.000123609
+ApVec is 0.00131993
+sumr2: 0.000417991
+pVec(0) is 0.000132
+ApVec is 0.00143926
+sumr2: 0.000365872
+pVec(0) is 0.000137466
+ApVec is 0.00152496
+sumr2: 0.000308667
+pVec(0) is 0.000139914
+ApVec is 0.00157038
+sumr2: 0.000250776
+pVec(0) is 0.000139328
+ApVec is 0.00157128
+sumr2: 0.000196505
+pVec(0) is 0.000135769
+ApVec is 0.00152686
+sumr2: 0.000149691
+pVec(0) is 0.000129371
+ApVec is 0.00144006
+sumr2: 0.000113398
+pVec(0) is 0.000120335
+ApVec is 7.93628e-05
+sumr2: 0.000113724
+pVec(0) is 0.000121689
+ApVec is 0.0013121
+sumr2: 8.97506e-05
+pVec(0) is 9.90864e-05
+ApVec is 0.00104646
+sumr2: 8.02453e-05
+pVec(0) is 7.51404e-05
+ApVec is 0.000772783
+sumr2: 8.49287e-05
+pVec(0) is 5.0322e-05
+ApVec is 0.000499946
+sumr2: 0.000102552
+pVec(0) is 2.51095e-05
+ApVec is 0.000234927
+sumr2: 0.000131025
+pVec(0) is -2.23208e-08
+ApVec is -1.73655e-05
+sumr2: 0.000167602
+pVec(0) is -2.4616e-05
+ApVec is -0.000253983
+sumr2: 0.000209114
+pVec(0) is -4.82451e-05
+ApVec is -0.000473643
+sumr2: 0.000252219
+pVec(0) is -7.0526e-05
+ApVec is -0.000676334
+sumr2: 0.000293641
+pVec(0) is -9.11247e-05
+ApVec is -0.000862863
+sumr2: 0.000330384
+pVec(0) is -0.000109756
+ApVec is -0.00103436
+sumr2: 0.000359903
+pVec(0) is -0.000126179
+ApVec is -0.0011918
+sumr2: 0.000380226
+pVec(0) is -0.000140185
+ApVec is -0.00133549
+sumr2: 0.000390046
+pVec(0) is -0.000151594
+ApVec is -0.00146469
+sumr2: 0.000388766
+pVec(0) is -0.000160245
+ApVec is -0.00157728
+sumr2: 0.000376531
+pVec(0) is -0.000166003
+ApVec is -0.00166973
+sumr2: 0.000354215
+pVec(0) is -0.000168767
+ApVec is -0.00173724
+sumr2: 0.000323361
+pVec(0) is -0.000168484
+ApVec is -0.0017743
+sumr2: 0.000286081
+pVec(0) is -0.000165163
+ApVec is -0.00177556
+sumr2: 0.000244896
+pVec(0) is -0.000158882
+ApVec is -0.00173687
+sumr2: 0.000202539
+pVec(0) is -0.00014979
+ApVec is -0.00165628
+sumr2: 0.000161745
+pVec(0) is -0.000138101
+ApVec is -0.00153482
+sumr2: 0.000125045
+pVec(0) is -0.000124086
+ApVec is -0.0013766
+sumr2: 9.45884e-05
+pVec(0) is -0.000108058
+ApVec is -7.23912e-05
+sumr2: 9.78488e-05
+pVec(0) is -0.000109234
+ApVec is -0.00119081
+sumr2: 7.50159e-05
+pVec(0) is -8.30932e-05
+ApVec is -0.00089223
+sumr2: 6.18048e-05
+pVec(0) is -5.61557e-05
+ApVec is -2.92628e-05
+sumr2: 6.04016e-05
+pVec(0) is -1.85453e-05
+ApVec is -2.67639e-06
+sumr2: 6.05316e-05
+pVec(0) is 1.23562e-05
+ApVec is 1.95394e-05
+sumr2: 6.16646e-05
+pVec(0) is 3.93998e-05
+ApVec is 3.98398e-05
+sumr2: 6.33139e-05
+pVec(0) is 6.62242e-05
+ApVec is 6.08126e-05
+sumr2: 6.4919e-05
+pVec(0) is 9.08978e-05
+ApVec is 8.03763e-05
+sumr2: 6.58141e-05
+pVec(0) is 0.000103411
+ApVec is 0.00104977
+sumr2: 6.03083e-05
+pVec(0) is 0.000105006
+ApVec is 0.00105783
+sumr2: 6.4333e-05
+pVec(0) is 0.000105238
+ApVec is 0.00105048
+sumr2: 7.7308e-05
+pVec(0) is 0.000104123
+ApVec is 0.00102858
+sumr2: 9.82326e-05
+pVec(0) is 0.0001017
+ApVec is 0.000993351
+sumr2: 0.000125749
+pVec(0) is 9.80288e-05
+ApVec is 0.000946263
+sumr2: 0.000158221
+pVec(0) is 9.31902e-05
+ApVec is 0.000888917
+sumr2: 0.000193833
+pVec(0) is 8.72819e-05
+ApVec is 0.000822954
+sumr2: 0.000230687
+pVec(0) is 8.04152e-05
+ApVec is 0.000749949
+sumr2: 0.000266901
+pVec(0) is 7.271e-05
+ApVec is 0.000671338
+sumr2: 0.000300701
+pVec(0) is 6.42909e-05
+ApVec is 0.000588352
+sumr2: 0.000330496
+pVec(0) is 5.52822e-05
+ApVec is 0.000501982
+sumr2: 0.000354939
+pVec(0) is 4.58049e-05
+ApVec is 0.000412982
+sumr2: 0.000372965
+pVec(0) is 3.5975e-05
+ApVec is 0.000321891
+sumr2: 0.000383824
+pVec(0) is 2.59026e-05
+ApVec is 0.000229086
+sumr2: 0.000387095
+pVec(0) is 1.5693e-05
+ApVec is 0.000134859
+sumr2: 0.000382685
+pVec(0) is 5.44811e-06
+ApVec is 3.95022e-05
+sumr2: 0.000370834
+pVec(0) is -4.73102e-06
+ApVec is -5.66007e-05
+sumr2: 0.000352098
+pVec(0) is -1.47427e-05
+ApVec is -0.000152893
+sumr2: 0.000327331
+pVec(0) is -2.44832e-05
+ApVec is -0.000248583
+sumr2: 0.000297647
+pVec(0) is -3.38467e-05
+ApVec is -0.000342612
+sumr2: 0.000264379
+pVec(0) is -4.27263e-05
+ApVec is -0.000433662
+sumr2: 0.000229015
+pVec(0) is -5.10156e-05
+ApVec is -0.000520192
+sumr2: 0.000193131
+pVec(0) is -5.86119e-05
+ApVec is -0.000600523
+sumr2: 0.000158312
+pVec(0) is -6.54183e-05
+ApVec is -0.000672939
+sumr2: 0.000126072
+pVec(0) is -7.13468e-05
+ApVec is -0.000735803
+sumr2: 9.77809e-05
+pVec(0) is -7.63211e-05
+ApVec is -0.000787678
+sumr2: 7.45937e-05
+pVec(0) is -8.0278e-05
+ApVec is -7.3462e-05
+sumr2: 8.08868e-05
+pVec(0) is -0.000103935
+ApVec is -0.00107212
+sumr2: 6.34742e-05
+pVec(0) is -0.000100042
+ApVec is -0.00103098
+sumr2: 5.30379e-05
+pVec(0) is -9.52134e-05
+ApVec is -0.000978577
+sumr2: 4.97441e-05
+pVec(0) is -8.95053e-05
+ApVec is -0.000915891
+sumr2: 5.34931e-05
+pVec(0) is -8.29859e-05
+ApVec is -0.000844128
+sumr2: 6.3928e-05
+pVec(0) is -7.57319e-05
+ApVec is -0.000764653
+sumr2: 8.04531e-05
+pVec(0) is -6.78282e-05
+ApVec is -0.000678924
+sumr2: 0.000102263
+pVec(0) is -5.93665e-05
+ApVec is -0.000588429
+sumr2: 0.000128378
+pVec(0) is -5.04429e-05
+ApVec is -0.000494621
+sumr2: 0.000157688
+pVec(0) is -4.11569e-05
+ApVec is -0.000398862
+sumr2: 0.000189
+pVec(0) is -3.16083e-05
+ApVec is -0.000302374
+sumr2: 0.000221085
+pVec(0) is -2.18958e-05
+ApVec is -0.000206207
+sumr2: 0.000252727
+pVec(0) is -1.21148e-05
+ApVec is -0.000111216
+sumr2: 0.000282769
+pVec(0) is -2.35567e-06
+ApVec is -1.80602e-05
+sumr2: 0.000310146
+pVec(0) is 7.29724e-06
+ApVec is 7.27893e-05
+sumr2: 0.000333922
+pVec(0) is 1.67661e-05
+ApVec is 0.000161019
+sumr2: 0.000353308
+pVec(0) is 2.59796e-05
+ApVec is 0.00024644
+sumr2: 0.000367685
+pVec(0) is 3.48719e-05
+ApVec is 0.000328937
+sumr2: 0.000376608
+pVec(0) is 4.33819e-05
+ApVec is 0.000408421
+sumr2: 0.000379818
+pVec(0) is 5.14513e-05
+ApVec is 0.00048478
+sumr2: 0.000377242
+pVec(0) is 5.90239e-05
+ApVec is 0.000557828
+sumr2: 0.000368991
+pVec(0) is 6.60445e-05
+ApVec is 0.000627272
+sumr2: 0.000355358
+pVec(0) is 7.24582e-05
+ApVec is 0.000692688
+sumr2: 0.00033681
+pVec(0) is 7.82106e-05
+ApVec is 0.000753505
+sumr2: 0.000313976
+pVec(0) is 8.32488e-05
+ApVec is 0.000809015
+sumr2: 0.000287628
+pVec(0) is 8.75224e-05
+ApVec is 0.000858398
+sumr2: 0.000258657
+pVec(0) is 9.09854e-05
+ApVec is 0.000900755
+sumr2: 0.000228047
+pVec(0) is 9.35977e-05
+ApVec is 0.000935161
+sumr2: 0.000196834
+pVec(0) is 9.53273e-05
+ApVec is 0.000960721
+sumr2: 0.000166073
+pVec(0) is 9.61516e-05
+ApVec is 0.000976635
+sumr2: 0.000136792
+pVec(0) is 9.60581e-05
+ApVec is 0.000982252
+sumr2: 0.000109959
+pVec(0) is 9.50459e-05
+ApVec is 0.000977126
+sumr2: 8.6439e-05
+pVec(0) is 9.31252e-05
+ApVec is 0.000961052
+sumr2: 6.69649e-05
+pVec(0) is 9.03178e-05
+ApVec is 0.000934093
+sumr2: 5.21099e-05
+pVec(0) is 8.66564e-05
+ApVec is 0.000896588
+sumr2: 4.22678e-05
+pVec(0) is 8.21839e-05
+ApVec is 0.000849145
+sumr2: 3.76411e-05
+pVec(0) is 7.6953e-05
+ApVec is 0.000792614
+sumr2: 3.82364e-05
+pVec(0) is 7.1025e-05
+ApVec is 0.000728048
+sumr2: 4.38681e-05
+pVec(0) is 6.44693e-05
+ApVec is 0.000656654
+sumr2: 5.41687e-05
+pVec(0) is 5.73619e-05
+ApVec is 0.000579739
+sumr2: 6.86078e-05
+pVec(0) is 4.9784e-05
+ApVec is 0.000498645
+sumr2: 8.6516e-05
+pVec(0) is 4.18212e-05
+ApVec is 0.000414696
+sumr2: 0.000107115
+pVec(0) is 3.35612e-05
+ApVec is 0.000329141
+sumr2: 0.000129549
+pVec(0) is 2.50924e-05
+ApVec is 0.000243107
+sumr2: 0.000152926
+pVec(0) is 1.65017e-05
+ApVec is 0.000157571
+sumr2: 0.000176345
+pVec(0) is 7.87347e-06
+ApVec is 7.33312e-05
+sumr2: 0.000198937
+pVec(0) is -7.12662e-07
+ApVec is -8.9936e-06
+sumr2: 0.00021989
+pVec(0) is -9.18229e-06
+ApVec is -8.89586e-05
+sumr2: 0.000238475
+pVec(0) is -1.7467e-05
+ApVec is -0.000166272
+sumr2: 0.000254069
+pVec(0) is -2.55041e-05
+ApVec is -0.000240762
+sumr2: 0.000266165
+pVec(0) is -3.32364e-05
+ApVec is -0.000312337
+sumr2: 0.000274382
+pVec(0) is -4.0611e-05
+ApVec is -0.000380941
+sumr2: 0.000278474
+pVec(0) is -4.75779e-05
+ApVec is -0.00044651
+sumr2: 0.000278331
+pVec(0) is -5.40893e-05
+ApVec is -0.000508926
+sumr2: 0.000273978
+pVec(0) is -6.00985e-05
+ApVec is -0.000567985
+sumr2: 0.000265575
+pVec(0) is -6.55591e-05
+ApVec is -0.000623371
+sumr2: 0.000253414
+pVec(0) is -7.04254e-05
+ApVec is -0.000674644
+sumr2: 0.000237907
+pVec(0) is -7.46525e-05
+ApVec is -0.000721242
+sumr2: 0.00021958
+pVec(0) is -7.81981e-05
+ApVec is -0.000762496
+sumr2: 0.000199052
+pVec(0) is -8.10232e-05
+ApVec is -0.000797661
+sumr2: 0.000177021
+pVec(0) is -8.30941e-05
+ApVec is -0.000825957
+sumr2: 0.000154234
+pVec(0) is -8.43839e-05
+ApVec is -0.000846616
+sumr2: 0.000131463
+pVec(0) is -8.48741e-05
+ApVec is -0.000858937
+sumr2: 0.000109474
+pVec(0) is -8.45554e-05
+ApVec is -0.000862337
+sumr2: 8.89976e-05
+pVec(0) is -8.34286e-05
+ApVec is -0.000856402
+sumr2: 7.07025e-05
+pVec(0) is -8.15046e-05
+ApVec is -0.000840918
+sumr2: 5.51674e-05
+pVec(0) is -7.88047e-05
+ApVec is -7.41826e-05
+sumr2: 5.96115e-05
+pVec(0) is -9.24805e-05
+ApVec is -0.0009617
+sumr2: 4.71701e-05
+pVec(0) is -8.39111e-05
+ApVec is -0.000875326
+sumr2: 3.85144e-05
+pVec(0) is -7.47579e-05
+ApVec is -0.000781317
+sumr2: 3.37973e-05
+pVec(0) is -6.5099e-05
+ApVec is -0.000680848
+sumr2: 3.30558e-05
+pVec(0) is -5.50163e-05
+ApVec is -0.000575222
+sumr2: 3.62118e-05
+pVec(0) is -4.45945e-05
+ApVec is -0.000465819
+sumr2: 4.30763e-05
+pVec(0) is -3.39204e-05
+ApVec is -0.000354053
+sumr2: 5.3357e-05
+pVec(0) is -2.30816e-05
+ApVec is -0.000241323
+sumr2: 6.6669e-05
+pVec(0) is -1.21657e-05
+ApVec is -0.000128962
+sumr2: 8.25485e-05
+pVec(0) is -1.25879e-06
+ApVec is -1.81962e-05
+sumr2: 0.000100468
+pVec(0) is 9.55537e-06
+ApVec is 8.98864e-05
+sumr2: 0.000119854
+pVec(0) is 2.01965e-05
+ApVec is 0.000194367
+sumr2: 0.000140107
+pVec(0) is 3.0589e-05
+ApVec is 0.000294508
+sumr2: 0.000160616
+pVec(0) is 4.06625e-05
+ApVec is 0.000389762
+sumr2: 0.000180782
+pVec(0) is 5.03528e-05
+ApVec is 0.000479757
+sumr2: 0.000200032
+pVec(0) is 5.96022e-05
+ApVec is 0.000564289
+sumr2: 0.000217833
+pVec(0) is 6.83592e-05
+ApVec is 0.000643289
+sumr2: 0.000233706
+pVec(0) is 7.65784e-05
+ApVec is 0.000716792
+sumr2: 0.000247237
+pVec(0) is 8.42197e-05
+ApVec is 0.000784901
+sumr2: 0.00025808
+pVec(0) is 9.12476e-05
+ApVec is 0.000847749
+sumr2: 0.000265968
+pVec(0) is 9.76298e-05
+ApVec is 0.000905459
+sumr2: 0.000270713
+pVec(0) is 0.000103336
+ApVec is 0.000958113
+sumr2: 0.000272208
+pVec(0) is 0.000108339
+ApVec is 0.00100572
+sumr2: 0.000270428
+pVec(0) is 0.00011261
+ApVec is 0.00104821
+sumr2: 0.000265432
+pVec(0) is 0.000116124
+ApVec is 0.00108539
+sumr2: 0.000257357
+pVec(0) is 0.000118853
+ApVec is 0.00111697
+sumr2: 0.000246421
+pVec(0) is 0.000120775
+ApVec is 0.00114258
+sumr2: 0.000232913
+pVec(0) is 0.000121868
+ApVec is 0.00116173
+sumr2: 0.000217191
+pVec(0) is 0.000122113
+ApVec is 0.0011739
+sumr2: 0.000199672
+pVec(0) is 0.000121499
+ApVec is 0.00117854
+sumr2: 0.000180825
+pVec(0) is 0.000120017
+ApVec is 0.00117509
+sumr2: 0.000161152
+pVec(0) is 0.000117671
+ApVec is 0.00116305
+sumr2: 0.000141179
+pVec(0) is 0.000114467
+ApVec is 0.00114201
+sumr2: 0.000121439
+pVec(0) is 0.000110426
+ApVec is 0.00111165
+sumr2: 0.000102455
+pVec(0) is 0.000105574
+ApVec is 0.00107183
+sumr2: 8.47252e-05
+pVec(0) is 9.99473e-05
+ApVec is 0.00102257
+sumr2: 6.87075e-05
+pVec(0) is 9.35906e-05
+ApVec is 0.000964094
+sumr2: 5.48048e-05
+pVec(0) is 8.65563e-05
+ApVec is 0.000896823
+sumr2: 4.33545e-05
+pVec(0) is 7.89036e-05
+ApVec is 0.000821373
+sumr2: 3.46184e-05
+pVec(0) is 7.06973e-05
+ApVec is 0.000738553
+sumr2: 2.87767e-05
+pVec(0) is 6.20074e-05
+ApVec is 0.000649338
+sumr2: 2.59229e-05
+pVec(0) is 5.29077e-05
+ApVec is 0.00055484
+sumr2: 2.60636e-05
+pVec(0) is 4.34749e-05
+ApVec is 0.000456272
+sumr2: 2.91189e-05
+pVec(0) is 3.37877e-05
+ApVec is 0.000354908
+sumr2: 3.49268e-05
+pVec(0) is 2.39257e-05
+ApVec is 0.000252037
+sumr2: 4.32495e-05
+pVec(0) is 1.39687e-05
+ApVec is 0.000148922
+sumr2: 5.37819e-05
+pVec(0) is 3.99584e-06
+ApVec is 4.67537e-05
+sumr2: 6.61621e-05
+pVec(0) is -5.91587e-06
+ApVec is -5.33851e-05
+sumr2: 7.99837e-05
+pVec(0) is -1.5692e-05
+ApVec is -0.000150548
+sumr2: 9.48091e-05
+pVec(0) is -2.52621e-05
+ApVec is -0.00024395
+sumr2: 0.000110183
+pVec(0) is -3.45599e-05
+ApVec is -0.000332973
+sumr2: 0.000125648
+pVec(0) is -4.35247e-05
+ApVec is -0.000417175
+sumr2: 0.000140755
+pVec(0) is -5.21013e-05
+ApVec is -0.000496273
+sumr2: 0.000155078
+pVec(0) is -6.02406e-05
+ApVec is -0.000570131
+sumr2: 0.000168225
+pVec(0) is -6.78988e-05
+ApVec is -0.000638727
+sumr2: 0.000179845
+pVec(0) is -7.50378e-05
+ApVec is -0.000702132
+sumr2: 0.000189635
+pVec(0) is -8.16238e-05
+ApVec is -0.000760463
+sumr2: 0.00019735
+pVec(0) is -8.7627e-05
+ApVec is -0.000813857
+sumr2: 0.0002028
+pVec(0) is -9.30199e-05
+ApVec is -0.000862437
+sumr2: 0.000205855
+pVec(0) is -9.77774e-05
+ApVec is -0.000906276
+sumr2: 0.00020645
+pVec(0) is -0.000101875
+ApVec is -0.000945383
+sumr2: 0.000204578
+pVec(0) is -0.000105291
+ApVec is -0.000979679
+sumr2: 0.000200297
+pVec(0) is -0.000108
+ApVec is -0.00100899
+sumr2: 0.000193723
+pVec(0) is -0.000109983
+ApVec is -0.00103306
+sumr2: 0.000185032
+pVec(0) is -0.00011122
+ApVec is -0.00105153
+sumr2: 0.000174453
+pVec(0) is -0.000111693
+ApVec is -0.00106399
+sumr2: 0.000162267
+pVec(0) is -0.000111389
+ApVec is -0.00106998
+sumr2: 0.000148796
+pVec(0) is -0.000110299
+ApVec is -0.00106901
+sumr2: 0.000134399
+pVec(0) is -0.000108422
+ApVec is -0.00106063
+sumr2: 0.000119459
+pVec(0) is -0.000105763
+ApVec is -0.00104443
+sumr2: 0.000104376
+pVec(0) is -0.000102334
+ApVec is -0.00102007
+sumr2: 8.95503e-05
+pVec(0) is -9.81565e-05
+ApVec is -0.000987332
+sumr2: 7.53728e-05
+pVec(0) is -9.326e-05
+ApVec is -0.000946151
+sumr2: 6.22138e-05
+pVec(0) is -8.76817e-05
+ApVec is -0.000896605
+sumr2: 5.04103e-05
+pVec(0) is -8.14664e-05
+ApVec is -0.000838955
+sumr2: 4.02567e-05
+pVec(0) is -7.46657e-05
+ApVec is -7.2272e-05
+sumr2: 4.30234e-05
+pVec(0) is -7.82003e-05
+ApVec is -0.000815839
+sumr2: 3.46884e-05
+pVec(0) is -6.71068e-05
+ApVec is -0.000704565
+sumr2: 2.85393e-05
+pVec(0) is -5.5648e-05
+ApVec is -0.000587841
+sumr2: 2.46751e-05
+pVec(0) is -4.39029e-05
+ApVec is -0.000466827
+sumr2: 2.31391e-05
+pVec(0) is -3.19516e-05
+ApVec is -0.000342773
+sumr2: 2.39178e-05
+pVec(0) is -1.98748e-05
+ApVec is -0.000216988
+sumr2: 2.69431e-05
+pVec(0) is -7.75281e-06
+ApVec is -9.07968e-05
+sumr2: 3.20939e-05
+pVec(0) is 4.33526e-06
+ApVec is 3.44943e-05
+sumr2: 3.92009e-05
+pVec(0) is 1.63118e-05
+ApVec is 0.000157637
+sumr2: 4.80506e-05
+pVec(0) is 2.81016e-05
+ApVec is 0.000277477
+sumr2: 5.83924e-05
+pVec(0) is 3.96324e-05
+ApVec is 0.000392983
+sumr2: 6.99444e-05
+pVec(0) is 5.08357e-05
+ApVec is 0.000503274
+sumr2: 8.2402e-05
+pVec(0) is 6.16474e-05
+ApVec is 0.000607635
+sumr2: 9.54452e-05
+pVec(0) is 7.2008e-05
+ApVec is 0.000705525
+sumr2: 0.000108747
+pVec(0) is 8.18633e-05
+ApVec is 0.000796573
+sumr2: 0.000121983
+pVec(0) is 9.11649e-05
+ApVec is 0.000880578
+sumr2: 0.000134837
+pVec(0) is 9.98699e-05
+ApVec is 0.000957479
+sumr2: 0.000147007
+pVec(0) is 0.000107941
+ApVec is 0.00102734
+sumr2: 0.000158218
+pVec(0) is 0.000115346
+ApVec is 0.00109033
+sumr2: 0.000168218
+pVec(0) is 0.000122057
+ApVec is 0.00114665
+sumr2: 0.000176791
+pVec(0) is 0.000128051
+ApVec is 0.00119657
+sumr2: 0.000183755
+pVec(0) is 0.000133309
+ApVec is 0.00124034
+sumr2: 0.000188964
+pVec(0) is 0.000137811
+ApVec is 0.00127819
+sumr2: 0.000192314
+pVec(0) is 0.000141544
+ApVec is 0.00131027
+sumr2: 0.000193741
+pVec(0) is 0.000144491
+ApVec is 0.00133671
+sumr2: 0.000193221
+pVec(0) is 0.000146639
+ApVec is 0.00135752
+sumr2: 0.000190771
+pVec(0) is 0.000147977
+ApVec is 0.00137263
+sumr2: 0.00018645
+pVec(0) is 0.000148492
+ApVec is 0.00138191
+sumr2: 0.000180356
+pVec(0) is 0.000148175
+ApVec is 0.00138511
+sumr2: 0.000172623
+pVec(0) is 0.000147019
+ApVec is 0.00138195
+sumr2: 0.000163424
+pVec(0) is 0.000145021
+ApVec is 0.00137209
+sumr2: 0.000152961
+pVec(0) is 0.000142181
+ApVec is 0.00135516
+sumr2: 0.000141469
+pVec(0) is 0.000138506
+ApVec is 0.0013308
+sumr2: 0.000129202
+pVec(0) is 0.000134007
+ApVec is 0.00129868
+sumr2: 0.000116435
+pVec(0) is 0.000128705
+ApVec is 0.00125851
+sumr2: 0.000103454
+pVec(0) is 0.000122626
+ApVec is 0.00121009
+sumr2: 9.05483e-05
+pVec(0) is 0.000115802
+ApVec is 0.00115331
+sumr2: 7.80057e-05
+pVec(0) is 0.000108277
+ApVec is 0.0010882
+sumr2: 6.61025e-05
+pVec(0) is 0.000100097
+ApVec is 0.00101491
+sumr2: 5.50979e-05
+pVec(0) is 9.13169e-05
+ApVec is 0.000933765
+sumr2: 4.52273e-05
+pVec(0) is 8.19963e-05
+ApVec is 0.000845218
+sumr2: 3.66962e-05
+pVec(0) is 7.21995e-05
+ApVec is 0.000749892
+sumr2: 2.96757e-05
+pVec(0) is 6.19944e-05
+ApVec is 0.000648552
+sumr2: 2.42983e-05
+pVec(0) is 5.14519e-05
+ApVec is 0.0005421
+sumr2: 2.06555e-05
+pVec(0) is 4.06444e-05
+ApVec is 0.000431552
+sumr2: 1.8796e-05
+pVec(0) is 2.96457e-05
+ApVec is 0.000318017
+sumr2: 1.87255e-05
+pVec(0) is 1.85298e-05
+ApVec is 0.000202665
+sumr2: 2.04069e-05
+pVec(0) is 7.37035e-06
+ApVec is 8.66972e-05
+sumr2: 2.3762e-05
+pVec(0) is -3.75993e-06
+ApVec is -2.86909e-05
+sumr2: 2.86746e-05
+pVec(0) is -1.479e-05
+ApVec is -0.000142341
+sumr2: 3.49931e-05
+pVec(0) is -2.56509e-05
+ApVec is -0.000253167
+sumr2: 4.25359e-05
+pVec(0) is -3.62766e-05
+ApVec is -0.000360186
+sumr2: 5.10954e-05
+pVec(0) is -4.66042e-05
+ApVec is -0.000462542
+sumr2: 6.04444e-05
+pVec(0) is -5.65746e-05
+ApVec is -0.000559522
+sumr2: 7.03415e-05
+pVec(0) is -6.61332e-05
+ApVec is -0.000650573
+sumr2: 8.0538e-05
+pVec(0) is -7.52301e-05
+ApVec is -0.000735299
+sumr2: 9.07833e-05
+pVec(0) is -8.38202e-05
+ApVec is -0.000813459
+sumr2: 0.000100832
+pVec(0) is -9.18636e-05
+ApVec is -0.000884954
+sumr2: 0.000110447
+pVec(0) is -9.93256e-05
+ApVec is -0.000949804
+sumr2: 0.00011941
+pVec(0) is -0.000106176
+ApVec is -0.00100813
+sumr2: 0.00012752
+pVec(0) is -0.000112389
+ApVec is -0.00106012
+sumr2: 0.000134598
+pVec(0) is -0.000117943
+ApVec is -0.001106
+sumr2: 0.000140493
+pVec(0) is -0.00012282
+ApVec is -0.00114602
+sumr2: 0.000145083
+pVec(0) is -0.000127003
+ApVec is -0.0011804
+sumr2: 0.000148274
+pVec(0) is -0.000130478
+ApVec is -0.00120934
+sumr2: 0.000150003
+pVec(0) is -0.000133233
+ApVec is -0.00123296
+sumr2: 0.000150238
+pVec(0) is -0.000135254
+ApVec is -0.00125134
+sumr2: 0.000148981
+pVec(0) is -0.000136533
+ApVec is -0.00126445
+sumr2: 0.000146262
+pVec(0) is -0.000137058
+ApVec is -0.00127223
+sumr2: 0.000142143
+pVec(0) is -0.000136821
+ApVec is -0.0012745
+sumr2: 0.000136716
+pVec(0) is -0.000135817
+ApVec is -0.00127104
+sumr2: 0.0001301
+pVec(0) is -0.000134042
+ApVec is -0.00126159
+sumr2: 0.000122443
+pVec(0) is -0.000131495
+ApVec is -0.00124585
+sumr2: 0.000113912
+pVec(0) is -0.000128183
+ApVec is -0.00122351
+sumr2: 0.000104696
+pVec(0) is -0.000124116
+ApVec is -0.00119427
+sumr2: 9.50021e-05
+pVec(0) is -0.00011931
+ApVec is -0.00115789
+sumr2: 8.50444e-05
+pVec(0) is -0.000113787
+ApVec is -0.00111416
+sumr2: 7.50449e-05
+pVec(0) is -0.000107579
+ApVec is -0.00106298
+sumr2: 6.52254e-05
+pVec(0) is -0.00010072
+ApVec is -0.00100432
+sumr2: 5.58023e-05
+pVec(0) is -9.3255e-05
+ApVec is -0.000938305
+sumr2: 4.69811e-05
+pVec(0) is -8.52312e-05
+ApVec is -0.000865157
+sumr2: 3.89511e-05
+pVec(0) is -7.6703e-05
+ApVec is -0.000785248
+sumr2: 3.1881e-05
+pVec(0) is -6.77289e-05
+ApVec is -6.72292e-05
+sumr2: 3.36162e-05
+pVec(0) is -6.58484e-05
+ApVec is -0.000685852
+sumr2: 2.75776e-05
+pVec(0) is -5.39578e-05
+ApVec is -0.000567372
+sumr2: 2.28245e-05
+pVec(0) is -4.1828e-05
+ApVec is -0.000444666
+sumr2: 1.94296e-05
+pVec(0) is -2.95303e-05
+ApVec is -0.000318729
+sumr2: 1.74365e-05
+pVec(0) is -1.71356e-05
+ApVec is -0.000190637
+sumr2: 1.68595e-05
+pVec(0) is -4.71457e-06
+ApVec is -6.15209e-05
+sumr2: 1.76834e-05
+pVec(0) is 7.66304e-06
+ApVec is 6.74594e-05
+sumr2: 1.98646e-05
+pVec(0) is 1.99291e-05
+ApVec is 0.000195144
+sumr2: 2.33325e-05
+pVec(0) is 3.20172e-05
+ApVec is 0.000320404
+sumr2: 2.7991e-05
+pVec(0) is 4.38633e-05
+ApVec is 0.000442165
+sumr2: 3.37214e-05
+pVec(0) is 5.54061e-05
+ApVec is 0.000559444
+sumr2: 4.03846e-05
+pVec(0) is 6.6587e-05
+ApVec is 0.000671365
+sumr2: 4.78251e-05
+pVec(0) is 7.73513e-05
+ApVec is 0.000777182
+sumr2: 5.58739e-05
+pVec(0) is 8.76475e-05
+ApVec is 0.000876294
+sumr2: 6.43529e-05
+pVec(0) is 9.74286e-05
+ApVec is 0.000968249
+sumr2: 7.30781e-05
+pVec(0) is 0.000106652
+ApVec is 0.00105275
+sumr2: 8.18645e-05
+pVec(0) is 0.000115279
+ApVec is 0.00112963
+sumr2: 9.0529e-05
+pVec(0) is 0.000123275
+ApVec is 0.00119887
+sumr2: 9.88948e-05
+pVec(0) is 0.000130613
+ApVec is 0.00126056
+sumr2: 0.000106794
+pVec(0) is 0.000137265
+ApVec is 0.00131488
+sumr2: 0.000114073
+pVec(0) is 0.000143213
+ApVec is 0.00136207
+sumr2: 0.00012059
+pVec(0) is 0.000148437
+ApVec is 0.00140241
+sumr2: 0.000126223
+pVec(0) is 0.000152924
+ApVec is 0.00143621
+sumr2: 0.000130868
+pVec(0) is 0.000156662
+ApVec is 0.00146376
+sumr2: 0.00013444
+pVec(0) is 0.000159641
+ApVec is 0.00148533
+sumr2: 0.000136876
+pVec(0) is 0.000161853
+ApVec is 0.00150112
+sumr2: 0.000138136
+pVec(0) is 0.000163291
+ApVec is 0.00151131
+sumr2: 0.000138198
+pVec(0) is 0.000163949
+ApVec is 0.00151598
+sumr2: 0.000137067
+pVec(0) is 0.000163823
+ApVec is 0.00151517
+sumr2: 0.000134765
+pVec(0) is 0.00016291
+ApVec is 0.00150881
+sumr2: 0.000131339
+pVec(0) is 0.000161209
+ApVec is 0.00149682
+sumr2: 0.000126855
+pVec(0) is 0.00015872
+ApVec is 0.00147903
+sumr2: 0.000121399
+pVec(0) is 0.000155448
+ApVec is 0.00145524
+sumr2: 0.000115077
+pVec(0) is 0.000151399
+ApVec is 0.00142524
+sumr2: 0.00010801
+pVec(0) is 0.000146586
+ApVec is 0.00138878
+sumr2: 0.000100334
+pVec(0) is 0.000141024
+ApVec is 0.00134566
+sumr2: 9.21977e-05
+pVec(0) is 0.000134737
+ApVec is 0.00129567
+sumr2: 8.37586e-05
+pVec(0) is 0.00012775
+ApVec is 0.00123868
+sumr2: 7.51805e-05
+pVec(0) is 0.000120099
+ApVec is 0.00117462
+sumr2: 6.66291e-05
+pVec(0) is 0.000111821
+ApVec is 0.00110347
+sumr2: 5.82693e-05
+pVec(0) is 0.000102962
+ApVec is 0.00102534
+sumr2: 5.0261e-05
+pcg did not converge. You may increase maxiter number.
+iter from getPCG1ofSigmaAndVector 500
+28835 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+xVec: 
+rVec: 
+HELL3: 
+pVec(0) is -0.00258821
+ApVec is -0.0322636
+sumr2: 0.124537
+pVec(0) is 0.0010201
+ApVec is 0.0348808
+sumr2: 0.017257
+pVec(0) is -4.41269e-06
+ApVec is 4.95544e-05
+sumr2: 0.00586434
+pVec(0) is -0.000262558
+ApVec is -0.010083
+sumr2: 0.000475208
+pVec(0) is -5.82397e-05
+ApVec is -2.51154e-05
+sumr2: 0.00036961
+pVec(0) is -2.96019e-05
+ApVec is -9.67575e-06
+sumr2: 0.000352031
+pVec(0) is 1.6127e-05
+ApVec is 2.1268e-05
+sumr2: 0.000350797
+pVec(0) is 1.52635e-05
+ApVec is 2.12736e-05
+sumr2: 0.000344904
+pVec(0) is -3.71279e-05
+ApVec is -6.73635e-06
+sumr2: 0.000344453
+pVec(0) is -7.12417e-05
+ApVec is -2.24954e-05
+sumr2: 0.00034567
+pVec(0) is -3.93583e-05
+ApVec is -9.28682e-06
+sumr2: 0.000382099
+pVec(0) is -1.28992e-05
+ApVec is 1.8514e-05
+sumr2: 0.000444591
+pVec(0) is -2.25121e-05
+ApVec is 1.62119e-05
+sumr2: 0.000528528
+pVec(0) is -7.37525e-05
+ApVec is -1.57764e-05
+sumr2: 0.000636866
+pVec(0) is -9.97181e-05
+ApVec is -1.90584e-05
+sumr2: 0.000690218
+pVec(0) is -4.69747e-05
+ApVec is 2.05294e-05
+sumr2: 0.000789658
+pVec(0) is -6.93963e-05
+ApVec is -0.00927254
+sumr2: 0.000622042
+pVec(0) is -5.80005e-05
+ApVec is -0.00862716
+sumr2: 0.000671608
+pVec(0) is -3.2812e-05
+ApVec is -0.00782691
+sumr2: 0.000955927
+pVec(0) is 9.59442e-06
+ApVec is -0.00663234
+sumr2: 0.00149621
+pVec(0) is 7.29084e-05
+ApVec is 0.000701461
+sumr2: 0.00208077
+pVec(0) is 0.000130595
+ApVec is 0.00117677
+sumr2: 0.00275709
+pVec(0) is 0.000183239
+ApVec is 0.00160075
+sumr2: 0.00344297
+pVec(0) is 0.000229921
+ApVec is 0.00200344
+sumr2: 0.00406263
+pVec(0) is 0.000269962
+ApVec is 0.0024115
+sumr2: 0.00455183
+pVec(0) is 0.00030278
+ApVec is 0.00284634
+sumr2: 0.00486135
+pVec(0) is 0.000327767
+ApVec is 0.0114173
+sumr2: 0.00448525
+pVec(0) is 0.000278129
+ApVec is 0.0110426
+sumr2: 0.00399726
+pVec(0) is 0.000223362
+ApVec is 0.0101529
+sumr2: 0.00346058
+pVec(0) is 0.000169265
+ApVec is 0.00911452
+sumr2: 0.00290909
+pVec(0) is 0.000115698
+ApVec is 0.00808631
+sumr2: 0.002361
+pVec(0) is 5.80258e-05
+ApVec is 0.00703633
+sumr2: 0.00183228
+pVec(0) is -1.14243e-05
+ApVec is 0.00577132
+sumr2: 0.00135062
+pVec(0) is -0.000100567
+ApVec is -0.00103736
+sumr2: 0.000851414
+pVec(0) is -0.000182204
+ApVec is -0.00174012
+sumr2: 0.00055141
+pVec(0) is -0.000256161
+ApVec is -0.00234371
+sumr2: 0.000465202
+pVec(0) is -0.000320529
+ApVec is -0.00288676
+sumr2: 0.000582595
+pVec(0) is -0.000373772
+ApVec is -0.00340107
+sumr2: 0.000871349
+pVec(0) is -0.000414816
+ApVec is -0.00391236
+sumr2: 0.00128249
+pVec(0) is -0.000443031
+ApVec is -0.00443844
+sumr2: 0.0017569
+pVec(0) is -0.000458136
+ApVec is -0.0049828
+sumr2: 0.002232
+pVec(0) is -0.000460085
+ApVec is -0.0121873
+sumr2: 0.0022058
+pVec(0) is -0.000384856
+ApVec is -0.0112563
+sumr2: 0.00211756
+pVec(0) is -0.000320316
+ApVec is -0.0102894
+sumr2: 0.00198561
+pVec(0) is -0.000265744
+ApVec is -0.00940845
+sumr2: 0.00182117
+pVec(0) is -0.000216921
+ApVec is -0.0086109
+sumr2: 0.00163239
+pVec(0) is -0.000167347
+ApVec is -0.00778394
+sumr2: 0.00142747
+pVec(0) is -0.000108876
+ApVec is -0.00110013
+sumr2: 0.00120375
+pVec(0) is -2.25008e-05
+ApVec is -0.00018345
+sumr2: 0.000969866
+pVec(0) is 6.18271e-05
+ApVec is 0.000600303
+sumr2: 0.00074742
+pVec(0) is 0.000142204
+ApVec is 0.00130042
+sumr2: 0.000555765
+pVec(0) is 0.00021688
+ApVec is 0.00195901
+sumr2: 0.000410518
+pVec(0) is 0.000284205
+ApVec is 0.00261044
+sumr2: 0.000322285
+pVec(0) is 0.000342624
+ApVec is 0.00328186
+sumr2: 0.000295702
+pVec(0) is 0.000390743
+ApVec is 0.00399234
+sumr2: 0.000328989
+pVec(0) is 0.000427427
+ApVec is 0.00474874
+sumr2: 0.000414193
+pVec(0) is 0.000451886
+ApVec is 0.00553565
+sumr2: 0.000538168
+pVec(0) is 0.000463715
+ApVec is 0.00629817
+sumr2: 0.00068414
+pVec(0) is 0.000462883
+ApVec is 0.00692329
+sumr2: 0.000833632
+pVec(0) is 0.000449693
+ApVec is 0.0129189
+sumr2: 0.000797247
+pVec(0) is 0.000407638
+ApVec is 0.0122564
+sumr2: 0.000759666
+pVec(0) is 0.000374835
+ApVec is 0.0117438
+sumr2: 0.000722696
+pVec(0) is 0.00034861
+ApVec is 0.0113509
+sumr2: 0.000688036
+pVec(0) is 0.000325362
+ApVec is 0.0110053
+sumr2: 0.000657673
+pVec(0) is 0.000300456
+ApVec is 0.010584
+sumr2: 0.000633698
+pVec(0) is 0.000268186
+ApVec is 0.00990878
+sumr2: 0.000617656
+pVec(0) is 0.000222225
+ApVec is 0.00875584
+sumr2: 0.000609422
+pVec(0) is 0.000156994
+ApVec is 0.00140434
+sumr2: 0.000581821
+pVec(0) is 5.58461e-05
+ApVec is 0.000456437
+sumr2: 0.000553656
+pVec(0) is -4.43516e-05
+ApVec is -0.000427417
+sumr2: 0.000525922
+pVec(0) is -0.000142627
+ApVec is -0.00128323
+sumr2: 0.00049958
+pVec(0) is -0.000238067
+ApVec is -0.00214454
+sumr2: 0.000475532
+pVec(0) is -0.000329767
+ApVec is -0.00304378
+sumr2: 0.00045459
+pVec(0) is -0.000416795
+ApVec is -0.0104398
+sumr2: 0.00040293
+pVec(0) is -0.000436948
+ApVec is -0.0116063
+sumr2: 0.000356307
+pVec(0) is -0.000435136
+ApVec is -0.011984
+sumr2: 0.000318341
+pVec(0) is -0.000420272
+ApVec is -0.011834
+sumr2: 0.00029033
+pVec(0) is -0.000400311
+ApVec is -0.0114089
+sumr2: 0.000272004
+pVec(0) is -0.000381178
+ApVec is -0.010907
+sumr2: 0.000262339
+pVec(0) is -0.000366767
+ApVec is -0.00590995
+sumr2: 0.00022374
+pVec(0) is -0.000368232
+ApVec is -0.00602256
+sumr2: 0.000193332
+pVec(0) is -0.000359325
+ApVec is -0.00569345
+sumr2: 0.000173215
+pVec(0) is -0.000340539
+ApVec is -0.00502446
+sumr2: 0.000164173
+pVec(0) is -0.000312618
+ApVec is -0.0041873
+sumr2: 0.000165636
+pVec(0) is -0.000276604
+ApVec is -0.00333073
+sumr2: 0.000175828
+pVec(0) is -0.000233859
+ApVec is -0.00254032
+sumr2: 0.000192091
+pVec(0) is -0.000186
+ApVec is -0.00184628
+sumr2: 0.000211327
+pVec(0) is -0.000134758
+ApVec is -0.00124543
+sumr2: 0.000230449
+pVec(0) is -8.17951e-05
+ApVec is -0.000718599
+sumr2: 0.000246735
+pVec(0) is -2.85736e-05
+ApVec is -0.000240404
+sumr2: 0.000258037
+pVec(0) is 2.3668e-05
+ApVec is 0.000216088
+sumr2: 0.000262885
+pVec(0) is 7.38442e-05
+ApVec is 0.000677116
+sumr2: 0.000260536
+pVec(0) is 0.000120911
+ApVec is 0.00116658
+sumr2: 0.000251005
+pVec(0) is 0.000163786
+ApVec is 0.00170347
+sumr2: 0.000235073
+pVec(0) is 0.000201358
+ApVec is 0.00229673
+sumr2: 0.000214223
+pVec(0) is 0.00023257
+ApVec is 0.00293579
+sumr2: 0.000190478
+pVec(0) is 0.000256557
+ApVec is 0.00357678
+sumr2: 0.000166137
+pVec(0) is 0.000272737
+ApVec is 0.00413193
+sumr2: 0.000143476
+pVec(0) is 0.00028084
+ApVec is 0.00448145
+sumr2: 0.000124463
+pVec(0) is 0.000280872
+ApVec is 0.00452494
+sumr2: 0.000110539
+pVec(0) is 0.000273051
+ApVec is 0.00424653
+sumr2: 0.000102481
+pVec(0) is 0.000257783
+ApVec is 0.0037286
+sumr2: 0.000100339
+pVec(0) is 0.00023567
+ApVec is 0.00309716
+sumr2: 0.000103463
+pVec(0) is 0.000207548
+ApVec is 0.00245766
+sumr2: 0.000110629
+pVec(0) is 0.000174487
+ApVec is 0.00186952
+sumr2: 0.000120246
+pVec(0) is 0.000137729
+ApVec is 0.00135284
+sumr2: 0.000130602
+pVec(0) is 9.85729e-05
+ApVec is 0.00090418
+sumr2: 0.000140096
+pVec(0) is 5.82388e-05
+ApVec is 0.000508799
+sumr2: 0.000147395
+pVec(0) is 1.77916e-05
+ApVec is 0.00014763
+sumr2: 0.000151521
+pVec(0) is -2.18602e-05
+ApVec is -0.000199285
+sumr2: 0.000151888
+pVec(0) is -5.98992e-05
+ApVec is -0.000551064
+sumr2: 0.000148317
+pVec(0) is -9.55177e-05
+ApVec is -0.000924632
+sumr2: 0.000141039
+pVec(0) is -0.000127872
+ApVec is -0.00133267
+sumr2: 0.00013068
+pVec(0) is -0.000156104
+ApVec is -0.00177968
+sumr2: 0.000118206
+pVec(0) is -0.000179417
+ApVec is -0.00225511
+sumr2: 0.000104803
+pVec(0) is -0.000197178
+ApVec is -0.00272403
+sumr2: 9.17267e-05
+pVec(0) is -0.000208975
+ApVec is -0.0031211
+sumr2: 8.0139e-05
+pVec(0) is -0.000214632
+ApVec is -0.00336139
+sumr2: 7.09725e-05
+pVec(0) is -0.000214174
+ApVec is -0.00337737
+sumr2: 6.48321e-05
+pVec(0) is -0.000207783
+ApVec is -0.00316218
+sumr2: 6.1943e-05
+pVec(0) is -0.000195781
+ApVec is -0.0027763
+sumr2: 6.21413e-05
+pVec(0) is -0.000178646
+ApVec is -0.00230918
+sumr2: 6.49131e-05
+pVec(0) is -0.000157029
+ApVec is -0.00183574
+sumr2: 6.94808e-05
+pVec(0) is -0.000131753
+ApVec is -0.00139868
+sumr2: 7.49275e-05
+pVec(0) is -0.000103757
+ApVec is -0.0010129
+sumr2: 8.03304e-05
+pVec(0) is -7.40026e-05
+ApVec is -0.000676172
+sumr2: 8.48728e-05
+pVec(0) is -4.33849e-05
+ApVec is -0.000377912
+sumr2: 8.79156e-05
+pVec(0) is -1.26842e-05
+ApVec is -0.000104264
+sumr2: 8.90313e-05
+pVec(0) is 1.74252e-05
+ApVec is 0.000159245
+sumr2: 8.80145e-05
+pVec(0) is 4.63227e-05
+ApVec is 0.000426308
+sumr2: 8.48838e-05
+pVec(0) is 7.33843e-05
+ApVec is 2.49244e-05
+sumr2: 8.65566e-05
+pVec(0) is 0.000111386
+ApVec is 0.00114508
+sumr2: 7.88164e-05
+pVec(0) is 0.000133957
+ApVec is 0.00148333
+sumr2: 7.06088e-05
+pVec(0) is 0.000152946
+ApVec is 4.47253e-05
+sumr2: 7.38799e-05
+pVec(0) is 0.000205491
+ApVec is 0.00263632
+sumr2: 6.4702e-05
+pVec(0) is 0.000216835
+ApVec is 0.00294907
+sumr2: 5.70712e-05
+pVec(0) is 0.000223796
+ApVec is 0.00317895
+sumr2: 5.14105e-05
+pVec(0) is 0.000226348
+ApVec is 0.00329042
+sumr2: 4.79709e-05
+pVec(0) is 0.000224545
+ApVec is 0.00326265
+sumr2: 4.6819e-05
+pVec(0) is 0.000218513
+ApVec is 0.00309885
+sumr2: 4.78384e-05
+pVec(0) is 0.000208445
+ApVec is 0.00282574
+sumr2: 5.07443e-05
+pVec(0) is 0.000194611
+ApVec is 0.00248317
+sumr2: 5.51125e-05
+pVec(0) is 0.00017737
+ApVec is 0.00211099
+sumr2: 6.04219e-05
+pVec(0) is 0.000157169
+ApVec is 0.00174002
+sumr2: 6.61071e-05
+pVec(0) is 0.000134532
+ApVec is 0.00138926
+sumr2: 7.16131e-05
+pVec(0) is 0.00011002
+ApVec is 0.00106715
+sumr2: 7.64427e-05
+pVec(0) is 8.41914e-05
+ApVec is 0.000774601
+sumr2: 8.01895e-05
+pVec(0) is 5.75623e-05
+ApVec is 0.000507748
+sumr2: 8.25555e-05
+pVec(0) is 3.05891e-05
+ApVec is 0.000260174
+sumr2: 8.3356e-05
+pVec(0) is 3.67261e-06
+ApVec is 2.43831e-05
+sumr2: 8.25183e-05
+pVec(0) is -2.2819e-05
+ApVec is -0.00020721
+sumr2: 8.00791e-05
+pVec(0) is -4.85197e-05
+ApVec is -0.000441564
+sumr2: 7.61811e-05
+pVec(0) is -7.30409e-05
+ApVec is -0.000684389
+sumr2: 7.10682e-05
+pVec(0) is -9.5963e-05
+ApVec is -0.00093946
+sumr2: 6.50728e-05
+pVec(0) is -0.000116848
+ApVec is -0.00120774
+sumr2: 5.8594e-05
+pVec(0) is -0.000135269
+ApVec is -0.00148623
+sumr2: 5.20659e-05
+pVec(0) is -0.000150848
+ApVec is -0.00176655
+sumr2: 4.59192e-05
+pVec(0) is -0.000163287
+ApVec is -4.77147e-05
+sumr2: 4.84973e-05
+pVec(0) is -0.000202853
+ApVec is -0.00264834
+sumr2: 4.2738e-05
+pVec(0) is -0.000208382
+ApVec is -0.00281985
+sumr2: 3.83511e-05
+pVec(0) is -0.0002105
+ApVec is -0.00290942
+sumr2: 3.55131e-05
+pVec(0) is -0.000209249
+ApVec is -0.00290416
+sumr2: 3.42929e-05
+pVec(0) is -0.000204716
+ApVec is -0.00280328
+sumr2: 3.46519e-05
+pVec(0) is -0.000197035
+ApVec is -0.00261884
+sumr2: 3.64491e-05
+pVec(0) is -0.000186381
+ApVec is -0.00237217
+sumr2: 3.94533e-05
+pVec(0) is -0.000172984
+ApVec is -0.00208802
+sumr2: 4.33626e-05
+pVec(0) is -0.000157128
+ApVec is -0.00178903
+sumr2: 4.7829e-05
+pVec(0) is -0.000139147
+ApVec is -0.00149244
+sumr2: 5.24867e-05
+pVec(0) is -0.000119412
+ApVec is -0.00120923
+sumr2: 5.69803e-05
+pVec(0) is -9.8312e-05
+ApVec is -0.000944748
+sumr2: 6.09894e-05
+pVec(0) is -7.62306e-05
+ApVec is -0.000700032
+sumr2: 6.42452e-05
+pVec(0) is -5.35241e-05
+ApVec is -0.000473198
+sumr2: 6.65411e-05
+pVec(0) is -3.0514e-05
+ApVec is -0.000260585
+sumr2: 6.77362e-05
+pVec(0) is -7.48798e-06
+ApVec is -5.76286e-05
+sumr2: 6.77562e-05
+pVec(0) is 1.52879e-05
+ApVec is 0.000140483
+sumr2: 6.65923e-05
+pVec(0) is 3.75525e-05
+ApVec is 0.000338321
+sumr2: 6.43004e-05
+pVec(0) is 5.90342e-05
+ApVec is 0.00053979
+sumr2: 6.09996e-05
+pVec(0) is 7.94415e-05
+ApVec is 0.000747734
+sumr2: 5.68683e-05
+pVec(0) is 9.84645e-05
+ApVec is 0.000963483
+sumr2: 5.2136e-05
+pVec(0) is 0.000115787
+ApVec is 0.00118634
+sumr2: 4.70708e-05
+pVec(0) is 0.000131108
+ApVec is 0.00141299
+sumr2: 4.19604e-05
+pVec(0) is 0.000144161
+ApVec is 4.44734e-05
+sumr2: 4.43754e-05
+pVec(0) is 0.000186217
+ApVec is 0.00220842
+sumr2: 3.90852e-05
+pVec(0) is 0.000194452
+ApVec is 0.00239765
+sumr2: 3.4554e-05
+pVec(0) is 0.000200034
+ApVec is 0.00254625
+sumr2: 3.09666e-05
+pVec(0) is 0.000202937
+ApVec is 0.00264178
+sumr2: 2.8452e-05
+pVec(0) is 0.000203176
+ApVec is 0.00267478
+sumr2: 2.70786e-05
+pVec(0) is 0.000200799
+ApVec is 0.00264101
+sumr2: 2.6852e-05
+pVec(0) is 0.000195885
+ApVec is 0.00254269
+sumr2: 2.77172e-05
+pVec(0) is 0.000188541
+ApVec is 0.00238821
+sumr2: 2.95628e-05
+pVec(0) is 0.000178901
+ApVec is 0.00219031
+sumr2: 3.22284e-05
+pVec(0) is 0.000167134
+ApVec is 0.00196355
+sumr2: 3.55152e-05
+pVec(0) is 0.00015344
+ApVec is 0.00172182
+sumr2: 3.91989e-05
+pVec(0) is 0.000138048
+ApVec is 0.00147664
+sumr2: 4.30441e-05
+pVec(0) is 0.000121213
+ApVec is 0.00123639
+sumr2: 4.68191e-05
+pVec(0) is 0.000103201
+ApVec is 0.00100626
+sumr2: 5.03087e-05
+pVec(0) is 8.42802e-05
+ApVec is 0.000788694
+sumr2: 5.33242e-05
+pVec(0) is 6.4706e-05
+ApVec is 0.000583948
+sumr2: 5.5711e-05
+pVec(0) is 4.47173e-05
+ApVec is 0.00039076
+sumr2: 5.73515e-05
+pVec(0) is 2.4532e-05
+ApVec is 0.000206878
+sumr2: 5.81674e-05
+pVec(0) is 4.34996e-06
+ApVec is 2.9523e-05
+sumr2: 5.81192e-05
+pVec(0) is -1.56388e-05
+ApVec is -0.000144244
+sumr2: 5.72062e-05
+pVec(0) is -3.52453e-05
+ApVec is -0.00031722
+sumr2: 5.54661e-05
+pVec(0) is -5.42732e-05
+ApVec is -0.000491797
+sumr2: 5.29739e-05
+pVec(0) is -7.25132e-05
+ApVec is -0.000669721
+sumr2: 4.98403e-05
+pVec(0) is -8.97435e-05
+ApVec is -0.000851853
+sumr2: 4.62078e-05
+pVec(0) is -0.000105735
+ApVec is -0.00103791
+sumr2: 4.22448e-05
+pVec(0) is -0.000120262
+ApVec is -0.00122623
+sumr2: 3.81366e-05
+pVec(0) is -0.000133115
+ApVec is -0.00141349
+sumr2: 3.40754e-05
+pVec(0) is -0.000144111
+ApVec is -0.00159459
+sumr2: 3.02481e-05
+pVec(0) is -0.000153105
+ApVec is -4.77322e-05
+sumr2: 3.21126e-05
+pVec(0) is -0.000185665
+ApVec is -0.00220685
+sumr2: 2.85251e-05
+pVec(0) is -0.000190263
+ApVec is -0.00232274
+sumr2: 2.56036e-05
+pVec(0) is -0.00019271
+ApVec is -0.00239995
+sumr2: 2.34418e-05
+pVec(0) is -0.000193019
+ApVec is -0.0024325
+sumr2: 2.20969e-05
+pVec(0) is -0.000191223
+ApVec is -0.00241711
+sumr2: 2.15881e-05
+pVec(0) is -0.000187381
+ApVec is -0.00235403
+sumr2: 2.1897e-05
+pVec(0) is -0.000181567
+ApVec is -0.00224706
+sumr2: 2.29689e-05
+pVec(0) is -0.000173876
+ApVec is -0.00210298
+sumr2: 2.47169e-05
+pVec(0) is -0.000164423
+ApVec is -0.00193046
+sumr2: 2.7026e-05
+pVec(0) is -0.000153342
+ApVec is -0.00173877
+sumr2: 2.97596e-05
+pVec(0) is -0.000140789
+ApVec is -0.00153662
+sumr2: 3.27668e-05
+pVec(0) is -0.000126935
+ApVec is -0.00133136
+sumr2: 3.58907e-05
+pVec(0) is -0.000111965
+ApVec is -0.00112855
+sumr2: 3.8976e-05
+pVec(0) is -9.60738e-05
+ApVec is -0.000931933
+sumr2: 4.18764e-05
+pVec(0) is -7.94533e-05
+ApVec is -0.000743558
+sumr2: 4.44604e-05
+pVec(0) is -6.22912e-05
+ApVec is -0.000564092
+sumr2: 4.6616e-05
+pVec(0) is -4.47651e-05
+ApVec is -0.000393137
+sumr2: 4.82532e-05
+pVec(0) is -2.70399e-05
+ApVec is -0.000229546
+sumr2: 4.93058e-05
+pVec(0) is -9.26979e-06
+ApVec is -7.17107e-05
+sumr2: 4.97316e-05
+pVec(0) is 8.39901e-06
+ApVec is 8.22006e-05
+sumr2: 4.95131e-05
+pVec(0) is 2.58231e-05
+ApVec is 0.000234031
+sumr2: 4.86571e-05
+pVec(0) is 4.28567e-05
+ApVec is 0.000385456
+sumr2: 4.71943e-05
+pVec(0) is 5.93478e-05
+ApVec is 0.000537823
+sumr2: 4.51794e-05
+pVec(0) is 7.51365e-05
+ApVec is 0.000692006
+sumr2: 4.26891e-05
+pVec(0) is 9.00556e-05
+ApVec is 0.000848255
+sumr2: 3.98203e-05
+pVec(0) is 0.000103935
+ApVec is 0.00100607
+sumr2: 3.66864e-05
+pVec(0) is 0.000116609
+ApVec is 0.00116405
+sumr2: 3.34125e-05
+pVec(0) is 0.000127922
+ApVec is 0.00131983
+sumr2: 3.01291e-05
+pVec(0) is 0.000137737
+ApVec is 0.00146998
+sumr2: 2.69661e-05
+pVec(0) is 0.000145941
+ApVec is 0.00161007
+sumr2: 2.40462e-05
+pVec(0) is 0.00015245
+ApVec is 4.85388e-05
+sumr2: 2.54536e-05
+pVec(0) is 0.00017709
+ApVec is 0.00206657
+sumr2: 2.27928e-05
+pVec(0) is 0.00017984
+ApVec is 0.00214231
+sumr2: 2.06398e-05
+pVec(0) is 0.000180835
+ApVec is 0.0021866
+sumr2: 1.90541e-05
+pVec(0) is 0.000180097
+ApVec is 0.00219624
+sumr2: 1.80717e-05
+pVec(0) is 0.00017766
+ApVec is 0.00216983
+sumr2: 1.77044e-05
+pVec(0) is 0.000173577
+ApVec is 0.00210814
+sumr2: 1.794e-05
+pVec(0) is 0.000167911
+ApVec is 0.00201404
+sumr2: 1.8743e-05
+pVec(0) is 0.00016074
+ApVec is 0.00189212
+sumr2: 2.00571e-05
+pVec(0) is 0.000152155
+ApVec is 0.00174817
+sumr2: 2.18074e-05
+pVec(0) is 0.00014226
+ApVec is 0.00158841
+sumr2: 2.3904e-05
+pVec(0) is 0.000131172
+ApVec is 0.00141887
+sumr2: 2.62466e-05
+pVec(0) is 0.000119021
+ApVec is 0.00124486
+sumr2: 2.87284e-05
+pVec(0) is 0.000105943
+ApVec is 0.00107071
+sumr2: 3.12415e-05
+pVec(0) is 9.20834e-05
+ApVec is 0.000899595
+sumr2: 3.36807e-05
+pVec(0) is 7.75877e-05
+ApVec is 0.000733581
+sumr2: 3.59483e-05
+pVec(0) is 6.26e-05
+ApVec is 0.000573754
+sumr2: 3.79564e-05
+pVec(0) is 4.72595e-05
+ApVec is 0.000420383
+sumr2: 3.96302e-05
+pVec(0) is 3.16985e-05
+ApVec is 0.000273107
+sumr2: 4.09091e-05
+pVec(0) is 1.60419e-05
+ApVec is 0.000131123
+sumr2: 4.17478e-05
+pVec(0) is 4.0845e-07
+ApVec is -6.64309e-06
+sumr2: 4.21168e-05
+pVec(0) is -1.50871e-05
+ApVec is -0.000141392
+sumr2: 4.20027e-05
+pVec(0) is -3.03312e-05
+ApVec is -0.000274314
+sumr2: 4.14084e-05
+pVec(0) is -4.52086e-05
+ApVec is -0.000406471
+sumr2: 4.03527e-05
+pVec(0) is -5.96003e-05
+ApVec is -0.000538694
+sumr2: 3.88704e-05
+pVec(0) is -7.33826e-05
+ApVec is -0.000671485
+sumr2: 3.70109e-05
+pVec(0) is -8.64283e-05
+ApVec is -0.000804928
+sumr2: 3.48378e-05
+pVec(0) is -9.86087e-05
+ApVec is -0.000938611
+sumr2: 3.24263e-05
+pVec(0) is -0.000109798
+ApVec is -0.00107155
+sumr2: 2.98605e-05
+pVec(0) is -0.000119877
+ApVec is -0.00120214
+sumr2: 2.72306e-05
+pVec(0) is -0.000128739
+ApVec is -0.00132814
+sumr2: 2.46284e-05
+pVec(0) is -0.000136294
+ApVec is -0.00144664
+sumr2: 2.21437e-05
+pVec(0) is -0.000142469
+ApVec is -4.74318e-05
+sumr2: 2.33611e-05
+pVec(0) is -0.000166864
+ApVec is -0.00186322
+sumr2: 2.09667e-05
+pVec(0) is -0.000170052
+ApVec is -0.00193794
+sumr2: 1.89054e-05
+pVec(0) is -0.000171787
+ApVec is -0.00199064
+sumr2: 1.7232e-05
+pVec(0) is -0.000172075
+ApVec is -5.29353e-05
+sumr2: 1.76718e-05
+pVec(0) is -0.000169159
+ApVec is -5.09393e-05
+sumr2: 1.80482e-05
+pVec(0) is -0.000163182
+ApVec is -4.79882e-05
+sumr2: 1.83924e-05
+pVec(0) is -0.000156084
+ApVec is -4.46971e-05
+sumr2: 1.87284e-05
+pVec(0) is -0.000149257
+ApVec is -4.14809e-05
+sumr2: 1.90716e-05
+pVec(0) is -0.000143411
+ApVec is -3.85267e-05
+sumr2: 1.94298e-05
+pVec(0) is -0.000138633
+ApVec is -3.58284e-05
+sumr2: 1.98045e-05
+pVec(0) is -0.000134524
+ApVec is -3.32419e-05
+sumr2: 2.01922e-05
+pVec(0) is -0.000130356
+ApVec is -3.05448e-05
+sumr2: 2.05862e-05
+pVec(0) is -0.000125266
+ApVec is -0.00141777
+sumr2: 1.92726e-05
+pVec(0) is -0.00011219
+ApVec is -0.00124946
+sumr2: 1.85086e-05
+pVec(0) is -9.83987e-05
+ApVec is -0.00107446
+sumr2: 1.82983e-05
+pVec(0) is -8.40041e-05
+ApVec is -0.000896388
+sumr2: 1.86294e-05
+pVec(0) is -6.91214e-05
+ApVec is -0.000718476
+sumr2: 1.94738e-05
+pVec(0) is -5.38703e-05
+ApVec is -0.000543417
+sumr2: 2.07884e-05
+pVec(0) is -3.83734e-05
+ApVec is -0.000373327
+sumr2: 2.25171e-05
+pVec(0) is -2.27537e-05
+ApVec is -0.000209735
+sumr2: 2.45929e-05
+pVec(0) is -7.1334e-06
+ApVec is -5.36294e-05
+sumr2: 2.69402e-05
+pVec(0) is 8.36894e-06
+ApVec is 9.44863e-05
+sumr2: 2.94775e-05
+pVec(0) is 2.36402e-05
+ApVec is 0.000234514
+sumr2: 3.21204e-05
+pVec(0) is 3.85748e-05
+ApVec is 0.000366687
+sumr2: 3.47841e-05
+pVec(0) is 5.3076e-05
+ApVec is 0.000491486
+sumr2: 3.73864e-05
+pVec(0) is 6.70571e-05
+ApVec is 0.000609574
+sumr2: 3.9849e-05
+pVec(0) is 8.0441e-05
+ApVec is 0.000721722
+sumr2: 4.21005e-05
+pVec(0) is 9.31602e-05
+ApVec is 0.000828751
+sumr2: 4.40771e-05
+pVec(0) is 0.000105155
+ApVec is 0.000931466
+sumr2: 4.57241e-05
+pVec(0) is 0.000116372
+ApVec is 0.0010306
+sumr2: 4.69964e-05
+pVec(0) is 0.000126763
+ApVec is 0.00112677
+sumr2: 4.78597e-05
+pVec(0) is 0.000136282
+ApVec is 0.0012204
+sumr2: 4.82904e-05
+pVec(0) is 0.000144883
+ApVec is 0.00131169
+sumr2: 4.8276e-05
+pVec(0) is 0.000152522
+ApVec is 0.00140057
+sumr2: 4.78159e-05
+pVec(0) is 0.000159152
+ApVec is 0.00148662
+sumr2: 4.69205e-05
+pVec(0) is 0.00016473
+ApVec is 0.00156907
+sumr2: 4.56123e-05
+pVec(0) is 0.00016921
+ApVec is 0.00164677
+sumr2: 4.39247e-05
+pVec(0) is 0.000172551
+ApVec is 0.00171817
+sumr2: 4.19016e-05
+pVec(0) is 0.000174717
+ApVec is 0.00178136
+sumr2: 3.95968e-05
+pVec(0) is 0.000175679
+ApVec is 0.0018341
+sumr2: 3.7072e-05
+pVec(0) is 0.000175416
+ApVec is 0.00187397
+sumr2: 3.43955e-05
+pVec(0) is 0.00017392
+ApVec is 0.00189849
+sumr2: 3.16399e-05
+pVec(0) is 0.000171193
+ApVec is 0.00190531
+sumr2: 2.88798e-05
+pVec(0) is 0.000167251
+ApVec is 0.00189243
+sumr2: 2.61894e-05
+pVec(0) is 0.00016212
+ApVec is 0.00185842
+sumr2: 2.36401e-05
+pVec(0) is 0.000155842
+ApVec is 0.00180264
+sumr2: 2.12983e-05
+pVec(0) is 0.000148466
+ApVec is 4.00099e-05
+sumr2: 2.22371e-05
+pVec(0) is 0.000161557
+ApVec is 0.00188174
+sumr2: 2.01125e-05
+pVec(0) is 0.000152131
+ApVec is 0.00176881
+sumr2: 1.8348e-05
+pVec(0) is 0.000141789
+ApVec is 0.001639
+sumr2: 1.69779e-05
+pVec(0) is 0.000130603
+ApVec is 0.00149509
+sumr2: 1.6026e-05
+pVec(0) is 0.000118654
+ApVec is 2.52179e-05
+sumr2: 1.60104e-05
+pVec(0) is 0.000102922
+ApVec is 1.98081e-05
+sumr2: 1.59725e-05
+pVec(0) is 8.6326e-05
+ApVec is 1.41925e-05
+sumr2: 1.59293e-05
+pVec(0) is 6.9861e-05
+ApVec is 8.59128e-06
+sumr2: 1.58919e-05
+pVec(0) is 5.42021e-05
+ApVec is 3.11514e-06
+sumr2: 1.58649e-05
+pVec(0) is 3.96318e-05
+ApVec is -2.24282e-06
+sumr2: 1.5847e-05
+pVec(0) is 2.60976e-05
+ApVec is -7.57826e-06
+sumr2: 1.58316e-05
+pVec(0) is 1.33437e-05
+ApVec is -1.30241e-05
+sumr2: 1.58086e-05
+pVec(0) is 1.06743e-06
+ApVec is -1.86877e-05
+sumr2: 1.57649e-05
+pVec(0) is -1.09286e-05
+ApVec is -2.45853e-05
+sumr2: 1.5687e-05
+pVec(0) is -2.26121e-05
+ApVec is -3.05852e-05
+sumr2: 1.55635e-05
+pVec(0) is -3.3656e-05
+ApVec is -3.63847e-05
+sumr2: 1.53897e-05
+pVec(0) is -4.34758e-05
+ApVec is -4.1546e-05
+sumr2: 1.51698e-05
+pVec(0) is -5.13848e-05
+ApVec is -4.56019e-05
+sumr2: 1.49186e-05
+pVec(0) is -5.68246e-05
+ApVec is -4.82017e-05
+sumr2: 1.46571e-05
+pVec(0) is -5.95643e-05
+ApVec is -4.92265e-05
+sumr2: 1.44078e-05
+pVec(0) is -5.97638e-05
+ApVec is -4.88155e-05
+sumr2: 1.41886e-05
+pVec(0) is -5.78799e-05
+ApVec is -4.72924e-05
+sumr2: 1.401e-05
+pVec(0) is -5.44807e-05
+ApVec is -4.5041e-05
+sumr2: 1.38744e-05
+pVec(0) is -5.00659e-05
+ApVec is -4.23902e-05
+sumr2: 1.37783e-05
+pVec(0) is -4.49565e-05
+ApVec is -3.95439e-05
+sumr2: 1.37143e-05
+pVec(0) is -3.92648e-05
+ApVec is -3.65622e-05
+sumr2: 1.3673e-05
+pVec(0) is -3.29293e-05
+ApVec is -3.3379e-05
+sumr2: 1.3645e-05
+pVec(0) is -2.57917e-05
+ApVec is -2.9846e-05
+sumr2: 1.36218e-05
+pVec(0) is -1.76994e-05
+ApVec is -2.57949e-05
+sumr2: 1.35974e-05
+pVec(0) is -8.60886e-06
+ApVec is -2.11077e-05
+sumr2: 1.35691e-05
+pVec(0) is 1.34278e-06
+ApVec is -1.57798e-05
+sumr2: 1.35379e-05
+pVec(0) is 1.18373e-05
+ApVec is -9.94535e-06
+sumr2: 1.35076e-05
+pVec(0) is 2.24588e-05
+ApVec is -3.84964e-06
+sumr2: 1.34834e-05
+pVec(0) is 3.28307e-05
+ApVec is 2.22608e-06
+sumr2: 1.34696e-05
+pVec(0) is 4.27425e-05
+ApVec is 8.05168e-06
+sumr2: 1.34691e-05
+pVec(0) is 5.221e-05
+ApVec is 1.35063e-05
+sumr2: 1.34824e-05
+pVec(0) is 6.14497e-05
+ApVec is 1.85865e-05
+sumr2: 1.35083e-05
+pVec(0) is 7.07898e-05
+ApVec is 2.33698e-05
+sumr2: 1.35446e-05
+pVec(0) is 8.05454e-05
+ApVec is 2.79518e-05
+sumr2: 1.35889e-05
+pVec(0) is 9.088e-05
+ApVec is 3.23746e-05
+sumr2: 1.36389e-05
+pVec(0) is 0.000101666
+ApVec is 3.65627e-05
+sumr2: 1.36935e-05
+pVec(0) is 0.000112375
+ApVec is 4.02787e-05
+sumr2: 1.37527e-05
+pVec(0) is 0.000122043
+ApVec is 4.31264e-05
+sumr2: 1.38179e-05
+pVec(0) is 0.000129404
+ApVec is 4.46226e-05
+sumr2: 1.38913e-05
+pVec(0) is 0.000133201
+ApVec is 4.43423e-05
+sumr2: 1.39746e-05
+pVec(0) is 0.000132623
+ApVec is 4.20895e-05
+sumr2: 1.40666e-05
+pVec(0) is 0.000127643
+ApVec is 3.80051e-05
+sumr2: 1.4163e-05
+pVec(0) is 0.000119062
+ApVec is 3.25412e-05
+sumr2: 1.42562e-05
+pVec(0) is 0.000108236
+ApVec is 2.63098e-05
+sumr2: 1.43369e-05
+pVec(0) is 9.66288e-05
+ApVec is 1.98931e-05
+sumr2: 1.4396e-05
+pVec(0) is 8.54458e-05
+ApVec is 1.37069e-05
+sumr2: 1.44255e-05
+pVec(0) is 7.54564e-05
+ApVec is 7.95991e-06
+sumr2: 1.44194e-05
+pVec(0) is 6.69978e-05
+ApVec is 2.68897e-06
+sumr2: 1.43733e-05
+pVec(0) is 6.00759e-05
+ApVec is -2.1675e-06
+sumr2: 1.4285e-05
+pVec(0) is 5.44851e-05
+ApVec is -6.69011e-06
+sumr2: 1.41546e-05
+pVec(0) is 4.991e-05
+ApVec is -1.09102e-05
+sumr2: 1.39866e-05
+pVec(0) is 4.60017e-05
+ApVec is -1.47631e-05
+sumr2: 1.379e-05
+pVec(0) is 4.244e-05
+ApVec is -1.80741e-05
+sumr2: 1.3579e-05
+pVec(0) is 3.89869e-05
+ApVec is -2.05903e-05
+sumr2: 1.33703e-05
+pVec(0) is 3.55275e-05
+ApVec is -2.20574e-05
+sumr2: 1.31796e-05
+pVec(0) is 3.20819e-05
+ApVec is -2.23167e-05
+sumr2: 1.3017e-05
+pVec(0) is 2.87768e-05
+ApVec is -2.1376e-05
+sumr2: 1.28844e-05
+pVec(0) is 2.57855e-05
+ApVec is -1.9416e-05
+sumr2: 1.27759e-05
+pVec(0) is 2.32635e-05
+ApVec is -1.67287e-05
+sumr2: 1.26802e-05
+pVec(0) is 2.1307e-05
+ApVec is -1.36285e-05
+sumr2: 1.25847e-05
+pVec(0) is 1.99417e-05
+ApVec is -1.03778e-05
+sumr2: 1.24781e-05
+pVec(0) is 1.91337e-05
+ApVec is -7.15398e-06
+sumr2: 1.23527e-05
+pVec(0) is 1.88073e-05
+ApVec is -4.05409e-06
+sumr2: 1.22051e-05
+pVec(0) is 1.8858e-05
+ApVec is -1.12207e-06
+sumr2: 1.20371e-05
+pVec(0) is 1.91584e-05
+ApVec is 1.61808e-06
+sumr2: 1.18558e-05
+pVec(0) is 1.95619e-05
+ApVec is 4.1352e-06
+sumr2: 1.16734e-05
+pVec(0) is 1.99105e-05
+ApVec is 6.37688e-06
+sumr2: 1.15052e-05
+pVec(0) is 2.00489e-05
+ApVec is 8.27145e-06
+sumr2: 1.13673e-05
+pVec(0) is 1.98473e-05
+ApVec is 9.74379e-06
+sumr2: 1.1273e-05
+pVec(0) is 1.92217e-05
+ApVec is 1.07378e-05
+sumr2: 1.12294e-05
+pVec(0) is 1.81441e-05
+ApVec is 1.12341e-05
+sumr2: 1.12359e-05
+pVec(0) is 1.66368e-05
+ApVec is 1.12554e-05
+sumr2: 1.12842e-05
+pVec(0) is 1.47524e-05
+ApVec is 1.08568e-05
+sumr2: 1.13601e-05
+pVec(0) is 1.25488e-05
+ApVec is 1.01084e-05
+sumr2: 1.14462e-05
+pVec(0) is 1.00705e-05
+ApVec is 9.07666e-06
+sumr2: 1.15248e-05
+pVec(0) is 7.34067e-06
+ApVec is 7.81417e-06
+sumr2: 1.15804e-05
+pVec(0) is 4.36732e-06
+ApVec is 6.35767e-06
+sumr2: 1.16018e-05
+pVec(0) is 1.15795e-06
+ApVec is 4.73479e-06
+sumr2: 1.1584e-05
+pVec(0) is -2.26182e-06
+ApVec is 2.97453e-06
+sumr2: 1.15296e-05
+pVec(0) is -5.83444e-06
+ApVec is 1.11676e-06
+sumr2: 1.14483e-05
+pVec(0) is -9.46844e-06
+ApVec is -7.84024e-07
+sumr2: 1.13553e-05
+pVec(0) is -1.30519e-05
+ApVec is -2.66365e-06
+sumr2: 1.1268e-05
+pVec(0) is -1.64776e-05
+ApVec is -4.46022e-06
+sumr2: 1.1202e-05
+pVec(0) is -1.96697e-05
+ApVec is -6.1279e-06
+sumr2: 1.11674e-05
+pVec(0) is -2.25988e-05
+ApVec is -7.64629e-06
+sumr2: 1.11674e-05
+pVec(0) is -2.52801e-05
+ApVec is -9.02072e-06
+sumr2: 1.11979e-05
+pVec(0) is -2.77534e-05
+ApVec is -1.02742e-05
+sumr2: 1.12485e-05
+pVec(0) is -3.00528e-05
+ApVec is -1.14338e-05
+sumr2: 1.13042e-05
+pVec(0) is -3.21749e-05
+ApVec is -1.25152e-05
+sumr2: 1.1348e-05
+pVec(0) is -3.40532e-05
+ApVec is -1.3511e-05
+sumr2: 1.13626e-05
+pVec(0) is -3.55479e-05
+ApVec is -1.43835e-05
+sumr2: 1.13344e-05
+pVec(0) is -3.64593e-05
+ApVec is -1.50676e-05
+sumr2: 1.12563e-05
+pVec(0) is -3.65704e-05
+ApVec is -1.54847e-05
+sumr2: 1.11307e-05
+pVec(0) is -3.57112e-05
+ApVec is -1.55664e-05
+sumr2: 1.09699e-05
+pVec(0) is -3.38234e-05
+ApVec is -1.52805e-05
+sumr2: 1.07934e-05
+pVec(0) is -3.09919e-05
+ApVec is -1.46469e-05
+sumr2: 1.06234e-05
+pVec(0) is -2.74261e-05
+ApVec is -1.37359e-05
+sumr2: 1.04795e-05
+pVec(0) is -2.33956e-05
+ApVec is -1.26474e-05
+sumr2: 1.03749e-05
+pVec(0) is -1.91512e-05
+ApVec is -1.14832e-05
+sumr2: 1.03161e-05
+pVec(0) is -1.48653e-05
+ApVec is -1.03229e-05
+sumr2: 1.0303e-05
+pVec(0) is -1.06052e-05
+ApVec is -9.21042e-06
+sumr2: 1.03308e-05
+pVec(0) is -6.34025e-06
+ApVec is -8.15111e-06
+sumr2: 1.03916e-05
+pVec(0) is -1.97024e-06
+ApVec is -7.11666e-06
+sumr2: 1.04748e-05
+pVec(0) is 2.63355e-06
+ApVec is -6.05346e-06
+sumr2: 1.05677e-05
+pVec(0) is 7.57917e-06
+ApVec is -4.89407e-06
+sumr2: 1.06557e-05
+pVec(0) is 1.29029e-05
+ApVec is -3.57245e-06
+sumr2: 1.07234e-05
+pVec(0) is 1.85272e-05
+ApVec is -2.04207e-06
+sumr2: 1.07568e-05
+pVec(0) is 2.42479e-05
+ApVec is -2.93385e-07
+sumr2: 1.07464e-05
+pVec(0) is 2.97683e-05
+ApVec is 1.63725e-06
+sumr2: 1.06891e-05
+pVec(0) is 3.47805e-05
+ApVec is 3.67472e-06
+sumr2: 1.05898e-05
+pVec(0) is 3.90642e-05
+ApVec is 5.72868e-06
+sumr2: 1.04591e-05
+pVec(0) is 4.25563e-05
+ApVec is 7.72386e-06
+sumr2: 1.0311e-05
+pVec(0) is 4.5361e-05
+ApVec is 9.62348e-06
+sumr2: 1.01595e-05
+pVec(0) is 4.77034e-05
+ApVec is 1.14362e-05
+sumr2: 1.00166e-05
+pVec(0) is 4.98554e-05
+ApVec is 1.32075e-05
+sumr2: 9.89144e-06
+iter from getPCG1ofSigmaAndVector 441
