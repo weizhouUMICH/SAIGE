@@ -1165,9 +1165,9 @@ struct CorssProd_LOCO : public Worker
 					//}
 				}else{
                         		val1 = dot(vec,  m_bVec);
+					m_Msub_mafge1perc += 1;
 				}
                         	m_bout += val1 * (vec);
-				m_Msub_mafge1perc += 1;
 			}
 
                 }
