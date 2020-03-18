@@ -89,7 +89,7 @@ SPA_ER_kernel_related<-function(G,obj, obj.noK, Cutoff=2, Phi, weight, VarRatio_
 	return(outlist) ;
 }
 
-SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,VarRatio_Vec, mu.a){
+SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,VarRatio_Vec, mu.a, sparseSigma){
 	zscore.all_0<-matrix(rep(0, ncol(G)), ncol=ncol(G))
 	zscore.all_1<-matrix(rep(0, ncol(G)), ncol=ncol(G))
 	VarS=c()	
@@ -98,11 +98,18 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 	p.old=c()
 	p.new=c()
 	MAFsum=colSums(G)
-
+	mu2.a = mu.a *(1-mu.a)
 	for (jj in 1:ncol(G)){
 		n.g<-sum(G[,jj])
 		NAset<-which(G[,jj]==0)
 		G1<-G[,jj]  - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G[,jj]) ####equal to G[,jj] in terms of score statistics.
+		AC = n.g
+		AF = AC/(length(G[,jj]))	
+		MAF = AF
+		if(AF > 0.5){
+			MAF = 1 - AF
+		}
+
 		q<-(t(G1) %*% (obj.noK$y)) 
 		g=G1 
 		mu.qtemp=mu.a; g.qtemp=g   
@@ -123,7 +130,10 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 	
 		}else {
 			if (length( id1)>0){  
-    				p_temp1 = scoreTest_SPAGMMAT_binaryTrait(g, n.g, NAset, obj.noK$y, mu.a, varRatio=VarRatio_Vec[jj], Cutoff = Cutoff)$p.value
+    				#p_temp1 = scoreTest_SPAGMMAT_binaryTrait(g, n.g, NAset, obj.noK$y, mu.a, varRatio=VarRatio_Vec[jj], Cutoff = Cutoff)$p.value
+				p_temp1=scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G[,jj], AC, AF, MAF, IsSparse=TRUE, obj.noK, mu.a = mu.a, mu2.a = mu2.a, obj.noK$y, varRatio=VarRatio_Vec[jj], Cutoff = Cutoff, rowHeader=NULL, sparseSigma=sparseSigma)$p.value
+
+
 			}
 		}	
 		
