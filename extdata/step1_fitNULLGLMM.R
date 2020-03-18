@@ -81,7 +81,9 @@ option_list <- list(
   make_option("--minMAFforGRM", type="numeric", default=0.01,
     help="Minimum MAF of markers used for GRM"),
   make_option("--minCovariateCount", type="numeric", default=-1,
-    help="If binary covariates have a count less than this, they will be excluded from the model to avoid convergence issues [default=-1] (no covariates will be excluded).")
+    help="If binary covariates have a count less than this, they will be excluded from the model to avoid convergence issues [default=-1] (no covariates will be excluded)."),
+  make_option("--includeNonautoMarkersforVarRatio", type="logical", default=FALSE,
+    help="Whether to allow for non-autosomal markers for variance ratio. [default, 'FALSE']")
 )
 
 
@@ -148,4 +150,5 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
 	    useSparseSigmaConditionerforPCG = opt$useSparseSigmaConditionerforPCG,
 	    useSparseSigmaforInitTau = opt$useSparseSigmaforInitTau,
 	    minMAFforGRM = opt$minMAFforGRM,
-	    minCovariateCount=opt$minCovariateCount)	
+	    minCovariateCount=opt$minCovariateCount,
+	    includeNonautoMarkersforVarRatio=opt$includeNonautoMarkersforVarRatio)	
