@@ -11,7 +11,7 @@ Rscript step1_fitNULLGLMM.R     \
         --covarColList=x1,x2 \
         --sampleIDColinphenoFile=IID \
         --traitType=binary        \
-        --outputPrefix=./output/example_binary \
+        --outputPrefix=./output/example_binary_includenonAutoforvarRatio \
         --nThreads=4	\
 	--LOCO=FALSE	\
 	--minMAFforGRM=0.01
