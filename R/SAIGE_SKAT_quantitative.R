@@ -149,7 +149,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 					G1_tilde_Ps_G1_tilde = getCovM_nopcg(G1=G1, G2=G1, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
                         		Phi = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m])
 				}
-				Phi_ccadj = SPA_ER_kernel_related_Phiadj(G1_org, obj_cc, obj.noK, Cutoff=2, Phi, weights[1:m], VarRatio_Vec = as.vector(GratioMatrixall[1:m,1]), mu)
+				Phi_ccadj = SPA_ER_kernel_related_Phiadj(G1_org, obj_cc, obj.noK, Cutoff=2, Phi, weights[1:m], VarRatio_Vec = as.vector(GratioMatrixall[1:m,1]), mu, sparseSigma)
 
 				#check if variance for any marker is negative, remove the variant
                         	if(!is.null(G2_cond)){
@@ -168,7 +168,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 					}
 
 
-					Phi2_ccadj = SPA_ER_kernel_related_Phiadj(G2_cond_org, obj_cc, obj.noK, Cutoff=2, Phi2, weights[((m+1):(m+m_cond))], VarRatio_Vec = as.vector(GratioMatrixall[c((m+1):(m+m_cond)),1]), mu)			
+					Phi2_ccadj = SPA_ER_kernel_related_Phiadj(G2_cond_org, obj_cc, obj.noK, Cutoff=2, Phi2, weights[((m+1):(m+m_cond))], VarRatio_Vec = as.vector(GratioMatrixall[c((m+1):(m+m_cond)),1]), mu, sparseSigma)			
 					Phi12_ccadj_val = Phi_ccadj$scaleFactor %*% Phi12 %*% Phi2_ccadj$scaleFactor
 					G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv_ccadj = Phi12_ccadj_val%*%solve(Phi2_ccadj$val)
 					Score_cond_ccadj = Score - G1_tilde_P_G2_tilde_G2_tilde_P_G2_tilde_inv_ccadj %*% T2
