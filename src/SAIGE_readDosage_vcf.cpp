@@ -131,8 +131,12 @@ Rcpp::List getGenoOfnthVar_vcfDosage(int mth) {
       }
     }
   }
-
-  float AF = AC / 2 / (float)(gmtest_samplesize_vcfDosage - missing_cnt) ;
+  float AF;
+  if(gmtest_samplesize_vcfDosage == missing_cnt){
+    AF = 0;
+  }else{
+    AF = AC / 2 / (float)(gmtest_samplesize_vcfDosage - missing_cnt) ;
+  }
   //set missing dosages to be the 2*AF
   if(missing_cnt > 0){
     float imputeDosage = 2*AF;

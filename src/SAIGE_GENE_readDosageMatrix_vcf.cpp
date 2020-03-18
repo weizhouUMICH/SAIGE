@@ -136,8 +136,13 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
 	//std::cout << "missing_cnt: " << missing_cnt << std::endl; 
       //group_matrix[cnt * sample_size + dose_it.offset()] = *dose_it;
       }
+      float AF;
+      if(genetest_samplesize_vcfDosage == missing_cnt){
+        AF = 0;
+      }else{	
+        AF = (float)(AC) / 2 / (float)(genetest_samplesize_vcfDosage - missing_cnt) ;
+      }	
 
-      float AF = (float)(AC) / 2 / (float)(genetest_samplesize_vcfDosage - missing_cnt) ;
       //check if the AF of the marker is within the required range
       float MAF;
       float MAC;

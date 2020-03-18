@@ -482,10 +482,15 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
     //std::cout << "i: " <<  i << std::endl;
     }
 
-
+     
      AC = 2* ((double) (gmtest_samplesize - missing_cnt)) - sum_eij_sub;
-     AF = AC/ 2/ ((double) (gmtest_samplesize - missing_cnt)) ;
 
+
+     if(gmtest_samplesize == missing_cnt){
+       AF = 0;
+     }else{
+       AF = AC/ 2/ ((double) (gmtest_samplesize - missing_cnt)) ;
+     }
 
      double thetaHat = sum_eij / (2* (N - missingSamplesize));
      double info = thetaHat==0 || thetaHat==1 ? 1 :
