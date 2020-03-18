@@ -11,7 +11,7 @@ Table of Contents
 # Introduction
 
 
-## Current version is 0.36.3.2 (Updated on February 25, 2020)
+## Current version is 0.36.4 (Updated on March 18, 2020)
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
@@ -146,6 +146,10 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.36.4 (March-18-2020)
+** add an option includeNonautoMarkersforVarRatio in step 1. If TRUE, non-autosomal markers are also used for variance ratio estimation, which will make the algorithm more appropriate for assoc tests for non-autosomal markers; use the new function with sparse sigma for p-values for single variants in gene-based tests; assign AF to be 0 if all samples have missing genotypes or dosages
+
+
 * 0.36.3.2 (February-25-2020)
 ** Bug fixed: 1. fixed a bug for gene-based conditioning tests with multiple conditioning markers 2. add codes to re-check markers after dropping samples with missing dosages/genotypes in gene-based tests
 
