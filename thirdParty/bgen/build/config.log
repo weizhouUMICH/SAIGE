@@ -1,4 +1,4 @@
-# project bgen (1.1.4) configured on Wed Mar 18 20:01:18 2020 by
+# project bgen (1.1.4) configured on Wed Mar 18 21:43:08 2020 by
 # waf 2.0.6 (abi 20, python 2070cf0 on linux2)
 # using ./waf configure
 #
@@ -528,12 +528,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_254f2a40df84f3f6f2a22d7e22eae3c4/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_75d6c487fc86f5ae3ae44fe11470d3a5/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_254f2a40df84f3f6f2a22d7e22eae3c4/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_254f2a40df84f3f6f2a22d7e22eae3c4/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_75d6c487fc86f5ae3ae44fe11470d3a5/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_75d6c487fc86f5ae3ae44fe11470d3a5/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_254f2a40df84f3f6f2a22d7e22eae3c4/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lz']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_75d6c487fc86f5ae3ae44fe11470d3a5/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lz']
 yes
 ----------------------------------------
 rt
@@ -545,12 +545,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_0aa4b90b8e2cafe3e281571373554666/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_54fdc080e7e2304e201c5394835e5a42/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_0aa4b90b8e2cafe3e281571373554666/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_0aa4b90b8e2cafe3e281571373554666/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_54fdc080e7e2304e201c5394835e5a42/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_54fdc080e7e2304e201c5394835e5a42/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_0aa4b90b8e2cafe3e281571373554666/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_54fdc080e7e2304e201c5394835e5a42/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt']
 yes
 ----------------------------------------
 pthread
@@ -562,12 +562,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_1248cd25df5962a3ebca0cc60f27bc04/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_daab0588a5cf9a19e70e412886b74b18/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_1248cd25df5962a3ebca0cc60f27bc04/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_1248cd25df5962a3ebca0cc60f27bc04/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_daab0588a5cf9a19e70e412886b74b18/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_daab0588a5cf9a19e70e412886b74b18/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_1248cd25df5962a3ebca0cc60f27bc04/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_daab0588a5cf9a19e70e412886b74b18/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread']
 yes
 ----------------------------------------
 dl
@@ -579,10 +579,10 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_fb7a8d66b1e6a1dbc0b15a9391a3a16b/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_7475447dd23831c0889a22ac6b7e6d48/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_fb7a8d66b1e6a1dbc0b15a9391a3a16b/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_fb7a8d66b1e6a1dbc0b15a9391a3a16b/testbuild/testprog[0m
+['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_7475447dd23831c0889a22ac6b7e6d48/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_7475447dd23831c0889a22ac6b7e6d48/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_fb7a8d66b1e6a1dbc0b15a9391a3a16b/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-ldl']
+['/usr/bin/g++', 'test.cpp.1.o', '-o/home/wei/SAIGE/thirdParty/bgen/build/.conf_check_7475447dd23831c0889a22ac6b7e6d48/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-ldl']
 yes
