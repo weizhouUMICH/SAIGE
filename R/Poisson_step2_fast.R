@@ -1,4 +1,4 @@
-scoreTest_SAIGE_survivalTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
 
   N = length(G0)
   if(AF > 0.5){
@@ -16,7 +16,7 @@ if(!isCondition){
     }else{
        out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio );
     }
-#    if(out.score["pval.noadj"] > 0.05){
+    #if(out.score["pval.noadj"] > 0.05){
     if(abs(as.numeric(unlist(out.score["Tstat"])[1])/sqrt(as.numeric(unlist(out.score["var1"])[1]))) < Cutoff){
        if(AF > 0.5){
          out.score$BETA = (-1)*out.score$BETA
@@ -29,14 +29,19 @@ if(!isCondition){
 }
 
   #cat("Run1: ", Run1, "\n")
-
   if(Run1){
     G0 = matrix(G0, ncol = 1)
     XVG0 = eigenMapMatMult(obj.noK$XV, G0)
     G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G is X adjusted
     g = G
     NAset = which(G0==0)
-    out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma(g, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
+    #cat("length(NAset): ", length(NAset), "\n")	
+    #if(length(NAset)/length(G)<0.5){
+    #out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma(g, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
+    #}else{
+    out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast(g, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
+    #print(out1)
+    #}
 
     if(isCondition){
      outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], p.value.NA = out1["p.value.NA"], Is.converge=out1["Is.converge"], var1 = out1["var1"], var2 = out1["var2"], Tstat_c = out1["Tstat_c"], p.value.c = out1["p.value.c"], var1_c = out1["var1_c"], BETA_c = out1["BETA_c"], SE_c = out1["SE_c"])
@@ -51,7 +56,7 @@ if(!isCondition){
 
 
 
-scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
 
   #g = G/sqrt(AC)
   q = innerProduct(g, y)
@@ -84,15 +89,14 @@ scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma=function(g, AC, AC_true, NAset
 
   qtilde = Tstat/sqrt(var1) * sqrt(var2) + m1
 
-  #if(length(NAset)/length(g) < 0.5){
-  out1 = Saddle_Prob_Poisson(q=qtilde, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
-  #}else{
-    #out1 = SPAtest:::Saddle_Prob_fast(q=qtilde,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="p")
-  #}
+  if(length(NAset)/length(g) < 0.5){
+	#print("Saddle_Prob_Poisson")
+    out1 = Saddle_Prob_Poisson(q=qtilde, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
+  }else{
+	#print("Saddle_Prob_Poisson_fast")
+    out1 = Saddle_Prob_Poisson_fast(q=qtilde,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8)
+  }
 
-
-  #print("out1")
-  #print(out1)
   #out1 = c(out1, var1 = var1)
   #out1 = c(out1, var2 = var2)
   out1$var1 = var1
@@ -114,11 +118,12 @@ scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma=function(g, AC, AC_true, NAset
     }else{
 
       qtilde_c = Tstat_c/sqrt(var1_c) * sqrt(var2) + m1
-      #if(length(NAset)/length(g) < 0.5){
-      out1_c = Saddle_Prob_Poisson(q=qtilde_c, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
-      #}else{
+      if(length(NAset)/length(g) < 0.5){
+        out1_c = Saddle_Prob_Poisson(q=qtilde_c, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
+      }else{
+        out1_c = Saddle_Prob_Poisson_fast(q=qtilde_c,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8)
       #  out1_c = SPAtest:::Saddle_Prob_fast(q=qtilde_c,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="p")
-      #}
+      }
     #01-27-2019
     #logOR_c = (Tstat_c/var1_c)/sqrt(AC)
     logOR_c = Tstat_c/var1_c
@@ -135,12 +140,16 @@ scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma=function(g, AC, AC_true, NAset
 }
 
 
-Saddle_Prob_Poisson=function (q, mu, g, Cutoff = 2, alpha = 5*10^-8){
+Saddle_Prob_Poisson_fast=function (q, mu, g, gNA,gNB,muNA,muNB, Cutoff = 2, alpha = 5*10^-8){
     m1 <- sum(mu * g)
     var1 <- sum(mu * g^2)
     p1 = NULL
     p2 = NULL
 
+    #NAmu= m1-sum(gNB*muNB)
+    NAsigma=var1-sum(muNB*gNB^2)
+
+    #NAsigma = sum(muNA*gNA^2)
     Score <- q - m1
     qinv = -sign(q - m1) * abs(q - m1) + m1
     pval.noadj <- pchisq((q - m1)^2/var1, lower.tail = FALSE,
@@ -150,20 +159,24 @@ Saddle_Prob_Poisson=function (q, mu, g, Cutoff = 2, alpha = 5*10^-8){
     if (abs(q - m1)/sqrt(var1) < Cutoff) {
         pval = pval.noadj
     }else {
-        #print("Saddle_Prob_Poisson_fast >= Cutoff")
-        out.uni1 <- getroot_K1_Poi(0, mu = mu, g = g, q = q)
-        out.uni2 <- getroot_K1_Poi(0, mu = mu, g = g, q = qinv)
+	#print("Saddle_Prob_Poisson_fast >= Cutoff")
+
+	#Korg_Poi_result = Korg_Poi(t=0.1, mu, g)
+	#Korg_Poi_fast_result = Korg_Poi_fast(t=0.1, mu, g, gNA,gNB,muNA,muNB,NAmu,NAsigma)	
+	#cat("Korg_Poi_result: ", Korg_Poi_result, "\n")
+	#cat("Korg_Poi_fast_result: ", Korg_Poi_fast_result, "\n")
+        out.uni1 <- getroot_K1_Poi_fast(0, mu = mu, g = g, q = q, gNA=gNA,gNB=gNB,muNA=muNA,muNB=muNB,NAsigma=NAsigma)
+        out.uni2 <- getroot_K1_Poi_fast(0, mu = mu, g = g, q = qinv, gNA=gNA,gNB=gNB,muNA=muNA,muNB=muNB,NAsigma=NAsigma)
+         #cat("out.uni1 out.uni2: ", out.uni1$root, " ", out.uni2$root, "\n")
+
         if (out.uni1$Is.converge == TRUE && out.uni2$Is.converge == TRUE) {
-	   p1 <- tryCatch(Get_Saddle_Prob_Poi(out.uni1$root, mu, g, q), error=function(e) {return(pval.noadj/2)})	
-	   p2 <- tryCatch(Get_Saddle_Prob_Poi(out.uni2$root, mu, g, qinv), error=function(e) {return(pval.noadj/2)})	
-            #p1 <- Get_Saddle_Prob_Poi(out.uni1$root, mu, g, q)
-            #p2 <- Get_Saddle_Prob_Poi(out.uni2$root, mu, g, qinv)
-	    #cat("p1 p2: ", p1, " ", p2, "\n")	
+		p1<-tryCatch(Get_Saddle_Prob_Poi_fast(out.uni1$root, mu, g, q,gNA,gNB,muNA,muNB,NAsigma),error=function(e) {return(pval.noadj/2)})
+		p2<-tryCatch(Get_Saddle_Prob_Poi_fast(out.uni2$root, mu, g, qinv,gNA,gNB,muNA,muNB,NAsigma),error=function(e) {return(pval.noadj/2)})	
+		#cat("p1 p2: ", p1, " ", p2, "\n")
 
             pval = abs(p1) + abs(p2)
             Is.converge = TRUE
-        }
-        else {
+        }else {
             print("Error_Converge")
             pval <- pval.noadj
             Is.converge = FALSE

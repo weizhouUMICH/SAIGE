@@ -1,62 +1,65 @@
 ##saddlepoint approxmation for sum of weighted Poisson distribution
-Korg_Poi<-function(t, mu, g)
+Korg_Poi_fast<-function(t, mu, g, gNA,gNB,muNA,muNB,NAsigma)
 {
   n.t<-length(t)
   out<-rep(0,n.t)
   
   for(i in 1:n.t){
     t1<-t[i]
-    temp<-mu*(exp(g*t1) - g*t1 - 1)
-    out[i]<-sum(temp)
-  }
+    temp<-muNB*(exp(gNB*t1) - gNB*t1 - 1)
+    #out[i]<-sum(temp)+NAmu*t1+0.5*NAsigma*t1^2
+    out[i]<-sum(temp)+0.5*NAsigma*t1^2 
+ }
   return(out)
 }
 
-K1_Poi<-function(t, mu, g)
-{
-  n.t<-length(t)
-  out<-rep(0,n.t)
+#K1_Poi<-function(t, mu, g)
+#{
+#  n.t<-length(t)
+#  out<-rep(0,n.t)
   
-  for(i in 1:n.t){
-    t1<-t[i]
-    temp<-mu * g * exp(g*t1) - mu * g
-    out[i]<-sum(temp)
-  }
-  return(out)
-}
+#  for(i in 1:n.t){
+#    t1<-t[i]
+#    temp<-mu * g * exp(g*t1) - mu * g
+#    out[i]<-sum(temp)
+#  }
+#  return(out)
+#}
 
 
-K1_adj_Poi<-function(t, mu, g, q)
+K1_adj_Poi_fast<-function(t, mu, g, q, gNA,gNB,muNA,muNB,NAsigma)
 {
   n.t<-length(t)	
   out<-rep(0,n.t)
   
   for(i in 1:n.t){
     t1<-t[i]
-    temp<-mu * g * exp(g*t1) - mu * g
-    out[i]<-sum(temp)-q
+    temp<-muNB * gNB * exp(gNB*t1) - muNB * gNB
+    #temp2<-NAmu+NAsigma*t1
+    temp2<-NAsigma*t1
+    out[i]<-sum(temp)-q + temp2
   }
   return(out)
 }
 
 
-K2_Poi<-function(t, mu, g)
+K2_Poi_fast<-function(t, mu, g, gNA,gNB,muNA,muNB,NAsigma)
 {
   n.t<-length(t)
   out<-rep(0,n.t)
   
   for(i in 1:n.t){
     t1<-t[i]
-    temp<-mu * g^2 * exp(g*t1)
-    out[i]<-sum(temp, na.rm=TRUE)
+    temp<-muNB * gNB^2 * exp(gNB*t1)
+    out[i]<-sum(temp, na.rm=TRUE) + NAsigma
   }
   return(out)
 }
 
 
-getroot_K1_uniroot_Poi = function(init,mu,g,q,m1,tol=.Machine$double.eps^0.25,maxiter=1000){
+getroot_K1_uniroot_Poi_fast = function(init,mu,g,q,m1,gNA,gNB,muNA,muNB,NAsigma,tol=.Machine$double.eps^0.25,maxiter=1000){
 
-	newroot = uniroot(function(x) K1_adj_Poi(x,mu,g,q), c(-1000,1000),extendInt="yes", check.conv=TRUE, maxiter=maxiter) 
+	newroot = uniroot(function(x) K1_adj_Poi_fast(x,mu,g,q,gNA,gNB,muNA,muNB,NAsigma), c(-1000,1000),extendInt="yes", check.conv=TRUE, maxiter=maxiter) 
 	if(newroot$iter==maxiter)
         {
         	conv<-FALSE
@@ -67,16 +70,16 @@ getroot_K1_uniroot_Poi = function(init,mu,g,q,m1,tol=.Machine$double.eps^0.25,ma
 	return(list(root=newroot$root,n.iter=newroot$iter,Is.converge=conv))
 }
 
-getroot_K1_Poi<-function(init,mu,g,q,m1,tol=.Machine$double.eps^0.25,maxiter=1000)
+getroot_K1_Poi_fast<-function(init,mu,g,q,m1,gNA,gNB,muNA,muNB,NAsigma,tol=.Machine$double.eps^0.25,maxiter=1000)
 {
     t<-init
-    K1_eval<-K1_adj_Poi(t,mu,g,q)
-    #cat("K1_eval ", K1_eval, "\n")
+    K1_eval<-K1_adj_Poi_fast(t,mu,g,q,gNA,gNB,muNA,muNB,NAsigma)
+    #cat("K1_eval: ", K1_eval, "\n")
     prevJump<- Inf
     rep<-1
     repeat
     {
-      K2_eval<-K2_Poi(t,mu,g)
+      K2_eval<-K2_Poi_fast(t,mu,g,gNA,gNB,muNA,muNB,NAsigma)
       tnew<-t-K1_eval/K2_eval
       if(is.na(tnew))
       {
@@ -94,13 +97,13 @@ getroot_K1_Poi<-function(init,mu,g,q,m1,tol=.Machine$double.eps^0.25,maxiter=100
         break
       }
       
-      newK1<-K1_adj_Poi(tnew,mu,g,q)
+      newK1<-K1_adj_Poi_fast(tnew,mu,g,q,gNA,gNB,muNA,muNB,NAsigma)
       if(sign(K1_eval)!=sign(newK1))
       {
         if(abs(tnew-t)>prevJump-tol)
         {
           tnew<-t+sign(newK1-K1_eval)*prevJump/2
-          newK1<-K1_adj_Poi(tnew,mu,g,q)
+          newK1<-K1_adj_Poi_fast(tnew,mu,g,q,gNA,gNB,muNA,muNB,NAsigma)
           prevJump<-prevJump/2
         } else {
           prevJump<-abs(tnew-t)
@@ -116,11 +119,11 @@ getroot_K1_Poi<-function(init,mu,g,q,m1,tol=.Machine$double.eps^0.25,maxiter=100
 }
 
 
-Get_Saddle_Prob_Poi<-function(zeta, mu, g, q) 
+Get_Saddle_Prob_Poi_fast<-function(zeta, mu, g, q,gNA,gNB,muNA,muNB,NAsigma) 
 {
-  k1<-Korg_Poi(zeta, mu, g)
+  k1<-Korg_Poi_fast(zeta, mu, g,gNA,gNB,muNA,muNB,NAsigma)
   #cat("k1 is ", k1, "\n")
-  k2<-K2_Poi(zeta, mu, g)
+  k2<-K2_Poi_fast(zeta, mu, g,gNA,gNB,muNA,muNB,NAsigma)
   #cat("k2 is ", k2, "\n")
   if(is.finite(k1) && is.finite(k2))
   {

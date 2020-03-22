@@ -16,6 +16,44 @@ Rscript step1_fitNULLGLMM.R     \
 	--tauInit=1,0	\
 	--pcgforUhatforSurvAnalysis=FALSE
 
+
+
+Rscript step2_SPAtests.R        \
+        --vcfFile=./input/genotype_10markers.missingness.vcf.gz \
+        --vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.tbi \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output_test/example_survival.rda \
+        --varianceRatioFile=./output_test/example_survival.varianceRatio.txt \
+        --SAIGEOutputFile=./output_test/example_survival.SAIGE.vcf.genotype.SPAfast.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsOutputNinCaseCtrl=TRUE	\
+	--IsSPAfast=TRUE
+
+
+Rscript step2_SPAtests.R        \
+        --vcfFile=./input/genotype_10markers.missingness.vcf.gz \
+        --vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.tbi \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output_test/example_survival.rda \
+        --varianceRatioFile=./output_test/example_survival.varianceRatio.txt \
+        --SAIGEOutputFile=./output_test/example_survival.SAIGE.vcf.genotype.noSPAfast.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsOutputNinCaseCtrl=TRUE      \
+        --IsSPAfast=FALSE
+
+
+
+
 Rscript step1_fitNULLGLMM.R     \
         --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
         --phenoFile=./input/pheno_1000samples_survival.txt \

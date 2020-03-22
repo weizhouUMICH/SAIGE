@@ -95,8 +95,8 @@ SPAGMMATtest = function(bgenFile = "",
 		 dosageZerodCutoff = 0.2,	
 		 IsOutputPvalueNAinGroupTestforBinary = FALSE,
 		 IsAccountforCasecontrolImbalanceinGroupTest = TRUE,
-		 IsOutputBETASEinBurdenTest = FALSE){
-
+		 IsOutputBETASEinBurdenTest = FALSE,
+		 IsSPAfast = TRUE){
 
   if(weightMAFcutoff < 0 | weightMAFcutoff > 0.5){
     stop("weightMAFcutoff needs to be between 0 and 0.5\n")
@@ -519,6 +519,7 @@ SPAGMMATtest = function(bgenFile = "",
 
   }else if(traitType == "survival"){
     cat("It is a survival trait\n")
+    if(IsSPAfast){cat("Fast SPA will be performed\n")}
     if(!isGroupTest){
       if(!isCondition){
         resultHeader = c(dosageFilecolnamesSkip, "N", "BETA", "SE", "Tstat", "p.value", "p.value.NA", "Is.SPA.converge","varT","varTstar")
@@ -540,7 +541,7 @@ SPAGMMATtest = function(bgenFile = "",
     }else{
       Cutoff = SPAcutoff
     }
-
+    
     y = obj.glmm.null$obj.glm.null$y
     y1Index = which(y == 1)
     NCase = length(y1Index)
@@ -583,7 +584,6 @@ SPAGMMATtest = function(bgenFile = "",
   }else{
     stop("ERROR! The type of the trait has to be either binary, quantitative or survival\n")
   }
-
 
 
   if(nrow(varRatioData) == 1){
@@ -688,6 +688,8 @@ SPAGMMATtest = function(bgenFile = "",
     OUT = NULL
     numPassMarker = 0
     mth = 0
+
+
 
     while(isVariant){
       mth = mth + 1
@@ -852,10 +854,19 @@ SPAGMMATtest = function(bgenFile = "",
 	   OUT = rbind(OUT, OUTvec)
 	   OUTvec=NULL
 	  }else{ #if (NCase.sub == 0 | NCtrl.sub == 0) {
+		print("OKOKOKOK")
 		if(traitType == "binary"){
            		out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
 		}else if(traitType == "survival"){
-			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub) 
+
+			if(IsSPAfast){
+				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
+			
+			}else{
+				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
+				
+			}
+
 		}
 
 	  OUTvec=c(rowHeader, N.sub, unlist(out1))
@@ -898,10 +909,6 @@ SPAGMMATtest = function(bgenFile = "",
            GratioMatrixall = NULL
          }	
 
-
-
-
-
   	 if(traitType == "binary"){
            out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 	   OUTvec=c(rowHeader, N,unlist(out1))
@@ -919,8 +926,14 @@ SPAGMMATtest = function(bgenFile = "",
 	   OUTvec=NULL
 
          }else if(traitType == "survival"){
-           #print("OKKKKKK")
-           out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+		if(!IsSPAfast){
+		#cat("IsSPAfast: ", IsSPAfast, "\n")
+           		out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+		}else{
+		#cat("IsSPAfast2: ", IsSPAfast, "\n")
+			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+		}
+
            OUTvec=c(rowHeader, N,unlist(out1))
 
            if(IsOutputAFinCaseCtrl){
@@ -1552,7 +1565,8 @@ scoreTest_SAIGE_binaryTrait=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, m
      }else{
        out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio );
      }
-     if(out.score["pval.noadj"] > 0.05){
+     if(abs(as.numeric(unlist(out.score["Tstat"])[1])/sqrt(as.numeric(unlist(out.score["var1"])[1]))) < Cutoff){
+     #if(out.score["pval.noadj"] > 0.05){
        if(AF > 0.5){
          out.score$BETA = (-1)*out.score$BETA
          out.score$Tstat = (-1)*out.score$Tstat
@@ -1865,7 +1879,8 @@ if(!isCondition){
      }else{
        out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio );
      }
-     if(out.score["pval.noadj"] > 0.05){
+     #if(out.score["pval.noadj"] > 0.05){
+     if(abs(as.numeric(unlist(out.score["Tstat"])[1])/sqrt(as.numeric(unlist(out.score["var1"])[1]))) < Cutoff){
        if(AF > 0.5){
          out.score$BETA = (-1)*out.score$BETA
          out.score$Tstat = (-1)*out.score$Tstat
