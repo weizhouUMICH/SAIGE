@@ -132,6 +132,7 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 			if (length( id1)>0){  
     				#p_temp1 = scoreTest_SPAGMMAT_binaryTrait(g, n.g, NAset, obj.noK$y, mu.a, varRatio=VarRatio_Vec[jj], Cutoff = Cutoff)$p.value
 				p_temp1=scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G[,jj], AC, AF, MAF, IsSparse=TRUE, obj.noK, mu.a = mu.a, mu2.a = mu2.a, obj.noK$y, varRatio=VarRatio_Vec[jj], Cutoff = Cutoff, rowHeader=NULL, sparseSigma=sparseSigma)$p.value
+				p_temp1 = unlist(p_temp1)[1]
 
 
 			}
