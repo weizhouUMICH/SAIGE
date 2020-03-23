@@ -3456,16 +3456,18 @@ arma::fvec getPCG1ofSigmaAndVector_Surv(arma::fvec& wVec,  arma::fvec& tauVec, a
         arma::fvec xVec(Nnomissing);
         //xVec.zeros();
 	xVec = x0Vec;
-if(isUseSparseSigmaforInitTau){
-        cout << "use sparse kinship to estimate initial tau " <<  endl;
-        xVec = gen_spsolve_v4(wVec, tauVec, bVec);
-}else if(isUseSparseSigmaforModelFitting){
-	cout << "use sparse kinship to fit the model " << endl;
-	xVec = gen_spsolve_v4(wVec, tauVec, bVec);
-}else{
+	//arma::fvec rVec(Nnomissing);
+//if(isUseSparseSigmaforInitTau){
+//        cout << "use sparse kinship to estimate initial tau " <<  endl;
+//        xVec = gen_spsolve_v4(wVec, tauVec, bVec);
+        if(isUseSparseSigmaforModelFitting){
+	     cout << "use sparse kinship to estimate the variance ratio " << endl;
+	}
+//	rVec = bVec - getCrossprod_Surv_sparseGRM(xVec, wVec, tauVec, WinvNRt, ACinv);
+//}else{
         //arma::fvec rVec = bVec;
 	arma::fvec rVec = bVec - getCrossprod_Surv(xVec, wVec, tauVec, WinvNRt, ACinv); 
-
+//}
         arma::fvec r1Vec;
         arma::fvec crossProdVec(Nnomissing);
         arma::fvec zVec(Nnomissing);
@@ -3593,7 +3595,7 @@ if(isUseSparseSigmaforInitTau){
 
         }
         cout << "iter from getPCG1ofSigmaAndVector " << iter << endl;
-} //else if(isUseSparseKinforInitTau){
+//} //else if(isUseSparseKinforInitTau){
 //        double wall1 = get_wall_time();
 //    double cpu1  = get_cpu_time();
 
@@ -3782,13 +3784,17 @@ arma::fvec getPCG1ofSigmaAndVector_Surv_new(arma::fvec& wVec,  arma::fvec& tauVe
     //xVec.print();
 
 
-    if(isUseSparseSigmaforInitTau){
-        cout << "use sparse kinship to estimate initial tau " <<  endl;
-        xVec = gen_spsolve_v4(wVec, tauVec, bVec); //to update
-    }else if(isUseSparseSigmaforModelFitting){
-	cout << "use sparse kinship to fit the model " << endl;
-	xVec = gen_spsolve_v4(wVec, tauVec, bVec); //to update
-    }else{
+    //if(isUseSparseSigmaforInitTau){
+      //  cout << "use sparse kinship to estimate initial tau " <<  endl;
+      //  xVec = gen_spsolve_v4(wVec, tauVec, bVec); //to update
+//    if(isUseSparseSigmaforModelFitting){
+//	cout << "use sparse kinship to fit the model " << endl;
+//	xVec = gen_spsolve_v4(wVec, tauVec, bVec); //to update
+//    }else{
+        if(isUseSparseSigmaforModelFitting){
+        	cout << "use sparse kinship to estimate the variance ratio " << endl;
+	}
+
         arma::fvec rVec = bVec - getCrossprod_Surv_new(xVec, wVec, tauVec, RvecIndex, sqrtWinvNVec,WinvN,Dvec, kuniqtime, maxiterPCG, tolPCG);
 	//cout << "rVec: " << rVec[0] << endl;
 	//cout << "bVec: " << bVec[0] << endl;
@@ -3962,7 +3968,7 @@ arma::fvec getPCG1ofSigmaAndVector_Surv_new(arma::fvec& wVec,  arma::fvec& tauVe
 
         }
         cout << "iter from getPCG1ofSigmaAndVector " << iter << endl;
-} //else if(isUseSparseKinforInitTau){
+//} //else if(isUseSparseKinforInitTau){
 //        double wall1 = get_wall_time();
 //    double cpu1  = get_cpu_time();
 
@@ -3988,15 +3994,17 @@ arma::fvec getPCG1ofSigmaAndVector_Surv_new2(arma::fvec& wVec,  arma::fvec& tauV
     //xVec = x0Vec;
     cout << "xVec: " << endl;	
     //xVec.print();
+    if(isUseSparseSigmaforModelFitting){
+                 cout << "use sparse kinship to estimate the variance ratio " << endl;
+     }
 
-
-    if(isUseSparseSigmaforInitTau){
-        cout << "use sparse kinship to estimate initial tau " <<  endl;
-        xVec = gen_spsolve_v4(wVec, tauVec, bVec); //to update
-    }else if(isUseSparseSigmaforModelFitting){
-	cout << "use sparse kinship to fit the model " << endl;
-	xVec = gen_spsolve_v4(wVec, tauVec, bVec); //to update
-    }else{
+//    if(isUseSparseSigmaforInitTau){
+//        cout << "use sparse kinship to estimate initial tau " <<  endl;
+//        xVec = gen_spsolve_v4(wVec, tauVec, bVec); //to update
+//    }else if(isUseSparseSigmaforModelFitting){
+//	cout << "use sparse kinship to fit the model " << endl;
+//	xVec = gen_spsolve_v4(wVec, tauVec, bVec); //to update
+    //}else{
         //arma::fvec rVec = bVec; 
         arma::fvec rVec = bVec - getCrossprod_Surv_new2(xVec,  wVec, tauVec, RvecIndex,NVec, sqrtDvec,diagofWminusUinv, kuniqtime, maxiterPCG, tolPCG, dofWminusU);
         //arma::fvec rVec = bVec - getCrossprod_Surv_new(xVec, wVec, tauVec, RvecIndex, sqrtWinvNVec,WinvN,Dvec, kuniqtime, maxiterPCG, tolPCG);
@@ -4168,7 +4176,7 @@ arma::fvec getPCG1ofSigmaAndVector_Surv_new2(arma::fvec& wVec,  arma::fvec& tauV
 
         }
         cout << "iter from getPCG1ofSigmaAndVector " << iter << endl;
-} //else if(isUseSparseKinforInitTau){
+//} //else if(isUseSparseKinforInitTau){
 //        double wall1 = get_wall_time();
 //    double cpu1  = get_cpu_time();
 
