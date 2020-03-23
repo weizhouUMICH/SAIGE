@@ -151,7 +151,7 @@ Saddle_Prob_Poisson_fast=function (q, mu, g, gNA,gNB,muNA,muNB, Cutoff = 2, alph
 
     #NAsigma = sum(muNA*gNA^2)
     Score <- q - m1
-    qinv = -sign(q - m1) * abs(q - m1) + m1
+    #qinv = -sign(q - m1) * abs(q - m1) + m1
     pval.noadj <- pchisq((q - m1)^2/var1, lower.tail = FALSE,
         df = 1)
     Is.converge = TRUE
@@ -165,13 +165,13 @@ Saddle_Prob_Poisson_fast=function (q, mu, g, gNA,gNB,muNA,muNB, Cutoff = 2, alph
 	#Korg_Poi_fast_result = Korg_Poi_fast(t=0.1, mu, g, gNA,gNB,muNA,muNB,NAmu,NAsigma)	
 	#cat("Korg_Poi_result: ", Korg_Poi_result, "\n")
 	#cat("Korg_Poi_fast_result: ", Korg_Poi_fast_result, "\n")
-        out.uni1 <- getroot_K1_Poi_fast(0, mu = mu, g = g, q = q, gNA=gNA,gNB=gNB,muNA=muNA,muNB=muNB,NAsigma=NAsigma)
-        out.uni2 <- getroot_K1_Poi_fast(0, mu = mu, g = g, q = qinv, gNA=gNA,gNB=gNB,muNA=muNA,muNB=muNB,NAsigma=NAsigma)
+        out.uni1 <- getroot_K1_Poi_fast(0, mu = mu, g = g, q = Score, gNA=gNA,gNB=gNB,muNA=muNA,muNB=muNB,NAsigma=NAsigma)
+        out.uni2 <- getroot_K1_Poi_fast(0, mu = mu, g = g, q = (-1)*Score, gNA=gNA,gNB=gNB,muNA=muNA,muNB=muNB,NAsigma=NAsigma)
          #cat("out.uni1 out.uni2: ", out.uni1$root, " ", out.uni2$root, "\n")
 
         if (out.uni1$Is.converge == TRUE && out.uni2$Is.converge == TRUE) {
-		p1<-tryCatch(Get_Saddle_Prob_Poi_fast(out.uni1$root, mu, g, q,gNA,gNB,muNA,muNB,NAsigma),error=function(e) {return(pval.noadj/2)})
-		p2<-tryCatch(Get_Saddle_Prob_Poi_fast(out.uni2$root, mu, g, qinv,gNA,gNB,muNA,muNB,NAsigma),error=function(e) {return(pval.noadj/2)})	
+		p1<-tryCatch(Get_Saddle_Prob_Poi_fast(out.uni1$root, mu, g, q=Score,gNA,gNB,muNA,muNB,NAsigma),error=function(e) {return(pval.noadj/2)})
+		p2<-tryCatch(Get_Saddle_Prob_Poi_fast(out.uni2$root, mu, g, q=(-1)*Score,gNA,gNB,muNA,muNB,NAsigma),error=function(e) {return(pval.noadj/2)})	
 		#cat("p1 p2: ", p1, " ", p2, "\n")
 
             pval = abs(p1) + abs(p2)

@@ -28,11 +28,12 @@ Rscript step2_SPAtests.R        \
         --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output_test/example_survival.rda \
         --varianceRatioFile=./output_test/example_survival.varianceRatio.txt \
-        --SAIGEOutputFile=./output_test/example_survival.SAIGE.vcf.genotype.SPAfast.txt \
+        --SAIGEOutputFile=./output_test/example_survival.SAIGE.vcf.genotype.SPAfast_0.35.3.6.txt \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE     \
         --IsOutputNinCaseCtrl=TRUE	\
 	--IsSPAfast=TRUE
+
 
 
 Rscript step2_SPAtests.R        \
@@ -45,13 +46,45 @@ Rscript step2_SPAtests.R        \
         --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output_test/example_survival.rda \
         --varianceRatioFile=./output_test/example_survival.varianceRatio.txt \
-        --SAIGEOutputFile=./output_test/example_survival.SAIGE.vcf.genotype.noSPAfast.txt \
+        --SAIGEOutputFile=./output_test/example_survival.SAIGE.vcf.genotype.SPAfast_0.35.3.5.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsOutputNinCaseCtrl=TRUE      \
+        --IsSPAfast=TRUE
+
+
+
+Rscript step2_SPAtests.R        \
+        --vcfFile=./input/genotype_10markers.missingness.vcf.gz \
+        --vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.tbi \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output_test/example_survival.rda \
+        --varianceRatioFile=./output_test/example_survival.varianceRatio.txt \
+        --SAIGEOutputFile=./output_test/example_survival.SAIGE.vcf.genotype.noSPAfast_0.35.3.6.txt \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE     \
         --IsOutputNinCaseCtrl=TRUE      \
         --IsSPAfast=FALSE
 
-
+Rscript step2_SPAtests.R        \
+        --vcfFile=./input/genotype_10markers.missingness.vcf.gz \
+        --vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.tbi \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/sampleIDindosage.txt \
+        --GMMATmodelFile=./output_test/example_survival.rda \
+        --varianceRatioFile=./output_test/example_survival.varianceRatio.txt \
+        --SAIGEOutputFile=./output_test/example_survival.SAIGE.vcf.genotype.noSPAfast_0.35.3.5.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsOutputNinCaseCtrl=TRUE      \
+        --IsSPAfast=FALSE
 
 
 Rscript step1_fitNULLGLMM.R     \

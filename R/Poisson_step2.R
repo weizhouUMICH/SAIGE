@@ -142,7 +142,7 @@ Saddle_Prob_Poisson=function (q, mu, g, Cutoff = 2, alpha = 5*10^-8){
     p2 = NULL
 
     Score <- q - m1
-    qinv = -sign(q - m1) * abs(q - m1) + m1
+    #qinv = -sign(q - m1) * abs(q - m1) + m1
     pval.noadj <- pchisq((q - m1)^2/var1, lower.tail = FALSE,
         df = 1)
     Is.converge = TRUE
@@ -151,11 +151,11 @@ Saddle_Prob_Poisson=function (q, mu, g, Cutoff = 2, alpha = 5*10^-8){
         pval = pval.noadj
     }else {
         #print("Saddle_Prob_Poisson_fast >= Cutoff")
-        out.uni1 <- getroot_K1_Poi(0, mu = mu, g = g, q = q)
-        out.uni2 <- getroot_K1_Poi(0, mu = mu, g = g, q = qinv)
+        out.uni1 <- getroot_K1_Poi(0, mu = mu, g = g, q = Score)
+        out.uni2 <- getroot_K1_Poi(0, mu = mu, g = g, q = (-1)*Score)
         if (out.uni1$Is.converge == TRUE && out.uni2$Is.converge == TRUE) {
-	   p1 <- tryCatch(Get_Saddle_Prob_Poi(out.uni1$root, mu, g, q), error=function(e) {return(pval.noadj/2)})	
-	   p2 <- tryCatch(Get_Saddle_Prob_Poi(out.uni2$root, mu, g, qinv), error=function(e) {return(pval.noadj/2)})	
+	   p1 <- tryCatch(Get_Saddle_Prob_Poi(out.uni1$root, mu, g, q=Score), error=function(e) {return(pval.noadj/2)})	
+	   p2 <- tryCatch(Get_Saddle_Prob_Poi(out.uni2$root, mu, g, q = (-1)*Score), error=function(e) {return(pval.noadj/2)})	
             #p1 <- Get_Saddle_Prob_Poi(out.uni1$root, mu, g, q)
             #p2 <- Get_Saddle_Prob_Poi(out.uni2$root, mu, g, qinv)
 	    #cat("p1 p2: ", p1, " ", p2, "\n")	

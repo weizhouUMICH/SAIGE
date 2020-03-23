@@ -2,6 +2,7 @@
 
 options(stringsAsFactors=F)
 library(SAIGE)
+#library(SAIGE, lib.loc="~/install_dir/0.36.3.6_homN_hetN_surv")
 #library(SAIGE, lib.loc="~/install_dir/0.36.3.5_homN_hetN_surv")
 print(sessionInfo())
 
