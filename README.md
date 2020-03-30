@@ -11,9 +11,7 @@ Table of Contents
 # Introduction
 
 
-## Current version is 0.36.4.2 (Updated on March 20, 2020). For gene-based tests of binary traits, please use version 0.36.4.2 instead of 0.36.4 
-
-
+## Current version is 0.36.5 (Updated on March 29, 2020).
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
@@ -148,6 +146,9 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.36.5 (March-29-2020)
+** Fix a typo to extract p.value. 0.36.5: fix an issue for LOCO=TRUE. This issue was introduced when the option minMAFforGRM was introduced.
+
 * 0.36.4.2 (March-20-2020)
 ** Fix a bug by unlist(p.value), which was introduced in 0.36.4
 

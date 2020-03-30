@@ -235,6 +235,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
       startIndex = chromosomeStartIndexVec[j]
       endIndex = chromosomeEndIndexVec[j]
       if(!is.na(startIndex) && !is.na(endIndex)){
+        cat("leave chromosome ", j, " out\n")
         setStartEndIndex(startIndex, endIndex)
         re.coef_LOCO = Get_Coef_LOCO(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
         cov = re.coef_LOCO$cov
@@ -455,6 +456,7 @@ if(FALSE){
     lmmResult$LOCOResult = list()
 
     for (j in 1:22){
+      cat("leave chromosome ", j, " out\n")
       startIndex = chromosomeStartIndexVec[j]
       endIndex = chromosomeEndIndexVec[j]
       if(!is.na(startIndex) && !is.na(endIndex)){
@@ -1337,10 +1339,13 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
           G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted
           g = G/sqrt(AC)
           q = innerProduct(g,y)
- #     print(g[1:20])
- #     print(y[1:20])
- #     print(q)
-          if(!obj.glmm.null$LOCO){
+	  if(CHR >= 1 & CHR <= 22){
+               autoMarker=TRUE
+          }else{
+               autoMarker=FALSE
+          }
+
+          if(!obj.glmm.null$LOCO | (!autoMarker)){
             Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
             Sigma_iX = Sigma_iX_noLOCO
           }else if(!(obj.glmm.null$LOCOResult[[CHR]]$isLOCO)){
@@ -1657,6 +1662,13 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
          #  indexInMarkerList = indexInMarkerList + 1
          #}else{
 	 if((CHR >= 1 & CHR <= 22) | includeNonautoMarkersforVarRatio){
+
+	   if(CHR >= 1 & CHR <= 22){
+               autoMarker=TRUE
+           }else{
+               autoMarker=FALSE
+           }
+
           AF = AC/(2*Nnomissing)
           G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted 
           g = G/sqrt(AC)
@@ -1664,7 +1676,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
  #     print(g[1:20])
  #     print(y[1:20])
  #     print(q)
-          if(!obj.glmm.null$LOCO){          
+          if(!obj.glmm.null$LOCO | (!autoMarker)){          
             Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
             Sigma_iX = Sigma_iX_noLOCO
           }else if(!(obj.glmm.null$LOCOResult[[CHR]]$isLOCO)){

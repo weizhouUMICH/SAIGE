@@ -345,7 +345,7 @@ public:
                 arma::fvec * temp = &m_OneSNP_StdGeno;
 		Msub_MAFge_minMAFtoConstructGRM = 0;
                 // Not yet calculated
-                if(size(m_DiagStd)[0] != Nnomissing){
+                if(size(m_DiagStd)[0] == Nnomissing){
                         m_DiagStd.zeros(Nnomissing);
                         for(size_t i=0; i< M; i++){
 				if(i < startIndex || i > endIndex){
@@ -1630,9 +1630,10 @@ arma::fvec getDiagOfSigma_LOCO(arma::fvec& wVec, arma::fvec& tauVec){
         float diagElement;
         float floatBuffer;
         //float minvElement;
+        diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno_LOCO());
 	int Msub_MAFge_minMAFtoConstructGRM = geno.getMsub_MAFge_minMAFtoConstructGRM_in();
-        
-        diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno_LOCO()) /(Msub_MAFge_minMAFtoConstructGRM) + tauVec(0)/wVec;
+	diagVec = diagVec/(Msub_MAFge_minMAFtoConstructGRM) + tauVec(0)/wVec;
+        //diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno_LOCO()) /(Msub_MAFge_minMAFtoConstructGRM) + tauVec(0)/wVec;
         for(unsigned int i=0; i< Nnomissing; i++){
                 if(diagVec(i) < 1e-4){
                         diagVec(i) = 1e-4 ;
@@ -3462,7 +3463,6 @@ arma::vec gen_spsolve_inR(const arma::sp_mat& a, arma::vec & y) {
 arma::fvec get_DiagofKin(){
     int M = geno.getM();
     int Nnomissing = geno.getNnomissing();
-    int MminMAF = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
         //cout << "MminMAF=" << MminMAF << endl;
         //cout << "M=" << M << endl; 
 
@@ -3470,7 +3470,9 @@ arma::fvec get_DiagofKin(){
     arma::fvec x(Nnomissing);
 
     if(!(geno.setKinDiagtoOne)){
-           x  = (*geno.Get_Diagof_StdGeno()) /MminMAF; 
+           x  = (*geno.Get_Diagof_StdGeno());
+    	   int MminMAF = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
+           x = x/MminMAF; 
     }else{
 	   x  = arma::ones<arma::fvec>(Nnomissing);	
     }	
