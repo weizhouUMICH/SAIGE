@@ -1,7 +1,8 @@
 #!/usr/bin/env Rscript
 
 options(stringsAsFactors=F)
-library(SAIGE)
+#library(SAIGE)
+library(SAIGE, lib.loc="../../install_dir/0.36.5.1")
 print(sessionInfo())
 
 
@@ -59,7 +60,10 @@ option_list <- list(
   make_option("--numLinesOutput", type="numeric",default=10000,
     help="Number of  markers to be output each time [default=10000]"),
   make_option("--IsSparse", type="logical",default=TRUE,
-    help="Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for binary traits [default=TRUE]."), 
+    help="Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for binary traits [default=TRUE]."),
+  make_option("--SPAcutoff", type="numeric", default=2,
+    help=" If the test statistic lies within the standard deviation cutoff of the
+mean, p-value based on traditional score test is returned. Default value is 2."), 
   make_option("--IsOutputAFinCaseCtrl", type="logical",default=FALSE,
     help="whether to output allele frequency in cases and controls for dichotomous traits [default=FALSE]"),
   make_option("--IsOutputNinCaseCtrl", type="logical",default=FALSE,
@@ -183,5 +187,6 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 	     r.corr=opt$r.corr,
 	     weightsIncludeinGroupFile=opt$weightsIncludeinGroupFile,
 	     weights_for_G2_cond=weights_for_G2_cond,
-		IsOutputBETASEinBurdenTest=opt$IsOutputBETASEinBurdenTest	
+		IsOutputBETASEinBurdenTest=opt$IsOutputBETASEinBurdenTest,
+	SPAcutoff=opt$SPAcutoff	
 )

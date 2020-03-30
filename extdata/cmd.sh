@@ -188,7 +188,7 @@ Rscript step2_SPAtests.R \
         --sparseSigmaFile=./output/example_binary_cate.varianceRatio.txt.sparseSigma.mtx        \
         --IsOutputAFinCaseCtrl=TRUE     \
         --IsSingleVarinGroupTest=TRUE
-
+	
 
 #conditional analysis
 Rscript step2_SPAtests.R \

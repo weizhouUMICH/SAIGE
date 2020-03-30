@@ -1505,7 +1505,8 @@ scoreTest_SAIGE_binaryTrait=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, m
      }else{
        out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio );
      }
-     if(out.score["pval.noadj"] > 0.05){
+     #if(out.score["pval.noadj"] > 0.05){
+     if(abs(as.numeric(unlist(out.score["Tstat"])[1])/sqrt(as.numeric(unlist(out.score["var1"])[1]))) < Cutoff){
        if(AF > 0.5){
          out.score$BETA = (-1)*out.score$BETA
          out.score$Tstat = (-1)*out.score$Tstat
@@ -1818,7 +1819,8 @@ if(!isCondition){
      }else{
        out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio );
      }
-     if(out.score["pval.noadj"] > 0.05){
+     #if(out.score["pval.noadj"] > 0.05){
+     if(abs(as.numeric(unlist(out.score["Tstat"])[1])/sqrt(as.numeric(unlist(out.score["var1"])[1]))) < Cutoff){
        if(AF > 0.5){
          out.score$BETA = (-1)*out.score$BETA
          out.score$Tstat = (-1)*out.score$Tstat
