@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
 
 options(stringsAsFactors=F)
-#library(SAIGE)
-library(SAIGE, lib.loc="../../install_dir/0.36.5.1")
+library(SAIGE)
+#library(SAIGE, lib.loc="../../install_dir/0.36.5.1")
 print(sessionInfo())
 
 

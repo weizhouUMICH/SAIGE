@@ -11,7 +11,7 @@ Table of Contents
 # Introduction
 
 
-## Current version is 0.36.5 (Updated on March 29, 2020).
+## Current version is 0.36.5.1 (Updated on March 29, 2020).
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
@@ -146,6 +146,9 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.36.5.1 (March-29-2020)
+** add the option SPAcutoff, If the test statistic lies within the standard deviation cutoff of the mean, p-value based on traditional score test is returned. Otherwise, SPA will be applied. Default value of SPAcutoff is 2 (corresponding p.value.NA 0.05
+
 * 0.36.5 (March-29-2020)
 ** Fix a typo to extract p.value. 0.36.5: fix an issue for LOCO=TRUE. This issue was introduced when the option minMAFforGRM was introduced.
 
