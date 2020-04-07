@@ -182,6 +182,20 @@ Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG
     #W = sqrtW^2
 
     if( max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol.coef))< tol.coef){
+	if(!is.null(inC)){
+      	  Lambda0 = GetLambda0(eta, inC)
+          #print("Lambda0")
+          #print(Lambda0)
+          mu = Lambda0*exp(eta)
+          Y = eta - offset + (y - mu)/mu
+          W = as.vector(mu)
+        }else{
+          mu = family$linkinv(eta)
+          mu.eta = family$mu.eta(eta)
+          Y = eta - offset + (y - mu)/mu.eta
+          sqrtW = mu.eta/sqrt(family$variance(mu))
+          W = sqrtW^2
+        }
 	break
     }
       alpha0 = alpha
