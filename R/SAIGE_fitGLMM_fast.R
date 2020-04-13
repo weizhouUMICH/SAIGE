@@ -45,17 +45,18 @@ GetIndexofCases = function(status, time){
 }
 
 
-GetdenominN = function(uniqTimeIndex, lin.pred.new, newIndexWithTies, caseIndexwithTies){
+GetdenominN = function(uniqTimeIndex, lin.pred.new, newIndexWithTies, caseIndexwithTies , orgIndex){
   #demonVec = rep(0, length(caseIndex))
   explin<-exp(lin.pred.new)
 
-  getdenominN = function(i,uniqTimeIndex, explin, newIndexWithTies, caseIndexwithTies){
+  getdenominN = function(i,uniqTimeIndex, explin, newIndexWithTies, caseIndexwithTies, orgIndex){
     nc = length(explin)
     ntie = sum(caseIndexwithTies == uniqTimeIndex[i])
-    x = ntie/(sum(explin[which(newIndexWithTies >= uniqTimeIndex[i])]))^2
+    x = ntie/(sum(explin[orgIndex[which(newIndexWithTies >= uniqTimeIndex[i])]]))^2	
+    #x = ntie/(sum(explin[which(newIndexWithTies >= uniqTimeIndex[i])]))^2
     return(x)
   }
-  demonVec = sapply(seq(1,length(uniqTimeIndex)), getdenominN, uniqTimeIndex, explin, newIndexWithTies, caseIndexwithTies)
+  demonVec = sapply(seq(1,length(uniqTimeIndex)), getdenominN, uniqTimeIndex, explin, newIndexWithTies, caseIndexwithTies, orgIndex)
   #cat("demonVec: ", demonVec, "\n")
   return(demonVec)
 }
@@ -1476,7 +1477,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
      inC = GetIndexofCases(y, obj.glmm.null$eventTime)
      gc()
      Lambda0 = obj.glmm.null$Lambda0
-     Dvec = GetdenominN(inC$uniqTimeIndex, eta, inC$timedata$newIndexWithTies, inC$caseIndexwithTies)
+     Dvec = GetdenominN(inC$uniqTimeIndex, eta, inC$timedata$newIndexWithTies, inC$caseIndexwithTies, inC$timedata$orgIndex)
      print(gc())
      #print("debug2")
      print(nrow(inC$timedata))
@@ -1495,7 +1496,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
      if(pcgforUhatforSurvAnalysis){
        WinvNvec = 1/(Lambda0)
        #sqrtWinvNVec = sqrt(exp(eta))/(sqrt(Lambda0))
-       sqrtWinvNVec = sqrt(1/W)*Nvec
+       #sqrtWinvNVec = sqrt(1/W)*Nvec
+       W0 = W + (1e-4)
+       sqrtWinvNVec = sqrt(1/W0)*Nvec
      }else{
        print("Herehere")
        Rmat = t(sapply(1:nrow(inC$timedata), Getrmat, inC))
@@ -1512,7 +1515,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
        #dim(sqrtWinvNR):  1000 46
        Dinv =  Matrix:::Diagonal(length(Dvec), x = 1/(-Dvec))
        cat("dim(Dinv): ", dim(Dinv), "\n")
-       ACinv = solve(Dinv + t(sqrtWinvNR)%*%sqrtWinvNR)
+       #ACinv = solve(Dinv + t(sqrtWinvNR)%*%sqrtWinvNR)
+              ACinv = MASS::ginv(Dinv + t(sqrtWinvNR)%*%sqrtWinvNR)	
        rm(Dinv)
        rm(sqrtWinvNR)
        rm(sqrtWinvN)
