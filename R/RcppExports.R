@@ -357,6 +357,10 @@ setminMAFforGRM <- function(minMAFforGRM) {
     invisible(.Call('_SAIGE_setminMAFforGRM', PACKAGE = 'SAIGE', minMAFforGRM))
 }
 
+setIsDropMissingDosages_bgen <- function(isdropmissingdosages) {
+    invisible(.Call('_SAIGE_setIsDropMissingDosages_bgen', PACKAGE = 'SAIGE', isdropmissingdosages))
+}
+
 setgenoTest_bgenDosage <- function(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude) {
     .Call('_SAIGE_setgenoTest_bgenDosage', PACKAGE = 'SAIGE', filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude)
 }
@@ -390,7 +394,7 @@ getMarkerInfo <- function() {
 }
 
 SetSampleIdx <- function(sample_idx, Ntest) {
-    .Call('_SAIGE_SetSampleIdx', PACKAGE = 'SAIGE', sample_idx, Ntest)
+    invisible(.Call('_SAIGE_SetSampleIdx', PACKAGE = 'SAIGE', sample_idx, Ntest))
 }
 
 closetestGenoFile_bgenDosage <- function() {
@@ -411,6 +415,10 @@ SetSampleIdx_vcfDosage <- function(sample_idx, Ntest) {
 
 setTestField <- function(testFieldInput) {
     invisible(.Call('_SAIGE_setTestField', PACKAGE = 'SAIGE', testFieldInput))
+}
+
+setIsDropMissingDosages_vcf <- function(isdropmissingdosages) {
+    invisible(.Call('_SAIGE_setIsDropMissingDosages_vcf', PACKAGE = 'SAIGE', isdropmissingdosages))
 }
 
 setgenoTest_vcfDosage <- function(vcfFileName, vcfFileIndex, vcfField, ids_to_exclude_vcf, ids_to_include_vcf, chromNam, start = 0L, end = 0L) {

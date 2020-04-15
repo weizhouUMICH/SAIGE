@@ -27,10 +27,11 @@ Rscript step2_SPAtests.R	\
         --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output/example_binary.rda \
         --varianceRatioFile=./output/example_binary.varianceRatio.txt \
-        --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype.txt_new \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE	\
-	--IsOutputNinCaseCtrl=TRUE	
+	--IsOutputNinCaseCtrl=TRUE	\
+	--IsOutputHetHomCountsinCaseCtrl=TRUE	
 
 	##drop samples with missing genotypes/dosages
 	##--IsDropMissingDosages=TRUE, if FALSE, missing genotypes/dosages will be mean imputed
@@ -38,7 +39,7 @@ Rscript step2_SPAtests.R        \
         --vcfFile=./input/genotype_10markers.missingness.vcf.gz \
         --vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.tbi \
         --vcfField=GT \
-        --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype.dropmissing.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype.dropmissing.txt_new \
         --chrom=1 \
         --minMAF=0.0001 \
         --minMAC=1 \
@@ -47,7 +48,8 @@ Rscript step2_SPAtests.R        \
         --varianceRatioFile=./output/example_binary.varianceRatio.txt \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE	\
-	--IsDropMissingDosages=TRUE     
+	--IsDropMissingDosages=TRUE    \
+	--IsOutputHetHomCountsinCaseCtrl=TRUE 
 
 
 
@@ -64,7 +66,8 @@ Rscript step2_SPAtests.R        \
         --varianceRatioFile=./output/example_binary.varianceRatio.txt \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE	\
-	--IsDropMissingDosages=TRUE     
+	--IsDropMissingDosages=TRUE    	\
+	--IsOutputHetHomCountsinCaseCtrl=TRUE 
 
 
 

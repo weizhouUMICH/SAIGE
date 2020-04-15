@@ -42,7 +42,8 @@ fitNULLGLMM(
   useSparseSigmaConditionerforPCG = FALSE,
   useSparseSigmaforInitTau = FALSE,
   minCovariateCount = -1,
-  minMAFforGRM = 0.01
+  minMAFforGRM = 0.01,
+  includeNonautoMarkersforVarRatio = FALSE
 )
 }
 \arguments{
@@ -119,6 +120,8 @@ fitNULLGLMM(
 \item{minCovariateCount}{integer. If binary covariates have a count less than this, they will be excluded from the model to avoid convergence issues. By default, -1 (no covariates will be excluded)}
 
 \item{minMAFforGRM}{numeric. Minimum MAF for markers (in the Plink file) used for construcing the sparse GRM. By default, 0.01}
+
+\item{includeNonautoMarkersforVarRatio}{logical. Whether to allow for non-autosomal markers for variance ratio. By default, FALSE}
 }
 \value{
 a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio values, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.

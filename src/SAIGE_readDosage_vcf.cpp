@@ -22,6 +22,7 @@ Rcpp::IntegerVector gm_sample_idx_vcfDosage;
 int gmtest_samplesize_vcfDosage;
 
 int numSamples_vcf;
+bool isDropMissingDosages_vcf = false;
 
 using namespace std;
 
@@ -39,7 +40,10 @@ void setTestField(std::string testFieldInput){
   testField = testFieldInput;
 }
 
-
+// [[Rcpp::export]]
+void setIsDropMissingDosages_vcf (bool isdropmissingdosages){
+  isDropMissingDosages_vcf = isdropmissingdosages;
+}
 
 // [[Rcpp::export]]
 bool setgenoTest_vcfDosage(const std::string& vcfFileName,  const std::string& vcfFileIndex, const std::string& vcfField, const std::string& ids_to_exclude_vcf, const std::string& ids_to_include_vcf, const std::string& chromNam, int32_t start = 0, int32_t end = 0){
@@ -143,7 +147,10 @@ Rcpp::List getGenoOfnthVar_vcfDosage(int mth) {
     for (unsigned int i = 0; i < indexforMissing.size(); i++)
     {
       dosages[indexforMissing[i]] = imputeDosage;
-    }  
+    } 
+    if(!isDropMissingDosages_vcf){
+      AC = AC + imputeDosage * missing_cnt;
+    } 
   }
 
     result[ "dosages" ] = dosages;

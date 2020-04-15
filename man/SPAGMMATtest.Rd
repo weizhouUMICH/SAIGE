@@ -32,6 +32,7 @@ SPAGMMATtest(
   numLinesOutput = 10000,
   IsSparse = TRUE,
   IsOutputAFinCaseCtrl = FALSE,
+  IsOutputHetHomCountsinCaseCtrl = FALSE,
   IsOutputNinCaseCtrl = FALSE,
   LOCO = FALSE,
   condition = "",
@@ -108,6 +109,8 @@ SPAGMMATtest(
 \item{IsSparse}{logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE}
 
 \item{IsOutputAFinCaseCtrl}{logical. Whether to output allele frequency in cases and controls. By default, FALSE}
+
+\item{IsOutputHetHomCountsinCaseCtrl}{logical. Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls" will be output.}
 
 \item{IsOutputNinCaseCtrl}{logical. Whether to output sample sizes in cases and controls. By default, FALSE}
 

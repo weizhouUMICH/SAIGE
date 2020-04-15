@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
 
 options(stringsAsFactors=F)
-library(SAIGE)
-#library(SAIGE, lib.loc="../../install_dir/0.36.5.1")
+#library(SAIGE)
+library(SAIGE, lib.loc="../../install_dir/0.36.6")
 print(sessionInfo())
 
 
@@ -68,6 +68,8 @@ mean, p-value based on traditional score test is returned. Default value is 2.")
     help="whether to output allele frequency in cases and controls for dichotomous traits [default=FALSE]"),
   make_option("--IsOutputNinCaseCtrl", type="logical",default=FALSE,
     help="Whether to output sample sizes in cases and controls for dichotomous traits [default=FALSE]"),
+  make_option("--IsOutputHetHomCountsinCaseCtrl", type="logical",default=FALSE,
+    help="Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls will be output [default=FALSE]"),
   make_option("--LOCO", type="logical", default=FALSE,
     help="Whether to apply the leave-one-chromosome-out option. This option has not been extensively tested."),
   make_option("--condition", type="character",default="",
@@ -188,5 +190,6 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 	     weightsIncludeinGroupFile=opt$weightsIncludeinGroupFile,
 	     weights_for_G2_cond=weights_for_G2_cond,
 		IsOutputBETASEinBurdenTest=opt$IsOutputBETASEinBurdenTest,
-	SPAcutoff=opt$SPAcutoff	
+	SPAcutoff=opt$SPAcutoff,
+	IsOutputHetHomCountsinCaseCtrl=opt$IsOutputHetHomCountsinCaseCtrl	
 )

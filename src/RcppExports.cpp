@@ -1107,6 +1107,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// setIsDropMissingDosages_bgen
+void setIsDropMissingDosages_bgen(bool isdropmissingdosages);
+RcppExport SEXP _SAIGE_setIsDropMissingDosages_bgen(SEXP isdropmissingdosagesSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type isdropmissingdosages(isdropmissingdosagesSEXP);
+    setIsDropMissingDosages_bgen(isdropmissingdosages);
+    return R_NilValue;
+END_RCPP
+}
 // setgenoTest_bgenDosage
 int setgenoTest_bgenDosage(std::string& filename, std::string& index_filename, Rcpp::DataFrame& ranges_to_include, Rcpp::DataFrame& ranges_to_exclude, std::vector< std::string > const& ids_to_include, std::vector< std::string > const& ids_to_exclude);
 RcppExport SEXP _SAIGE_setgenoTest_bgenDosage(SEXP filenameSEXP, SEXP index_filenameSEXP, SEXP ranges_to_includeSEXP, SEXP ranges_to_excludeSEXP, SEXP ids_to_includeSEXP, SEXP ids_to_excludeSEXP) {
@@ -1194,15 +1204,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // SetSampleIdx
-int SetSampleIdx(Rcpp::IntegerVector sample_idx, int Ntest);
+void SetSampleIdx(Rcpp::IntegerVector sample_idx, int Ntest);
 RcppExport SEXP _SAIGE_SetSampleIdx(SEXP sample_idxSEXP, SEXP NtestSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type sample_idx(sample_idxSEXP);
     Rcpp::traits::input_parameter< int >::type Ntest(NtestSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetSampleIdx(sample_idx, Ntest));
-    return rcpp_result_gen;
+    SetSampleIdx(sample_idx, Ntest);
+    return R_NilValue;
 END_RCPP
 }
 // closetestGenoFile_bgenDosage
@@ -1258,6 +1267,16 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type testFieldInput(testFieldInputSEXP);
     setTestField(testFieldInput);
+    return R_NilValue;
+END_RCPP
+}
+// setIsDropMissingDosages_vcf
+void setIsDropMissingDosages_vcf(bool isdropmissingdosages);
+RcppExport SEXP _SAIGE_setIsDropMissingDosages_vcf(SEXP isdropmissingdosagesSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type isdropmissingdosages(isdropmissingdosagesSEXP);
+    setIsDropMissingDosages_vcf(isdropmissingdosages);
     return R_NilValue;
 END_RCPP
 }
@@ -1489,6 +1508,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getCrossprodMatAndKin_mailman", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin_mailman, 1},
     {"_SAIGE_get_GRMdiagVec", (DL_FUNC) &_SAIGE_get_GRMdiagVec, 0},
     {"_SAIGE_setminMAFforGRM", (DL_FUNC) &_SAIGE_setminMAFforGRM, 1},
+    {"_SAIGE_setIsDropMissingDosages_bgen", (DL_FUNC) &_SAIGE_setIsDropMissingDosages_bgen, 1},
     {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 6},
     {"_SAIGE_getDosage_inner_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery, 0},
     {"_SAIGE_getDosage_inner_bgen_withquery_new", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery_new, 0},
@@ -1503,6 +1523,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getSampleSizeinBgen", (DL_FUNC) &_SAIGE_getSampleSizeinBgen, 0},
     {"_SAIGE_SetSampleIdx_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_vcfDosage, 2},
     {"_SAIGE_setTestField", (DL_FUNC) &_SAIGE_setTestField, 1},
+    {"_SAIGE_setIsDropMissingDosages_vcf", (DL_FUNC) &_SAIGE_setIsDropMissingDosages_vcf, 1},
     {"_SAIGE_setgenoTest_vcfDosage", (DL_FUNC) &_SAIGE_setgenoTest_vcfDosage, 8},
     {"_SAIGE_getNumofSamples", (DL_FUNC) &_SAIGE_getNumofSamples, 0},
     {"_SAIGE_getSampleIDlist", (DL_FUNC) &_SAIGE_getSampleIDlist, 0},

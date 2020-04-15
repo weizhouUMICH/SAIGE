@@ -28,6 +28,7 @@
 #' @param IsSparse logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE 
 #' @param IsOutputAFinCaseCtrl logical. Whether to output allele frequency in cases and controls. By default, FALSE
 #' @param IsOutputNinCaseCtrl logical. Whether to output sample sizes in cases and controls. By default, FALSE
+#' @param IsOutputHetHomCountsinCaseCtrl logical. Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls" will be output. 
 #' @param LOCO logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE
 #' @param condition character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input , marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input.
 #' @param sparseSigmaFile character. Path to the file containing the sparseSigma from step 1. The suffix of this file is ".mtx". 
@@ -76,6 +77,7 @@ SPAGMMATtest = function(bgenFile = "",
 		 numLinesOutput = 10000, 
 		 IsSparse=TRUE,
 		 IsOutputAFinCaseCtrl=FALSE,
+		 IsOutputHetHomCountsinCaseCtrl=FALSE,
 		 IsOutputNinCaseCtrl=FALSE,
 		 LOCO=FALSE,
 		 condition="",	
@@ -160,6 +162,10 @@ SPAGMMATtest = function(bgenFile = "",
     sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
     cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
     traitType = obj.glmm.null$traitType
+    if(traitType == "quantitative"){
+      IsOutputHetHomCountsinCaseCtrl = FALSE
+    }
+
     if(!LOCO | is.null(obj.glmm.null$LOCO)){
       obj.glmm.null$LOCO = FALSE
       cat("obj.glmm.null$LOCO: ", obj.glmm.null$LOCO, "\n")
@@ -291,6 +297,9 @@ SPAGMMATtest = function(bgenFile = "",
     cat("Missing dosages will be mean imputed for the analysis\n")
   }
 
+  setIsDropMissingDosages_bgen(IsDropMissingDosages)
+  setIsDropMissingDosages_vcf(IsDropMissingDosages)
+  
 
   ##############START TEST########################
   startTime = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
@@ -311,7 +320,8 @@ SPAGMMATtest = function(bgenFile = "",
 
   if(!isGroupTest){
     if(dosageFileType == "bgen"){
-      dosageFilecolnamesSkip = c("CHR","POS","rsid","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
+        dosageFilecolnamesSkip = c("CHR","POS","rsid","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
+
     }else if(dosageFileType == "vcf"){
       dosageFilecolnamesSkip = c("CHR","POS","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
     }
@@ -426,7 +436,12 @@ SPAGMMATtest = function(bgenFile = "",
       }
       if(IsOutputNinCaseCtrl){
 	resultHeader = c(resultHeader, "N.Cases", "N.Controls")
-      } 	
+      }
+
+      if(IsOutputHetHomCountsinCaseCtrl){
+	resultHeader = c(resultHeader, "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls")
+      }
+	
       write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
     } #if(!isGroupTest){ 
 
@@ -598,8 +613,7 @@ SPAGMMATtest = function(bgenFile = "",
         stop("ERROR! Failed to open ", bgenFile, "\n")
       }
       isQuery = getQueryStatus()
-      SetSampleIdx(sampleIndex, N)
-
+      SetSampleIdx(sampleIndex, N)	
 	
       nsamplesinBgen = getSampleSizeinBgen()
       if(nrow(sampleListinDosage) != nsamplesinBgen){
@@ -718,12 +732,18 @@ SPAGMMATtest = function(bgenFile = "",
 		indexforMissing = unique(c(indexforMissing, Gx_cond$indexforMissing))
 	}
 
+	if(IsOutputHetHomCountsinCaseCtrl){
+		G0round = round(G0)
+	}	
 
     if(IsDropMissingDosages & length(indexforMissing) > 0){
         missingind = seq(1, length(G0))[-(indexforMissing + 1)]
 	cat("Removing ", length(indexforMissing), " samples with missing dosages/genotypes\n")
 
         G0 = G0[missingind]
+        if(IsOutputHetHomCountsinCaseCtrl){
+          G0round = G0round[missingind]
+        }  
 	subsetModelResult = subsetModelFileforMissing(obj.glmm.null, missingind, mu, mu.a ,mu2.a)	
 	obj.glmm.null.sub = subsetModelResult$obj.glmm.null.sub
 	mu.a.sub = subsetModelResult$mu.a.sub
@@ -743,6 +763,14 @@ SPAGMMATtest = function(bgenFile = "",
           NCase.sub = length(y1Index.sub)
           y0Index.sub = which(y.sub == 0)
 	  NCtrl.sub = length(y0Index.sub)
+	  
+	  if(IsOutputHetHomCountsinCaseCtrl){
+	    homN_Allele2_cases = sum(G0round[y1Index.sub] == 2)
+            hetN_Allele2_cases = sum(G0round[y1Index.sub] == 1) 
+	    homN_Allele2_ctrls = sum(G0round[y0Index.sub] == 2)
+            hetN_Allele2_ctrls = sum(G0round[y0Index.sub] == 1) 
+          }	
+
 	}
 
 	sparseSigma.sub = sparseSigma
@@ -770,7 +798,7 @@ SPAGMMATtest = function(bgenFile = "",
 	   if(IsOutputAFinCaseCtrl){
 	     if(NCase.sub == 0){
 		AFCase = NA
-		AFCtrl = sum(G0[y0Index.sub])/(2*NCtrl.sub)		
+		AFCtrl = sum(G0[y0Index.sub])/(2*NCtrl.sub)
 	     }else if(NCtrl.sub == 0){
 		AFCtrl = NA
 		AFCase = sum(G0[y1Index.sub])/(2*NCase.sub)
@@ -782,6 +810,11 @@ SPAGMMATtest = function(bgenFile = "",
 	   if(IsOutputNinCaseCtrl){
 	     OUTvec=c(OUTvec, NCase.sub, NCtrl.sub)			
 	   }
+
+	   if(IsOutputHetHomCountsinCaseCtrl){
+             OUTvec=c(OUTvec, homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls)
+           }
+
 	   OUT = rbind(OUT, OUTvec)
 	   OUTvec=NULL
 	  }else{ #if (NCase.sub == 0 | NCtrl.sub == 0) {
@@ -800,8 +833,13 @@ SPAGMMATtest = function(bgenFile = "",
 	   if(IsOutputNinCaseCtrl){
              OUTvec=c(OUTvec, NCase.sub, NCtrl.sub)
            }
+
+	   if(IsOutputHetHomCountsinCaseCtrl){
+            OUTvec=c(OUTvec, homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls)
+           } 
+
 	   OUT = rbind(OUT, OUTvec)
-		OUTvec=NULL
+	   OUTvec=NULL
 	  }
          }else if(traitType == "quantitative"){
 
@@ -838,11 +876,21 @@ SPAGMMATtest = function(bgenFile = "",
       	     AFCase = sum(G0[y1Index])/(2*NCase)
       	     AFCtrl = sum(G0[y0Index])/(2*NCtrl)
 		OUTvec=c(OUTvec, AFCase, AFCtrl)
-
            }
+
 	   if(IsOutputNinCaseCtrl){
 	     OUTvec=c(OUTvec, NCase, NCtrl)
            }
+
+
+	   if(IsOutputHetHomCountsinCaseCtrl){
+            homN_Allele2_cases = sum(G0round[y1Index] == 2)
+            hetN_Allele2_cases = sum(G0round[y1Index] == 1)
+            homN_Allele2_ctrls = sum(G0round[y0Index] == 2)
+            hetN_Allele2_ctrls = sum(G0round[y0Index] == 1)
+	    OUTvec = c(OUTvec, homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls)	
+          }	
+	  
 	   OUT = rbind(OUT, OUTvec)
 	   OUTvec=NULL
 
@@ -896,7 +944,7 @@ SPAGMMATtest = function(bgenFile = "",
      }
     	 
      if(dosageFileType == "bgen"){
-       SetSampleIdx(sampleIndex, N)
+       SetSampleIdx(sampleIndex, N)	
      }else if(dosageFileType == "vcf"){
        setMAFcutoffs(testMinMAF, maxMAFforGroupTest)
        cat("genetic variants with ", testMinMAF, "<= MAF <= ", maxMAFforGroupTest, "are included for gene-based tests\n")
