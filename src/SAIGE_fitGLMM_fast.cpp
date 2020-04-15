@@ -268,7 +268,7 @@ public:
 		//std::cout << "stdGenoLookUpArr[1]: " << stdGenoLookUpArr[1] << std::endl;
 		//std::cout << "stdGenoLookUpArr[2]: " << stdGenoLookUpArr[2] << std::endl;
 //		cout << "Get_OneSNP_StdGeno here2"  << endl;
-		for(size_t i=Start_idx; i< Start_idx+m_size_of_esi; i++){
+		for(size_t i=Start_idx; i< Start_idx+m_size_of_esi-1; i++){
 //			geno1 = genoVec[i];
 			geno1 = genoVecofPointers[indexOfVectorPointer]->at(i);
 
@@ -281,18 +281,36 @@ public:
 			ind++;
     			geno1 = geno1 >> 1;
     			
-    			if(ind >= Nnomissing){
+//    			if(ind >= Nnomissing){
 //				cout << "Get_OneSNP_StdGeno " << SNPIdx << endl; 
 //				cout << "Nnomissing " << Nnomissing << endl; 
-				stdGenoLookUpArr.clear();
-    				return 1;
-    			}
-    		}
+//				stdGenoLookUpArr.clear();
+//    				return 1;
+//    			}
+	    		}
 		}
+
+
+		size_t i = Start_idx+m_size_of_esi-1;
+                geno1 = genoVecofPointers[indexOfVectorPointer]->at(i);
+
+                for(int j=0; j<4; j++){
+                        int b = geno1 & 1 ;
+                        geno1 = geno1 >> 1;
+                        int a = geno1 & 1 ;
+                        (*out)[ind] = stdGenoLookUpArr(2-(a+b));
+                        ind++;
+                        geno1 = geno1 >> 1;
+
+                        if(ind >= Nnomissing){
+                                stdGenoLookUpArr.clear();
+                                return 1;
+                        }
+                }
+
 		stdGenoLookUpArr.clear();
 		return 1;
-		
-		
+				
  	}
 
 
