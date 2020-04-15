@@ -11,7 +11,7 @@ Table of Contents
 # Introduction
 
 
-## Current version is 0.36.5.1 (Updated on March 29, 2020).
+## Current version is 0.36.6 (Updated on April 15, 2020).
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
@@ -63,7 +63,7 @@ R CMD INSTALL SAIGE
 4. Using a docker image (Thanks to Juha Karjalainen for sharing the Dockerfile). The docker image can be pulled
 
 ```
-docker pull wzhou88/saige:0.36.3.2
+docker pull wzhou88/saige:0.36.6
 ```
 [Dockerfile for creating a docker image for SAIGE](https://github.com/weizhouUMICH/Docker/tree/master/SAIGE)
 
@@ -146,6 +146,9 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.36.6 (April-15-2020)
+** add an option IsOutputHetHomCountsinCaseCtrl to output the heterozygous and homozygous counts in cases and controls
+
 * 0.36.5.1 (March-29-2020)
 ** add the option SPAcutoff, If the test statistic lies within the standard deviation cutoff of the mean, p-value based on traditional score test is returned. Otherwise, SPA will be applied. Default value of SPAcutoff is 2 (corresponding p.value.NA 0.05
 
