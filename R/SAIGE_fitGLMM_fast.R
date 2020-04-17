@@ -1516,7 +1516,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
        Dinv =  Matrix:::Diagonal(length(Dvec), x = 1/(-Dvec))
        cat("dim(Dinv): ", dim(Dinv), "\n")
        #ACinv = solve(Dinv + t(sqrtWinvNR)%*%sqrtWinvNR)
-              ACinv = MASS::ginv(Dinv + t(sqrtWinvNR)%*%sqrtWinvNR)	
+       ACinv = MASS::ginv(Dinv + t(sqrtWinvNR)%*%sqrtWinvNR)	
        rm(Dinv)
        rm(sqrtWinvNR)
        rm(sqrtWinvN)

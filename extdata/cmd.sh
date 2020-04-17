@@ -6,6 +6,7 @@ Rscript step1_fitNULLGLMM.R     \
         --phenoCol=casecontrol \
         --covarColList=X \
 	--eventTimeCol=AgeOfEventFinal \
+	--eventTimeBinSize=1 \
         --sampleIDColinphenoFile=IND_ID \
         --traitType=survival        \
         --outputPrefix=./output_test/example_survival \
