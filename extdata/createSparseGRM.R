@@ -4,7 +4,9 @@ options(stringsAsFactors=F)
 
 ## load R libraries
 #library(SAIGE, lib.loc="../../install_dir/burdenbeta_test/")
-library(SAIGE, lib.loc="~/install_dir/0.36.3.1_homN_hetN_surv")
+#library(SAIGE, lib.loc="~/install_dir/0.36.3.1_homN_hetN_surv")
+library(SAIGE)
+
 require(optparse) #install.packages("optparse")
 
 print(sessionInfo())
