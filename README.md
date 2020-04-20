@@ -113,12 +113,6 @@ step2_SPAtests.R --help
 createSparseGRM.R --help
 ```
 
-###  Install SAIGE using the binary file 
-
-The binary install file can be downloaded from [SAIGE releases](https://github.com/weizhouUMICH/SAIGE/releases) or from the master branch. Then using the following command line to install SAIGE
-```
-R CMD INSTALL SAIGE_XX_R_x86_64-pc-linux-gnu.tar.gz
-```
 
 ## Run SAIGE for single-variant association tests and SAIGE-GENE for gene- or region-based tests
 
