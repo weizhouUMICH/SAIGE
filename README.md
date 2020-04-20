@@ -1,15 +1,16 @@
+
 Table of Contents
 =================
 
    * [Introduction](#introduction)
    * [Citation](#citation)
    * [How to install SAIGE and SAIGE-GENE](#how-to-install-and-run-saige-and-saige-gene)
+   * [Notes for users before running jobs](#notes-for-users-before-running-jobs)
    * [UK Biobank GWAS Results](#uk-biobank-gwas-results)
    * [Log for fixing bugs](#log-for-fixing-bugs)
-   * [Notes for users before running jobs](#notes-for-users-before-running-jobs)
+   
 
 # Introduction
-
 
 ## Current version is 0.36.6 (Updated on April 15, 2020).
 
@@ -42,6 +43,7 @@ https://www.biorxiv.org/content/10.1101/583278v2
 
 
 ###  Install SAIGE using the conda environment
+
 1. Create a conda environment using 
      ([conda environment file](https://github.com/weizhouUMICH/SAIGE/blob/master/conda_env/environment-RSAIGE.yml)) 
      Here is a link to download the [conda environment file](https://raw.githubusercontent.com/weizhouUMICH/SAIGE/master/conda_env/environment-RSAIGE.yml)
@@ -59,7 +61,7 @@ https://www.biorxiv.org/content/10.1101/583278v2
        export LDFLAGS="-L${FLAGPATH}/lib"
        export CPPFLAGS="-I${FLAGPATH}/include"
      ```
- Please make sure to set up the LDFLAGS and CPPFLAGS, so libraries can be linked correctly when the SAIGE source code is compiled. Note: [Here](https://github.com/weizhouUMICH/SAIGE/blob/master/conda_env/createCondaEnvSAIGE_steps.txt) are the steps to create the conda environment file 
+Please make sure to set up the LDFLAGS and CPPFLAGS using export (the last two command lines), so libraries can be linked correctly when the SAIGE source code is compiled. Note: [Here](https://github.com/weizhouUMICH/SAIGE/blob/master/conda_env/createCondaEnvSAIGE_steps.txt) are the steps to create the conda environment file 
 
 3. Open R, run following script to install the MetaSKAT R library.
    
@@ -95,14 +97,14 @@ https://www.biorxiv.org/content/10.1101/583278v2
 
 ### Run SAIGE using a docker image 
 
-  Thanks to Juha Karjalainen for sharing the Dockerfile. 
+Thanks to Juha Karjalainen for sharing the Dockerfile. 
 The docker image can be pulled
 
 ```
 docker pull wzhou88/saige:0.36.6
 ```
 
-[Dockerfile for creating a docker image for SAIGE](https://github.com/weizhouUMICH/Docker/tree/master/SAIGE)
+[Dockerfile for creating your own docker image for SAIGE](https://github.com/weizhouUMICH/Docker/tree/master/SAIGE)
 
 Functions can be called
 ```
@@ -125,12 +127,26 @@ Here is a wiki page containg tutorial to run SAIGE and SAIGE-GENE
   
 ### Examples
 
-Examplary data and script can be found in ./extdata. Run
+Example data and script can be found in ./extdata. Run
 
     bash cmd.sh
 
 to run single-variant and gene-based association tests
 
+
+# Notes before running jobs
+
+### FAQ can be found  [here](https://github.com/weizhouUMICH/SAIGE/wiki/Genetic-association-tests-using-SAIGE#Frequently-asked-questions)
+
+### More notes
+1. Since the SPA test always provides close to 0 p-values for variants with MAC < 3, please use at least minMAC = 3 to filter out the results
+2. When query is used for bgen files, please make sure there are no duplicate SNP ids in the list
+3. If the error message "Error in setgeno(genofile, subSampleInGeno, memoryChunk) :
+  vector::_M_range_check", try use a smaller memeoryChunk, such as 2
+4. IMPORTANT:In version <= 0.26, for binary traits, BETA is for alt allele and for quantitative traits, BETA is for minor allele 
+5. Please note that LOCO only works for autosomal genetic variants. For non-autosomal genetic variants, please leave LOCO=FALSE in step 2.
+6. SAIGE-GENE 0.36.3 and 0.36.3.1 now output an effect size for burden tests with the option IsOutputBETASEinBurdenTest in step2. Please note that the magnitude of the effect size is difficult to interpret. 
+7. We haven't throughly tested the program on a small sample size. All simulation studies were done using 10,000 samples. Similar to BOLT-LMM, SAIGE uses asymptotic approaches to for feasibility on large samples. Based on our previous real-data analysis, we saw the performance on 3,000 samples were fine. 
 
 # UK Biobank GWAS Results
 1. The GWAS results for binary phenotypes in UK Biobank (1,283 phenotypes) using SAIGE are currently available for public download at
@@ -152,6 +168,7 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+
 * 0.36.6 (April-15-2020)
 ** add an option IsOutputHetHomCountsinCaseCtrl to output the heterozygous and homozygous counts in cases and controls
 
@@ -244,14 +261,3 @@ Bugs fixed: 1. fixed the freq calculation for mean impute for missing genotypes 
 * 0.26: fixed a bug for the Tstat in the output
 * 0.25: allow models with no covariates and GRM contruction using a large number of genetic markers (> 600,000)
 * 0.24: centerVariable is no longer needed. QR transformation of the covariate matrix is automatically performed. Supports the dosage files in the VCF,BCF and SAV formats using the SAVVY library 
-
-# Notes for users before running jobs
-1. Since the SPA test always provides close to 0 p-values for variants with MAC < 3, please use at least minMAC = 3 to filter out the results
-2. When query is used for bgen files, please make sure there are no duplicate SNP ids in the list
-3. If the error message "Error in setgeno(genofile, subSampleInGeno, memoryChunk) :
-  vector::_M_range_check", try use a smaller memeoryChunk, such as 2
-4. IMPORTANT:In version <= 0.26, for binary traits, BETA is for alt allele and for quantitative traits, BETA is for minor allele 
-5. Please note that LOCO only works for autosomal genetic variants. For non-autosomal genetic variants, please leave LOCO=FALSE in step 2.
-6. SAIGE-GENE 0.36.3 and 0.36.3.1 now output an effect size for burden tests with the option IsOutputBETASEinBurdenTest in step2. Please note that the magnitude of the effect size is difficult to interpret. 
-7. We haven't throughly tested the program on a small sample size. All simulation studies were done using 10,000 samples. Similar to BOLT-LMM, SAIGE uses asymptotic approaches to for feasibility on large samples. Based on our previous real-data analysis, we saw the performance on 3,000 samples were fine. 
-
