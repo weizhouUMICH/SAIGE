@@ -34,37 +34,74 @@ https://www.biorxiv.org/content/10.1101/583278v2
 
 ## Install SAIGE/SAIGE-GENE
 
-SAIGE can be installed in 4 ways. The first 3 ways require installing dependencies first. 
+### List of dependencies: 
 
 * R-3.6.1, gcc >= 5.4.0, cmake 3.14.1, [cget](https://cget.readthedocs.io/en/latest/src/intro.html#installing-cget)
 * R packages: "R.utils", "Rcpp", "RcppParallel", "RcppArmadillo", "data.table", "RcppEigen", "Matrix", "methods", "BH", "optparse", "SPAtest", "SKAT","MetaSKAT"
 * /extdata/install_packages.R can be used to install the R packages
 
 
-1. The binary install file can be downloaded from [SAIGE releases](https://github.com/weizhouUMICH/SAIGE/releases) or from the master branch. Then using the following command line to install SAIGE
+###  Install SAIGE using the conda environment
+1. Create a conda environment using 
+     ([conda environment file](https://github.com/weizhouUMICH/SAIGE/blob/master/conda_env/environment-RSAIGE.yml)) 
+     Here is a link to download the [conda environment file](https://raw.githubusercontent.com/weizhouUMICH/SAIGE/master/conda_env/environment-RSAIGE.yml)
 
-```
-R CMD INSTALL SAIGE_XX_R_x86_64-pc-linux-gnu.tar.gz
-```
-2. Installing using the R library devtools from github
-```
-devtools::install_github("weizhouUMICH/SAIGE") 
+     After downloading environment-RSAIGE.yml, run following command
+     ```
+       conda env create -f environment-RSAIGE.yml
+   ```
 
-```
-3. Installing from the source code. 
-```
-src_branch=master
-repo_src_url=https://github.com/weizhouUMICH/SAIGE
-git clone --depth 1 -b $src_branch $repo_src_url
+2. Activate the conda environment RSAIGE
 
-R CMD INSTALL SAIGE
-```
+     ```
+       conda activate RSAIGE
+       FLAGPATH=`which python | sed 's|/bin/python$||'`
+       export LDFLAGS="-L${FLAGPATH}/lib"
+       export CPPFLAGS="-I${FLAGPATH}/include"
+     ```
+ Please make sure to set up the LDFLAGS and CPPFLAGS, so libraries can be linked correctly when the SAIGE source code is compiled. Note: [Here](https://github.com/weizhouUMICH/SAIGE/blob/master/conda_env/createCondaEnvSAIGE_steps.txt) are the steps to create the conda environment file 
 
-4. Using a docker image (Thanks to Juha Karjalainen for sharing the Dockerfile). The docker image can be pulled
+3. Open R, run following script to install the MetaSKAT R library.
+   
+     ```
+       install.packages('MetaSKAT')
+     ```
+
+4. Install SAIGE from the source code. 
+
+     Method 1: 
+
+     ```
+       src_branch=master
+       repo_src_url=https://github.com/weizhouUMICH/SAIGE
+       git clone --depth 1 -b $src_branch $repo_src_url
+
+       R CMD INSTALL --library=path_to_final_SAIGE_library SAIGE
+     ```
+     
+     When call SAIGE in R, set lib.loc=path_to_final_SAIGE_library   
+
+     ```
+       library(SAIGE, lib.loc=path_to_final_SAIGE_library)
+     ```
+
+    Method 2: 
+
+    Open R. Run
+
+    ```
+      devtools::install_github("weizhouUMICH/SAIGE")
+    ```
+
+### Run SAIGE using a docker image 
+
+  Thanks to Juha Karjalainen for sharing the Dockerfile. 
+The docker image can be pulled
 
 ```
 docker pull wzhou88/saige:0.36.6
 ```
+
 [Dockerfile for creating a docker image for SAIGE](https://github.com/weizhouUMICH/Docker/tree/master/SAIGE)
 
 Functions can be called
@@ -74,42 +111,11 @@ step2_SPAtests.R --help
 createSparseGRM.R --help
 ```
 
-5. Using a conda environment (Thanks to [Wallace(Minxian) Wang](https://github.com/weizhouUMICH/SAIGE/issues/118))
+###  Install SAIGE using the binary file 
 
-a) create a conda environment using 
- ([conda environment file](https://github.com/weizhouUMICH/SAIGE/blob/master/conda_env/environment-RSAIGE.yml)) 
-
+The binary install file can be downloaded from [SAIGE releases](https://github.com/weizhouUMICH/SAIGE/releases) or from the master branch. Then using the following command line to install SAIGE
 ```
-conda env create -f environment-RSAIGE.yml
-conda activate RSAIGE
-FLAGPATH=`which python | sed 's|/bin/python$||'`
-export LDFLAGS="-L${FLAGPATH}/lib"
-export CPPFLAGS="-I${FLAGPATH}/include"
-```
-
-Note: [Here](https://github.com/weizhouUMICH/SAIGE/blob/master/conda_env/createCondaEnvSAIGE_steps.txt) are the steps to create the conda environment file 
-
-
-b) Using method 3
-Open R and install package MetaSKAT
-
-```
-install.packages('MetaSKAT')
-```
-
-exit R and run command
-```
-src_branch=master
-repo_src_url=https://github.com/weizhouUMICH/SAIGE
-git clone --depth 1 -b $src_branch $repo_src_url
-R CMD INSTALL SAIGE
-
-```
-
-c) Or using method 2
-Open R and run (choose 3 no update any packages): 
-```
-devtools::install_github("weizhouUMICH/SAIGE")
+R CMD INSTALL SAIGE_XX_R_x86_64-pc-linux-gnu.tar.gz
 ```
 
 ## Run SAIGE for single-variant association tests and SAIGE-GENE for gene- or region-based tests
