@@ -104,8 +104,6 @@ The docker image can be pulled
 docker pull wzhou88/saige:0.36.6
 ```
 
-[Dockerfile for creating your own docker image for SAIGE](https://github.com/weizhouUMICH/Docker/tree/master/SAIGE)
-
 Functions can be called
 ```
 step1_fitNULLGLMM.R --help
