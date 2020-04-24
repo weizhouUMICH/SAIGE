@@ -17,7 +17,7 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] optparse_1.6.4 SAIGE_0.36.3.4
+[1] optparse_1.6.4 SAIGE_0.36.4  
 
 loaded via a namespace (and not attached):
 [1] compiler_3.6.1     Matrix_1.2-17      Rcpp_1.0.3         getopt_1.20.3     
@@ -26,7 +26,7 @@ $plinkFile
 [1] "./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly"
 
 $phenoFile
-[1] "./input/pheno_1000samples_survival.50cases.txt"
+[1] "./input/pheno_1000samples_survival.txt"
 
 $phenoCol
 [1] "casecontrol"
@@ -37,8 +37,11 @@ $traitType
 $eventTimeCol
 [1] "AgeOfEventFinal"
 
+$eventTimeBinSize
+[1] 1
+
 $pcgforUhatforSurvAnalysis
-[1] FALSE
+[1] TRUE
 
 $invNormalize
 [1] FALSE
@@ -71,7 +74,7 @@ $numRandomMarkerforVarianceRatio
 [1] 30
 
 $skipModelFitting
-[1] TRUE
+[1] FALSE
 
 $memoryChunk
 [1] 2
@@ -89,7 +92,7 @@ $ratioCVcutoff
 [1] 0.001
 
 $outputPrefix
-[1] "./output_test/example_survival.50cases"
+[1] "./output_test/example_survival"
 
 $IsSparseKin
 [1] FALSE
@@ -145,28 +148,42 @@ cateVarRatioMaxMACVecInclude  is  1.5 2.5 3.5 4.5 5.5 10.5 20.5
 [1] 1 0
 Markers in the Plink file with MAF >=  0.01  will be used to construct GRM
 4  threads are set to be used  
-WARNING: The variance ratio file  ./output_test/example_survival.50cases.varianceRatio.txt  already exists. The new variance ratios will be output to  ./output_test/example_survival.50cases.varianceRatio.txt . In order to avoid over-writting, please remove the  ./output_test/example_survival.50cases.varianceRatio.txt  or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s)
+WARNING: The variance ratio file  ./output_test/example_survival.varianceRatio.txt  already exists. The new variance ratios will be output to  ./output_test/example_survival.varianceRatio.txt . In order to avoid over-writting, please remove the  ./output_test/example_survival.varianceRatio.txt  or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s)
 1000  samples have genotypes
+eventTimeBinSize is specified, so event time will be grouped by bins with size  1 
 formula is  casecontrol~X 
 1000  samples have non-missing phenotypes
 1000  samples will be used for analysis
 qr transformation has been performed on covariates
-colnames(data.new) is  Y minus1 X 
-out.transform$Param.transform$qrr:  2 2 
+[1] "data.new"
+    X1          X2
+1    1 -1.54992823
+113  0  0.44553114
+224  0 -0.07180992
+335  0 -0.83129611
+446  0 -0.67519515
+557  0 -1.81225485
+colnames(data.new) is  Y X 
+out.transform$Param.transform$qrr:  1 1 
 casecontrol  is a binary trait
 Survival analysis will be performed
+Y ~ X
+<environment: 0x39a3bd8>
 glm:
 
 Call:  glm(formula = formula.new, family = binomial, data = data.new)
 
 Coefficients:
-minus1       X  
-3.1641  0.7046  
+(Intercept)            X  
+    -1.4069      -0.8796  
 
-Degrees of Freedom: 1000 Total (i.e. Null);  998 Residual
-Null Deviance:	    1386 
-Residual Deviance: 373.9 	AIC: 377.9
-Skip fitting the NULL GLMM
+Degrees of Freedom: 999 Total (i.e. Null);  998 Residual
+Null Deviance:	    1069 
+Residual Deviance: 955.5 	AIC: 959.5
+Start fitting the NULL GLMM
+   user  system elapsed 
+  1.217   0.168   1.256 
+[1] "Start reading genotype plink file here"
 nbyte: 250
 nbyte: 250
 reserve: 32474736
@@ -178,2135 +195,1188 @@ setgeno mark2
 111305 markers with MAF >= 0.01 are used for GRM.
 setgeno mark5
 setgeno mark6
-time: 1900.67
+time: 1734
+[1] "Genotype reading is done"
+inital tau is  1 0 
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+Tau:
+[1] 1 0
+Fixed-effect coefficients:
+           [,1]
+[1,] -0.2036746
+iGet_Coef:  2 
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+Tau:
+[1] 1 0
+Fixed-effect coefficients:
+           [,1]
+[1,] -0.8313345
+iGet_Coef:  3 
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+Tau:
+[1] 1 0
+Fixed-effect coefficients:
+          [,1]
+[1,] -0.846737
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+Variance component estimates:
+[1] 1 0
+
+Iteration  1 1 0 :
+tau0_v1:  1 0 
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+Tau:
+[1] 1 0
+Fixed-effect coefficients:
+           [,1]
+[1,] -0.2036746
+iGet_Coef:  2 
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+Tau:
+[1] 1 0
+Fixed-effect coefficients:
+           [,1]
+[1,] -0.8313345
+iGet_Coef:  3 
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+Tau:
+[1] 1 0
+Fixed-effect coefficients:
+          [,1]
+[1,] -0.846737
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+[1] 0.0000000 0.8598824
+tau:  1 0.1227372 
+tau0:  1 0 
+
+Iteration  2 1 0.1227372 :
+tau0_v1:  1 0.1227372 
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+Tau:
+[1] 1.0000000 0.1227372
+Fixed-effect coefficients:
+           [,1]
+[1,] -0.8810339
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 3
+[1] 0.00000000 0.08470065
+tau:  1 0.1020072 
+tau0:  1 0.1227372 
+
+Iteration  3 1 0.1020072 :
+tau0_v1:  1 0.1020072 
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+Tau:
+[1] 1.0000000 0.1020072
+Fixed-effect coefficients:
+           [,1]
+[1,] -0.8763147
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 3
+[1] 0.0000000 0.2596929
+tau:  1 0.1805894 
+tau0:  1 0.1020072 
+
+Iteration  4 1 0.1805894 :
+tau0_v1:  1 0.1805894 
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+Tau:
+[1] 1.0000000 0.1805894
+Fixed-effect coefficients:
+           [,1]
+[1,] -0.8904785
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+[1] 0.00000000 0.04020868
+tau:  1 0.1658552 
+tau0:  1 0.1805894 
+
+Iteration  5 1 0.1658552 :
+tau0_v1:  1 0.1658552 
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+Tau:
+[1] 1.0000000 0.1658552
+Fixed-effect coefficients:
+           [,1]
+[1,] -0.8877984
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+[1] 0.00000 0.10704
+tau:  1 0.208015 
+tau0:  1 0.1658552 
+
+Iteration  6 1 0.208015 :
+tau0_v1:  1 0.208015 
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+Tau:
+[1] 1.000000 0.208015
+Fixed-effect coefficients:
+           [,1]
+[1,] -0.8942835
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+[1] 0.0000000 0.0192599
+tau:  1 0.1997758 
+tau0:  1 0.208015 
+
+Final  1 0.1997758 :
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 4
+Tau:
+[1] 1.0000000 0.1997758
+Fixed-effect coefficients:
+           [,1]
+[1,] -0.8931736
+dim(X1):  1000 1 
+length(V):  1000 
+   user  system elapsed 
+428.218   0.751 216.795 
+t_end - t_begin, fitting the NULL model took
+   user  system elapsed 
+427.001   0.583 215.539 
 Start estimating variance ratios
 
 Family: binomial 
 Link function: logit 
 
           used (Mb) gc trigger  (Mb) max used  (Mb)
-Ncells 1646301 88.0    2514678 134.3  2514678 134.3
-Vcells 3458085 26.4    8388608  64.0  5837617  44.6
+Ncells 1651732 88.3    2514678 134.3  2514678 134.3
+Vcells 3434504 26.3    8388608  64.0  8388580  64.0
 [1] 1000
-[1] 45
-[1] FALSE
-[1] "Herehere"
-dim(Rmat):  1000 45 
-dim(sqrtWinvN):  1000 1000 
-dim(sqrtWinvNR):  1000 45 
-dim(Dinv):  45 45 
-dim(WinvN):  1000 1000 
-dim(Rmat):  1000 45 
-dim(WinvNRt):  1000 45 
-dim(ACinv):  45 45 
+[1] 154
+[1] TRUE
 Only one variance ratio will be estimated using randomly selected markers with MAC >= 20
-  -2.1807e-02
-  -4.1412e-03
-  -4.0956e-03
-  -1.2388e-02
-  -8.4125e-04
-  -1.1843e-03
-  -2.1431e-02
-  -2.0038e-03
-  -6.6696e-03
-  -3.7287e-03
-  -6.9055e-05
-  -3.3290e-02
-  -2.4239e-03
-  -2.8597e-02
-  -3.9450e-03
-   1.4069e-05
-  -8.8141e-03
-  -1.3888e-02
-   2.1574e-04
-  -1.0770e-02
-  -4.3346e-02
-  -3.2886e-02
-  -4.7540e-02
-  -7.8211e-03
-  -1.4089e-03
-  -2.9776e-02
-  -3.4387e-02
-  -5.0864e-03
-  -5.2730e-03
-  -1.1084e-02
-  -1.0376e-06
-  -3.8808e-02
-  -1.3035e-03
-  -2.1687e-02
-  -8.1575e-03
-  -6.3479e-04
-   3.2489e-05
-  -1.5776e-02
-  -1.0121e-02
-  -1.6765e-02
-   2.7515e-05
-  -3.3905e-02
-  -4.2631e-07
-   2.1487e-05
-  -3.1459e-03
-  -2.1377e-02
-  -4.6566e-10
-  -1.3017e-02
-  -1.8881e-02
-  -1.0815e-02
-  -5.6375e-03
-  -2.8460e-03
-  -8.1031e-02
-  -1.2251e-02
-  -6.1845e-04
-  -9.8870e-04
-  -3.1736e-02
-   1.4137e-06
-  -1.7914e-03
-  -9.0481e-04
-  -5.7337e-03
-   3.2467e-06
-   1.0468e-05
-  -5.0378e-04
-   1.5090e-05
-  -2.7733e-02
-  -3.5205e-03
-  -8.7310e-04
-  -1.4749e-02
-  -8.2077e-03
-  -6.5052e-02
-  -3.2621e-02
-  -2.5158e-02
-   2.9872e-06
-  -8.6954e-03
-  -8.3972e-03
-  -2.7937e-03
-  -1.8135e-03
-  -1.4034e-03
-  -5.4676e-04
-  -2.4662e-03
-  -5.0798e-02
-  -1.0362e-03
-  -2.7875e-02
-  -2.7788e-03
-  -2.5304e-02
-  -4.2462e-03
-   2.0092e-05
-  -2.2883e-02
-  -2.3662e-02
-   2.5975e-06
-  -2.4568e-03
-  -1.6245e-02
-   8.2147e-06
-  -1.0041e-02
-  -8.7083e-03
-  -1.3471e-02
-  -1.2901e-02
-  -7.3904e-03
-  -5.6750e-03
-  -1.2991e-04
-  -2.0691e-02
-  -1.7894e-03
-  -7.6200e-03
-  -1.3204e-02
-  -8.5919e-03
-  -1.4068e-02
-  -1.2315e-04
-   8.8542e-05
-  -1.0473e-02
-  -1.9856e-02
-  -5.3764e-02
-  -3.2541e-03
-  -1.3811e-03
-  -5.2606e-03
-  -5.5313e-03
-  -1.7871e-03
-  -5.0967e-03
-  -1.0979e-02
-  -2.0438e-02
-  -2.4957e-02
-   1.1562e-06
-  -1.2422e-03
-  -1.8631e-02
-  -3.4220e-03
-  -8.9772e-02
-   2.9909e-06
-  -1.7796e-03
-  -5.4729e-04
-  -1.3703e-03
-  -4.5462e-02
-  -3.9169e-02
-  -6.6468e-03
-  -6.2199e-03
-  -3.9811e-03
-  -2.6426e-02
-  -1.0246e-03
-  -1.0678e-02
-  -7.2899e-05
-  -3.0752e-04
-  -1.0856e-02
-  -5.3026e-03
-  -2.0998e-02
-  -1.8817e-03
-  -1.4014e-02
-  -5.9580e-04
-  -1.4615e-02
-  -6.8116e-03
-  -1.1161e-02
-  -1.1326e-02
-  -1.0958e-01
-  -1.2869e-03
-  -1.8410e-03
-  -2.6690e-02
-  -4.3557e-03
-  -2.7690e-02
-  -1.8425e-02
-  -1.1861e-02
-  -6.9902e-03
-  -4.7952e-02
-  -1.5490e-01
-  -5.3600e-02
-  -1.2681e-03
-  -1.5935e-03
-  -1.3146e-02
-  -6.4804e-03
-  -1.4426e-06
-  -3.1937e-03
-  -2.4407e-03
-  -7.4564e-02
-  -1.1223e-02
-  -1.1463e-02
-  -1.8453e-02
-   1.7269e-05
-  -2.3262e-02
-  -5.2747e-02
-  -1.7004e-02
-  -1.1961e-02
-  -1.0877e-03
-  -8.7968e-03
-  -5.8735e-04
-  -6.9208e-04
-  -1.6235e-04
-  -7.3261e-03
-  -5.8133e-03
-  -7.3653e-04
-  -5.5542e-02
-  -2.9714e-04
-  -1.6009e-02
-  -2.6169e-03
-  -1.4911e-03
-  -8.5271e-03
-  -1.6230e-02
-  -1.2550e-02
-  -1.3396e-03
-  -2.2217e-02
-  -1.1894e-02
-  -6.2884e-02
-  -7.3109e-04
-  -3.0032e-03
-  -7.8543e-03
-  -2.7323e-02
-  -5.7567e-02
-  -2.1750e-03
-  -1.5344e-07
-  -1.5612e-04
-  -9.1721e-05
-   2.0105e-05
-  -1.0979e-03
-  -2.2313e-03
-  -2.6132e-02
-   1.0646e-04
-   9.3970e-07
-  -3.1542e-03
-  -2.4760e-02
-  -9.5311e-04
-   1.3131e-05
-  -3.0641e-07
-  -2.1597e-03
-  -2.3790e-02
-  -2.4473e-02
-  -3.7530e-03
-  -1.4677e-02
-  -2.3481e-02
-  -8.8521e-03
-  -1.4690e-04
-  -4.2506e-03
-  -1.1014e-03
-  -8.6225e-03
-  -3.2164e-03
-  -9.2535e-04
-  -1.3708e-02
-  -4.3879e-03
-  -1.5102e-02
-  -2.0615e-02
-  -1.0785e-02
-  -2.1080e-02
-  -2.4726e-03
-  -1.4753e-02
-  -9.0517e-03
-  -4.1056e-02
-  -3.3856e-03
-  -1.7328e-03
-  -2.8266e-03
-   1.0924e-05
-   1.7742e-07
-  -3.2938e-03
-  -5.6995e-03
-  -6.8409e-04
-  -1.8747e-02
-  -1.8106e-02
-  -3.8094e-04
-  -5.4704e-04
-  -3.5291e-02
-  -1.4546e-03
-  -7.7049e-03
-   5.1593e-06
-  -1.2302e-03
-  -3.1181e-02
-  -6.8740e-03
-   2.6040e-06
-  -6.3050e-03
-  -2.4375e-03
-  -6.7617e-04
-   9.8841e-06
-   4.5802e-06
-  -2.6783e-03
-  -2.2711e-02
-  -1.1365e-01
-  -2.4664e-03
-  -1.6042e-02
-  -2.2445e-07
-   2.5473e-06
-  -6.0200e-03
-   2.0669e-05
-  -2.9444e-02
-  -9.6593e-03
-   2.2153e-06
-  -3.5632e-02
-  -4.9779e-02
-  -2.5375e-03
-  -3.0688e-05
-  -1.2297e-02
-  -1.3937e-02
-  -3.7606e-04
-  -2.0504e-02
-  -1.8277e-02
-  -3.2635e-05
-  -4.7355e-03
-  -6.1556e-03
-  -2.1029e-02
-  -2.1433e-02
-  -5.4034e-03
-  -8.1366e-03
-  -8.8023e-03
-   3.5251e-07
-  -1.9737e-02
-  -7.5703e-03
-  -3.1678e-04
-  -1.6476e-02
-  -6.6408e-02
-  -1.9676e-02
-  -8.8360e-03
-  -4.2631e-02
-  -5.5105e-07
-  -1.2118e-02
-  -3.3174e-03
-  -2.1017e-03
-  -2.2120e-03
-   8.4257e-06
-  -4.4649e-02
-  -4.8809e-02
-  -4.6631e-02
-  -2.4694e-02
-  -1.9427e-04
-  -9.6623e-04
-  -5.8359e-03
-  -6.2450e-02
-   1.3329e-05
-  -1.0401e-03
-  -1.8529e-02
-  -5.2142e-03
-   5.5898e-06
-  -1.5369e-02
-  -6.4395e-02
-  -3.3665e-03
-  -6.7370e-02
-  -2.5832e-02
-  -5.2953e-03
-  -3.2948e-02
-  -3.1912e-02
-  -2.3418e-03
-   2.6010e-05
-  -2.0758e-02
-  -1.3331e-02
-  -5.2311e-03
-  -2.1303e-02
-  -1.8512e-03
-  -1.5090e-02
-  -8.2813e-04
-  -6.4859e-03
-  -4.4552e-02
-  -3.8930e-02
-  -3.5191e-02
-  -5.6912e-03
-  -4.4467e-03
-  -2.8747e-03
-  -3.5357e-03
-  -1.0757e-03
-  -1.5410e-02
-  -6.5208e-03
-   2.3482e-05
-  -3.9404e-02
-   6.2186e-05
-  -7.1601e-03
-   2.0111e-05
-  -4.2546e-03
-  -6.9432e-03
-  -2.8909e-02
-  -2.6734e-03
-  -4.6795e-03
-  -1.8469e-02
-  -1.7745e-02
-  -7.7375e-03
-  -1.2109e-02
-  -7.8362e-04
-  -1.6404e-04
-  -7.2646e-02
-  -1.2774e-02
-  -9.1181e-03
-  -3.2519e-03
-  -7.8809e-03
-  -3.9454e-05
-   1.3495e-06
-  -3.8469e-04
-  -1.9475e-02
-  -3.4336e-03
-  -6.2031e-03
-  -1.7197e-02
-  -6.2444e-04
-  -1.8214e-02
-  -2.3073e-02
-   1.8785e-06
-  -9.8679e-05
-  -5.5509e-03
-  -1.1141e-04
-  -4.1185e-03
-  -3.5816e-03
-  -1.4690e-04
-  -5.7037e-04
-  -7.1875e-03
-  -8.7949e-04
-  -2.1739e-02
-  -4.8724e-03
-  -2.7691e-02
-  -8.2927e-03
-  -5.8842e-04
-  -2.8754e-02
-  -4.3359e-03
-  -4.8498e-03
-  -1.6186e-02
-  -5.8260e-03
-  -1.7431e-02
-  -8.5294e-03
-  -2.4224e-03
-  -2.9584e-02
-  -4.5729e-02
-  -5.4225e-03
-  -4.8915e-03
-  -4.3339e-03
-  -6.1835e-03
-  -1.7687e-02
-  -5.0589e-02
-  -1.2122e-03
-  -8.9961e-03
-  -1.0652e-02
-  -3.9713e-03
-  -1.1123e-03
-  -1.8115e-03
-  -2.1990e-03
-   4.8820e-06
-  -2.2642e-02
-  -1.2591e-02
-  -4.4793e-03
-   6.6990e-06
-  -6.6583e-02
-  -1.4193e-02
-   2.1808e-05
-  -6.7437e-03
-  -6.6574e-03
-  -5.9705e-03
-  -4.0406e-02
-  -2.0237e-03
-  -1.6455e-02
-  -1.4840e-02
-  -2.5873e-02
-  -1.3614e-02
-  -2.4799e-03
-   1.1107e-04
-  -1.9371e-02
-  -2.2712e-02
-   6.3559e-05
-  -1.3711e-02
-  -1.1083e-06
-  -2.6799e-03
-  -2.9728e-02
-  -4.8075e-03
-  -3.3789e-02
-  -1.9175e-03
-  -5.2352e-03
-  -3.1861e-02
-  -2.2073e-03
-  -3.8196e-02
-  -1.9965e-02
-   8.7717e-05
-  -2.9677e-02
-   1.3099e-05
-  -1.7991e-03
-  -3.7676e-02
-  -5.6296e-02
-  -1.8865e-02
-   1.3574e-05
-  -4.7458e-03
-   1.2214e-04
-  -1.5358e-02
-   7.0108e-05
-  -2.1675e-03
-  -1.1465e-06
-  -9.8209e-04
-  -1.8606e-02
-   1.1064e-05
-  -4.1065e-02
-  -1.6844e-02
-  -2.2112e-02
-  -4.9822e-03
-  -7.8279e-03
-  -2.4214e-02
-  -3.0214e-02
-  -2.1037e-03
-   1.1419e-05
-  -6.9478e-03
-  -6.2596e-02
-  -6.1374e-03
-  -7.0382e-03
-  -1.7087e-02
-  -1.6733e-02
-  -2.5325e-02
-  -7.0867e-03
-  -9.3476e-03
-  -1.0197e-03
-  -8.4815e-03
-  -8.3780e-03
-  -9.4286e-04
-  -3.3997e-02
-   4.1444e-06
-  -3.3901e-03
-  -2.1782e-03
-   1.2938e-05
-  -8.4111e-03
-   3.1117e-05
-   6.6685e-05
-  -5.0999e-03
-  -3.0853e-03
-  -3.9617e-02
-   5.0345e-04
-  -1.3623e-02
-  -4.8769e-03
-  -2.1168e-03
-   1.5045e-05
-  -1.5821e-03
-  -1.8945e-02
-  -7.6938e-03
-  -3.3731e-03
-  -3.8463e-03
-  -1.1351e-03
-  -2.0549e-03
-  -3.6148e-03
-  -2.6974e-02
-  -1.1119e-04
-  -8.8328e-03
-  -3.0791e-03
-  -1.2698e-02
-  -7.5186e-03
-  -1.3745e-02
-  -2.0245e-03
-   2.1359e-05
-  -2.1319e-02
-  -8.2277e-03
-   4.4636e-06
-  -3.5678e-02
-  -1.9393e-02
-  -4.5928e-02
-  -2.7354e-02
-   1.5639e-06
-  -2.0053e-02
-  -6.0031e-04
-  -1.5195e-04
-  -2.9844e-02
-  -9.7657e-03
-  -5.6445e-04
-  -4.0298e-05
-  -3.6133e-03
-  -1.1772e-02
-  -2.3848e-03
-  -1.3951e-03
-  -1.1621e-06
-  -1.4759e-02
-  -2.0413e-03
-   4.5600e-06
-  -5.0542e-04
-  -6.6271e-03
-  -5.3656e-04
-  -1.4807e-02
-  -3.9709e-02
-  -1.3946e-03
-  -4.4352e-03
-  -1.3165e-02
-  -1.2463e-02
-  -1.5770e-04
-  -1.5267e-02
-  -1.1746e-03
-  -1.7089e-03
-  -1.1130e-03
-  -7.4064e-03
-  -2.9223e-02
-  -1.0097e-02
-   3.6802e-05
-  -6.1200e-03
-  -8.8046e-03
-  -9.7323e-07
-   3.0624e-06
-  -1.9591e-03
-  -2.1938e-02
-  -5.5603e-02
-  -1.9624e-03
-  -1.6335e-04
-  -1.0799e-02
-  -2.5808e-02
-  -2.0133e-02
-  -4.0906e-02
-  -7.8034e-02
-  -3.3988e-03
-  -6.7451e-03
-  -6.2636e-04
-  -9.9639e-04
-  -3.0265e-03
-  -2.9268e-02
-   3.5791e-06
-  -1.1262e-02
-  -8.9252e-03
-  -6.5964e-04
-  -1.1219e-02
-  -2.7370e-02
-  -1.9894e-04
-  -5.2861e-03
-  -2.1528e-02
-  -8.3052e-03
-  -1.1741e-02
-  -3.2873e-02
-  -9.0045e-04
-  -2.9695e-02
-  -4.0224e-03
-  -1.2895e-03
-  -8.3507e-03
-  -6.6563e-03
-  -1.4794e-02
-  -2.1424e-02
-  -1.0288e-02
-  -3.2257e-02
-  -6.3918e-03
-  -3.5584e-02
-   5.7489e-05
-  -3.0423e-02
-  -1.1898e-02
-  -5.1763e-02
-  -3.7809e-03
-  -4.0334e-02
-  -7.1390e-04
-  -4.3802e-03
-  -6.1793e-02
-  -4.6270e-03
-  -3.2824e-04
-  -6.0833e-07
-  -6.0660e-04
-  -7.4100e-02
-  -1.3210e-02
-  -6.1781e-04
-  -1.5513e-01
-  -4.0549e-02
-  -1.0126e-03
-  -1.8141e-02
-  -1.6914e-02
-  -3.1320e-03
-  -1.7549e-03
-  -2.5803e-02
-  -1.5400e-03
-   4.4145e-07
-  -1.1014e-02
-  -1.4810e-02
-  -1.2720e-02
-  -3.5656e-02
-  -5.4521e-03
-  -2.6885e-03
-  -2.4223e-03
-  -1.9158e-02
-  -1.4822e-02
-  -7.1519e-03
-   2.2220e-05
-  -4.4548e-03
-  -6.2179e-03
-  -2.0587e-02
-  -9.1449e-03
-  -3.0546e-02
-  -3.9986e-02
-  -1.0306e-02
-  -4.9087e-03
-  -2.0881e-02
-  -2.7118e-03
-  -7.1886e-02
-  -9.3596e-03
-  -2.6599e-03
-  -1.5185e-03
-   1.6149e-06
-  -1.1991e-02
-  -7.6930e-03
-  -2.2016e-03
-  -2.1664e-02
-   7.0874e-07
-  -2.6832e-03
-  -2.0942e-03
-  -1.5432e-02
-  -4.8177e-03
-   9.8753e-06
-  -3.0698e-03
-  -6.9236e-03
-  -5.2450e-03
-  -3.0112e-03
-  -5.0379e-02
-   2.6498e-06
-  -1.8025e-02
-  -3.9320e-02
-  -1.4956e-02
-   3.0908e-06
-  -2.4442e-03
-  -1.3492e-02
-  -6.5168e-03
-  -1.9916e-02
-  -6.2128e-03
-  -3.6384e-02
-   1.4649e-04
-  -1.2826e-02
-  -4.1619e-03
-  -2.0242e-02
-  -4.8840e-04
-  -1.1962e-03
-  -4.7099e-02
-  -1.4866e-04
-  -5.0632e-02
-  -8.4140e-03
-  -4.7904e-04
-  -3.7744e-04
-  -3.9098e-02
-   9.5447e-06
-  -9.5225e-03
-  -1.7749e-03
-  -1.1143e-02
-  -3.6688e-03
-  -8.1737e-03
-  -1.7143e-02
-  -6.9439e-03
-  -3.1509e-03
-  -5.5363e-02
-   5.1258e-07
-  -3.2801e-03
-  -4.3389e-02
-   3.6827e-05
-  -2.8606e-02
-  -6.6435e-02
-  -2.0205e-02
-  -4.7413e-04
-  -1.8257e-02
-  -7.6546e-03
-  -7.4756e-03
-  -1.9836e-03
-  -1.1142e-02
-  -2.1244e-03
-  -2.5955e-05
-  -3.1210e-02
-  -1.4095e-03
-  -1.0691e-03
-   1.8049e-06
-  -1.0019e-01
-  -2.1574e-02
-  -2.0243e-04
-  -4.6639e-05
-  -5.2245e-03
-  -2.9869e-02
-  -3.3505e-02
-  -2.3536e-02
-  -1.1335e-03
-  -2.5673e-02
-  -7.8075e-03
-  -1.5926e-04
-  -5.6094e-05
-  -1.8169e-02
-  -6.1016e-03
-   2.1691e-05
-  -1.7280e-03
-  -9.0612e-04
-  -3.2735e-04
-  -2.0059e-02
-  -1.0364e-03
-  -1.7999e-02
-   8.3726e-06
-  -2.2175e-03
-  -1.1498e-06
-   3.0662e-05
-  -2.0473e-02
-  -6.8514e-03
-  -1.8698e-03
-   3.4038e-05
-  -8.6302e-04
-  -6.9888e-03
-  -8.9115e-03
-  -5.7238e-03
-  -3.1914e-02
-  -1.2988e-02
-   1.8188e-05
-  -2.9340e-02
-  -6.6867e-03
-  -2.6592e-03
-  -7.5344e-03
-  -1.3312e-06
-  -8.5206e-03
-  -1.5924e-02
-  -1.3677e-02
-  -3.4228e-03
-  -1.1171e-06
-  -7.5418e-03
-  -1.7937e-03
-  -1.1603e-02
-  -4.8281e-04
-  -1.3803e-02
-  -9.5405e-03
-  -1.8464e-03
-  -1.2796e-02
-  -2.1034e-02
-  -5.3830e-04
-  -8.9037e-03
-  -3.6141e-02
-   6.5449e-06
-  -2.9113e-04
-  -9.8861e-02
-  -2.6099e-03
-  -3.6192e-02
-  -1.5554e-03
-  -1.1674e-03
-  -1.3186e-02
-   3.9211e-06
-  -7.9309e-03
-  -5.7244e-03
-  -7.4505e-04
-  -3.1485e-03
-  -9.2952e-03
-  -9.9236e-04
-  -6.6277e-02
-  -2.3842e-02
-   9.7197e-06
-  -9.8865e-04
-  -2.3836e-02
-  -1.7455e-03
-  -4.0995e-03
-  -5.4978e-03
-  -1.8501e-02
-  -3.7315e-03
-  -3.1327e-03
-  -1.0647e-02
-  -1.1093e-02
-  -1.4110e-02
-  -1.4219e-02
-  -1.4797e-02
-  -3.9235e-04
-  -8.8048e-02
-  -1.4352e-06
-  -6.9587e-04
-  -2.0017e-02
-  -3.4591e-02
-  -1.1615e-01
-   1.3970e-09
-  -1.6872e-02
-  -1.4964e-03
-   3.5483e-07
-  -3.5296e-03
-  -1.0833e-02
-  -1.7128e-02
-  -4.1419e-03
-  -1.7209e-02
-   2.7709e-05
-  -1.6181e-04
-  -7.9636e-03
-  -1.7683e-02
-  -4.9346e-03
-  -1.2690e-02
-  -2.7908e-03
-  -3.4572e-03
-   1.5832e-06
-  -9.7465e-03
-  -2.2538e-03
-  -5.5706e-03
-  -7.1965e-03
-   1.7220e-06
-  -1.7738e-03
-  -2.0666e-03
-  -8.2174e-02
-  -5.0701e-03
-  -1.0955e-03
-  -2.1308e-02
-  -8.7637e-07
-  -8.7922e-02
-  -1.1782e-02
-  -3.4395e-02
-  -1.5859e-02
-   8.8047e-06
-   4.9975e-06
-  -1.5237e-03
-  -1.5943e-02
-  -4.3177e-03
-  -2.0012e-03
-  -1.8744e-02
-  -4.3951e-03
-  -6.5757e-02
-  -3.8227e-03
-   9.9856e-06
-  -3.3730e-03
-  -1.5166e-02
-   5.0017e-05
-  -2.2718e-03
-  -5.0235e-03
-  -4.6219e-03
-  -2.0158e-03
-  -1.7260e-02
-  -3.4475e-02
-  -7.0950e-03
-  -7.7022e-03
-  -1.4523e-02
-  -5.1811e-03
-  -1.2698e-02
-  -1.1462e-02
-  -3.5567e-03
-  -7.9143e-04
-  -2.2366e-02
-  -3.2384e-03
-  -1.2015e-02
-  -4.1021e-04
-  -1.2954e-02
-  -2.1936e-04
-  -3.0964e-03
-  -3.3116e-03
-  -3.3427e-02
-  -7.9875e-03
-  -1.0560e-02
-   8.3977e-06
-  -1.6840e-02
-  -1.4749e-02
-  -1.0446e-02
-  -2.4118e-02
-  -2.1079e-03
-  -3.2915e-02
-   3.3055e-05
-  -3.5522e-03
-  -1.3419e-02
-  -1.1714e-02
-  -1.4488e-04
-  -4.8869e-03
-   5.7843e-06
-   1.7967e-05
-  -4.5655e-03
-  -5.7500e-03
-  -6.6259e-04
-  -3.3094e-02
-  -2.6941e-02
-  -3.0697e-05
-   1.5328e-05
-   3.5394e-05
-  -6.8122e-04
-  -5.3411e-07
-  -5.2479e-03
-   8.6026e-05
-  -1.2442e-02
-  -2.7214e-03
-  -2.7993e-03
-  -2.4670e-04
-   2.4823e-05
-  -6.8311e-05
-  -8.1363e-03
-  -7.7827e-03
-  -5.0183e-02
-  -1.7734e-02
-  -1.0349e-02
-  -1.7254e-02
-  -3.8574e-03
-  -1.5555e-02
-  -5.7626e-02
-  -7.3342e-03
-  -1.8185e-02
-  -1.5850e-02
-  -2.0874e-02
-  -3.3770e-04
-   2.3795e-07
-  -1.5957e-02
-  -4.0388e-03
-  -1.6717e-02
-   7.1577e-06
-  -1.0320e-02
-  -2.7204e-02
-  -3.3687e-03
-  -8.4955e-03
-   5.8473e-06
-  -1.2477e-06
-  -7.2695e-03
-  -2.6199e-02
-  -8.7544e-03
-  -5.8288e-03
-  -2.5279e-03
-  -2.9906e-02
-  -1.0573e-03
-  -1.0128e-02
-  -1.5016e-03
-  -3.6081e-02
-  -4.9789e-04
-  -8.9588e-03
-  -1.2514e-02
-  -1.2711e-02
-  -1.1982e-03
-  -1.4992e-02
-  -1.1672e-02
-  -1.1808e-02
-   8.5214e-06
-  -1.5696e-03
-  -5.4459e-07
-  -5.0348e-03
-  -3.8521e-03
-  -4.0401e-02
-  -1.9053e-03
-  -1.0385e-03
-  -4.3049e-03
-  -2.9156e-04
-  -2.6567e-03
-  -6.7581e-04
-  -1.4204e-02
-  -5.9590e-03
-  -1.0810e-02
-  -4.9768e-04
-  -8.0034e-03
-  -2.3140e-04
-  -6.5017e-03
-  -8.6348e-03
-  -4.6252e-03
-  -1.1963e-06
-  -2.2060e-03
-iter from getPCG1ofSigmaAndVector 4
-   1.1074e-01
-  -2.2895e-02
-  -1.5280e-02
-   1.4630e-02
-  -3.4673e-03
-   4.7567e-02
-  -5.6275e-03
-  -1.8642e-02
-  -3.8222e-02
-  -1.4820e-02
-  -7.4050e-03
-   3.7331e-02
-  -1.8688e-02
-  -1.4444e-02
-  -1.8644e-02
-   4.5467e-03
-  -4.1446e-02
-  -3.8960e-02
-   5.0424e-02
-  -3.0754e-03
-   8.4053e-02
-   2.5297e-02
-   2.3407e-03
-  -3.0553e-02
-  -1.6161e-02
-  -3.5006e-02
-  -4.1863e-02
-  -1.1920e-02
-  -3.3152e-02
-   1.2715e-01
-  -3.9022e-03
-   8.3416e-02
-  -1.5301e-02
-  -3.8743e-02
-  -4.2162e-02
-  -1.2103e-02
-  -2.8508e-03
-   3.9875e-02
-  -4.7432e-02
-   9.4714e-02
-   2.0779e-02
-   3.8912e-02
-  -1.0560e-03
-   1.3562e-02
-  -1.7597e-02
-   3.6068e-03
-  -6.7158e-03
-  -3.0587e-02
-   5.0903e-01
-   6.0156e-04
-  -2.8747e-02
-   9.9608e-03
-   5.9398e-01
-  -1.4501e-02
-  -1.1531e-02
-  -1.4048e-04
-  -2.4665e-02
-  -2.8346e-03
-  -1.6207e-02
-  -1.2007e-02
-  -3.2232e-02
-  -1.7825e-03
-   1.0756e-03
-  -9.3709e-03
-  -4.6919e-03
-   8.8964e-03
-  -2.1142e-02
-  -2.8675e-03
-   3.1570e-02
-  -3.2371e-02
-   1.8412e-01
-   8.7213e-02
-  -3.9100e-02
-  -3.3343e-03
-  -3.3162e-03
-  -2.2097e-02
-  -2.3086e-02
-  -1.6209e-02
-  -1.6293e-02
-  -1.1295e-02
-   1.4192e-01
-   9.3910e-02
-  -1.4423e-02
-  -3.5222e-02
-  -2.3774e-02
-  -3.3507e-02
-  -3.0737e-02
-   1.2293e-02
-  -1.5047e-02
-  -4.9507e-02
-  -5.8547e-03
-  -1.8693e-02
-  -5.0224e-02
-  -3.1851e-03
-  -3.2013e-02
-  -3.5084e-02
-  -2.5631e-02
-  -4.8418e-02
-  -4.0647e-02
-  -2.6232e-02
-  -8.3013e-03
-  -4.8624e-02
-  -1.7286e-02
-  -3.8074e-02
-  -3.9919e-02
-  -7.9036e-03
-  -8.1589e-03
-  -4.1380e-03
-   3.1059e-03
-  -2.6657e-02
-  -4.6666e-03
-   3.5507e-02
-  -2.4860e-02
-  -1.1493e-02
-  -2.1960e-02
-  -3.2021e-02
-  -3.0185e-03
-   4.3165e-02
-  -3.9134e-02
-  -2.8538e-02
-  -4.4279e-02
-  -2.8210e-03
-  -1.3111e-02
-  -4.9458e-02
-  -2.6828e-02
-   2.5983e-01
-  -1.8084e-03
-  -1.0362e-02
-  -4.9377e-03
-  -7.6595e-03
-  -8.3670e-03
-  -2.5999e-02
-  -1.5748e-02
-  -2.7560e-02
-  -2.3061e-02
-  -3.5647e-02
-  -1.4225e-02
-  -3.4629e-02
-  -1.0890e-02
-  -9.4411e-03
-  -3.0750e-02
-  -3.0897e-02
-  -4.0123e-02
-  -5.8940e-03
-  -4.6112e-02
-  -8.6567e-03
-  -4.4929e-02
-  -1.5929e-03
-  -3.7893e-02
-  -4.6803e-02
-   2.0158e-01
-  -1.5189e-02
-  -1.9874e-02
-  -7.0328e-03
-  -2.9655e-02
-  -7.0440e-03
-  -5.3584e-02
-   9.7955e-03
-  -1.9131e-03
-   1.0912e-02
-   6.5128e-01
-   9.9095e-02
-  -1.6134e-02
-  -1.7209e-02
-  -2.0916e-02
-   6.7867e-03
-  -5.9984e-03
-  -1.9052e-02
-  -3.8044e-03
-   2.6909e-01
-   9.7559e-03
-   5.1792e-02
-  -3.1676e-03
-   6.4440e-03
-  -4.4952e-02
-   2.4042e-01
-   6.7812e-02
-  -4.7693e-02
-  -1.5714e-02
-   1.0431e-02
-  -1.1588e-02
-  -1.2258e-02
-  -8.5267e-03
-  -3.6002e-02
-  -3.2954e-02
-  -1.2005e-02
-   4.1926e-02
-  -7.4504e-03
-  -1.9192e-02
-  -1.4048e-03
-   2.0186e-02
-  -3.4665e-02
-  -4.5316e-02
-   6.7959e-02
-  -1.5604e-02
-  -2.7125e-02
-   2.4436e-02
-   2.6551e-01
-  -5.1389e-03
-  -2.2359e-02
-   6.2000e-03
-  -2.7554e-02
-   4.5870e-02
-  -1.9917e-02
-  -3.8117e-04
-  -5.6060e-04
-  -7.4590e-03
-  -5.1908e-03
-  -1.5172e-02
-  -2.1278e-02
-  -4.0838e-02
-   1.0772e-02
-  -6.5414e-03
-  -2.2067e-02
-   1.4296e-02
-  -1.3490e-02
-  -4.1699e-03
-  -7.5082e-04
-  -2.0520e-02
-   2.6677e-01
-  -5.2551e-04
-  -1.2845e-02
-  -2.4366e-02
-   4.0928e-01
-   1.1491e-02
-  -7.7045e-03
-  -1.8251e-02
-  -1.4281e-02
-  -4.2095e-02
-  -1.4650e-02
-  -1.5695e-02
-  -4.1967e-02
-  -2.3629e-02
-  -6.4169e-02
-  -4.7651e-02
-   5.0273e-02
-  -4.9386e-02
-   4.5369e-02
-  -4.4888e-02
-   8.8140e-03
-  -7.9632e-03
-  -1.4630e-02
-  -9.8682e-03
-  -1.2683e-02
-   6.3967e-04
-  -6.9501e-03
-  -2.5927e-02
-  -3.3226e-02
-  -1.6386e-03
-   6.6272e-02
-  -2.0025e-02
-  -1.0110e-02
-  -1.2807e-02
-  -3.3607e-02
-  -4.4153e-03
-  -4.0067e-02
-  -2.6067e-03
-  -1.5390e-02
-  -3.5775e-02
-  -3.3974e-02
-  -8.6008e-03
-  -4.0818e-03
-  -2.2598e-02
-  -1.3550e-02
-   1.6239e-04
-  -2.7997e-03
-  -3.7419e-03
-   1.3738e-02
-   5.2663e-01
-  -2.2380e-02
-  -4.4158e-02
-  -6.7871e-03
-  -2.4217e-03
-  -5.7595e-03
-  -5.7409e-03
-  -2.2402e-02
-  -2.3661e-02
-  -1.7838e-03
-   6.8567e-02
-   2.6899e-02
-  -2.0386e-02
-  -6.2321e-03
-  -3.6937e-02
-  -2.8869e-02
-  -1.0267e-02
-  -3.0534e-02
-  -7.8043e-04
-  -6.3806e-03
-  -2.9930e-02
-  -1.9108e-02
-   3.3535e-04
-   2.7462e-03
-   5.2275e-02
-  -3.2820e-02
-  -3.6381e-02
-  -6.9278e-03
-  -4.1388e-02
-  -1.3440e-02
-  -9.2107e-03
-  -4.0555e-02
-   2.9892e-01
-  -4.7376e-02
-  -4.1169e-02
-   3.4472e-01
-  -1.1938e-03
-   8.9100e-03
-  -1.7364e-02
-  -1.7365e-02
-  -1.7514e-02
-  -2.8033e-03
-   1.2423e-01
-  -9.3657e-04
-   2.1855e-02
-   5.2405e-01
-  -6.8709e-03
-  -7.1909e-03
-   3.7698e-03
-   9.8558e-02
-   3.8548e-03
-  -1.4313e-02
-  -5.8698e-02
-  -2.6777e-02
-  -5.0725e-03
-  -5.6221e-02
-   6.4553e-01
-  -2.2932e-02
-   3.2300e-01
-  -5.6209e-02
-  -1.3992e-02
-   1.0036e-02
-  -5.8838e-03
-  -2.0761e-02
-   1.2556e-03
-  -4.6878e-02
-   1.9402e-02
-  -2.3551e-02
-   6.7461e-02
-  -2.0845e-02
-   2.4122e-03
-  -1.3729e-02
-  -3.1866e-02
-   6.7360e-03
-   2.3772e-02
-  -1.8094e-02
-  -2.1201e-02
-  -1.1395e-02
-  -2.1904e-02
-  -1.9065e-02
-   3.4401e-03
-  -4.4326e-02
-  -1.2351e-02
-   8.0436e-03
-   4.1451e-02
-   7.0694e-02
-  -1.9872e-02
-   1.3217e-02
-  -1.4829e-02
-  -1.5506e-02
-  -3.4660e-02
-  -2.0392e-02
-  -1.3642e-02
-   6.8471e-02
-   1.0770e-01
-   3.0882e-03
-  -3.7520e-02
-  -5.4507e-03
-  -7.8403e-03
-   1.2558e-01
-  -3.5900e-02
-  -4.2926e-02
-  -1.8571e-02
-  -3.5810e-02
-  -6.8550e-03
-  -6.4829e-03
-  -1.0153e-02
-   3.6745e-02
-  -2.6610e-02
-  -3.4752e-02
-  -4.0309e-02
-  -1.0685e-02
-   1.2052e-01
-   6.2142e-03
-  -6.2271e-03
-  -5.9208e-03
-   1.2966e-02
-  -5.4490e-03
-  -2.6979e-02
-  -1.6114e-02
-  -5.5889e-03
-  -1.1578e-02
-  -3.2299e-03
-  -1.2934e-02
-   3.2915e-03
-  -1.2481e-02
-  -3.8577e-02
-   4.0072e-02
-  -7.9903e-03
-   1.5447e-02
-  -2.2492e-02
-  -1.8652e-02
-  -3.1215e-02
-  -3.1541e-02
-  -2.2605e-02
-   2.2943e-03
-  -2.0157e-02
-   4.0846e-02
-   8.5040e-03
-  -1.4203e-02
-   4.0216e-02
-  -2.1825e-02
-  -3.4100e-02
-  -2.8463e-02
-   5.1775e-01
-  -1.5586e-02
-  -1.6070e-02
-  -4.6189e-02
-   9.6830e-03
-  -1.3137e-02
-   5.7046e-02
-   4.9669e-02
-  -4.3490e-03
-  -3.3245e-02
-   3.0771e-01
-  -3.2077e-02
-  -2.6045e-03
-   4.1240e-01
-   1.1318e-02
-   5.4254e-03
-   2.7933e-02
-  -3.5874e-02
-   1.4158e-02
-  -1.7653e-02
-  -1.8420e-02
-  -4.0969e-02
-  -4.2727e-02
-  -8.1908e-02
-  -4.6160e-02
-  -1.1403e-02
-   1.3932e-01
-   4.1234e-02
-   6.9445e-03
-  -7.9750e-05
-   6.5706e-02
-  -4.9361e-03
-  -2.0549e-02
-  -2.5139e-02
-  -3.0045e-02
-  -1.2243e-02
-  -8.7861e-03
-  -3.0899e-02
-  -1.3241e-02
-  -1.6191e-02
-   1.0664e-01
-   1.6149e-01
-   2.7124e-03
-   7.3181e-02
-  -4.0969e-03
-  -1.6958e-02
-   9.0253e-03
-   5.8756e-02
-   1.1918e-01
-  -2.2652e-03
-  -3.3738e-02
-   9.1795e-03
-  -1.0976e-02
-  -3.1110e-04
-  -2.2885e-02
-  -2.1623e-03
-  -1.2186e-02
-   1.0623e-01
-   2.4222e-03
-   1.5552e-02
-  -2.6728e-02
-  -5.7854e-02
-  -2.1718e-02
-  -4.1868e-02
-   1.1246e-01
-  -4.0472e-02
-  -1.9577e-02
-   6.4164e-04
-  -4.1108e-02
-   3.8032e-01
-  -5.4202e-03
-   1.6475e-03
-  -6.1369e-02
-  -3.7963e-02
-  -4.5364e-02
-  -4.3354e-02
-  -4.3446e-02
-  -1.4148e-02
-  -1.0071e-03
-  -4.7518e-02
-  -1.6651e-02
-  -3.3063e-02
-  -1.6848e-03
-  -4.1930e-03
-   3.6810e-02
-  -2.8789e-03
-  -3.7390e-02
-   2.5616e-02
-   3.1594e-02
-  -1.2547e-02
-   1.5187e-03
-   7.4667e-02
-   1.4649e-01
-  -5.7819e-02
-   5.0691e-03
-  -2.0306e-02
-   4.9812e-03
-  -6.9878e-03
-   1.7229e-02
-   4.1276e-03
-  -2.1965e-02
-   1.8449e-02
-  -1.4768e-02
-  -1.8795e-02
-  -2.2294e-02
-  -1.2054e-02
-  -5.0684e-03
-  -1.6209e-03
-  -9.4215e-03
-  -2.7474e-02
-  -1.6702e-02
-  -3.4993e-02
-  -8.0267e-03
-  -5.6237e-03
-   6.6235e-02
-  -5.5200e-04
-  -1.5427e-03
-  -2.1899e-02
-  -7.6688e-03
-   7.1414e-03
-  -3.7086e-02
-  -1.6666e-03
-  -4.7756e-02
-  -1.1550e-02
-  -8.2687e-03
-  -3.2550e-02
-  -4.4665e-02
-  -1.1498e-02
-  -3.4680e-03
-  -2.7073e-02
-   1.3521e-02
-  -2.0117e-02
-  -1.6554e-02
-  -5.5592e-03
-   3.8034e-02
-  -1.9911e-02
-  -3.6628e-03
-  -5.4079e-04
-  -2.1653e-02
-  -9.9398e-03
-  -3.7400e-02
-  -1.7421e-02
-  -8.5875e-03
-  -2.6872e-02
-  -2.1490e-02
-  -4.8689e-02
-  -8.6528e-03
-  -3.8817e-02
-   1.4063e-03
-  -1.0970e-02
-  -1.6352e-02
-  -3.9575e-02
-   3.8962e-02
-   9.4768e-04
-   3.2065e-02
-  -2.2964e-02
-   1.4146e-03
-  -6.8173e-03
-  -3.4046e-03
-  -1.6558e-02
-   3.9317e-02
-   5.2629e-02
-  -1.9652e-02
-   1.2581e-03
-  -4.1048e-02
-  -3.1305e-02
-  -4.4747e-02
-   1.0186e-01
-   1.4743e-01
-   9.4003e-03
-  -3.2453e-02
-  -2.7801e-03
-  -1.1447e-02
-  -2.3111e-02
-  -3.4259e-02
-  -3.5332e-03
-  -3.2513e-02
-  -3.2465e-02
-   9.4520e-03
-   5.9258e-02
-   1.2592e-02
-   8.5109e-03
-  -1.7793e-02
-  -4.8462e-02
-  -3.1229e-02
-   3.5564e-01
-  -2.7486e-02
-  -1.2176e-02
-   1.1150e-01
-  -1.6003e-02
-   1.2235e-02
-  -2.3984e-02
-  -3.4430e-02
-  -3.1708e-02
-   2.9091e-03
-  -3.8822e-02
-  -2.7998e-02
-  -3.2477e-02
-   2.4277e-02
-   2.4441e-02
-   4.7007e-02
-  -4.9626e-02
-   2.8664e-02
-  -2.0334e-02
-  -2.8115e-02
-  -1.3836e-02
-  -1.6809e-02
-   8.5977e-02
-  -2.1884e-02
-  -9.6780e-03
-  -1.0602e-03
-  -1.1568e-02
-   2.2422e-01
-   2.8666e-01
-  -1.0066e-02
-   7.7948e-01
-   1.4627e-02
-  -1.2509e-02
-  -1.2982e-02
-  -2.1814e-02
-  -1.8075e-02
-   2.9985e-02
-  -4.2459e-02
-   1.9009e-02
-  -6.5965e-03
-  -4.3750e-02
-  -4.8980e-02
-  -3.6712e-02
-  -3.2571e-02
-  -2.1950e-02
-  -2.3787e-02
-  -2.4093e-02
-  -2.3336e-02
-  -3.5680e-02
-  -3.6688e-02
-  -6.1211e-03
-  -3.1486e-02
-  -3.7478e-02
-  -3.8754e-02
-  -5.0451e-02
-   7.9514e-02
-   2.1630e-02
-  -1.4708e-03
-  -3.2528e-02
-  -6.3501e-02
-  -2.3749e-02
-   5.8800e-02
-  -4.7384e-02
-  -1.1983e-03
-  -1.5980e-02
-  -6.4091e-03
-  -3.2841e-02
-  -4.0198e-02
-  -2.0645e-02
-  -7.1471e-03
-  -6.7856e-03
-  -2.3157e-02
-  -2.0727e-02
-   5.2126e-02
-  -1.9224e-02
-  -2.4296e-03
-  -1.7644e-02
-   1.5663e-02
-  -9.4419e-03
-  -2.4259e-02
-   2.6613e-02
-  -1.7656e-03
-  -3.3613e-02
-   6.5807e-03
-  -5.4602e-02
-  -3.7612e-03
-  -2.3584e-02
-  -4.5774e-02
-  -3.8340e-02
-  -4.9718e-02
-  -3.4465e-02
-  -4.2249e-02
-   2.8031e-02
-   2.2983e-02
-  -1.9957e-02
-  -2.1804e-02
-  -6.2910e-03
-  -1.3271e-02
-   7.2587e-02
-  -7.9481e-03
-   2.4843e-02
-   1.9024e-02
-  -9.0381e-03
-  -1.0195e-02
-  -2.2156e-02
-  -3.7080e-03
-  -2.0318e-02
-   8.8800e-02
-  -2.9426e-02
-  -5.0064e-03
-  -1.4464e-02
-  -1.6330e-02
-   3.9600e-01
-  -1.5252e-02
-  -4.0817e-03
-  -2.7342e-03
-   6.0734e-02
-   2.3268e-02
-  -6.6183e-03
-  -4.5342e-02
-   9.9549e-02
-  -1.1846e-02
-  -1.3221e-02
-  -3.4294e-02
-  -3.6575e-02
-  -3.5875e-02
-  -1.8239e-02
-  -1.9470e-02
-  -1.8841e-02
-  -5.7029e-03
-   3.6777e-02
-  -1.2615e-02
-  -1.3483e-02
-  -3.0835e-03
-   4.0560e-01
-  -3.1873e-03
-  -8.2383e-03
-  -6.9653e-03
-  -1.2117e-02
-   4.6254e-01
-   4.6135e-02
-   7.4858e-02
-   5.9719e-03
-  -4.2197e-02
-  -3.8606e-02
-  -6.4234e-03
-  -7.3947e-03
-  -1.9346e-02
-  -1.3450e-02
-   2.5507e-03
-  -3.7454e-03
-  -1.3211e-02
-  -9.9677e-03
-   8.9377e-02
-  -1.0865e-03
-  -5.3918e-02
-  -3.4467e-03
-  -2.2628e-02
-  -4.4466e-03
-  -7.2755e-03
-  -5.9238e-02
-  -1.9462e-02
-  -1.8799e-02
-   2.9489e-02
-  -1.2779e-02
-   1.4199e-04
-   1.6139e-02
-  -1.2362e-02
-  -3.1724e-02
-   5.6632e-02
-  -4.6956e-03
-  -3.3663e-02
-  -1.6918e-02
-  -9.1897e-03
-  -2.9557e-02
-  -4.9941e-03
-  -1.8976e-02
-  -4.2861e-02
-   3.1254e-02
-  -1.7961e-02
-  -6.7945e-03
-  -4.9946e-02
-  -2.2925e-02
-   6.9197e-03
-  -7.2759e-03
-  -3.9242e-02
-  -4.7216e-03
-  -1.0280e-02
-  -1.5872e-02
-  -4.8177e-02
-  -1.1117e-02
-   4.1889e-03
-  -1.9404e-02
-  -3.2499e-03
-  -9.4660e-03
-   2.6048e-01
-  -4.6748e-04
-   8.3894e-02
-  -1.2003e-02
-  -1.0720e-02
-  -4.5860e-02
-  -1.6377e-03
-  -6.2303e-03
-  -3.0156e-02
-  -1.2759e-02
-  -2.0725e-02
-  -2.8563e-02
-  -1.3270e-02
-   8.6476e-02
-   1.1638e-01
-  -2.7676e-03
-  -1.3540e-02
-  -4.2625e-02
-  -1.6556e-02
-  -1.6300e-02
-  -2.2252e-02
-  -2.1695e-02
-  -1.7597e-02
-  -2.5159e-02
-  -3.0991e-02
-  -3.2537e-02
-  -4.8168e-02
-   8.6478e-02
-  -5.0504e-02
-  -1.0069e-02
-   1.6952e-01
-  -6.4455e-03
-  -1.1733e-02
-  -4.9495e-02
-   9.8493e-02
-   3.1957e-01
-  -6.7829e-03
-  -3.1832e-02
-  -1.5900e-02
-  -8.5402e-03
-  -1.7381e-02
-  -5.3251e-02
-  -4.9875e-02
-  -2.4627e-02
-  -2.0497e-02
-   2.0258e-02
-  -8.4582e-03
-  -5.0518e-03
-   1.3652e-02
-  -2.0400e-02
-  -2.5460e-02
-   6.9178e-02
-  -2.6841e-02
-  -6.6337e-03
-  -2.9730e-02
-  -2.1094e-02
-  -2.2666e-02
-   5.5908e-03
-  -5.2230e-03
-  -1.8091e-02
-  -5.5561e-03
-   3.2281e-01
-  -3.2559e-02
-  -1.4274e-02
-  -4.5463e-02
-  -6.2364e-03
-   2.1677e-01
-   8.1396e-03
-   1.4829e-02
-  -4.9525e-02
-   1.6644e-04
-  -1.3485e-03
-  -1.2263e-02
-  -4.9345e-02
-  -2.9094e-02
-  -1.7525e-02
-   6.8236e-02
-  -6.3350e-03
-   4.7996e-01
-  -2.3893e-02
-   4.6077e-04
-  -1.3633e-02
-  -2.7376e-02
-   1.5120e-03
-   5.8429e-03
-  -2.1283e-02
-  -1.5811e-02
-  -1.8101e-02
-   8.2473e-02
-  -1.1827e-02
-  -3.2898e-02
-  -3.6966e-02
-  -3.5707e-02
-  -3.1367e-02
-   1.5295e-02
-  -2.8868e-02
-  -2.0616e-02
-  -1.2715e-02
-   5.1952e-02
-  -2.8040e-02
-  -1.4355e-02
-  -1.4786e-02
-  -2.1348e-02
-  -1.0652e-02
-  -2.4568e-02
-  -2.4847e-02
-   4.1042e-03
-  -4.6608e-02
-  -5.1926e-02
-  -4.5153e-03
-   3.0145e-02
-  -4.3069e-02
-   1.0004e-02
-   7.4616e-02
-  -1.9244e-02
-   1.1828e-02
-   2.6674e-02
-   3.9479e-03
-   4.9866e-02
-  -2.3487e-02
-  -7.4616e-03
-  -3.2251e-02
-  -3.5679e-03
-   6.5241e-04
-  -2.2389e-02
-  -2.7871e-02
-  -7.0617e-03
-   1.0910e-01
-  -4.9560e-02
-  -6.6002e-03
-   5.1142e-03
-   3.1333e-02
-  -1.3189e-02
-  -1.1503e-03
-  -3.7044e-02
-  -2.0429e-03
-  -3.0736e-02
-  -2.2627e-02
-  -1.6231e-02
-  -9.3723e-03
-   1.9998e-02
-  -7.2589e-03
-  -4.1475e-02
-  -3.0435e-02
-   2.2507e-02
-  -4.7869e-02
-  -4.1407e-04
-  -1.5396e-02
-  -2.7255e-02
-  -8.1372e-03
-   2.2259e-01
-  -1.6201e-02
-  -4.9399e-02
-  -4.5446e-02
-  -5.9309e-03
-  -8.9791e-03
-  -6.5565e-03
-   5.2136e-02
-  -3.1644e-02
-  -4.2009e-02
-  -5.4392e-03
-  -4.4042e-02
-  -4.0754e-02
-   8.2482e-03
-  -2.1002e-02
-  -4.3737e-03
-  -4.9910e-03
-  -3.6274e-02
-   1.5142e-02
-  -2.4989e-02
-   4.8156e-04
-   7.1769e-02
-   1.6849e-01
-   1.7987e-03
-   1.0369e-02
-  -1.0874e-02
-   8.4596e-02
-  -1.0964e-02
-  -1.3132e-02
-   5.1218e-03
-  -1.7877e-02
-  -1.5845e-02
-  -3.9085e-02
-  -4.9560e-02
-   2.3364e-02
-  -4.0489e-03
-  -1.5404e-02
-  -5.2426e-04
-  -2.1855e-03
-  -1.2833e-02
-   1.1279e-01
-  -1.8995e-02
-  -1.2681e-02
-  -1.1898e-02
-  -8.4212e-03
-  -2.1272e-02
-  -6.9115e-03
-  -4.5604e-02
-  -2.9915e-02
-  -1.7308e-02
-  -1.2134e-02
-  -2.2730e-02
-  -9.3115e-03
-  -3.4876e-02
-  -7.2637e-04
-  -1.2842e-02
-  -6.3615e-03
-  -2.0841e-02
-iter from getPCG1ofSigmaAndVector 4
-28835 th marker
+[1] "HERE6"
+iter from getPCG1ofSigmaAndVector 9
+81310 th marker
 G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-69453 th marker
+iter from getPCG1ofSigmaAndVector 7
+111416 th marker
+G0 0 1 0 1 0 0 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 7
+37839 th marker
+G0 1 1 0 0 0 1 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 7
+44248 th marker
+G0 2 0 1 1 2 1 2 1 0 1 
+iter from getPCG1ofSigmaAndVector 9
+111799 th marker
 G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-50686 th marker
+iter from getPCG1ofSigmaAndVector 8
+70674 th marker
 G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-80894 th marker
+iter from getPCG1ofSigmaAndVector 7
+44844 th marker
 G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-13974 th marker
-G0 0 0 0 0 1 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 4
-29743 th marker
-G0 1 1 1 0 2 1 1 1 0 0 
-iter from getPCG1ofSigmaAndVector 3
-38365 th marker
-G0 2 1 1 1 0 1 1 1 0 1 
-iter from getPCG1ofSigmaAndVector 4
-16777 th marker
+iter from getPCG1ofSigmaAndVector 7
+90717 th marker
+G0 0 0 0 0 0 1 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 5
+128241 th marker
 G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-9830 th marker
+iter from getPCG1ofSigmaAndVector 7
+24347 th marker
 G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 4
-29890 th marker
-G0 2 1 2 1 1 2 1 1 2 1 
-iter from getPCG1ofSigmaAndVector 4
+iter from getPCG1ofSigmaAndVector 7
 [1] "OK"
 [1] "OK1"
-104933 th marker
+111467 th marker
+G0 0 0 0 0 0 1 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+12435 th marker
 G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 4
-26381 th marker
-G0 2 1 2 2 1 1 1 2 1 2 
-iter from getPCG1ofSigmaAndVector 4
-121317 th marker
+iter from getPCG1ofSigmaAndVector 7
+101559 th marker
 G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-14757 th marker
-G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-51320 th marker
-G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-84228 th marker
-G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-107270 th marker
-G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-124835 th marker
-G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 4
-42621 th marker
-G0 0 1 0 1 0 1 0 0 2 0 
-iter from getPCG1ofSigmaAndVector 3
-112198 th marker
-G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 5
+107454 th marker
+G0 0 1 1 1 0 1 0 1 1 1 
+iter from getPCG1ofSigmaAndVector 7
+60569 th marker
+G0 0 1 0 1 0 0 0 0 1 1 
+iter from getPCG1ofSigmaAndVector 8
+75866 th marker
+G0 0 0 0 0 0 1 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 9
+44558 th marker
+G0 2 0 1 1 1 1 1 2 0 1 
+iter from getPCG1ofSigmaAndVector 9
+14763 th marker
+G0 0 0 0 0 1 0 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+105100 th marker
+G0 1 2 2 2 0 1 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 7
+116280 th marker
+G0 0 1 1 0 1 1 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
 [1] "OK"
 [1] "OK1"
-53330 th marker
+106706 th marker
+G0 0 0 0 0 2 0 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+3008 th marker
 G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-94339 th marker
+iter from getPCG1ofSigmaAndVector 7
+65323 th marker
+G0 1 1 0 2 2 0 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 9
+92338 th marker
+G0 1 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+73469 th marker
+G0 0 0 0 0 1 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+35435 th marker
 G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-7891 th marker
+iter from getPCG1ofSigmaAndVector 6
+18300 th marker
+G0 0 1 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+39608 th marker
 G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 4
-115296 th marker
-G0 0 0 0 0 2 1 1 1 0 1 
-iter from getPCG1ofSigmaAndVector 3
-106902 th marker
-G0 0 0 0 0 0 1 0 0 1 1 
-iter from getPCG1ofSigmaAndVector 3
-22978 th marker
-G0 1 0 0 1 1 2 0 1 2 1 
-iter from getPCG1ofSigmaAndVector 4
-100951 th marker
-G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-95339 th marker
-G0 2 2 2 2 0 0 1 1 1 1 
-iter from getPCG1ofSigmaAndVector 4
-25906 th marker
-G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
-68305 th marker
-G0 0 0 0 0 0 0 0 0 0 0 
-iter from getPCG1ofSigmaAndVector 3
+iter from getPCG1ofSigmaAndVector 7
+89691 th marker
+G0 1 1 2 0 0 1 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 7
+78222 th marker
+G0 1 0 1 1 0 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
 [1] "OK"
 [1] "OK1"
 [1] "OK2"
-CV for variance ratio estimate using  30  markers is  0.0003425069  <  0.001 
-varRatio 0.9402813 
-[1] 0.9402813
+CV for variance ratio estimate using  30  markers is  0.008389732  >  0.001 
+try  40  markers
+64816 th marker
+G0 1 1 2 2 0 1 1 1 1 2 
+iter from getPCG1ofSigmaAndVector 7
+119556 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+12185 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 8
+41021 th marker
+G0 0 0 0 0 0 1 0 0 1 1 
+iter from getPCG1ofSigmaAndVector 7
+115944 th marker
+G0 0 1 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+60896 th marker
+G0 0 1 0 1 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+61416 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+42758 th marker
+G0 0 1 1 1 0 1 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 7
+85954 th marker
+G0 0 0 0 0 1 1 1 0 1 0 
+iter from getPCG1ofSigmaAndVector 7
+32764 th marker
+G0 1 1 1 1 1 2 2 2 1 2 
+iter from getPCG1ofSigmaAndVector 8
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  40  markers is  0.006229287  >  0.001 
+try  50  markers
+72856 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+75088 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+24549 th marker
+G0 1 0 0 1 0 0 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 7
+121558 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+110113 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+63269 th marker
+G0 0 1 1 1 0 0 0 0 1 0 
+iter from getPCG1ofSigmaAndVector 7
+74818 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 6
+62970 th marker
+G0 0 1 1 1 0 0 1 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+37852 th marker
+G0 0 0 0 0 1 0 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+27274 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  50  markers is  0.004558732  >  0.001 
+try  60  markers
+123024 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 6
+19874 th marker
+G0 0 0 0 0 1 0 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+47099 th marker
+G0 1 0 1 0 0 0 1 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+57412 th marker
+G0 1 1 0 1 1 1 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 9
+13376 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+124538 th marker
+G0 0 1 1 1 1 1 1 2 0 2 
+iter from getPCG1ofSigmaAndVector 7
+57250 th marker
+G0 0 0 0 0 0 1 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 5
+106679 th marker
+G0 1 0 1 1 0 0 1 0 1 1 
+iter from getPCG1ofSigmaAndVector 8
+79156 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+88675 th marker
+G0 0 0 0 0 1 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  60  markers is  0.003749329  >  0.001 
+try  70  markers
+124079 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+38421 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+98747 th marker
+G0 1 0 1 1 2 0 2 1 0 0 
+iter from getPCG1ofSigmaAndVector 9
+8878 th marker
+G0 0 0 0 0 1 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 5
+103450 th marker
+G0 0 0 0 0 1 0 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 5
+18155 th marker
+G0 1 0 0 1 1 0 1 0 0 1 
+iter from getPCG1ofSigmaAndVector 5
+121026 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+67336 th marker
+G0 0 0 0 0 0 1 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 8
+99874 th marker
+G0 1 0 0 1 2 1 1 1 0 2 
+iter from getPCG1ofSigmaAndVector 8
+36566 th marker
+G0 0 0 0 0 0 1 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 8
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  70  markers is  0.003270872  >  0.001 
+try  80  markers
+41251 th marker
+G0 2 0 1 1 1 1 2 1 1 0 
+iter from getPCG1ofSigmaAndVector 9
+75852 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+76729 th marker
+G0 1 0 0 1 0 0 0 0 1 1 
+iter from getPCG1ofSigmaAndVector 5
+95891 th marker
+G0 0 1 1 0 0 0 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+122926 th marker
+G0 0 1 1 1 0 0 0 1 0 1 
+iter from getPCG1ofSigmaAndVector 7
+64407 th marker
+G0 1 1 2 1 1 1 1 2 0 1 
+iter from getPCG1ofSigmaAndVector 9
+6151 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+114330 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+89889 th marker
+G0 1 0 1 1 0 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+22896 th marker
+G0 0 1 1 0 1 0 2 1 0 0 
+iter from getPCG1ofSigmaAndVector 8
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  80  markers is  0.002896703  >  0.001 
+try  90  markers
+99727 th marker
+G0 0 0 0 0 1 1 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 7
+93916 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+6036 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+116592 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+14516 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+62379 th marker
+G0 0 1 1 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 8
+107837 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+126042 th marker
+G0 0 2 1 1 1 2 1 0 1 2 
+iter from getPCG1ofSigmaAndVector 7
+81423 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+71968 th marker
+G0 0 0 0 0 1 0 1 0 0 0 
+iter from getPCG1ofSigmaAndVector 8
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  90  markers is  0.002536979  >  0.001 
+try  100  markers
+86217 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 6
+69721 th marker
+G0 1 1 0 1 0 0 0 0 1 1 
+iter from getPCG1ofSigmaAndVector 7
+97513 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+60768 th marker
+G0 1 0 0 1 0 1 0 0 2 1 
+iter from getPCG1ofSigmaAndVector 7
+61505 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+1003 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+8493 th marker
+G0 0 0 0 0 2 1 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 7
+31410 th marker
+G0 0 0 0 0 0 1 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 5
+121238 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+44274 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  100  markers is  0.002230961  >  0.001 
+try  110  markers
+119750 th marker
+G0 0 0 0 0 1 0 1 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+114793 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+57143 th marker
+G0 0 2 1 1 2 1 2 1 1 2 
+iter from getPCG1ofSigmaAndVector 7
+69790 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+75367 th marker
+G0 0 0 0 0 0 1 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+112221 th marker
+G0 1 0 1 1 0 1 0 0 1 1 
+iter from getPCG1ofSigmaAndVector 8
+15298 th marker
+G0 0 0 0 0 1 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+40784 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+21457 th marker
+G0 1 0 1 0 0 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 5
+113059 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  110  markers is  0.002018735  >  0.001 
+try  120  markers
+94263 th marker
+G0 1 0 1 1 0 0 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 5
+63036 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+77249 th marker
+G0 0 1 1 0 0 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 5
+53309 th marker
+G0 0 0 0 0 1 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+91172 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+94030 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+95646 th marker
+G0 0 0 0 0 0 1 0 0 1 1 
+iter from getPCG1ofSigmaAndVector 7
+36138 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+48163 th marker
+G0 0 1 0 0 1 0 1 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+107965 th marker
+G0 2 0 1 1 0 1 1 0 0 1 
+iter from getPCG1ofSigmaAndVector 6
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  120  markers is  0.001791547  >  0.001 
+try  130  markers
+15568 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+51415 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+47227 th marker
+G0 1 1 0 0 2 2 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 7
+86391 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+68967 th marker
+G0 0 0 0 0 1 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+39241 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+30510 th marker
+G0 2 1 2 1 1 1 1 2 1 0 
+iter from getPCG1ofSigmaAndVector 7
+123311 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+60062 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+8054 th marker
+G0 0 0 0 0 1 0 1 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  130  markers is  0.001665136  >  0.001 
+try  140  markers
+24167 th marker
+G0 0 1 1 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+99265 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+110606 th marker
+G0 1 1 1 2 0 0 1 0 1 1 
+iter from getPCG1ofSigmaAndVector 7
+124616 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+83836 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+81413 th marker
+G0 0 0 0 0 1 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+106457 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+87397 th marker
+G0 1 1 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 9
+20514 th marker
+G0 0 0 0 0 1 1 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 5
+19914 th marker
+G0 0 2 1 1 0 1 1 0 2 1 
+iter from getPCG1ofSigmaAndVector 8
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  140  markers is  0.001577049  >  0.001 
+try  150  markers
+105291 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+77441 th marker
+G0 1 2 2 2 2 0 2 2 1 1 
+iter from getPCG1ofSigmaAndVector 8
+36898 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+110709 th marker
+G0 2 1 1 1 1 0 1 0 0 0 
+iter from getPCG1ofSigmaAndVector 9
+2161 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 6
+51591 th marker
+G0 2 1 1 1 0 1 0 0 1 0 
+iter from getPCG1ofSigmaAndVector 8
+52505 th marker
+G0 1 1 0 1 1 2 1 0 2 2 
+iter from getPCG1ofSigmaAndVector 9
+10203 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+15574 th marker
+G0 1 0 1 0 0 1 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+9979 th marker
+G0 0 2 1 1 2 2 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 7
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  150  markers is  0.001532894  >  0.001 
+try  160  markers
+101859 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+85796 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+116776 th marker
+G0 1 0 0 0 1 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 9
+91876 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+19073 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+95683 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+62122 th marker
+G0 0 0 0 0 2 0 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+45834 th marker
+G0 2 0 1 1 0 0 0 1 1 1 
+iter from getPCG1ofSigmaAndVector 7
+30377 th marker
+G0 0 0 0 0 1 0 1 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+58690 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  160  markers is  0.00143246  >  0.001 
+try  170  markers
+105948 th marker
+G0 1 1 1 1 1 1 1 1 0 1 
+iter from getPCG1ofSigmaAndVector 8
+27402 th marker
+G0 0 0 0 0 1 1 1 0 1 1 
+iter from getPCG1ofSigmaAndVector 7
+102870 th marker
+G0 0 1 0 1 0 1 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 7
+76349 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+121520 th marker
+G0 1 1 2 1 0 0 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 7
+26398 th marker
+G0 1 0 1 0 0 0 1 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+102514 th marker
+G0 0 2 1 1 0 1 0 0 2 0 
+iter from getPCG1ofSigmaAndVector 7
+53902 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+57203 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+77898 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 8
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  170  markers is  0.001386971  >  0.001 
+try  180  markers
+73306 th marker
+G0 0 2 1 1 0 0 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 9
+59313 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+53735 th marker
+G0 0 0 0 0 1 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 8
+15751 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+74958 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+16870 th marker
+G0 0 0 0 0 1 0 1 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+116979 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 8
+101261 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+32497 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+25923 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  180  markers is  0.001298102  >  0.001 
+try  190  markers
+45036 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 6
+37790 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 4
+51689 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+107597 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+19612 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+97242 th marker
+G0 0 1 1 0 0 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+33385 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+36677 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+124278 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+41272 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  190  markers is  0.001205878  >  0.001 
+try  200  markers
+77983 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 6
+103648 th marker
+G0 1 1 2 0 1 1 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 7
+8293 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 8
+88869 th marker
+G0 0 0 0 0 0 1 0 0 1 1 
+iter from getPCG1ofSigmaAndVector 7
+30147 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+86566 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+88834 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+63 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+4353 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 8
+40693 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  200  markers is  0.001131721  >  0.001 
+try  210  markers
+98341 th marker
+G0 0 0 0 0 1 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 5
+94475 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+59180 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+80116 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+56882 th marker
+G0 1 0 0 1 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 6
+30646 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+100081 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+2908 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+102802 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 9
+93177 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  210  markers is  0.001064494  >  0.001 
+try  220  markers
+1536 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+47983 th marker
+G0 1 1 1 1 1 0 1 2 1 1 
+iter from getPCG1ofSigmaAndVector 7
+17487 th marker
+G0 1 0 1 0 0 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 7
+36735 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+93344 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+37661 th marker
+G0 1 2 1 1 1 1 0 1 0 2 
+iter from getPCG1ofSigmaAndVector 9
+21312 th marker
+G0 0 0 0 0 0 1 0 0 1 1 
+iter from getPCG1ofSigmaAndVector 7
+88442 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+5564 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+54653 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  220  markers is  0.001023642  >  0.001 
+try  230  markers
+93227 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+113444 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+115571 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+89578 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+35745 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 5
+37462 th marker
+G0 0 0 0 0 1 1 1 1 1 0 
+iter from getPCG1ofSigmaAndVector 7
+74272 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+98437 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+10044 th marker
+G0 0 0 0 0 0 1 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 7
+118921 th marker
+G0 0 2 1 1 0 1 1 0 0 0 
+iter from getPCG1ofSigmaAndVector 9
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  230  markers is  0.0009694849  <  0.001 
+varRatio 0.7301696 
+[1] 0.7301696
           [,1]
-[1,] 0.9402813
+[1,] 0.7301696
           [,1]
-[1,] 0.9402813
-[1] "./output_test/example_survival.50cases.varianceRatio.txt"
+[1,] 0.7301696
+[1] "./output_test/example_survival.varianceRatio.txt"
          V1
-1 0.9402813
+1 0.7301696
 closed the plinkFile!

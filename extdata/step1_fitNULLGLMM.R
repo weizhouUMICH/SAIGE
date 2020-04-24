@@ -4,8 +4,9 @@ options(stringsAsFactors=F)
 
 ## load R libraries
 #library(SAIGE, lib.loc="/home/wei/install_dir/0.36.3.1_homN_hetN_surv")
-#library(SAIGE, lib.loc="/home/wei/install_dir/0.36.3.8_homN_hetN_surv")
-library(SAIGE)
+#library(SAIGE, lib.loc="/home/wei/install_dir/0.36.6_homN_hetN_surv")
+
+library(SAIGE, lib.loc="/home/wei/install_dir/0.36.3.8_homN_hetN_surv")
 require(optparse) #install.packages("optparse")
 
 print(sessionInfo())

@@ -253,6 +253,10 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   n = length(y)
   X = model.matrix(fit0)
 
+  if(!is.null(eventTime)){
+    X = X[,-1,drop=FALSE]	
+  }
+
   offset = fit0$offset
   if(is.null(offset)){
     offset = rep(0, n)
@@ -1055,7 +1059,7 @@ fitNULLGLMM = function(plinkFile = "",
 
   if(isCovariateTransform){
     cat("qr transformation has been performed on covariates\n")
-    out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
+    out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort, traitType)
     formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
     if(length(out.transform$Param.transform$X_name) > 1){
       for(i in c(2:length(out.transform$Param.transform$X_name))){
@@ -1064,11 +1068,15 @@ fitNULLGLMM = function(plinkFile = "",
     }
 
     formulaNewList = paste0(formulaNewList, collapse="")
-    formulaNewList = paste0(formulaNewList, "-1")
+    if(traitType != "survival"){
+    	formulaNewList = paste0(formulaNewList, "-1")
+    }
     formula.new = as.formula(paste0(formulaNewList, collapse=""))
     data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
+    print("data.new")
+    print(head(data.new))
     if(eventTimeCol != ""){
-          eventTime = dataMerge_sort[,which(colnames(dataMerge_sort) == eventTimeCol)]
+      eventTime = dataMerge_sort[,which(colnames(dataMerge_sort) == eventTimeCol)]
     }else{
       eventTime=NULL
     }
@@ -1141,6 +1149,7 @@ fitNULLGLMM = function(plinkFile = "",
     }
     #fit0 = glm(formula.null,data=dataMerge_sort, family=binomial)
     #fit0 = glm(out.transform$Y ~ out.transform$X1,family=binomial)
+    print(formula.new)
     fit0 = glm(formula.new, data=data.new, family=binomial)
     cat("glm:\n")
     print(fit0)
@@ -1516,7 +1525,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
        Dinv =  Matrix:::Diagonal(length(Dvec), x = 1/(-Dvec))
        cat("dim(Dinv): ", dim(Dinv), "\n")
        #ACinv = solve(Dinv + t(sqrtWinvNR)%*%sqrtWinvNR)
-       ACinv = MASS::ginv(Dinv + t(sqrtWinvNR)%*%sqrtWinvNR)	
+       #print(Dinv)
+       #print(t(sqrtWinvNR)%*%sqrtWinvNR)		
+       ACinv = MASS::ginv(as.matrix(Dinv) + t(sqrtWinvNR)%*%sqrtWinvNR)	
        rm(Dinv)
        rm(sqrtWinvNR)
        rm(sqrtWinvN)
@@ -1729,6 +1740,7 @@ print("HERE6")
   	      }else{
 		if(pcgforUhatforSurvAnalysis){	
     		  Sigma_iG = getSigma_G_Surv_new(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)
+		#print("Sigma_iG HERE")
     		  #Sigma_iG = getSigma_G_Surv_new2(W, tauVecNew, G, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG, diagofWminusU)
 		  #cat("Sigma_iG ", Sigma_iG, "\n")
 		}else{
@@ -2265,7 +2277,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 
 
 ##suggested by Shawn 01-19-2018
-Covariate_Transform<-function(formula, data){
+Covariate_Transform<-function(formula, data, traitType){
   X1<-model.matrix(formula,data=data)
 #  X1=X1[,c(2:ncol(X1))] #remove intercept
   formula.frame<-model.frame(formula,data=data)
@@ -2288,16 +2300,21 @@ Covariate_Transform<-function(formula, data){
     X_name[1] = "minus1"
   }
 
-	
+ 	
+
+ if(traitType == "survival"){	
+   X_name = X_name[-1]
+   X1 = X1[,-1,drop=FALSE]
+ }
  # QR decomposition
   Xqr = qr(X1)
   X1_Q = qr.Q(Xqr)
-  qrr = qr.R(Xqr)
-	
+  qrr = qr.R(Xqr)	
   N<-nrow(X1)
 	
   # Make square summation=N (so mean=1)
   X1_new<-X1_Q * sqrt(N)	
+
   Param.transform<-list(qrr=qrr, N=N, X_name = X_name, idx.na=idx.na)
   re<-list(Y =Y, X1 = X1_new, Param.transform=Param.transform)
 }
