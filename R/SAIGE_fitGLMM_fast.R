@@ -1522,12 +1522,21 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
        sqrtWinvNR = sqrtWinvN%*%Rmat
        cat("dim(sqrtWinvNR): ", dim(sqrtWinvNR), "\n")
        #dim(sqrtWinvNR):  1000 46
-       Dinv =  Matrix:::Diagonal(length(Dvec), x = 1/(-Dvec))
+       #Dinv =  Matrix:::Diagonal(length(Dvec), x = 1/(-Dvec))
+       Dinv =  diag(1/(-Dvec))
        cat("dim(Dinv): ", dim(Dinv), "\n")
        #ACinv = solve(Dinv + t(sqrtWinvNR)%*%sqrtWinvNR)
        #print(Dinv)
        #print(t(sqrtWinvNR)%*%sqrtWinvNR)		
-       ACinv = MASS::ginv(as.matrix(Dinv) + t(sqrtWinvNR)%*%sqrtWinvNR)	
+       #x=list(Dinv = Dinv, RNWNR=t(sqrtWinvNR)%*%sqrtWinvNR)
+       #save(x, file = "/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/survival/0.36.4_nointercept/SAIGE/extdata/output_test/x.rda")
+       RNWNR=t(sqrtWinvNR)%*%sqrtWinvNR
+       ACm = Dinv + RNWNR
+       cat("dim(RNWNR): ", dim(RNWNR), "\n")
+       cat("dim(ACm): ", dim(ACm), "\n")        
+       #ACinv = MASS::ginv(ACm)	
+       #ACinv = solve(ACm)	
+       ACinv = lintools::pinv(ACm)	
        rm(Dinv)
        rm(sqrtWinvNR)
        rm(sqrtWinvN)
