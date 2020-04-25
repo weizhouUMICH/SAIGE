@@ -272,7 +272,11 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   }else{
     inC = GetIndexofCases(y, eventTime)
   }
+
   alpha0 = fit0$coef
+  if(!is.null(eventTime)){
+    alpha0 = alpha0[-1]
+  }
   eta0 = eta
 
   
