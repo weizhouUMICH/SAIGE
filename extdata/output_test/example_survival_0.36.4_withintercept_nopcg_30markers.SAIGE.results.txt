@@ -1,0 +1,1 @@
+CHR SNPID POS A1 A2 p.value p.value.NA Is.converge var1 var2 N AC AF

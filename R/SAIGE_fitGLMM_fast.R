@@ -1728,7 +1728,13 @@ print("HERE6")
            indexInMarkerList = indexInMarkerList + 1
          }else{
           AF = AC/(2*Nnomissing)
-          G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted
+	  if(is.null(obj.glmm.null$eventTime)){
+	   	
+          	G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted
+	  }else{
+		G0_meanCentered = G0 - AF*2
+		G = G0_meanCentered - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0_meanCentered)
+	  }	
           g = G/sqrt(AC)
           q = innerProduct(g,y)
  #     print(g[1:20])
