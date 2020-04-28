@@ -1,4 +1,8 @@
-#binary
+#check the help info for step 1
+#Rscript step1_fitNULLGLMM.R --help
+
+#For Binary traits
+
 #For single-variant association tests. 
 #Not use sparse GRM and not use categorical variance ratios#
 #randomly selected markers with MAC >= 20 in the plink file are used to estimate the variance ratio
