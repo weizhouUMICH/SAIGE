@@ -367,7 +367,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   converged = ifelse(i < maxiter, TRUE, FALSE)
   res = y - mu
   if(isCovariateTransform){
-  coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+    coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
   }else{
     coef.alpha = alpha
   }
@@ -784,8 +784,10 @@ fitNULLGLMM = function(plinkFile = "",
 		useSparseGRMtoFitNULL=FALSE){
 
   #if traitType != "survival", ignore eventTimeCol
+  if(eventTimeCol != "" & traitType != "survival"){
+    cat("WARNING: eventTimeCol is specified but the traitType is not survival, survival analysis is NOT performed\n")    
+  }
   if(traitType != "survival"){eventTimeCol = ""}
-
 
   setminMAFforGRM(minMAFforGRM)
   if(minMAFforGRM > 0){
@@ -811,10 +813,9 @@ fitNULLGLMM = function(plinkFile = "",
       stop("sparseGRMFile ", sparseGRMFile, " does not exist!")
     }
 
-     if(!file.exists(sparseGRMSampleIDFile)){
+    if(!file.exists(sparseGRMSampleIDFile)){
       stop("sparseGRMSampleIDFile ", sparseGRMSampleIDFile, " does not exist!")
-     }
-
+    }
     useSparseSigmaforInitTau = FALSE
     useSparseSigmaConditionerforPCG = FALSE
   }
@@ -825,7 +826,6 @@ fitNULLGLMM = function(plinkFile = "",
     if(!file.exists(sparseGRMFile)){
       stop("sparseGRMFile ", sparseGRMFile, " does not exist!")
     }
-
     if(!file.exists(sparseGRMSampleIDFile)){
       stop("sparseGRMSampleIDFile ", sparseGRMSampleIDFile, " does not exist!")
     }
@@ -872,13 +872,15 @@ fitNULLGLMM = function(plinkFile = "",
   #check and read files
   #output file
   modelOut=paste0(outputPrefix, ".rda")
+  cat("Fitted null model will be output to ", modelOut, "\n")
   SPAGMMATOut=paste0(outputPrefix, "_", numMarkers,"markers.SAIGE.results.txt")
 
-  if (is.null(outputPrefix_varRatio)){
+  if(is.null(outputPrefix_varRatio)){
     outputPrefix_varRatio = outputPrefix
   }
 
   varRatioFile=paste0(outputPrefix_varRatio,".varianceRatio.txt")
+  cat("Variance ratio(s) will be output to ", varRatioFile, "\n")
 
   if(!file.exists(varRatioFile)){
     file.create(varRatioFile, showWarnings = TRUE)
@@ -898,8 +900,8 @@ fitNULLGLMM = function(plinkFile = "",
   if(!file.exists(paste0(plinkFile, ".bim"))){
     stop("ERROR! ", plinkFile, ".bim does not exsit\n")
   }else{
-      chromosomeStartIndexVec = NULL
-      chromosomeEndIndexVec = NULL
+    chromosomeStartIndexVec = NULL
+    chromosomeEndIndexVec = NULL
     ###if LOCO, record the indices of markers on each chromosome
     if(LOCO){
       cat("leave-one-chromosome-out is activated! Note this option will only be applied to autosomal variants\n")
@@ -910,7 +912,7 @@ fitNULLGLMM = function(plinkFile = "",
           chromosomeStartIndexVec = c(chromosomeStartIndexVec, min(which(bimData[,1] == i))-1)
 	  chromosomeEndIndexVec = c(chromosomeEndIndexVec, max(which(bimData[,1] == i))-1)
 
-	  if(i > 1 ){
+	  if(i > 1){
 	   if(!is.na(chromosomeStartIndexVec[i-1])){
 	    if(chromosomeStartIndexVec[i] <= chromosomeStartIndexVec[i-1] | chromosomeEndIndexVec[i] <= chromosomeEndIndexVec[i-1]){
 		stop(paste0("ERROR! chromosomes need to be ordered from 1 to 22 in ", plinkFile, ".bim\n"))
@@ -985,12 +987,9 @@ fitNULLGLMM = function(plinkFile = "",
 
   }
 
-
-
-
     #update the categorical variables
 
-    if(length(covarColList) > 0){
+   if(length(covarColList) > 0){
       #qCovarColUpdated = NULL
       #for(i in qCovarCol){
       #  j = paste0("factor(", i, ")")
@@ -1054,16 +1053,16 @@ fitNULLGLMM = function(plinkFile = "",
 
   #check for perfect separation
   if((traitType == "binary" | traitType == "survival") & (length(covarColList) > 0)){
-	out_checksep = checkPerfectSep(formula.null, data=dataMerge_sort, minCovariateCount)
-    covarColList <- covarColList[!(covarColList %in% out_checksep)]
+    out_checksep = checkPerfectSep(formula.null, data=dataMerge_sort, minCovariateCount)
+    covarColList = covarColList[!(covarColList %in% out_checksep)]
     formula = paste0(phenoCol,"~", paste0(covarColList,collapse="+"))
     formula.null = as.formula(formula)
-    dataMerge_sort <- dataMerge_sort[, !(names(dataMerge_sort) %in% out_checksep)]
+    dataMerge_sort = dataMerge_sort[, !(names(dataMerge_sort) %in% out_checksep)]
   }
 
   if(isCovariateTransform){
     cat("qr transformation has been performed on covariates\n")
-    out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort, traitType)
+    out.transform = Covariate_Transform(formula.null, data=dataMerge_sort, traitType)
     formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
     if(length(out.transform$Param.transform$X_name) > 1){
       for(i in c(2:length(out.transform$Param.transform$X_name))){
@@ -1128,11 +1127,6 @@ fitNULLGLMM = function(plinkFile = "",
       setisUsePrecondM(TRUE);
     }
 	
-#    if(useSparseSigmaforInitTau){
-#      setisUseSparseSigmaforInitTau(TRUE);
-#    } 
-#}
-
   if(traitType == "binary" | traitType == "survival"){
     cat(phenoCol, " is a binary trait\n")
     if(traitType == "survival"){
@@ -1166,15 +1160,9 @@ fitNULLGLMM = function(plinkFile = "",
     }
 
     if(!skipModelFitting){
-     #print("test memory 1")
-     #gc(verbose=T)	
      if(useSparseSigmaforInitTau){
-     #print("test memory 2")
-     #gc(verbose=T)	
        setisUseSparseSigmaforInitTau(TRUE)
        modglmm0<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne, eventTime = eventTime)
-	#print("test memory 3")
-	#gc(verbose=T)
 	tauInit = modglmm0$theta		
 	cat("tauInit estimated using sparse Sigma is ", tauInit, "\n")	
 	rm(modglmm0)
@@ -1188,7 +1176,7 @@ fitNULLGLMM = function(plinkFile = "",
       t_begin = proc.time()
       print(t_begin)
 
-      #set up the sparse GRM to speed up the PCG
+     # set up the sparse GRM to speed up the PCG
      # sparseGRMtest = Matrix:::readMM(sparseGRMFile)
      # m4 = gen_sp_v2(sparseGRMtest)
      # print("print m4")
@@ -1197,8 +1185,8 @@ fitNULLGLMM = function(plinkFile = "",
      # locationMatinR = rbind(A$i-1, A$j-1)
      # valueVecinR = A$x
      # setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
-     #print("test memory 4")
-     #gc(verbose=T)
+     # print("test memory 4")
+     # gc(verbose=T)
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne, eventTime = eventTime))
      #print("test memory 5")
      #gc(verbose=T)
@@ -1323,7 +1311,7 @@ fitNULLGLMM = function(plinkFile = "",
                                                     numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
                                                     relatednessCutoff = relatednessCutoff,
                                                     nThreads = nThreads,
-							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
+						    cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
                 cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
 		minMAFforGRM = minMAFforGRM,
 		isDiagofKinSetAsOne = isDiagofKinSetAsOne,
@@ -1468,11 +1456,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
   eta = obj.glmm.null$linear.predictors
   mu = obj.glmm.null$fitted.values
   y = obj.glm.null$y
-  #nsample = length(y)
-  #exactMethod = FALSE
-  #if(nsample <= 1000){
-  #  exactMethod = TRUE
-  #}
 
   if(obj.glmm.null$traitType == "binary"){
     mu.eta = family$mu.eta(eta)
@@ -1838,9 +1821,9 @@ print("HERE6")
              #mu.eta = family$mu.eta(eta)
           }
 
-          var1a = t(G)%*%Sigma_iG - t(G)%*%Sigma_iX%*%(solve(t(X1)%*%Sigma_iX))%*%t(X1)%*%Sigma_iG
+        var1a = t(G)%*%Sigma_iG - t(G)%*%Sigma_iX%*%(solve(t(X1)%*%Sigma_iX))%*%t(X1)%*%Sigma_iG
 	var1a = as.vector(var1a)
-	  #print("t(G)%*%Sigma_iG")
+	#print("t(G)%*%Sigma_iG")
 	#print(t(G)%*%Sigma_iG)
 	#print(t(G)%*%Sigma_iX%*%(solve(t(X1)%*%Sigma_iX))%*%t(X1)%*%Sigma_iG)
       ###var1 = g'Pg, var2 = g'g
@@ -2342,12 +2325,11 @@ Covariate_Transform<-function(formula, data, traitType){
 # X \beta = Q R \beta = (Q \sqrt(N)) ( R \beta / \sqrt(N))
 # So coefficient from fit.new is the same as R \beta / \sqrt(N)
 Covariate_Transform_Back<-function(coef, Param.transform){	
-	#coef<-fit.new$coef; Param.transform=out.transform$Param.transform
-	coef1<-coef * sqrt(Param.transform$N)
-	coef.org<-solve(Param.transform$qrr, coef1)
+  coef1<-coef * sqrt(Param.transform$N)
+  coef.org<-solve(Param.transform$qrr, coef1)
 	
-	names(coef.org)<-Param.transform$X_name
-	return(coef.org)
+  names(coef.org)<-Param.transform$X_name
+  return(coef.org)
 }
 
 
@@ -2812,11 +2794,6 @@ checkPerfectSep<-function(formula, data, minCovariateCount){
         colnamesDelete = c(colnamesDelete, X_name[i])
 	cat("less than ", minCovariateCount, " samples in a covariate  detected! ", X_name[i], " will be excluded in the model\n")
       }  
-
-    #if(sum(sumTable == 0) > 0){
-    #    colnamesDelete = c(colnamesDelete, X_name[i])
-    #    cat("perfect seperation is detected! ", X_name[i], " will be excluded in the model\n")
-    #  }
     }
   }
 

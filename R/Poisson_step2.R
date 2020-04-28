@@ -8,14 +8,22 @@ scoreTest_SAIGE_survivalTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSpars
     AC2 = AC
   }
   Run1=TRUE
+    G0 = matrix(G0, ncol = 1)
+    XVG0 = eigenMapMatMult(obj.noK$XV, G0)
+    G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G is X adjusted
+    g = G
+    G0_mc = matrix(G0-mean(G0), ncol = 1)
+    XVG0_mc = eigenMapMatMult(obj.noK$XV, G0_mc)
+    g_mc = G0_mc - eigenMapMatMult(obj.noK$XXVX_inv, XVG0_mc)	
 
 if(!isCondition){
   if(IsSparse==TRUE){
-    if(MAF < 0.05){
-       out.score<-Score_Test_Sparse(obj.noK, G0, mu.a, mu2.a, varRatio );
-    }else{
-       out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio );
-    }
+    #if(MAF < 0.05){
+    #   out.score<-Score_Test_Sparse(obj.noK, G0, mu.a, mu2.a, varRatio );
+    #}else{
+       #out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio );
+       out.score<-Score_Test_Survival(obj.noK, g, g_mc, mu.a, mu2.a, varRatio );
+    #}
 #    if(out.score["pval.noadj"] > 0.05){
     if(abs(as.numeric(unlist(out.score["Tstat"])[1])/sqrt(as.numeric(unlist(out.score["var1"])[1]))) < Cutoff){
        if(AF > 0.5){
@@ -31,12 +39,9 @@ if(!isCondition){
   #cat("Run1: ", Run1, "\n")
 
   if(Run1){
-    G0 = matrix(G0, ncol = 1)
-    XVG0 = eigenMapMatMult(obj.noK$XV, G0)
-    G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G is X adjusted
-    g = G
+
     NAset = which(G0==0)
-    out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma(g, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
+    out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma(g, g_mc, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
 
     if(isCondition){
      outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], p.value.NA = out1["p.value.NA"], Is.converge=out1["Is.converge"], var1 = out1["var1"], var2 = out1["var2"], Tstat_c = out1["Tstat_c"], p.value.c = out1["p.value.c"], var1_c = out1["var1_c"], BETA_c = out1["BETA_c"], SE_c = out1["SE_c"])
@@ -51,19 +56,20 @@ if(!isCondition){
 
 
 
-scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma=function(g,g_mc,AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
 
   #g = G/sqrt(AC)
   q = innerProduct(g, y)
   m1 = innerProduct(g, mu)
   Tstat = q-m1
   var2 = innerProduct(mu, g*g)
-  var1 = var2 * varRatio
+  var2c = innerProduct(mu, g_mc*g_mc)
+  var1 = var2c * varRatio
 
   if(!is.null(sparseSigma)){
     #pcginvSigma<-pcg(sparseSigma, g)
-    pcginvSigma<-solve(sparseSigma, g, sparse=T)
-    var2b = as.matrix(t(g) %*% pcginvSigma)
+    pcginvSigma<-solve(sparseSigma, g_mc, sparse=T)
+    var2b = as.matrix(t(g_mc) %*% pcginvSigma)
     var1 = var2b * varRatio
   }
 

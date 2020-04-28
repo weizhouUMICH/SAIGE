@@ -1443,7 +1443,7 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
     noCov = TRUE 
   }
 
-    A1<-obj.null$XVX_inv_XV[idx_no0,]
+  A1<-obj.null$XVX_inv_XV[idx_no0,]
 
   X1<-obj.null$X1[idx_no0,]
   mu21<-mu2[idx_no0]
@@ -1499,6 +1499,32 @@ Score_Test<-function(obj.null, G, mu, mu2, varRatio){
   m1<-crossprod(mu, g)
   var2<-crossprod(mu2, g^2)
   var1 = var2 * varRatio
+  S = q-m1
+
+  pval.noadj<-pchisq((S)^2/var1, lower.tail = FALSE, df=1)
+
+  ##add on 10-25-2017
+  BETA = S/var1
+  SE = abs(BETA/qnorm(pval.noadj/2))
+  #Tstat = S^2
+  Tstat = S
+
+  #return(c(BETA, SE, Tstat, pval.noadj, pval.noadj, NA, var1, var2))
+  #return(c(pval.noadj, pval.noadj, TRUE, var1, var2))
+  return(list(BETA=BETA, SE=SE, Tstat=Tstat, pval.noadj=pval.noadj, pval.noadj=pval.noadj, is.converge=TRUE, var1=var1, var2=var2))
+}
+
+
+Score_Test_Survival<-function(obj.null, g, g_mc, mu, mu2, varRatio){
+  #g<-G  -  obj.null$XXVX_inv %*%  (obj.null$XV %*% G)
+  #G_meanCentered = G - mean(G)
+  #g_meanCentered = G_meanCentered - obj.null$XXVX_inv %*%  (obj.null$XV %*% G_meanCentered)
+  q<-crossprod(g, obj.null$y) 
+  m1<-crossprod(mu, g)
+  var2<-crossprod(mu2, g^2)
+  var2c<-crossprod(mu2, g_mc^2)
+  #var1 = var2 * varRatio
+  var1 = var2c * varRatio
   S = q-m1
 
   pval.noadj<-pchisq((S)^2/var1, lower.tail = FALSE, df=1)
