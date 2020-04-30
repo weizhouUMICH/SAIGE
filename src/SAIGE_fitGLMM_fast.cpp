@@ -1280,7 +1280,7 @@ arma::fvec getCrossprodMatAndKin(arma::fcolvec& bVec){
 	//std::cout << "getCrossprodMatAndKin" << std::endl;
 
 if(isUseSparseSigmaforInitTau | isUseSparseSigmaforModelFitting){
-        //cout << "use sparse kinship to estimate initial tau and for getCrossprodMatAndKin" <<  endl;
+        cout << "use sparse kinship in getCrossprodMatAndKin" <<  endl;
 	arma::sp_mat result(locationMat, valueVec, dimNum, dimNum);
 	arma::vec x = result * arma::conv_to<arma::dcolvec>::from(bVec);
 
@@ -3278,13 +3278,13 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
 	arma::fvec xVec(Nnomissing);
         xVec.zeros();
 
-if(isUseSparseSigmaforInitTau){
+  if(isUseSparseSigmaforInitTau){
 	cout << "use sparse kinship to estimate initial tau " <<  endl;
 	xVec = gen_spsolve_v4(wVec, tauVec, bVec);
-}else if(isUseSparseSigmaforModelFitting){
+  }else if(isUseSparseSigmaforModelFitting){
 	cout << "use sparse kinship to fit the model " << endl;
 	xVec = gen_spsolve_v4(wVec, tauVec, bVec);
-}else{
+  }else{
         arma::fvec rVec = bVec;
         //cout << "HELLOa: "  << endl;
         arma::fvec r1Vec;
@@ -3796,9 +3796,6 @@ arma::fvec getPCG1ofSigmaAndVector_Surv_new(arma::fvec& wVec,  arma::fvec& tauVe
     arma::fvec xVec(Nnomissing);
     //xVec.zeros();
     xVec = x0Vec;
-    //cout << "xVec: " << endl;	
-    //xVec.print();
-
 
     //if(isUseSparseSigmaforInitTau){
       //  cout << "use sparse kinship to estimate initial tau " <<  endl;
@@ -3812,12 +3809,6 @@ arma::fvec getPCG1ofSigmaAndVector_Surv_new(arma::fvec& wVec,  arma::fvec& tauVe
 	}
 
         arma::fvec rVec = bVec - getCrossprod_Surv_new(xVec, wVec, tauVec, RvecIndex, sqrtWinvNVec,WinvN,Dvec, kuniqtime, maxiterPCG, tolPCG);
-	//cout << "rVec: " << rVec[0] << endl;
-	//cout << "bVec: " << bVec[0] << endl;
-	//arma::fvec csn = getCrossprod_Surv_new(xVec, wVec, tauVec, RvecIndex, sqrtWinvNVec,WinvN,Dvec, kuniqtime, maxiterPCG, tolPCG);
-	//cout << "csn: " << csn[0] << endl;
-	//rVec.print();
-
 
         arma::fvec r1Vec;
         arma::fvec crossProdVec(Nnomissing);
@@ -3835,118 +3826,25 @@ arma::fvec getPCG1ofSigmaAndVector_Surv_new(arma::fvec& wVec,  arma::fvec& tauVe
         }
 	double wall2 = get_wall_time();
 	double cpu2  = get_cpu_time();
-// cout << "Wall Time 2 = " << wall2 - wall1 << endl;
-// cout << "CPU Time 2 = " << cpu2  - cpu1  << endl;
-
-
-//      cout << "HELL3: "  << endl;
-//      for(int i = 0; i < 10; i++){
-//                cout << "full set minvVec[i]: " << minvVec[i] << endl;
-//        }
         float sumr2 = sum(rVec % rVec);
-	//cout << "sumr2: " << sumr2 << endl;
-/*
-        if(bVec[0] == 1 && bVec[99] == 1){
-        for(int i = 0; i < 100; i++){
-                cout << "rVec[i]: " << i << " " << rVec[i] << endl;
-                cout << "minvVec[i]: " << i << " " << minvVec[i] << endl;
-                cout << "wVec[i]: " << i << " " << wVec[i] << endl;
-        }
-        }
-*/
         arma::fvec z1Vec(Nnomissing);
         arma::fvec pVec = zVec;
-        /*
-        if(bVec[0] == 1 && bVec[2] == 1){
-        for(int i = 0; i < 10; i++){
-                cout << "pVec[i]: " << i << " " << pVec[i] << endl;
-        }
-        }
-*/
-        //arma::fvec xVec(Nnomissing);
-        //xVec.zeros();
 
         int iter = 0;
 	//cout << "OKKKKKK" << endl;
         while (sumr2 > tolPCG && iter < maxiterPCG) {
                 iter = iter + 1;
-                //arma::fcolvec ApVec = getCrossprod(pVec, wVec, tauVec);
-                //arma::fcolvec ApVec = getCrossprod_Surv(pVec, wVec, tauVec, WinvNRt, ACinv);
-		//cout << "OKKKKKK" << endl;
-
-		//arma::fcolvec RWinNpVec =  Rmat.t() * (WinvN % pVec);
-		//arma::fcolvec RWinN =  Rmat.t() * WinvN;
-		//cout << "RWinN(0) is " << RWinN(0) << endl;
-
-
-		//cout << "RWinNpVec(0) is " << RWinNpVec(0) << endl;
 
 		arma::fcolvec ApVec = getCrossprod_Surv_new(pVec, wVec, tauVec, RvecIndex, sqrtWinvNVec,WinvN,Dvec, kuniqtime, maxiterPCG, tolPCG);
-		//cout << "ApVec is " << ApVec(0) << endl;
-		//cout << "OKKKKKK2" << endl;
-		/*
-		arma::fcolvec ApVec0;
- 		arma::fcolvec crossProdVec0 = tauVec(0)*(pVec % (1/wVec));
-        	WinvNRtG = (WinvNRt.t()) * bVec;
-        //cout << "OKKKKK5" << endl;
-        ACivWinvNRtG = ACinv * WinvNRtG;
-        //cout << "OKKKKK6" << endl;
-        crossProdVec1 = WinvNRt * ACivWinvNRtG;
-        //cout << "OKKKKK7" << endl;
-        // Added by SLEE, 04/16/2017
-        if(tauVec(1) == 0){
-                crossProdVec = crossProdVec0 - tauVec(0)*crossProdVec1;
-
-                return(crossProdVec);
-        }
-        arma::fvec crossProd1  = getCrossprodMatAndKin(bVec);
-        crossProdVec = crossProdVec0 + tauVec(0)*crossProdVec1 + tauVec(1)*crossProd1;
-	*/
-
-
-
 
                 arma::fvec preA = (rVec.t() * zVec)/(pVec.t() * ApVec);
 
                 float a = preA(0);
 
-/*           if(bVec[0] == 1 && bVec[2] == 1){
-                        cout << "bVec[0] == 1 && bVec[2] == 1: " << endl;
-                        for(int i = 0; i < 10; i++){
-
-                                cout << "ApVec[i]: " << i << " " << ApVec[i] << endl;
-                                cout << "pVec[i]: " << i << " " << pVec[i] << endl;
-                                cout << "zVec[i]: " << i << " " << zVec[i] << endl;
-                                cout << "rVec[i]: " << i << " " << rVec[i] << endl;
-                        }
-                    }
-*/
-
                 xVec = xVec + a * pVec;
-/*
-                if(bVec[0] == 1 && bVec[2] == 1){
-                        for(int i = 0; i < 10; i++){
-                                cout << "xVec[i]: " << i << " " << xVec[i] << endl;
-                        }
-                }
-
-*/
 
 
                 r1Vec = rVec - a * ApVec;
-/*
-                if(bVec[0] == 1 && bVec[2] == 1){
-                        cout << "a: " << a  << endl;
-                        for(int i = 0; i < 10; i++){
-                                cout << "ApVec[i]: " << i << " " << ApVec[i] << endl;
-                                cout << "rVec[i]: " << i << " " << rVec[i] << endl;
-                                cout << "r1Vec[i]: " << i << " " << r1Vec[i] << endl;
-                        }
-                }
-*/
-//                z1Vec = minvVec % r1Vec;
-// double wall3a = get_wall_time();
-//       double cpu3a  = get_cpu_time();
 
         if (!isUsePrecondM){
                 z1Vec = minvVec % r1Vec;
@@ -3956,11 +3854,6 @@ arma::fvec getPCG1ofSigmaAndVector_Surv_new(arma::fvec& wVec,  arma::fvec& tauVe
                 //z1Vec = arma::spsolve(sparseGRMinC, r1Vec) ;
         }
 
-//       double wall3b = get_wall_time();
-//       double cpu3b  = get_cpu_time();
-// cout << "Wall Time 3b = " << wall3b - wall3a << endl;
-// cout << "CPU Time 3b = " << cpu3b  - cpu3a  << endl;
-
 
                 arma::fvec Prebet = (z1Vec.t() * r1Vec)/(zVec.t() * rVec);
                 float bet = Prebet(0);
@@ -3969,13 +3862,6 @@ arma::fvec getPCG1ofSigmaAndVector_Surv_new(arma::fvec& wVec,  arma::fvec& tauVe
                 rVec = r1Vec;
 
                 sumr2 = sum(rVec % rVec);
-                //        std::cout << "tolPCG: " << tolPCG << std::endl;
-/*
-                if(bVec[0] == 1 && bVec[2] == 1){
-                        std::cout << "sumr2: " << sumr2 << std::endl;
-                        std::cout << "tolPCG: " << tolPCG << std::endl;
-                }
-*/
         }
        //std::cout << "sumr2: " << sumr2 << std::endl;
 
@@ -3984,15 +3870,6 @@ arma::fvec getPCG1ofSigmaAndVector_Surv_new(arma::fvec& wVec,  arma::fvec& tauVe
 
         }
         cout << "iter from getPCG1ofSigmaAndVector " << iter << endl;
-//} //else if(isUseSparseKinforInitTau){
-//        double wall1 = get_wall_time();
-//    double cpu1  = get_cpu_time();
-
-//    cout << "Wall Time = " << wall1 - wall0 << endl;
-//    cout << "CPU Time  = " << cpu1  - cpu0  << endl;
-
-//      std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
-//        std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() <<std::endl;
         return(xVec);
 }
 

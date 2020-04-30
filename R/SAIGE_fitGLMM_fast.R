@@ -183,6 +183,7 @@ Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG
     #W = sqrtW^2
 
     if( max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol.coef))< tol.coef){
+	if(FALSE){
 	if(!is.null(inC)){
       	  Lambda0 = GetLambda0(eta, inC)
           #print("Lambda0")
@@ -197,6 +198,7 @@ Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG
           sqrtW = mu.eta/sqrt(family$variance(mu))
           W = sqrtW^2
         }
+	}
 	break
     }
       alpha0 = alpha
@@ -212,7 +214,7 @@ Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG
 
 
 #Fits the null glmm for binary traits or survival traits
-glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff, isCovariateTransform, isDiagofKinSetAsOne, eventTime = NULL) {
+glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff, isCovariateTransform, isDiagofKinSetAsOne, eventTime = NULL, useSparseGRM = FALSE) {
   #Fits the null generalized linear mixed model for a binary trait
   #Args:
   #  genofile: string. Plink file for the M1 markers to be used to construct the genetic relationship matrix 
@@ -242,7 +244,9 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     print("Start reading genotype plink file here")
   }
 
-  re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne)})
+  if(!useSparseGRM){
+    re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne)})
+  }
   #testM=getMmafge1perc()  
   #cat("testM: ", testM,"\n")
   if(verbose){
@@ -414,7 +418,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
 
 
 #Fits the null glmm for a quantitative trait
-glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff, isCovariateTransform, isDiagofKinSetAsOne){
+glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff, isCovariateTransform, isDiagofKinSetAsOne, useSparseGRM=FALSE){
   #Fits the null linear mixed model for a quantitative trait
   #Args:
   #  genofile: string. Plink file for the M1 markers to be used to construct the genetic relationship matrix
@@ -445,7 +449,9 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     print("Start reading genotype plink file here")
   }
 
-  re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne)})
+  if(!useSparseGRM){
+    re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne)})
+  }
 
   if(verbose){
     print("Genotype reading is done")
@@ -779,6 +785,7 @@ fitNULLGLMM = function(plinkFile = "",
 		isDiagofKinSetAsOne = FALSE,
 		useSparseSigmaConditionerforPCG = FALSE,
 		useSparseSigmaforInitTau = FALSE,
+		useSparseGRMforvarRatioDenom = FALSE,
 		minCovariateCount = -1, 
 		minMAFforGRM = 0.01,
 		useSparseGRMtoFitNULL=FALSE){
@@ -818,6 +825,13 @@ fitNULLGLMM = function(plinkFile = "",
     }
     useSparseSigmaforInitTau = FALSE
     useSparseSigmaConditionerforPCG = FALSE
+    useSparseGRMforvarRatioDenom = FALSE
+    LOCO=FALSE
+  }
+
+  if(useSparseGRMforvarRatioDenom){
+    useSparseGRMtoFitNULL = FALSE
+    cat("sparse GRM will be used for variance ratio estimation in the denom\n")    
   }
 
 
@@ -831,39 +845,12 @@ fitNULLGLMM = function(plinkFile = "",
     }
   }
 
-#set.seed(98765)
-#n <- 4e4
-# 5000 x 5000 matrices, 99% sparse
-#a <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
-#b <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
-#ytestvec = rnorm(n)
-#grm = Matrix::readMM(sparseGRMFile)
-#grm = Matrix::readMM("/net/hunt/disk2/zhowei/project/SAIGE_SKAT/realdata/UKB/step1/output/UKB_whiteBritish_Days_per_week_walked_10min_largeGRM.varianceRatio.txt_relatednessCutoff_0.125.sparseGRM.mtx")
-#n = dim(grm)[1]
-#print(n)
-#ytestvec = rnorm(n)
-#print("atime0")
-#atime = system.time({APCG = pcg(grm, ytestvec)})
-#print("atime")
-#print(atime)
-#btime = system.time({BPCG = gen_spsolve_inR(grm, ytestvec)})
-#print("btime")
-#print(btime)
-#cat("sum((APCG-BPCG)^2)\n")
-#print(APCG[1:100])
-#print(BPCG[1:100])
-#print(sum((APCG-BPCG)^2))
 
-#print(atime)
-#print(btime)
+  if(useSparseSigmaConditionerforPCG | useSparseSigmaforInitTau  | useSparseGRMtoFitNULL | useSparseGRMforvarRatioDenom){
+    IsSparseKin = TRUE
+  }
 
-#tauVec=c(0.5,0.5)
-#wVec =  rnorm(n)
 
-#ctime = system.time({gen_spsolve_v4(wVec,  tauVec, ytestvec)})
-#print(ctime)
-
-  
   if(nThreads > 1){
     RcppParallel:::setThreadOptions(numThreads = nThreads)
     cat(nThreads, " threads are set to be used ", "\n")
@@ -892,6 +879,7 @@ fitNULLGLMM = function(plinkFile = "",
   if(!file.exists(modelOut)){
     file.create(modelOut, showWarnings = TRUE)
   }
+
 
   if(!file.exists(paste0(plinkFile, ".bed"))){
     stop("ERROR! ", plinkFile, ".bed does not exsit\n")
@@ -951,7 +939,6 @@ fitNULLGLMM = function(plinkFile = "",
     sampleListwithGeno$IndexGeno = seq(1,nrow(sampleListwithGeno), by=1)
     cat(nrow(sampleListwithGeno), " samples have genotypes\n")
   }
-
 
   #phentoype file
   if(!file.exists(phenoFile)){
@@ -1097,12 +1084,7 @@ fitNULLGLMM = function(plinkFile = "",
     }
   }
 
-#  data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
-#  colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
-#  cat("colnames(data.new) is ", colnames(data.new), "\n")
-#  cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
-#if(FALSE){
-    if(useSparseSigmaConditionerforPCG | useSparseSigmaforInitTau  | useSparseGRMtoFitNULL){
+    if(IsSparseKin){
         #setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
 	sparseGRMtest = getsubGRM(sparseGRMFile, sparseGRMSampleIDFile, dataMerge_sort$IID)
         m4 = gen_sp_v2(sparseGRMtest)
@@ -1111,22 +1093,10 @@ fitNULLGLMM = function(plinkFile = "",
         A = summary(m4)
         locationMatinR = rbind(A$i-1, A$j-1)
         valueVecinR = A$x
-
-
-	#indexDiagSub = which(locationMatinR[1,] == locationMatinR[2,])
-	#indexDiag = locationMatinR[1,][indexDiagSub]+1
-	#valueVecinR[indexDiagSub] = (get_DiagofKin())[indexDiag]
-
         setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
- #       setisUsePrecondM(TRUE);
 	rm(sparseGRMtest)
     }
 
-    if(useSparseSigmaConditionerforPCG){
-      cat("sparse sigma will be used as the conditioner for PCG\n")
-      setisUsePrecondM(TRUE);
-    }
-	
   if(traitType == "binary" | traitType == "survival"){
     cat(phenoCol, " is a binary trait\n")
     if(traitType == "survival"){
@@ -1169,24 +1139,13 @@ fitNULLGLMM = function(plinkFile = "",
 	closeGenoFile_plink()	
       }
       setisUseSparseSigmaforInitTau(FALSE)
-      if(useSparseGRMtoFitNULL){
-         setisUseSparseSigmaforNullModelFitting(TRUE)
-      }
+
+      setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
+
       cat("Start fitting the NULL GLMM\n")
       t_begin = proc.time()
       print(t_begin)
 
-     # set up the sparse GRM to speed up the PCG
-     # sparseGRMtest = Matrix:::readMM(sparseGRMFile)
-     # m4 = gen_sp_v2(sparseGRMtest)
-     # print("print m4")
-     # print(dim(m4))
-     # A = summary(m4)
-     # locationMatinR = rbind(A$i-1, A$j-1)
-     # valueVecinR = A$x
-     # setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
-     # print("test memory 4")
-     # gc(verbose=T)
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne, eventTime = eventTime))
      #print("test memory 5")
      #gc(verbose=T)
@@ -1207,85 +1166,8 @@ fitNULLGLMM = function(plinkFile = "",
       load(modelOut)
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
-      	
-
-#if(FALSE){
-
-#      set.seed(98765)
-#n <- 4e4
-# 5000 x 5000 matrices, 99% sparse
-#a <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
-#b <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
-#ytestvec = rnorm(n)
-
-#atime = system.time({APCG = pcg(a, ytestvec)})
-#btime = system.time({BPCG = gen_spsolve_inR(a, ytestvec)})
-#cat("sum((APCG-BPCG)^2)\n")
-#print(sum((APCG-BPCG)^2))
-#print(atime)
-#print(btime)
-
-#d=a %*% b
-#print("print d")
-#print(dim(d))
-
-#m1 <- mult_sp_sp_to_sp(a, b)
-#print("print m1")
-#print(dim(m1))
-
-#m2 = gen_sp(a)
-#print("print m2")
-#print(dim(m2))
-
-#sparseGRMtest = Matrix:::readMM(sparseGRMFile)
-
-#m3 = gen_sp_v2(a)
-#print("print m3")
-#print(dim(m3))
-
-#m4 = gen_sp_v2(sparseGRMtest)
-#print("print m4")
-#print(dim(m4))
-#A = summary(m4)
-
-#locationMatinR = rbind(A$i-1, A$j-1)
-#valueVecinR = A$x
-#setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
-
-
-
-#B = gen_sp_GRM()
-#print("print B")
-#print(dim(B))
-#cat("sum((B-m4)^2)\n")
-#print(sum((B-m4)^2))
-
-#ytestvec = rnorm(dim(m4)[1])
-#x = gen_spsolve_v3(ytestvec)
-#print(x[1:30])
-#z = pcg(m4, ytestvec)
-#cat("sum((x-z)^2)\n")
-#print(sum((x-z)^2))
-
-#ytestvec = rnorm(dim(m4)[1])
-#timeWoConv = system.time({x = gen_spsolve_v3(ytestvec)})
-#print(x[1:30])
-#z = pcg(m4, ytestvec)
-#cat("sum((x-z)^2)\n")
-#print(sum((x-z)^2))
-
-#timeWithConv = system.time({x2 = gen_spsolve_v4(ytestvec)})
-#print("timeWoConv")
-#print(timeWoConv)
-
-#print("timeWithConv")
-#print(timeWithConv)
-#cat("sum(x-x2)^2 ", sum(x-x2)^2, "\n")
-
-#}
-
-
-
+      setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
+      #setisUseSparseSigmaforNullModelFitting(TRUE)
 
     }
     cat("Start estimating variance ratios\n")
@@ -1315,7 +1197,8 @@ fitNULLGLMM = function(plinkFile = "",
                 cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
 		minMAFforGRM = minMAFforGRM,
 		isDiagofKinSetAsOne = isDiagofKinSetAsOne,
-		pcgforUhatforSurvAnalysis = pcgforUhatforSurvAnalysis)
+		pcgforUhatforSurvAnalysis = pcgforUhatforSurvAnalysis,
+		useSparseGRMforvarRatioDenom = useSparseGRMforvarRatioDenom)
 
     closeGenoFile_plink()
 
@@ -1335,8 +1218,8 @@ fitNULLGLMM = function(plinkFile = "",
        modglmm0<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne) 
        tauInit = modglmm0$theta
        cat("tauInit estimated using sparse Sigma is ", tauInit, "\n")
-	 rm(modglmm0)
-        closeGenoFile_plink()
+       rm(modglmm0)
+       closeGenoFile_plink()
      }
 
      setisUseSparseSigmaforInitTau(FALSE)
@@ -1344,6 +1227,8 @@ fitNULLGLMM = function(plinkFile = "",
       cat("Start fitting the NULL GLMM\n")
       t_begin = proc.time()
       print(t_begin)
+
+      setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
 
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
       
@@ -1366,7 +1251,7 @@ fitNULLGLMM = function(plinkFile = "",
       load(modelOut)
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
-
+      setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
       #test time
 #	btest = rnorm(nrow(data.new))
 #	for(i in 1:10){
@@ -1401,7 +1286,8 @@ fitNULLGLMM = function(plinkFile = "",
 							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
                 cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
 		minMAFforGRM = minMAFforGRM,
-		isDiagofKinSetAsOne = isDiagofKinSetAsOne)
+		isDiagofKinSetAsOne = isDiagofKinSetAsOne,
+		useSparseGRMforvarRatioDenom = useSparseGRMforvarRatioDenom)
     closeGenoFile_plink()
   }
 }
@@ -1432,8 +1318,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 						    cateVarRatioMinMACVecExclude,
 						    cateVarRatioMaxMACVecInclude,
 						    minMAFforGRM,
-							isDiagofKinSetAsOne,
-							pcgforUhatforSurvAnalysis){
+						    isDiagofKinSetAsOne,
+						    pcgforUhatforSurvAnalysis,
+							useSparseGRMforvarRatioDenom){
 
 
   if(file.exists(testOut)){file.remove(testOut)}
@@ -1441,6 +1328,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 
   resultHeader = c("CHR","SNPID","POS","A1","A2","p.value", "p.value.NA", "Is.converge","var1","var2", "N", "AC", "AF")
   write(resultHeader,file = testOut, ncolumns = length(resultHeader))
+
   bimPlink = data.frame(data.table:::fread(paste0(plinkFile,".bim"), header=F))
   if(sum(sapply(bimPlink[,1], is.numeric)) != nrow(bimPlink)){
     stop("ERROR: chromosome column in plink bim file is no numeric!\n")
@@ -1654,7 +1542,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
   freqVec = getAlleleFreqVec()
 
 
-print("HERE6")
+  print("HERE6")
 
   Nnomissing = length(mu)
   varRatioTable = NULL
@@ -1823,33 +1711,18 @@ print("HERE6")
 
         var1a = t(G)%*%Sigma_iG - t(G)%*%Sigma_iX%*%(solve(t(X1)%*%Sigma_iX))%*%t(X1)%*%Sigma_iG
 	var1a = as.vector(var1a)
-	#print("t(G)%*%Sigma_iG")
-	#print(t(G)%*%Sigma_iG)
-	#print(t(G)%*%Sigma_iX%*%(solve(t(X1)%*%Sigma_iX))%*%t(X1)%*%Sigma_iG)
-      ###var1 = g'Pg, var2 = g'g
 
-      #cat("Sigma_iG: \n")
-      #print(Sigma_iG/AC)
-
-          var1 = var1a/AC
-          m1 = innerProduct(mu,g)
+        var1 = var1a/AC
+        m1 = innerProduct(mu,g)
 
 
-        if(IsSparseKin){
-            t1 = proc.time()
-            cat("t1\n")
-             cat("t1again\n")
-#       pcginvSigma = getPCG1ofSparseSigmaAndVector(sparseSigma, g)
-#       pcginvSigma = pcgSparse(sparseSigma, g)
-             #pcginvSigma = pcg(sparseSigma, g)
+        if(useSparseGRMforvarRatioDenom){
              pcginvSigma = solve(sparseSigma, g, sparse=T)
              t2 = proc.time()
              cat("t2-t1\n")
              print(t2-t1)
              var2_a = t(g) %*% pcginvSigma
              var2 = var2_a[1,1]
-        #cat("qrinvSigma: \n")
-        #print(qrinvSigma)
         }else{
           if(obj.glmm.null$traitType == "binary"){
             var2 = innerProduct(mu*(1-mu), g*g)
@@ -1881,12 +1754,10 @@ print("HERE6")
         }else{
           pval = pval.noadj
         }
-      #OUT = rbind(OUT, c(bimPlink[i,1], bimPlink[i,2], bimPlink[i,4], bimPlink[i,5], bimPlink[i,6], out1$p.value, out1$p.value.NA, out1$Is.converge, var1, var2, Nnomissing, AC, AF))
       OUT = rbind(OUT, c(bimPlink[i,1], bimPlink[i,2], bimPlink[i,4], bimPlink[i,5], bimPlink[i,6], pval, pval.noadj, 1, var1, var2, Nnomissing, AC, AF))
 
       }
 
-#        OUT = rbind(OUT, c(i, p.value, p.value.NA, var1, var2, Tv1, Nnomissing, AC, AF))
 
       indexInMarkerList = indexInMarkerList + 1
       numTestedMarker = numTestedMarker + 1
@@ -1985,7 +1856,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 							cateVarRatioMinMACVecExclude,
                                                         cateVarRatioMaxMACVecInclude,
 							minMAFforGRM,
-							isDiagofKinSetAsOne){	
+							isDiagofKinSetAsOne,
+							useSparseGRMforvarRatioDenom){	
 
 
   if(file.exists(testOut)){file.remove(testOut)}
@@ -2175,7 +2047,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
           m1 = innerProduct(mu,g)
 
 
-          if(IsSparseKin){
+          if(useSparseGRMforvarRatioDenom){
 	    t1 = proc.time()
 	    cat("t1\n")
 #	pcginvSigma = getPCG1ofSparseSigmaAndVector(sparseSigma, g)
@@ -2704,8 +2576,8 @@ getSparseSigma = function(plinkFile = plinkFile,
   #}
 
       sparseGRMSampleID$IndexGRM = c(1:nrow(sparseGRMSampleID))
-	cat("length(sparseGRMSampleID$IndexGRM): ", length(sparseGRMSampleID$IndexGRM), "\n")
-	cat("nrow(sparseGRMSampleID): ", nrow(sparseGRMSampleID), "\n")
+      cat("length(sparseGRMSampleID$IndexGRM): ", length(sparseGRMSampleID$IndexGRM), "\n")
+      cat("nrow(sparseGRMSampleID): ", nrow(sparseGRMSampleID), "\n")
       sampleInModel = NULL
       sampleInModel$IID = obj.glmm.null$sampleID
       sampleInModel = data.frame(sampleInModel)
