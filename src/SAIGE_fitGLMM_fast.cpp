@@ -1280,7 +1280,7 @@ arma::fvec getCrossprodMatAndKin(arma::fcolvec& bVec){
 	//std::cout << "getCrossprodMatAndKin" << std::endl;
 
 if(isUseSparseSigmaforInitTau | isUseSparseSigmaforModelFitting){
-        cout << "use sparse kinship in getCrossprodMatAndKin" <<  endl;
+        //cout << "use sparse kinship in getCrossprodMatAndKin" <<  endl;
 	arma::sp_mat result(locationMat, valueVec, dimNum, dimNum);
 	arma::vec x = result * arma::conv_to<arma::dcolvec>::from(bVec);
 

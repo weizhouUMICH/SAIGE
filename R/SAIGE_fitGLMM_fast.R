@@ -136,8 +136,9 @@ GetLambda0<-function(lin.pred,inC)
 }
 
 # Run iterations to get converged alpha and eta
-Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG,maxiter, verbose=FALSE, inC = NULL, LOCO = FALSE){
-  tol.coef = 0.1
+Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG,maxiter, verbose=FALSE, inC = NULL, LOCO = FALSE, tol.coef=0.01){
+  #cat("tol.coef is ", tol.coef, "\n")
+  #tol.coef = 0.1
   #mu = family$linkinv(eta0)
   #mu.eta = family$mu.eta(eta0)
   #Y = eta0 - offset + (y - mu)/mu.eta
@@ -302,7 +303,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   cat("inital tau is ", tau,"\n")
   tau0=tauInit
 
-  re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, inC = inC)
+  re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, inC = inC, tol.coef=tol)
   re = getAIScore(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG,tolPCG = tolPCG, traceCVcutoff = traceCVcutoff)
 
 
@@ -321,7 +322,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     cat("tau0_v1: ", tau0, "\n")
     eta0 = eta
     # use Get_Coef before getAIScore        
-    re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, inC = inC)
+    re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, inC = inC, tol.coef=tol)
     fit = fitglmmaiRPCG(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG, tolPCG, tol = tol, traceCVcutoff = traceCVcutoff)
 
     tau = as.numeric(fit$tau)
@@ -361,7 +362,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   if(verbose) cat("\nFinal " ,tau, ":\n")
 
     #added these steps after tau is estimated 04-14-2018
-  re.coef = Get_Coef(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, inC = inC)
+  re.coef = Get_Coef(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, inC = inC, tol.coef=tol)
   cov = re.coef$cov
   alpha = re.coef$alpha
   eta = re.coef$eta
@@ -393,7 +394,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
       endIndex = chromosomeEndIndexVec[j]
       if(!is.na(startIndex) && !is.na(endIndex)){
         setStartEndIndex(startIndex, endIndex)
-        re.coef_LOCO = Get_Coef(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, inC = inC, LOCO = LOCO)
+        re.coef_LOCO = Get_Coef(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, inC = inC, LOCO = LOCO, tol.coef=tol)
         cov = re.coef_LOCO$cov
         alpha = re.coef_LOCO$alpha
         eta = re.coef_LOCO$eta
@@ -507,7 +508,7 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 
   tau0 = tau
   cat("initial tau is ", tau,"\n")
-  re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
+  re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, tol.coef=tol)
 
   re = getAIScore_q(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG,tolPCG = tolPCG, traceCVcutoff = traceCVcutoff)
   tau[2] = max(0, tau0[2] + tau0[2]^2 * (re$YPAPY - re$Trace[2])/n)
@@ -528,7 +529,7 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     eta0 = eta
 #    cat("tau0: ", tau0,"\n")
 
-    re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)	
+    re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, tol.coef=tol)	
     fit = fitglmmaiRPCG_q(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG, tolPCG, tol = tol, traceCVcutoff = traceCVcutoff)
 
 #    cat("tau0_after_fit: ", tau0,"\n")
@@ -586,7 +587,7 @@ if(FALSE){
 
   if(verbose) cat("\nFinal " ,tau, ":\n")
 
-  re.coef = Get_Coef(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
+  re.coef = Get_Coef(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, tol.coef=tol)
   cov = re.coef$cov
   alpha = re.coef$alpha
   eta = re.coef$eta
@@ -618,7 +619,7 @@ if(FALSE){
       endIndex = chromosomeEndIndexVec[j]
       if(!is.na(startIndex) && !is.na(endIndex)){
         setStartEndIndex(startIndex, endIndex)
-	re.coef_LOCO = Get_Coef_LOCO(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
+	re.coef_LOCO = Get_Coef(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, tol.coef=tol)
 
         #re.coef_LOCO=fitglmmaiRPCG_q_LOCO(Y, X, W, tau, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
 	cov = re.coef_LOCO$cov
