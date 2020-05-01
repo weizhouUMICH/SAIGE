@@ -539,7 +539,7 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
           dosages[indexforMissing[i]] = imputeDosage;
        }
        if(!isDropMissingDosages_bgen){
-         AC = missing_cnt * imputeDosage;
+         AC = AC + missing_cnt * imputeDosage;
        }	
      }
 
