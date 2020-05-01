@@ -1491,6 +1491,67 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 }
 
 
+Score_Test_Sparse_Survival<-function(obj.null, G, Gc, mu, mu2, varRatio ){
+  # mu=mu.a; mu2= mu2.a; G=G0; obj.null=obj.noK
+  idx_no0<-which(G>0)
+  g1<-G[idx_no0]
+  g1c<-Gc[idx_no0] #center g1 
+  noCov = FALSE
+  if(dim(obj.null$X1)[2] == 1){
+    noCov = TRUE 
+  }
+
+  A1<-obj.null$XVX_inv_XV[idx_no0,]
+
+  X1<-obj.null$X1[idx_no0,]
+  mu21<-mu2[idx_no0]
+  mu1<-mu[idx_no0]
+  y1<-obj.null$y[idx_no0]
+
+  if(length(idx_no0) > 1){
+#    cat("idx_no0 ", idx_no0, "\n")
+#    cat("dim(X1) ", X1, "\n")
+    Z = t(A1) %*% g1
+    B<-X1 %*% Z
+    #cat("dim(Z) ", Z, "\n")
+    g_tilde1 = g1 - B
+    gc_tilde1 = g1c -B
+    #var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
+    #var1 = var2 * varRatio
+    var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(gc_tilde1^2) %*% mu21
+    var1 = var2 * varRatio
+    S1 = crossprod(y1-mu1, g_tilde1)
+
+    if(!noCov){
+      S_a2 = obj.null$S_a - colSums(X1 * (y1 - mu1))
+    }else{
+      S_a2 = obj.null$S_a - crossprod(X1, y1 - mu1)
+    }
+
+    S2 = -S_a2 %*% Z
+  }else{
+    Z = A1 * g1
+    B<-X1 %*% Z
+    g_tilde1 = g1 - B
+    gc_tilde1 = g1c -B
+    #var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
+    var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(gc_tilde1^2) %*% mu21
+    var1 = var2 * varRatio
+    S1 = crossprod(y1-mu1, g_tilde1)
+    S_a2 = obj.null$S_a - X1 * (y1 - mu1)
+    S2 = -S_a2 %*% Z
+  }
+
+  S<- S1+S2
+	
+  pval.noadj<-pchisq((S)^2/(var1), lower.tail = FALSE, df=1)
+  ##add on 10-25-2017
+  BETA = S/var1
+  SE = abs(BETA/qnorm(pval.noadj/2))
+  Tstat = S
+  #return(c(BETA, SE, Tstat, pval.noadj, pval.noadj, 1, var1, var2))
+  return(list(BETA=BETA, SE=SE, Tstat=Tstat, pval.noadj=pval.noadj, pval.noadj=pval.noadj, is.converge=TRUE, var1=var1, var2=var2))	
+}
 
 
 Score_Test<-function(obj.null, G, mu, mu2, varRatio){
