@@ -1512,13 +1512,15 @@ Score_Test_Sparse_Survival<-function(obj.null, G, Gc, mu, mu2, varRatio ){
 #    cat("idx_no0 ", idx_no0, "\n")
 #    cat("dim(X1) ", X1, "\n")
     Z = t(A1) %*% g1
-    B<-X1 %*% Z
+    #B<-X1 %*% Z
+    Zc = t(A1) %*% g1c
+    Bc<-X1 %*% Zc
     #cat("dim(Z) ", Z, "\n")
     g_tilde1 = g1 - B
     gc_tilde1 = g1c -B
     #var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
     #var1 = var2 * varRatio
-    var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(gc_tilde1^2) %*% mu21
+    var2 = t(Zc) %*% obj.null$XVX %*% Zc - t(Bc^2) %*% mu21 + t(gc_tilde1^2) %*% mu21
     var1 = var2 * varRatio
     S1 = crossprod(y1-mu1, g_tilde1)
 
@@ -1531,11 +1533,13 @@ Score_Test_Sparse_Survival<-function(obj.null, G, Gc, mu, mu2, varRatio ){
     S2 = -S_a2 %*% Z
   }else{
     Z = A1 * g1
-    B<-X1 %*% Z
+    #B<-X1 %*% Z
+    Zc = A1 * g1c
+    Bc<-X1 %*% Zc
     g_tilde1 = g1 - B
     gc_tilde1 = g1c -B
     #var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
-    var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(gc_tilde1^2) %*% mu21
+    var2 = t(Zc) %*% obj.null$XVX %*% Zc - t(Bc^2) %*% mu21 + t(gc_tilde1^2) %*% mu21
     var1 = var2 * varRatio
     S1 = crossprod(y1-mu1, g_tilde1)
     S_a2 = obj.null$S_a - X1 * (y1 - mu1)
