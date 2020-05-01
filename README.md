@@ -12,7 +12,9 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.36.6 (Updated on April 15, 2020).
+## Current version is 0.37 (Updated on May 1, 2020).
+
+## For BGEN input in step 2 with missing dosages to be mean imputed, Please use version 0.37
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
@@ -161,6 +163,8 @@ https://www.leelabsg.org/resources
 
 # Log for fixing bugs
 
+* 0.37 (May-1-2020)
+** fixed an issue with AC values when bgen input is used with missing dosages to be mean imputed (default setting). 
 * 0.36.6 (April-15-2020)
 ** add an option IsOutputHetHomCountsinCaseCtrl to output the heterozygous and homozygous counts in cases and controls
 

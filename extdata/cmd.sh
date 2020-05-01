@@ -20,11 +20,14 @@ Rscript step1_fitNULLGLMM.R     \
 	--LOCO=FALSE	\
 	--minMAFforGRM=0.01
 
+        #--vcfFile=./input/genotype_10markers.missingness.vcf.gz \
+        #--vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.tbi \
+        #--vcfField=GT \
 #step 2: perform the single-variant association tests
 Rscript step2_SPAtests.R	\
-        --vcfFile=./input/genotype_10markers.missingness.vcf.gz \
-        --vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.tbi \
-        --vcfField=GT \
+	--vcfFile=./input/dosage_10markers.vcf.gz \
+	--vcfFileIndex=./input/dosage_10markers.vcf.gz.tbi \
+	--vcfField=DS \
         --chrom=1 \
         --minMAF=0.0001 \
         --minMAC=1 \
