@@ -362,11 +362,9 @@ SPAGMMATtest = function(bgenFile = "",
 		condition_specified = unlist(strsplit(condition,","))
 	}   
     }
-#    conditionlist = paste(c("condMarkers",unlist(strsplit(condition,","))),collapse="\t")
     cat("conditionlist is ", conditionlist, "\n")
 
     if(dosageFileType == "vcf"){
-      #setMAFcutoffs(0, 0.5)
       setMAFcutoffs(testMinMAF, 0.5)
       isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
@@ -518,7 +516,8 @@ SPAGMMATtest = function(bgenFile = "",
     }
 
   }else if(traitType == "survival"){
-    cat("It is a survival trait\n")
+
+cat("It is a survival trait\n")
     if(IsSPAfast){cat("Fast SPA will be performed\n")}
     if(!isGroupTest){
       if(!isCondition){
@@ -602,18 +601,6 @@ SPAGMMATtest = function(bgenFile = "",
   }
 
   cat("isCondition is ", isCondition, "\n")
-
-#  gc(verbose=T, full=T)
-#determine minimum MAF for markers to be tested
-#  if(minMAC == 0){
-#    minMAC = 0.5
-#    cat("As minMAC is set to be 0, minMAC = 0.5 will be used\n")
-#  } ##01-19-2018
-#  cat("minMAC: ",minMAC,"\n")
-#  cat("minMAF: ",minMAF,"\n")
-#  minMAFBasedOnMAC = minMAC/(2*N) 
-#  testMinMAF = max(minMAFBasedOnMAC, minMAF) 
-#  cat("Minimum MAF of markers to be tested is ", testMinMAF, "\n")
 
   ##############START TEST########################
   startTime = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
@@ -737,14 +724,6 @@ SPAGMMATtest = function(bgenFile = "",
         MAC = 2*N - AC
         MAF = 1 - AF
       }
-     #if(dosageZerodCutoff > 0){
-     # 	if(MAC <= 10){
-     #		G0[which(G0 <= dosageZerodCutoff)] = 0
-     #		MAC = sum(G0)
-     #		MAF = MAC/(2*length(G0))
-     # 		cat("Any dosages <= ", dosageZerodCutoff, " are set to be 0")
-     #	}
-     #}  
 
       if(MAF >= testMinMAF & markerInfo >= minInfo){
          numPassMarker = numPassMarker + 1
@@ -854,7 +833,6 @@ SPAGMMATtest = function(bgenFile = "",
 	   OUT = rbind(OUT, OUTvec)
 	   OUTvec=NULL
 	  }else{ #if (NCase.sub == 0 | NCtrl.sub == 0) {
-		print("OKOKOKOK")
 		if(traitType == "binary"){
            		out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
 		}else if(traitType == "survival"){
@@ -939,7 +917,7 @@ SPAGMMATtest = function(bgenFile = "",
            if(IsOutputAFinCaseCtrl){
              AFCase = sum(G0[y1Index])/(2*NCase)
              AFCtrl = sum(G0[y0Index])/(2*NCtrl)
-                OUTvec=c(OUTvec, AFCase, AFCtrl)
+             OUTvec=c(OUTvec, AFCase, AFCtrl)
 
            }
            if(IsOutputNinCaseCtrl){

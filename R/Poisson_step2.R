@@ -141,9 +141,9 @@ scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma=function(g,g_mc,AC, AC_true, N
 }
 
 
-Saddle_Prob_Poisson=function (q, mu, g, Cutoff = 2, alpha = 5*10^-8){
-    m1 <- sum(mu * g)
-    var1 <- sum(mu * g^2)
+Saddle_Prob_Poisson=function (q, mu, g, Cutoff = 2, alpha = 5*10^-8, m1, var1){
+    #m1 <- sum(mu * g)
+    #var1 <- sum(mu * g^2)
     p1 = NULL
     p2 = NULL
 
