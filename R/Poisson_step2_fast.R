@@ -75,10 +75,10 @@ scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, g_mc, Wq, qW1
   m1 = innerProduct(g, mu)
   Tstat = q-m1
   var2 = innerProduct(mu, g*g)
-  var2c_old = innerProduct(mu, g_mc*g_mc)
+  #var2c_old = innerProduct(mu, g_mc*g_mc)
   var2c = var2 - 2*mug*innerProduct(g,Wq) + mug^2*qW1
-  cat("var2c_old ", var2c_old, "\n")
-  cat("var2c ", var2c, "\n")
+  #cat("var2c_old ", var2c_old, "\n")
+  #cat("var2c ", var2c, "\n")
   var1 = var2c * varRatio
 
 
