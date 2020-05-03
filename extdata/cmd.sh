@@ -29,7 +29,7 @@ Rscript step2_SPAtests.R        \
         --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output_test/example_survival.rda \
         --varianceRatioFile=./output_test/example_survival.varianceRatio.txt \
-        --SAIGEOutputFile=./output_test/example_survival.SAIGE.vcf.genotype.SPAfast_0.36.6.txt \
+        --SAIGEOutputFile=./output_test/example_survival.SAIGE.vcf.genotype.SPAfast_0.36.6.1.txt \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE     \
         --IsOutputNinCaseCtrl=TRUE	\

@@ -1,4 +1,4 @@
-scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(q0, Wq, qW1, G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
 
   N = length(G0)
   if(AF > 0.5){
@@ -12,11 +12,13 @@ scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(G0, AC, AF, MAF, Is
   XVG0 = eigenMapMatMult(obj.noK$XV, G0)
   G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G is X adjusted
   g = G
-  G0_mc = matrix(G0-mean(G0), ncol = 1)
-  XVG0_mc = eigenMapMatMult(obj.noK$XV, G0_mc)
-  g_mc = G0_mc - eigenMapMatMult(obj.noK$XXVX_inv, XVG0_mc)
-
-
+  #XVvec1 = matrix(rowSums(obj.noK$XV), ncol=1)
+  #q = 1 -  eigenMapMatMult(obj.noK$XXVX_inv, XVvec1)
+  mug = mean(G0)
+  #G0_mc = matrix(G0-mean(G0), ncol = 1)
+  #XVG0_mc = eigenMapMatMult(obj.noK$XV, G0_mc)
+  #g_mc_old = G0_mc - eigenMapMatMult(obj.noK$XXVX_inv, XVG0_mc)
+  g_mc = g - mug*q0
 #if(!isCondition){
 #  if(IsSparse==TRUE){
 #    if(MAF < 0.05){
@@ -49,7 +51,7 @@ scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(G0, AC, AF, MAF, Is
     #if(length(NAset)/length(G)<0.5){
     #out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma(g, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
     #}else{
-    out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast(g, g_mc, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
+    out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast(g, g_mc, Wq, qW1,mug, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
     #print(out1)
     #}
 
@@ -66,14 +68,17 @@ scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(G0, AC, AF, MAF, Is
 
 
 
-scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, g_mc, AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, g_mc, Wq, qW1, mug, AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
 
   #g = G/sqrt(AC)
   q = innerProduct(g, y)
   m1 = innerProduct(g, mu)
   Tstat = q-m1
   var2 = innerProduct(mu, g*g)
-  var2c = innerProduct(mu, g_mc*g_mc)
+  var2c_old = innerProduct(mu, g_mc*g_mc)
+  var2c = var2 - 2*mug*innerProduct(g,Wq) + mug^2*qW1
+  cat("var2c_old ", var2c_old, "\n")
+  cat("var2c ", var2c, "\n")
   var1 = var2c * varRatio
 
 

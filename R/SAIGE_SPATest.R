@@ -558,7 +558,10 @@ cat("It is a survival trait\n")
       mu2.a = mu.a
       obj.glmm.null$obj.noK$XVX = t(obj.glmm.null$obj.noK$X1) %*% (obj.glmm.null$obj.noK$X1 * mu2.a)
       obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
-
+      XVvec1 = matrix(rowSums(obj.glmm.null$obj.noK$XV), ncol=1)
+      q0 = 1 -  eigenMapMatMult(obj.glmm.null$obj.noK$XXVX_inv, XVvec1)
+      Wq = mu.a*q0 
+      qW1 = sum(Wq)
     }else if(chrom != ""){
       chrom_v2 = as.character(chrom)
       chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
@@ -575,7 +578,14 @@ cat("It is a survival trait\n")
       }
       obj.glmm.null$obj.noK$XVX = t(obj.glmm.null$obj.noK$X1) %*% (obj.glmm.null$obj.noK$X1 * mu2.a)
       obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
-    }else{
+      obj.glmm.null$obj.noK$XV = t(obj.glmm.null$obj.noK$X1 * mu2.a)	
+      obj.glmm.null$obj.noK$XVX_inv = solve(obj.glmm.null$obj.noK$XVX)
+      obj.glmm.null$obj.noK$XXVX_inv = X1 %*% XVX_inv
+      XVvec1 = matrix(rowSums(obj.glmm.null$obj.noK$XV), ncol=1)
+      q0 = 1 -  eigenMapMatMult(obj.glmm.null$obj.noK$XXVX_inv, XVvec1)
+      Wq = mu.a*q0
+      qW1 = sum(Wq)
+   }else{
       cat("WARNING: LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
       indChromCheck = TRUE
     }
@@ -777,6 +787,14 @@ cat("It is a survival trait\n")
 	mu.a.sub = subsetModelResult$mu.a.sub
 	mu.sub = subsetModelResult$mu.sub
 	mu2.a.sub = subsetModelResult$mu2.a.sub
+	if(traitType=="survival"){
+	  XVvec1.sub = matrix(rowSums(obj.glmm.null.sub$obj.noK$XV), ncol=1)
+	  q0.sub = 1 -  eigenMapMatMult(obj.glmm.null.sub$obj.noK$XXVX_inv, XVvec1.sub)
+	  Wq.sub = mu.a.sub*q0.sub
+	  qW1.sub = sum(Wq.sub)
+	}
+
+
 	rm(subsetModelResult)
 
         y.sub = obj.glmm.null.sub$obj.glm.null$y
@@ -838,7 +856,7 @@ cat("It is a survival trait\n")
 		}else if(traitType == "survival"){
 
 			if(IsSPAfast){
-				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
+				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(q0.sub, Wq.sub, qW1.sub, G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
 			
 			}else{
 				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
@@ -909,7 +927,7 @@ cat("It is a survival trait\n")
            		out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 		}else{
 		#cat("IsSPAfast2: ", IsSPAfast, "\n")
-			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(q0, Wq, qW1, G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 		}
 
            OUTvec=c(rowHeader, N,unlist(out1))
@@ -2077,7 +2095,7 @@ subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
         obj.glmm.null.sub$residuals = obj.glmm.null.sub$residuals[missingind]
 
         if(!is.null(obj.glmm.null.sub$P)){
-                obj.glmm.null.sub$P = obj.glmm.null.sub$P[missingind, missingind]
+                obj.glmm.null.sub$P = obj.glmm.null.sub$P[missingind, missingind] ##needs to be re-calculated
         }
 	noCov = FALSE
   if(is.null(dim(obj.glmm.null.sub$obj.noK$X1))){
@@ -2095,11 +2113,17 @@ subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
 	#}
 
         obj.glmm.null.sub$obj.noK$X1 = obj.glmm.null.sub$obj.noK$X1[missingind,]
-        obj.glmm.null.sub$obj.noK$XXVX_inv = obj.glmm.null.sub$obj.noK$XXVX_inv[missingind,]
         obj.glmm.null.sub$obj.noK$V = obj.glmm.null.sub$obj.noK$V[missingind]
-        obj.glmm.null.sub$obj.noK$XV = obj.glmm.null.sub$obj.noK$XV[,missingind]
+	obj.glmm.null.sub$obj.noK$XV = t(obj.glmm.null.sub$obj.noK$X1 * obj.glmm.null.sub$obj.noK$V)
+	obj.glmm.null.sub$obj.noK$XVX = t(obj.glmm.null.sub$obj.noK$X1)  %*% t(obj.glmm.null.sub$obj.noK$XV)
+	obj.glmm.null.sub$obj.noK$XVX_inv = solve(obj.glmm.null.sub$obj.noK$XVX)
+	obj.glmm.null.sub$obj.noK$XXVX_inv = obj.glmm.null.sub$obj.noK$X1 %*% obj.glmm.null.sub$obj.noK$XVX_inv
+	obj.glmm.null.sub$obj.noK$XVX_inv_XV = obj.glmm.null.sub$obj.noK$XXVX_inv * obj.glmm.null.sub$obj.noK$V
         obj.glmm.null.sub$obj.noK$y = obj.glmm.null.sub$obj.noK$y[missingind]
-        obj.glmm.null.sub$obj.noK$XVX_inv_XV = obj.glmm.null.sub$obj.noK$XVX_inv_XV[missingind,]
+
+	#obj.glmm.null.sub$obj.noK$XV = obj.glmm.null.sub$obj.noK$XV[,missingind]
+        #obj.glmm.null.sub$obj.noK$XXVX_inv = obj.glmm.null.sub$obj.noK$XXVX_inv[missingind,]
+        #obj.glmm.null.sub$obj.noK$XVX_inv_XV = obj.glmm.null.sub$obj.noK$XVX_inv_XV[missingind,]
         ##fitted values
         obj.glmm.null.sub$fitted.values = obj.glmm.null.sub$fitted.values[missingind]
         ##
@@ -2109,7 +2133,7 @@ subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
 	mu2.a.sub = mu2.a[missingind]
 
 #        if(obj.glmm.null.sub$traitType == "binary"){
-       obj.glmm.null.sub$obj.noK$XVX = t(obj.glmm.null.sub$obj.noK$X1) %*% (obj.glmm.null.sub$obj.noK$X1 *mu2.a.sub)
+       #obj.glmm.null.sub$obj.noK$XVX = t(obj.glmm.null.sub$obj.noK$X1) %*% (obj.glmm.null.sub$obj.noK$X1 *mu2.a.sub)
 #        }
 
 	obj.glmm.null.sub$obj.glm.null$y = obj.glmm.null.sub$obj.glm.null$y[missingind]
