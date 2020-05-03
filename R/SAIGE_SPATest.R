@@ -151,9 +151,16 @@ SPAGMMATtest = function(bgenFile = "",
     stop("ERROR! GMMATmodelFile ", GMMATmodelFile, " does not exsit\n")
   }else{
     load(GMMATmodelFile)
+    ytemp=modglmm$obj.glm.null$y
+    modglmm$obj.glm.null = NULL
+    modglmm$obj.glm.null = list(y=ytemp)
+    modglmm$linear.predictors = NULL
+    modglmm$coefficients = NULL
+    modglmm$cov = NULL
+    gc()
     obj.glmm.null = modglmm
     rm(modglmm)
-
+    gc()
     sampleInModel = NULL
     sampleInModel$IID = obj.glmm.null$sampleID
     sampleInModel = data.frame(sampleInModel)
