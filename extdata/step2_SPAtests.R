@@ -2,8 +2,8 @@
 
 #options(stringsAsFactors=F, scipen = 999)
 options(stringsAsFactors=F)
-#library(SAIGE)
-library(SAIGE, lib.loc="../../install_dir/0.38")
+library(SAIGE)
+#library(SAIGE, lib.loc="../../install_dir/0.38")
 #library(SAIGE, lib.loc="../../install_dir/0.36.3.3")
 #library(SAIGE, lib.loc="../../install_dir/0.37")
 print(sessionInfo())
