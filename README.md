@@ -14,7 +14,7 @@ Table of Contents
 
 ## Current version is 0.38 (Updated on May 4, 2020).
 
-## For BGEN input in step 2 with missing dosages, Please use version 0.38. The bug for BGEN input with missing dosages were introducted in v0.36.6. 
+## For BGEN input in step 2 with missing dosages, Please use version 0.38. The bug for BGEN input with missing dosages was introducted in v0.36.6. 
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
