@@ -12,9 +12,9 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.37 (Updated on May 1, 2020).
+## Current version is 0.38 (Updated on May 4, 2020).
 
-## For BGEN input in step 2 with missing dosages to be mean imputed, Please use version 0.37
+## For BGEN input in step 2 with missing dosages, Please use version 0.38. The bug for BGEN input with missing dosages were introducted in v0.36.6. 
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
@@ -103,7 +103,7 @@ Thanks to Juha Karjalainen for sharing the Dockerfile.
 The docker image can be pulled
 
 ```
-docker pull wzhou88/saige:0.36.6
+docker pull wzhou88/saige:0.38
 ```
 
 Functions can be called
@@ -162,9 +162,14 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.38 (May-4-2020)
+** further fixed the bug for output the allele 2 when bgen input with missing dosages was used and missing dosages were dropped. 
+** sampleFile is no longer needed if VCF file is used in Step 2
+** add --IsOverwriteVarianceRatioFile in step 1 to overwrite the variance ratio file
 
 * 0.37 (May-1-2020)
-** fixed an issue with AC values when bgen input is used with missing dosages to be mean imputed (default setting). 
+** fixed an issue with AC values when bgen input is used with missing dosages to be mean imputed (default setting).
+ 
 * 0.36.6 (April-15-2020)
 ** add an option IsOutputHetHomCountsinCaseCtrl to output the heterozygous and homozygous counts in cases and controls
 
