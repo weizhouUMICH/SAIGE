@@ -19,7 +19,7 @@
 #' @param minMAF numeric. Minimum minor allele frequency of markers to test. By default 0. The higher threshold between minMAC and minMAF will be used
 #' @param maxMAFforGroupTest numeric. Maximum minor allele frequency of markers to test in group test. By default 0.5.
 #' @param minInfo numeric. Minimum imputation info of markers to test. By default, 0. This option only works for bgen, vcf, and sav input
-#' @param sampleFile character. Path to the file that contains one column for IDs of samples in the dosage, vcf, sav, or bgen file with NO header
+#' @param sampleFile character. Path to the file that contains one column for IDs of samples in the bgen file with NO header
 #' @param GMMATmodelFile character. Path to the input file containing the glmm model, which is output from previous step. Will be used by load()
 #' @param varianceRatioFile character. Path to the input file containing the variance ratio, which is output from the previous step
 #' @param SPAcutoff by default = 2 (SPA test would be used when p value < 0.05 under the normal approximation)
@@ -104,7 +104,6 @@ SPAGMMATtest = function(bgenFile = "",
     stop("weightMAFcutoff needs to be between 0 and 0.5\n")
   }
 
-
   adjustCCratioinGroupTest=TRUE
   if(!IsAccountforCasecontrolImbalanceinGroupTest){
     IsOutputPvalueNAinGroupTestforBinary = TRUE
@@ -125,16 +124,16 @@ SPAGMMATtest = function(bgenFile = "",
   }else{
     cat("group-based test will be performed\n")
     
-  if(dosageZerodCutoff < 0){
-    dosageZerodCutoff = 0
-  }else if(dosageZerodCutoff >= 0 ){
-    cat("Any dosages <= ", dosageZerodCutoff, " for genetic variants with MAC <= 10 are set to be 0 in group tests\n")
-  }
-    if(!file.exists(groupFile)){
-      stop("ERROR! groupFile ", groupFile, " does not exsit\n")
-    }else{
-      isGroupTest = TRUE
+    if(dosageZerodCutoff < 0){
+      dosageZerodCutoff = 0
+    }else if(dosageZerodCutoff >= 0 ){
+      cat("Any dosages <= ", dosageZerodCutoff, " for genetic variants with MAC <= 10 are set to be 0 in group tests\n")
     }
+      if(!file.exists(groupFile)){
+        stop("ERROR! groupFile ", groupFile, " does not exsit\n")
+      }else{
+        isGroupTest = TRUE
+      }
   }
 
   if(file.exists(SAIGEOutputFile)){
@@ -203,58 +202,6 @@ SPAGMMATtest = function(bgenFile = "",
     cat("variance Ratio is ", ratioVec, "\n")
   }
 
-  #sample file
-  if(!file.exists(sampleFile)){
-    stop("ERROR! sampleFile ", sampleFile, " does not exsit\n")
-  }else{
-    sampleListinDosage = data.frame(data.table:::fread(sampleFile, header=F, stringsAsFactors=FALSE, colClasses=c("character")))
-    sampleListinDosage$IndexDose = seq(1,nrow(sampleListinDosage), by=1)
-    cat(nrow(sampleListinDosage), " sample IDs are found in sample file\n")
-    colnames(sampleListinDosage)[1] = "IIDDose"
-
-    dataMerge = merge(sampleInModel, sampleListinDosage, by.x="IID", by.y = "IIDDose")
-    dataMerge_sort = dataMerge[with(dataMerge, order(IndexInModel)), ]
-    if(nrow(dataMerge_sort) < nrow(sampleInModel)){
-      stop("ERROR!", nrow(sampleInModel) - nrow(dataMerge_sort), " samples used in glmm model fit do not have dosages\n")
-    }else{
-      #0909 modified by WZ
-      dataMerge_v2 = merge(dataMerge_sort, sampleListinDosage, by.x="IID", by.y = "IIDDose", all.y = TRUE)
-      print(dim(dataMerge_v2))
-      print(colnames(dataMerge_v2))
-      dataMerge_v2_sort = dataMerge_v2[with(dataMerge_v2, order(IndexDose.y)), ]
-      sampleIndex = dataMerge_v2_sort$IndexInModel
-      N = sum(!is.na(sampleIndex))
-      cat(N, " samples were used in fitting the NULL glmm model and are found in sample file\n")
-      sampleIndex[is.na(sampleIndex)] = -10  ##with a negative number
-      sampleIndex = sampleIndex - 1
-
-
-      #rm(sampleListinDosage)
-      rm(dataMerge)
-      rm(dataMerge_v2)
-      rm(dataMerge_sort)
-      rm(dataMerge_v2_sort)
-      rm(sampleInModel)
-
-
-    }
-  }
-
-
-  ####check and read files
-  #sparseSigmaFile
-  if(sparseSigmaFile == ""){
-    sparseSigma = NULL
-    cat("sparse kinship matrix is not used\n")  
-  }else{
-    cat("sparse kinship matrix is going to be used\n")
-    if(!file.exists(sparseSigmaFile)){
-      stop("ERROR! sparseSigmaFile ", sparseSigmaFile, " does not exsit\n")
-    }else{
-      sparseSigma = Matrix:::readMM(sparseSigmaFile)
-      cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
-    }
-  }
 
   ##Needs to check the number of columns and the number of samples in sample file
   if(bgenFile != ""){ 
@@ -291,6 +238,83 @@ SPAGMMATtest = function(bgenFile = "",
   }
 
 
+  #sample file
+  if (dosageFileType == "bgen"){
+    if(!file.exists(sampleFile)){
+      stop("ERROR! The dosage file type is bgen but sampleFile ", sampleFile, " does not exsit\n")
+    }else{
+      sampleListinDosage = data.frame(data.table:::fread(sampleFile, header=F, stringsAsFactors=FALSE, colClasses=c("character")))
+      sampleListinDosage$IndexDose = seq(1,nrow(sampleListinDosage), by=1)
+      cat(nrow(sampleListinDosage), " sample IDs are found in sample file\n")
+      colnames(sampleListinDosage)[1] = "IIDDose"
+    }
+  }
+if(condition != ""){
+  isCondition = TRUE
+}else{
+  isCondition = FALSE
+}
+
+cat("isCondition is ", isCondition, "\n")
+
+
+  if (dosageFileType == "vcf"){
+    if(isCondition){ 
+      isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
+      sampleListinDosage_vec = getSampleIDlist_vcfMatrix()
+    }else{
+      if(!isGroupTest){
+        setgenoTest_vcfDosage(vcfFile,vcfFileIndex,vcfField,ids_to_exclude_vcf = idstoExcludeFile, ids_to_include_vcf = idstoIncludeFile, chrom, start, end)
+        isVariant = getGenoOfnthVar_vcfDosage_pre()
+        sampleListinDosage_vec = getSampleIDlist() 
+      }else{
+        isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField) 
+        sampleListinDosage_vec = getSampleIDlist_vcfMatrix()	
+      }
+    }
+    sampleListinDosage = data.frame(IIDDose = sampleListinDosage_vec)
+    sampleListinDosage$IndexDose = seq(1,nrow(sampleListinDosage), by=1) 
+    cat(nrow(sampleListinDosage), " sample IDs are found in the vcf file\n") 
+  }
+
+
+  dataMerge = merge(sampleInModel, sampleListinDosage, by.x="IID", by.y = "IIDDose")
+  dataMerge_sort = dataMerge[with(dataMerge, order(IndexInModel)), ]
+  if(nrow(dataMerge_sort) < nrow(sampleInModel)){
+    stop("ERROR!", nrow(sampleInModel) - nrow(dataMerge_sort), " samples used in glmm model fit do not have dosages\n")
+  }else{
+      #0909 modified by WZ
+    dataMerge_v2 = merge(dataMerge_sort, sampleListinDosage, by.x="IID", by.y = "IIDDose", all.y = TRUE)
+    print(dim(dataMerge_v2))
+    print(colnames(dataMerge_v2))
+    dataMerge_v2_sort = dataMerge_v2[with(dataMerge_v2, order(IndexDose.y)), ]
+    sampleIndex = dataMerge_v2_sort$IndexInModel
+    N = sum(!is.na(sampleIndex))
+    cat(N, " samples were used in fitting the NULL glmm model and are found in sample file\n")
+    sampleIndex[is.na(sampleIndex)] = -10  ##with a negative number
+    sampleIndex = sampleIndex - 1
+      #rm(sampleListinDosage)
+    rm(dataMerge)
+    rm(dataMerge_v2)
+    rm(dataMerge_sort)
+    rm(dataMerge_v2_sort)
+    rm(sampleInModel)
+  }
+
+  ####check and read files
+  #sparseSigmaFile
+  if(sparseSigmaFile == ""){
+    sparseSigma = NULL
+    cat("sparse kinship matrix is not used\n")  
+  }else{
+    cat("sparse kinship matrix is going to be used\n")
+    if(!file.exists(sparseSigmaFile)){
+      stop("ERROR! sparseSigmaFile ", sparseSigmaFile, " does not exsit\n")
+    }else{
+      sparseSigma = Matrix:::readMM(sparseSigmaFile)
+      cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
+    }
+  }
   if(IsDropMissingDosages){
     cat("Samples with missing dosages will be dropped from the analysis\n")
   }else{
@@ -309,6 +333,7 @@ SPAGMMATtest = function(bgenFile = "",
     minMAC = 0.5
     cat("As minMAC is set to be 0, minMAC = 0.5 will be used\n")
   } ##01-19-2018
+
   cat("minMAC: ",minMAC,"\n")
   cat("minMAF: ",minMAF,"\n")
   minMAFBasedOnMAC = minMAC/(2*N)
@@ -327,13 +352,6 @@ SPAGMMATtest = function(bgenFile = "",
     }
   }
 
-  if(condition != ""){
-    isCondition = TRUE
-  }else{
-    isCondition = FALSE
-  }
-
-  cat("isCondition is ", isCondition, "\n")
 
   if(isCondition){
     condition_original=unlist(strsplit(condition,","))
@@ -378,7 +396,7 @@ SPAGMMATtest = function(bgenFile = "",
     if(dosageFileType == "vcf"){
       #setMAFcutoffs(0, 0.5)
       setMAFcutoffs(testMinMAF, 0.5)
-      isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
+      #isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
       SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
       Gx_cond = getGenoOfGene_vcf(conditionlist, minInfo)
       if(Gx_cond$cnt > 0){
@@ -623,9 +641,8 @@ SPAGMMATtest = function(bgenFile = "",
 
     }else if(dosageFileType == "vcf"){
 
-      setgenoTest_vcfDosage(vcfFile,vcfFileIndex,vcfField,ids_to_exclude_vcf = idstoExcludeFile, ids_to_include_vcf = idstoIncludeFile, chrom, start, end)
-    #setTestField(vcfField)
-      isVariant = getGenoOfnthVar_vcfDosage_pre()
+      #setgenoTest_vcfDosage(vcfFile,vcfFileIndex,vcfField,ids_to_exclude_vcf = idstoExcludeFile, ids_to_include_vcf = idstoIncludeFile, chrom, start, end)
+      #isVariant = getGenoOfnthVar_vcfDosage_pre()
       SetSampleIdx_vcfDosage(sampleIndex, N)
       nsamplesinVCF = getSampleSizeinVCF()
      if(nrow(sampleListinDosage) != nsamplesinVCF){
@@ -755,8 +772,18 @@ SPAGMMATtest = function(bgenFile = "",
 	N.sub = length(G0)
 	AC_Allele2.sub = sum(G0)
 	AF_Allele2.sub = AC_Allele2.sub/(2*N.sub)
-	rowHeader[6] = AC_Allele2.sub
-	rowHeader[7] = AF_Allele2.sub
+
+	 if(dosageFileType == "bgen"){
+		rowHeader[7] = AC_Allele2.sub
+		rowHeader[8] = AF_Allele2.sub
+
+    	  }else if(dosageFileType == "vcf"){
+		rowHeader[6] = AC_Allele2.sub
+		rowHeader[7] = AF_Allele2.sub
+    	  }
+
+
+
 
         if(traitType == "binary"){
           y1Index.sub = which(y.sub == 1)
@@ -766,9 +793,13 @@ SPAGMMATtest = function(bgenFile = "",
 	  
 	  if(IsOutputHetHomCountsinCaseCtrl){
 	    homN_Allele2_cases = sum(G0round[y1Index.sub] == 2)
+	    #print(which(G0round[y1Index.sub] == 2))
             hetN_Allele2_cases = sum(G0round[y1Index.sub] == 1) 
+	    #print(which(G0round[y1Index.sub] == 1))
 	    homN_Allele2_ctrls = sum(G0round[y0Index.sub] == 2)
+	    #print(which(G0round[y0Index.sub] == 2))
             hetN_Allele2_ctrls = sum(G0round[y0Index.sub] == 1) 
+	    #print(which(G0round[y0Index.sub] == 1))
           }	
 
 	}
@@ -826,6 +857,8 @@ SPAGMMATtest = function(bgenFile = "",
            #}else{
 	   if(IsOutputAFinCaseCtrl){
              AFCase = sum(G0[y1Index.sub])/(2*NCase.sub)
+	     #cat("G0[y1Index.sub]: ", G0[y1Index.sub], "\n")	
+	     #cat("NCase.sub: ", NCase.sub, "\n")	
              AFCtrl = sum(G0[y0Index.sub])/(2*NCtrl.sub)
 	     OUTvec=c(OUTvec, AFCase, AFCtrl)
              #OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1), AFCase, AFCtrl))
@@ -948,7 +981,7 @@ SPAGMMATtest = function(bgenFile = "",
      }else if(dosageFileType == "vcf"){
        setMAFcutoffs(testMinMAF, maxMAFforGroupTest)
        cat("genetic variants with ", testMinMAF, "<= MAF <= ", maxMAFforGroupTest, "are included for gene-based tests\n")
-       isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
+       #isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
        SetSampleIdx_forGenetest_vcfDosage(sampleIndex, N)
      }
 
@@ -1358,10 +1391,6 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio,
     #cat("length(idx_no0): ", length(idx_no0), "\n")
     #cat("maf: ", maf, "\n")
    
-
-
-
-
     g1<-G0[idx_no0]/sqrt(AC2)
     A1<-obj.noK$XVX_inv_XV[idx_no0,]
     X1<-obj.noK$X1[idx_no0,]
@@ -1431,7 +1460,7 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
     noCov = TRUE 
   }
 
-    A1<-obj.null$XVX_inv_XV[idx_no0,]
+  A1<-obj.null$XVX_inv_XV[idx_no0,]
 
   X1<-obj.null$X1[idx_no0,]
   mu21<-mu2[idx_no0]
@@ -1482,13 +1511,14 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 
 
 Score_Test<-function(obj.null, G, mu, mu2, varRatio){
+  #print("NO SPARSE")
   g<-G  -  obj.null$XXVX_inv %*%  (obj.null$XV %*% G)
   q<-crossprod(g, obj.null$y) 
   m1<-crossprod(mu, g)
   var2<-crossprod(mu2, g^2)
   var1 = var2 * varRatio
   S = q-m1
-
+  #cat("S is ", S, "\n")
   pval.noadj<-pchisq((S)^2/var1, lower.tail = FALSE, df=1)
 
   ##add on 10-25-2017
@@ -1883,7 +1913,6 @@ if(!isCondition){
   }
 }
 
-
   if(Run1){
     G0 = matrix(G0, ncol = 1)
     XVG0 = eigenMapMatMult(obj.noK$XV, G0)
@@ -1995,17 +2024,17 @@ subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
         obj.glmm.null.sub = obj.glmm.null
         obj.glmm.null.sub$residuals = obj.glmm.null.sub$residuals[missingind]
 
-        if(!is.null(obj.glmm.null.sub$P)){
-                obj.glmm.null.sub$P = obj.glmm.null.sub$P[missingind, missingind]
-        }
+        #if(!is.null(obj.glmm.null.sub$P)){
+        #        obj.glmm.null.sub$P = obj.glmm.null.sub$P[missingind, missingind]
+        #}
 	noCov = FALSE
-  if(is.null(dim(obj.glmm.null.sub$obj.noK$X1))){
-	noCov = TRUE
-  }else{
-    if(dim(obj.glmm.null.sub$obj.noK$X1)[2] == 1){
-      noCov = TRUE
-    }
-  }
+  	if(is.null(dim(obj.glmm.null.sub$obj.noK$X1))){
+		noCov = TRUE
+  	}else{
+    		if(dim(obj.glmm.null.sub$obj.noK$X1)[2] == 1){
+      			noCov = TRUE
+    		}
+  	}
 
 	#if(noCov){
     	#	obj.glmm.null.sub$obj.noK$X1 = as.matrix(obj.glmm.null.sub$obj.noK$X1)
@@ -2014,22 +2043,35 @@ subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
 	#}
 
         obj.glmm.null.sub$obj.noK$X1 = obj.glmm.null.sub$obj.noK$X1[missingind,]
-        obj.glmm.null.sub$obj.noK$XXVX_inv = obj.glmm.null.sub$obj.noK$XXVX_inv[missingind,]
+        #obj.glmm.null.sub$obj.noK$XXVX_inv_old = obj.glmm.null.sub$obj.noK$XXVX_inv[missingind,]
         obj.glmm.null.sub$obj.noK$V = obj.glmm.null.sub$obj.noK$V[missingind]
         obj.glmm.null.sub$obj.noK$XV = obj.glmm.null.sub$obj.noK$XV[,missingind]
+	#obj.glmm.null.sub$obj.noK$XV = t(obj.glmm.null.sub$obj.noK$X1 * obj.glmm.null.sub$obj.noK$V)
         obj.glmm.null.sub$obj.noK$y = obj.glmm.null.sub$obj.noK$y[missingind]
-        obj.glmm.null.sub$obj.noK$XVX_inv_XV = obj.glmm.null.sub$obj.noK$XVX_inv_XV[missingind,]
+        #obj.glmm.null.sub$obj.noK$XVX_inv_XV_old = obj.glmm.null.sub$obj.noK$XVX_inv_XV[missingind,]
         ##fitted values
+	obj.glmm.null.sub$obj.noK$XVX = t(obj.glmm.null.sub$obj.noK$X1)  %*% t(obj.glmm.null.sub$obj.noK$XV)
+	obj.glmm.null.sub$obj.noK$XVX_inv = solve(obj.glmm.null.sub$obj.noK$XVX)
+	obj.glmm.null.sub$obj.noK$XXVX_inv = obj.glmm.null.sub$obj.noK$X1 %*% obj.glmm.null.sub$obj.noK$XVX_inv 
+	obj.glmm.null.sub$obj.noK$XVX_inv_XV = obj.glmm.null.sub$obj.noK$XXVX_inv * obj.glmm.null.sub$obj.noK$V
+	#print("XVX_inv_XV_old")
+	#print(obj.glmm.null.sub$obj.noK$XVX_inv_XV_old)
+	#print("XVX_inv_XV")
+	#print(obj.glmm.null.sub$obj.noK$XVX_inv_XV)
+	#print("XXVX_inv_old")
+	#print(obj.glmm.null.sub$obj.noK$XXVX_inv_old)
+	#print("XXVX_inv")
+	#print(obj.glmm.null.sub$obj.noK$XXVX_inv)
         obj.glmm.null.sub$fitted.values = obj.glmm.null.sub$fitted.values[missingind]
         ##
 
 	mu.sub = mu[missingind]
 	mu.a.sub = mu.a[missingind]
 	mu2.a.sub = mu2.a[missingind]
-
-#        if(obj.glmm.null.sub$traitType == "binary"){
-       obj.glmm.null.sub$obj.noK$XVX = t(obj.glmm.null.sub$obj.noK$X1) %*% (obj.glmm.null.sub$obj.noK$X1 *mu2.a.sub)
-#        }
+	#mu2.a.sub = (1-mu.a.sub)*mu.a.sub
+        #if(obj.glmm.null.sub$traitType == "binary"){
+       #obj.glmm.null.sub$obj.noK$XVX = t(obj.glmm.null.sub$obj.noK$X1) %*% (obj.glmm.null.sub$obj.noK$X1 *mu2.a.sub)
+        #}
 
 	obj.glmm.null.sub$obj.glm.null$y = obj.glmm.null.sub$obj.glm.null$y[missingind]
 	if(!is.null(dim(obj.glmm.null.sub$obj.noK$X1))){

@@ -549,6 +549,7 @@ solveSpMatrixUsingArma = function(sparseGRMtest){
 #' @param ratioCVcutoff numeric. The threshold for coefficient of variantion (CV) for the variance ratio estimate. If ratioCV > ratioCVcutoff. numMarkers will be increased by 10. By default, 0.001 
 #' @param outputPrefix character. Path to the output files with prefix.
 #' @param outputPrefix_varRatio character. Path to the output variance ratio file with prefix. variace ratios will be output to outputPrefix_varRatio.varianceRatio.txt. If outputPrefix_varRatio is not specified, outputPrefix_varRatio will be the same as the outputPrefix
+#' @param IsOverwriteVarianceRatioFile logical. Whether to overwrite the variance ratio file if the file exists. By default, FALSE
 #' @param IsSparseKin logical. Whether to exploit the sparsity of GRM to estimate the variance ratio. By default, TRUE
 #' @param sparseGRMFile character. Path to the pre-calculated sparse GRM file. If not specified and IsSparseKin=TRUE, sparse GRM will be computed
 #' @param sparseGRMSampleIDFile character. Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to the order of samples in the sparse GRM. 
@@ -589,7 +590,8 @@ fitNULLGLMM = function(plinkFile = "",
 		ratioCVcutoff = 0.001, 
                 outputPrefix = "",
 		outputPrefix_varRatio = NULL,
-		IsSparseKin = FALSE,
+		IsOverwriteVarianceRatioFile=FALSE,
+		IsSparseKin=FALSE,
 		sparseGRMFile=NULL,
                 sparseGRMSampleIDFile=NULL,
 		numRandomMarkerforSparseKin = 1000,
@@ -682,7 +684,11 @@ fitNULLGLMM = function(plinkFile = "",
   if(!file.exists(varRatioFile)){
     file.create(varRatioFile, showWarnings = TRUE)
   }else{
-    stop("WARNING: The variance ratio file ", varRatioFile, " already exists. The new variance ratios will be output to ", varRatioFile,". In order to avoid over-writting, please remove the ", varRatioFile, " or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s)\n")
+    if(!IsOverwriteVarianceRatioFile){
+      stop("WARNING: The variance ratio file ", varRatioFile, " already exists. The new variance ratios will be output to ", varRatioFile,". In order to avoid overwriting the file, please remove the ", varRatioFile, " or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s). Otherwise, specify IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten with new variance ratio(s)\n")
+    }else{
+      cat("The variance ratio file ", varRatioFile, " already exists. IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten\n")
+    }
   }
 
 

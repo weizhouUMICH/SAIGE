@@ -68,6 +68,16 @@ bool setvcfDosageMatrix(const std::string& vcfFileName,  const std::string& vcfF
   return(isVcfOpen);
 }
 
+
+
+// [[Rcpp::export]]
+std::vector< std::string > getSampleIDlist_vcfMatrix(){
+  std::vector< std::string > sampleIDList (marker_file.samples().begin(), marker_file.samples().end());
+  return(sampleIDList);
+}
+
+
+
 // [[Rcpp::export]]
 Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
   //bool isGetDosage = TRUE;

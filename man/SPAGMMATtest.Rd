@@ -70,7 +70,7 @@ SPAGMMATtest(
 
 \item{savFileIndex}{character. Path to index for sav file .s1r}
 
-\item{sampleFile}{character. Path to the file that contains one column for IDs of samples in the dosage, vcf, sav, or bgen file with NO header}
+\item{sampleFile}{character. Path to the file that contains one column for IDs of samples in the bgen file with NO header}
 
 \item{idstoExcludeFile}{character. Path to the file containing variant ids to be excluded from the bgen file. The file does not have a header and each line is for a marker ID.}
 

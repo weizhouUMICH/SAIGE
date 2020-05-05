@@ -3,6 +3,7 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
+#library(SAIGE, lib.loc="../../install_dir/0.38")
 #library(SAIGE, lib.loc="../../install_dir/0.36.6")
 library(SAIGE)
 require(optparse) #install.packages("optparse")
@@ -55,6 +56,8 @@ option_list <- list(
     help="Path and prefix of the output files [default='~/']"),
   make_option("--outputPrefix_varRatio", type="character", default=NULL,
     help="Path and prefix of the output the variance ratio file [default=NULL]. if NULL, it will be the same as the outputPrefix"),
+  make_option("--IsOverwriteVarianceRatioFile", type="logical", default=FALSE,
+    help="Whether to overwrite the variance ratio file if the file exist.[default='FALSE']"),
   make_option("--IsSparseKin", type="logical", default=FALSE,
     help="Whether to use sparse kinship for association test [default='FALSE']"),
   make_option("--sparseGRMFile", type="character", default=NULL,
@@ -138,6 +141,7 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
             ratioCVcutoff = opt$ratioCVcutoff,
             outputPrefix = opt$outputPrefix,
 	    outputPrefix_varRatio = opt$outputPrefix_varRatio,
+	    IsOverwriteVarianceRatioFile = opt$IsOverwriteVarianceRatioFile,
             IsSparseKin = opt$IsSparseKin,
             sparseGRMFile=opt$sparseGRMFile,
             sparseGRMSampleIDFile=opt$sparseGRMSampleIDFile,
@@ -152,4 +156,5 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
 	    useSparseSigmaforInitTau = opt$useSparseSigmaforInitTau,
 	    minMAFforGRM = opt$minMAFforGRM,
 	    minCovariateCount=opt$minCovariateCount,
-	    includeNonautoMarkersforVarRatio=opt$includeNonautoMarkersforVarRatio)	
+	    includeNonautoMarkersforVarRatio=opt$includeNonautoMarkersforVarRatio,
+	)	

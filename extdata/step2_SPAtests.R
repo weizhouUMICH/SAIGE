@@ -3,7 +3,9 @@
 #options(stringsAsFactors=F, scipen = 999)
 options(stringsAsFactors=F)
 library(SAIGE)
-#library(SAIGE, lib.loc="../../install_dir/0.36.6")
+#library(SAIGE, lib.loc="../../install_dir/0.38")
+#library(SAIGE, lib.loc="../../install_dir/0.36.3.3")
+#library(SAIGE, lib.loc="../../install_dir/0.37")
 print(sessionInfo())
 
 
@@ -51,7 +53,7 @@ option_list <- list(
    make_option("--minInfo", type="numeric", default=0,
     help="Minimum Info for markers to be tested [default=0]"),
   make_option("--sampleFile", type="character",default="",
-    help="Path to the file that contains one column for IDs of samples in the dosage file"),
+    help="Path to the file that contains one column for IDs of samples in the dosage file. For version >= 0.38, this file is only needed for bgen files. "),
   make_option("--GMMATmodelFile", type="character",default="",
     help="Path to the input file containing the glmm model, which is output from previous step. Will be used by load()"),
   make_option("--varianceRatioFile", type="character",default="",

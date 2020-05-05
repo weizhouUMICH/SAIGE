@@ -42,6 +42,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getSampleIDlist_vcfMatrix
+std::vector< std::string > getSampleIDlist_vcfMatrix();
+RcppExport SEXP _SAIGE_getSampleIDlist_vcfMatrix() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getSampleIDlist_vcfMatrix());
+    return rcpp_result_gen;
+END_RCPP
+}
 // getGenoOfGene_vcf
 Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo);
 RcppExport SEXP _SAIGE_getGenoOfGene_vcf(SEXP marker_group_lineSEXP, SEXP minInfoSEXP) {
@@ -1422,6 +1432,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_SetSampleIdx_forGenetest_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_forGenetest_vcfDosage, 2},
     {"_SAIGE_setMAFcutoffs", (DL_FUNC) &_SAIGE_setMAFcutoffs, 2},
     {"_SAIGE_setvcfDosageMatrix", (DL_FUNC) &_SAIGE_setvcfDosageMatrix, 3},
+    {"_SAIGE_getSampleIDlist_vcfMatrix", (DL_FUNC) &_SAIGE_getSampleIDlist_vcfMatrix, 0},
     {"_SAIGE_getGenoOfGene_vcf", (DL_FUNC) &_SAIGE_getGenoOfGene_vcf, 2},
     {"_SAIGE_closevcfDosageFile", (DL_FUNC) &_SAIGE_closevcfDosageFile, 0},
     {"_SAIGE_closeGenoFile_plink", (DL_FUNC) &_SAIGE_closeGenoFile_plink, 0},

@@ -31,7 +31,6 @@ Rscript step2_SPAtests.R	\
         --chrom=1 \
         --minMAF=0.0001 \
         --minMAC=1 \
-        --sampleFile=./input/sampleIDindosage.txt \
         --GMMATmodelFile=./output/example_binary.rda \
         --varianceRatioFile=./output/example_binary.varianceRatio.txt \
         --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype.txt_new \
@@ -56,7 +55,24 @@ Rscript step2_SPAtests.R        \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE	\
 	--IsDropMissingDosages=TRUE    \
-	--IsOutputHetHomCountsinCaseCtrl=TRUE 
+	--IsOutputHetHomCountsinCaseCtrl=TRUE	\
+	--IsOutputNinCaseCtrl=TRUE 
+
+Rscript step2_SPAtests.R        \
+        --bgenFile=./input/genotype_10markers.missingness.bgen	\
+	--bgenFileIndex=./input/genotype_10markers.missingness.bgen.bgi \
+	--SAIGEOutputFile=./output/example_binary.SAIGE.bgen.genotype.dropmissing.txt \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile=./input/samplefileforbgen_1000samples.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary.varianceRatio.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsDropMissingDosages=TRUE     \
+        --IsOutputHetHomCountsinCaseCtrl=TRUE
+
 
 
 
@@ -435,7 +451,7 @@ Rscript step2_SPAtests.R \
         --sampleFile=./input/samplelist.txt \
         --GMMATmodelFile=./output/example_binary.rda \
         --varianceRatioFile=./output/example_binary_cate_v2.varianceRatio.txt \
-        --SAIGEOutputFile=./output/example_binary.SAIGE.gene_conditional.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.gene_conditional.txt_0.37 \
         --numLinesOutput=1 \
         --groupFile=./input/groupFile_geneBasedtest.txt    \
         --sparseSigmaFile=./output/example_binary_cate_v2.varianceRatio.txt_relatednessCutoff_0.125.sparseSigma.mtx       \
@@ -458,10 +474,9 @@ Rscript step2_SPAtests.R \
         --minMAF=0 \
         --minMAC=0.5 \
         --maxMAFforGroupTest=0.01       \
-        --sampleFile=./input/samplelist.txt \
         --GMMATmodelFile=./output/example_binary.rda \
         --varianceRatioFile=./output/example_binary_cate_v2.varianceRatio.txt \
-        --SAIGEOutputFile=./output/example_binary.SAIGE.gene_conditional_withspecifiedWeights.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.gene_conditional_withspecifiedWeights.txt.0.37 \
         --numLinesOutput=1 \
         --groupFile=./input/groupFile_geneBasedtest_withWeights.txt    \
         --sparseSigmaFile=./output/example_binary_cate_v2.varianceRatio.txt_relatednessCutoff_0.125.sparseSigma.mtx       \
@@ -472,3 +487,5 @@ Rscript step2_SPAtests.R \
 	--weightsIncludeinGroupFile=TRUE	\
 	--weights_for_G2_cond=3,1	\
 	--condition=chr1:32302_A/C,chr1:32304_A/C	
+
+#--sampleFile=./input/samplelist.txt \

@@ -28,6 +28,7 @@ fitNULLGLMM(
   ratioCVcutoff = 0.001,
   outputPrefix = "",
   outputPrefix_varRatio = NULL,
+  IsOverwriteVarianceRatioFile = FALSE,
   IsSparseKin = FALSE,
   sparseGRMFile = NULL,
   sparseGRMSampleIDFile = NULL,
@@ -92,6 +93,8 @@ fitNULLGLMM(
 \item{outputPrefix}{character. Path to the output files with prefix.}
 
 \item{outputPrefix_varRatio}{character. Path to the output variance ratio file with prefix. variace ratios will be output to outputPrefix_varRatio.varianceRatio.txt. If outputPrefix_varRatio is not specified, outputPrefix_varRatio will be the same as the outputPrefix}
+
+\item{IsOverwriteVarianceRatioFile}{logical. Whether to overwrite the variance ratio file if the file exists. By default, FALSE}
 
 \item{IsSparseKin}{logical. Whether to exploit the sparsity of GRM to estimate the variance ratio. By default, TRUE}
 
