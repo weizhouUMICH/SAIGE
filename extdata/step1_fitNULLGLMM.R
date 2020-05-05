@@ -3,9 +3,9 @@
 options(stringsAsFactors=F)
 
 ## load R libraries
-#library(SAIGE, lib.loc="../../install_dir/0.38")
+library(SAIGE, lib.loc="../../install_dir/0.38")
 #library(SAIGE, lib.loc="../../install_dir/0.36.6")
-library(SAIGE)
+#library(SAIGE)
 require(optparse) #install.packages("optparse")
 
 print(sessionInfo())

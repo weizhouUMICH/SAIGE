@@ -73,9 +73,6 @@ Rscript step2_SPAtests.R        \
         --IsDropMissingDosages=TRUE     \
         --IsOutputHetHomCountsinCaseCtrl=TRUE
 
-
-
-
 Rscript step2_SPAtests.R        \
 	--bgenFile=./input/genotype_100markers.bgen	\
 	--bgenFileIndex=./input/genotype_100markers.bgen.bgi	\
@@ -112,6 +109,33 @@ Rscript step2_SPAtests.R        \
 	--IsDropMissingDosages=TRUE	\
 	--condition=1:4_A/C
 
+
+#####Positive signal is simulated
+Rscript step1_fitNULLGLMM.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
+        --phenoFile=./input/Prev_0.1_nfam_1000.pheno_positive_pheno.txt \
+        --phenoCol=y \
+        --covarColList=x1,x2 \
+        --sampleIDColinphenoFile=IID \
+        --traitType=binary        \
+        --outputPrefix=./output/example_binary_positive_signal \
+        --nThreads=4    \
+        --LOCO=FALSE    \
+        --minMAFforGRM=0.01
+
+Rscript step2_SPAtests.R        \
+        --vcfFile=./input/nfam_1000_MAF0.2_nMarker1_nseed200.vcf.gz \
+        --vcfFileIndex=./input/nfam_1000_MAF0.2_nMarker1_nseed200.vcf.gz.tbi \
+        --vcfField=GT \
+        --chrom=1 \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --GMMATmodelFile=./output/example_binary_positive_signal.rda \
+        --varianceRatioFile=./output/example_binary_positive_signal.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary_positive_signal.assoc.step2.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsDropMissingDosages=TRUE
 
 #For gene-based test
 #step 0: create a sparse GRM for a data set. This sparse GRM only needs to be created once for each data set, e.g. a biobank,  and can be used for all different phenotypes as long as all tested samples are in the sparse GRM. 
