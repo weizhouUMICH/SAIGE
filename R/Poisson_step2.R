@@ -141,21 +141,21 @@ scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma=function(g,g_mc,AC, AC_true, N
 }
 
 
-Saddle_Prob_Poisson=function (q, mu, g, Cutoff = 2, alpha = 5*10^-8, m1, var1){
+Saddle_Prob_Poisson=function (Score, pval.noadj, mu, g, Cutoff = 2, alpha = 5*10^-8, m1, var1){
     #m1 <- sum(mu * g)
     #var1 <- sum(mu * g^2)
     p1 = NULL
     p2 = NULL
 
-    Score <- q - m1
+    #Score <- q - m1
     #qinv = -sign(q - m1) * abs(q - m1) + m1
-    pval.noadj <- pchisq((q - m1)^2/var1, lower.tail = FALSE,
-        df = 1)
+    #pval.noadj <- pchisq((q - m1)^2/var1, lower.tail = FALSE,
+    #    df = 1)
     Is.converge = TRUE
 
-    if (abs(q - m1)/sqrt(var1) < Cutoff) {
-        pval = pval.noadj
-    }else {
+    #if (abs(q - m1)/sqrt(var1) < Cutoff) {
+    #    pval = pval.noadj
+    #}else {
         #print("Saddle_Prob_Poisson_fast >= Cutoff")
         out.uni1 <- getroot_K1_Poi(0, mu = mu, g = g, q = Score)
         out.uni2 <- getroot_K1_Poi(0, mu = mu, g = g, q = (-1)*Score)
@@ -174,7 +174,7 @@ Saddle_Prob_Poisson=function (q, mu, g, Cutoff = 2, alpha = 5*10^-8, m1, var1){
             pval <- pval.noadj
             Is.converge = FALSE
         }
-    }
+    #}
     return(list(p.value = pval, p.value.NA = pval.noadj,
             Is.converge = Is.converge, Score = Score))
 }

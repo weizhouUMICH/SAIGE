@@ -1,4 +1,4 @@
-scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(q0, Wq, qW1, G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(resq, q0, Wq, qW1, XWq, G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
 
   N = length(G0)
   if(AF > 0.5){
@@ -9,39 +9,43 @@ scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(q0, Wq, qW1, G0, AC
   }
   Run1=TRUE
   G0 = matrix(G0, ncol = 1)
-  XVG0 = eigenMapMatMult(obj.noK$XV, G0)
-  G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G is X adjusted
-  g = G
+  #XVG0 = eigenMapMatMult(obj.noK$XV, G0)
+  #G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G is X adjusted
+  #g = G
   #XVvec1 = matrix(rowSums(obj.noK$XV), ncol=1)
   #q = 1 -  eigenMapMatMult(obj.noK$XXVX_inv, XVvec1)
   mug = mean(G0)
   #G0_mc = matrix(G0-mean(G0), ncol = 1)
   #XVG0_mc = eigenMapMatMult(obj.noK$XV, G0_mc)
   #g_mc_old = G0_mc - eigenMapMatMult(obj.noK$XXVX_inv, XVG0_mc)
-  g_mc = g - mug*q0
-#if(!isCondition){
-#  if(IsSparse==TRUE){
-#    if(MAF < 0.05){
-#       #out.score<-Score_Test_Sparse(obj.noK, G0, mu.a, mu2.a, varRatio );
-#       out.score<-Score_Test_Sparse_Survival(obj.noK, G0, G0_mc, mu.a, mu2.a, varRatio );
-#    }else{
-#       out.score<-Score_Test_Survival(obj.noK, g, g_mc, mu.a, mu2.a, varRatio );
-#       #out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio );
-#    }
-#    #if(out.score["pval.noadj"] > 0.05){
-#    if(abs(as.numeric(unlist(out.score["Tstat"])[1])/sqrt(as.numeric(unlist(out.score["var1"])[1]))) < Cutoff){
-#       if(AF > 0.5){
-#         out.score$BETA = (-1)*out.score$BETA
-#         out.score$Tstat = (-1)*out.score$Tstat
-#       }
-#       outVec = list(BETA = out.score$BETA, SE = out.score$SE, Tstat = out.score$Tstat, p.value = out.score$pval.noadj, p.value.NA = out.score$pval.noadj, Is.converge = 1, var1 = out.score$var1, var2 = out.score$var2)
-#       Run1=FALSE
-#     }
-#  }
-#}
+  #g_mc = g - mug*q0
+  print("okokok")
+  print(g[1:100])
+if(!isCondition){
+  if(IsSparse==TRUE){
+    if(MAF < 0.05){
+       out.score<-Score_Test_Sparse_Survival(obj.noK, G0, mu.a, mu2.a, varRatio, resq, Wq, qW1, XWq);
+    }else{
+       out.score<-Score_Test_Survival(obj.noK, g, g_mc, mu.a, mu2.a, varRatio, resq, Wq, qW1, XWq);
+    }
+    ##if(out.score["pval.noadj"] > 0.05){
+    if(abs(as.numeric(unlist(out.score["Tstat"])[1])/sqrt(as.numeric(unlist(out.score["var1"])[1]))) < Cutoff){
+       if(AF > 0.5){
+         out.score$BETA = (-1)*out.score$BETA
+         out.score$Tstat = (-1)*out.score$Tstat
+       }
+       outVec = list(BETA = out.score$BETA, SE = out.score$SE, Tstat = out.score$Tstat, p.value = out.score$pval.noadj, p.value.NA = out.score$pval.noadj, Is.converge = 1, var1 = out.score$var1, var2 = out.score$var2)
+       Run1=FALSE
+     }else{
+       X1 = obj.noK$X
+       g = out.score$g_tilde1 - (out.score$Z)%*%X1 + (out.score$B)
+       g_mc = g - mug*q0
+     }
+  }
+}
 
   #cat("Run1: ", Run1, "\n")
-#  if(Run1){
+  if(Run1){
     #G0 = matrix(G0, ncol = 1)
     #XVG0 = eigenMapMatMult(obj.noK$XV, G0)
     #G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G is X adjusted
@@ -49,9 +53,9 @@ scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(q0, Wq, qW1, G0, AC
     NAset = which(G0==0)
     #cat("length(NAset): ", length(NAset), "\n")	
     #if(length(NAset)/length(G)<0.5){
-    #out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma(g, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
+    #  out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma(g, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
     #}else{
-    out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast(g, g_mc, Wq, qW1,mug, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
+      out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast(g, g_mc, Score = out.score$Tstat, pval.noadj = out.score$pval.noadj, var1_a = out.score$var1, var2_a = out.score$var2, qW1,mug, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
     #print(out1)
     #}
 
@@ -62,25 +66,28 @@ scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(q0, Wq, qW1, G0, AC
      outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], p.value.NA = out1["p.value.NA"], Is.converge=out1["Is.converge"], var1 = out1["var1"], var2 = out1["var2"])
      #outVec = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2)
    }
-  #}
+ }
   return(outVec)
 }
 
 
 
-scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, g_mc, Wq, qW1, mug, AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, g_mc, Score, pval.noadj, var1_a, var2_a, Wq, qW1, mug, AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
 
   #g = G/sqrt(AC)
-  q = innerProduct(g, y)
+  #q = innerProduct(g, y)
   m1 = innerProduct(g, mu)
-  Tstat = q-m1
-  var2 = innerProduct(mu, g*g)
+  #Tstat = q-m1
+  Tstat = Score
+  #var2 = innerProduct(mu, g*g)
   #var2c_old = innerProduct(mu, g_mc*g_mc)
-  var2c = var2 - 2*mug*innerProduct(g,Wq) + mug^2*qW1
+  #var2c = var2 - 2*mug*innerProduct(g,Wq) + mug^2*qW1
+  
   #cat("var2c_old ", var2c_old, "\n")
   #cat("var2c ", var2c, "\n")
-  var1 = var2c * varRatio
-
+  #var1 = var2c * varRatio
+  var1 = var1_a
+  var2 = var2_a
 
   if(!is.null(sparseSigma)){
     #pcginvSigma<-pcg(sparseSigma, g)
@@ -97,21 +104,21 @@ scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, g_mc, Wq, qW1
   }
 
   AF = AC_true/(2*length(y))
-  if(AF > 0.5){
-    Tstat = (-1)*Tstat
-    if(isCondition){
-      Tstat_c = (-1)*Tstat_c
-    }
-  }
+  #if(AF > 0.5){
+  #  Tstat = (-1)*Tstat
+  #  if(isCondition){
+  #    Tstat_c = (-1)*Tstat_c
+  #  }
+  #}
 
-  qtilde = Tstat/sqrt(var1) * sqrt(var2) + m1
+  #qtilde = Tstat/sqrt(var1) * sqrt(var2) + m1
 
   if(length(NAset)/length(g) < 0.5){
 	#print("Saddle_Prob_Poisson")
-    out1 = Saddle_Prob_Poisson(q=qtilde, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8, m1=m1, var1=var2)
+    out1 = Saddle_Prob_Poisson(Score=Tstat, pval.noadj=pval.noadj, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8, m1=m1, var1=var2)
   }else{
 	#print("Saddle_Prob_Poisson_fast")
-    out1 = Saddle_Prob_Poisson_fast(q=qtilde,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, m1=m1, var1=var2)
+    out1 = Saddle_Prob_Poisson_fast(Score=Tstat, pval.noadj=pval.noadj, g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, m1=m1, var1=var2)
   }
 
   out1$var1 = var1
@@ -128,11 +135,12 @@ scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, g_mc, Wq, qW1
       out1 = c(out1, var1_c = var1_c,BETA_c = NA, SE_c = NA, Tstat_c = Tstat_c, p.value.c = 1, p.value.NA.c = 1)
     }else{
 
-      qtilde_c = Tstat_c/sqrt(var1_c) * sqrt(var2) + m1
+      #qtilde_c = Tstat_c/sqrt(var1_c) * sqrt(var2) + m1
+      pval.noadj_c<-pchisq((Tstat_c)^2/(var1_c), lower.tail = FALSE, df=1)
       if(length(NAset)/length(g) < 0.5){
-        out1_c = Saddle_Prob_Poisson(q=qtilde_c, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8, m1=m1, var1=var2)
+        out1_c = Saddle_Prob_Poisson(Score=Tstat_c, pval.noadj=pval.noadj_c, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8, m1=m1, var1=var2)
       }else{
-        out1_c = Saddle_Prob_Poisson_fast(q=qtilde_c,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, m1=m1, var1=var2)
+        out1_c = Saddle_Prob_Poisson_fast(Score=Tstat_c, pval.noadj=pval.noadj_c,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, m1=m1, var1=var2)
       }
     logOR_c = Tstat_c/var1_c
     SE_c = abs(logOR_c/qnorm(out1_c$p.value/2))
@@ -145,7 +153,7 @@ scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, g_mc, Wq, qW1
 }
 
 
-Saddle_Prob_Poisson_fast=function (q, mu, g, gNA,gNB,muNA,muNB, Cutoff = 2, alpha = 5*10^-8, m1, var1){
+Saddle_Prob_Poisson_fast=function (Score, pval.noadj, mu, g, gNA,gNB,muNA,muNB, Cutoff = 2, alpha = 5*10^-8, m1, var1){
     #m1 <- sum(mu * g)
     #var1 <- sum(mu * g^2)
     p1 = NULL
@@ -155,15 +163,15 @@ Saddle_Prob_Poisson_fast=function (q, mu, g, gNA,gNB,muNA,muNB, Cutoff = 2, alph
     NAsigma=var1-sum(muNB*gNB^2)
 
     #NAsigma = sum(muNA*gNA^2)
-    Score <- q - m1
+    #Score <- q - m1
     #qinv = -sign(q - m1) * abs(q - m1) + m1
-    pval.noadj <- pchisq((q - m1)^2/var1, lower.tail = FALSE,
-        df = 1)
-    Is.converge = TRUE
+    #pval.noadj <- pchisq((q - m1)^2/var1, lower.tail = FALSE,
+    #    df = 1)
+    #Is.converge = TRUE
 
-    if (abs(q - m1)/sqrt(var1) < Cutoff) {
-        pval = pval.noadj
-    }else {
+    #if (abs(q - m1)/sqrt(var1) < Cutoff) {
+    #    pval = pval.noadj
+    #}else {
 	#print("Saddle_Prob_Poisson_fast >= Cutoff")
 
 	#Korg_Poi_result = Korg_Poi(t=0.1, mu, g)
@@ -186,7 +194,7 @@ Saddle_Prob_Poisson_fast=function (q, mu, g, gNA,gNB,muNA,muNB, Cutoff = 2, alph
             pval <- pval.noadj
             Is.converge = FALSE
         }
-    }
+    #}
     return(list(p.value = pval, p.value.NA = pval.noadj,
             Is.converge = Is.converge, Score = Score))
 }

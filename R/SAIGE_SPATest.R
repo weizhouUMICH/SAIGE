@@ -567,7 +567,9 @@ cat("It is a survival trait\n")
       obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
       XVvec1 = matrix(rowSums(obj.glmm.null$obj.noK$XV), ncol=1)
       q0 = 1 -  eigenMapMatMult(obj.glmm.null$obj.noK$XXVX_inv, XVvec1)
-      Wq = mu.a*q0 
+      resq = (y - mu.a)*q0
+      Wq = mu.a*q0
+      XWq = t(obj.glmm.null$obj.noK$X1) %*% Wq 
       qW1 = sum(Wq)
     }else if(chrom != ""){
       chrom_v2 = as.character(chrom)
@@ -805,6 +807,10 @@ cat("It is a survival trait\n")
 	rm(subsetModelResult)
 
         y.sub = obj.glmm.null.sub$obj.glm.null$y
+	if(traitType=="survival"){
+	  resq.sub = (y.sub-mu.a.sub)*q0.sub	
+	}
+
 	N.sub = length(G0)
 	AC_Allele2.sub = sum(G0)
 	AF_Allele2.sub = AC_Allele2.sub/(2*N.sub)
@@ -863,7 +869,7 @@ cat("It is a survival trait\n")
 		}else if(traitType == "survival"){
 
 			if(IsSPAfast){
-				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(q0.sub, Wq.sub, qW1.sub, G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
+				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(resq.sub, q0.sub, Wq.sub, qW1.sub, G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
 			
 			}else{
 				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
@@ -934,7 +940,7 @@ cat("It is a survival trait\n")
            		out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 		}else{
 		#cat("IsSPAfast2: ", IsSPAfast, "\n")
-			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(q0, Wq, qW1, G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(resq, q0, Wq, qW1, G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 		}
 
            OUTvec=c(rowHeader, N,unlist(out1))
@@ -1455,11 +1461,14 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 
   if(length(idx_no0) > 1){
 #    cat("idx_no0 ", idx_no0, "\n")
-#    cat("dim(X1) ", X1, "\n")
+    cat("dim(X1) ", dim(X1), "\n")
+    cat("dim(A1) ", dim(A1), "\n")
     Z = t(A1) %*% g1
     B<-X1 %*% Z
-    #cat("dim(Z) ", Z, "\n")
+    cat("dim(Z) ", dim(Z), "\n")
+    cat("dim(B) ", dim(B), "\n")
     g_tilde1 = g1 - B
+    print(g_tilde1[1:100])
     var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
     var1 = var2 * varRatio
     S1 = crossprod(y1-mu1, g_tilde1)
@@ -1494,11 +1503,11 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 }
 
 
-Score_Test_Sparse_Survival<-function(obj.null, G, Gc, mu, mu2, varRatio ){
+
+Score_Test_Sparse_Survival<-function(obj.null, G, mu, mu2, varRatio, resq, Wq, qW1, XWq){
   # mu=mu.a; mu2= mu2.a; G=G0; obj.null=obj.noK
   idx_no0<-which(G>0)
   g1<-G[idx_no0]
-  g1c<-Gc[idx_no0] #center g1 
   noCov = FALSE
   if(dim(obj.null$X1)[2] == 1){
     noCov = TRUE 
@@ -1513,18 +1522,16 @@ Score_Test_Sparse_Survival<-function(obj.null, G, Gc, mu, mu2, varRatio ){
 
   if(length(idx_no0) > 1){
 #    cat("idx_no0 ", idx_no0, "\n")
-#    cat("dim(X1) ", X1, "\n")
+    cat("dim(X1) ", dim(X1), "\n")
+    cat("dim(A1) ", dim(A1), "\n")
     Z = t(A1) %*% g1
-    #B<-X1 %*% Z
-    Zc = t(A1) %*% g1c
-    Bc<-X1 %*% Zc
-    #cat("dim(Z) ", Z, "\n")
+    B<-X1 %*% Z
+    cat("dim(Z) ", dim(Z), "\n")
+    cat("dim(B) ", dim(B), "\n")
     g_tilde1 = g1 - B
-    gc_tilde1 = g1c -B
-    #var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
+    print(g_tilde1[1:100])
+    var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
     #var1 = var2 * varRatio
-    var2 = t(Zc) %*% obj.null$XVX %*% Zc - t(Bc^2) %*% mu21 + t(gc_tilde1^2) %*% mu21
-    var1 = var2 * varRatio
     S1 = crossprod(y1-mu1, g_tilde1)
 
     if(!noCov){
@@ -1536,20 +1543,21 @@ Score_Test_Sparse_Survival<-function(obj.null, G, Gc, mu, mu2, varRatio ){
     S2 = -S_a2 %*% Z
   }else{
     Z = A1 * g1
-    #B<-X1 %*% Z
-    Zc = A1 * g1c
-    Bc<-X1 %*% Zc
+    B<-X1 %*% Z
     g_tilde1 = g1 - B
-    gc_tilde1 = g1c -B
-    #var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
-    var2 = t(Zc) %*% obj.null$XVX %*% Zc - t(Bc^2) %*% mu21 + t(gc_tilde1^2) %*% mu21
-    var1 = var2 * varRatio
+    var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
+    #var1 = var2 * varRatio
     S1 = crossprod(y1-mu1, g_tilde1)
     S_a2 = obj.null$S_a - X1 * (y1 - mu1)
     S2 = -S_a2 %*% Z
   }
 
   S<- S1+S2
+  meanG = mean(G)
+  S = S - meanG*resq
+  var1centered1 = t(Z) %*% XWq - t(B) %*% Wq
+  var1centered = var2 - 2*meanG*var1centered1 + mug^2*qW1  
+  var1 = var1centered * varRatio
 	
   pval.noadj<-pchisq((S)^2/(var1), lower.tail = FALSE, df=1)
   ##add on 10-25-2017
@@ -1557,17 +1565,23 @@ Score_Test_Sparse_Survival<-function(obj.null, G, Gc, mu, mu2, varRatio ){
   SE = abs(BETA/qnorm(pval.noadj/2))
   Tstat = S
   #return(c(BETA, SE, Tstat, pval.noadj, pval.noadj, 1, var1, var2))
-  return(list(BETA=BETA, SE=SE, Tstat=Tstat, pval.noadj=pval.noadj, pval.noadj=pval.noadj, is.converge=TRUE, var1=var1, var2=var2))	
+  return(list(BETA=BETA, SE=SE, Tstat=Tstat, pval.noadj=pval.noadj, pval.noadj=pval.noadj, is.converge=TRUE, var1=var1, var2=var2, B=B, Z=Z, g_tilde1=g_tilde1))	
 }
 
 
-Score_Test<-function(obj.null, G, mu, mu2, varRatio){
+Score_Test_Survival<-function(obj.null, G, mu, mu2, varRatio, resq, Wq, qW1, XWq){
   g<-G  -  obj.null$XXVX_inv %*%  (obj.null$XV %*% G)
   q<-crossprod(g, obj.null$y) 
   m1<-crossprod(mu, g)
   var2<-crossprod(mu2, g^2)
-  var1 = var2 * varRatio
+  #var1 = var2 * varRatio
   S = q-m1
+
+  meanG = mean(G)
+  S = S - meanG*resq
+  var1centered1 = t(Z) %*% XWq - t(B) %*% Wq
+  var1centered = var2 - 2*meanG*var1centered1 + mug^2*qW1
+  var1 = var1centered * varRatio
 
   pval.noadj<-pchisq((S)^2/var1, lower.tail = FALSE, df=1)
 
@@ -1579,20 +1593,16 @@ Score_Test<-function(obj.null, G, mu, mu2, varRatio){
 
   #return(c(BETA, SE, Tstat, pval.noadj, pval.noadj, NA, var1, var2))
   #return(c(pval.noadj, pval.noadj, TRUE, var1, var2))
-  return(list(BETA=BETA, SE=SE, Tstat=Tstat, pval.noadj=pval.noadj, pval.noadj=pval.noadj, is.converge=TRUE, var1=var1, var2=var2))
+  return(list(BETA=BETA, SE=SE, Tstat=Tstat, pval.noadj=pval.noadj, pval.noadj=pval.noadj, is.converge=TRUE, var1=var1, var2=var2,  B=B, Z=Z, g_tilde1=g_tilde1))
 }
 
 
-Score_Test_Survival<-function(obj.null, g, g_mc, mu, mu2, varRatio){
-  #g<-G  -  obj.null$XXVX_inv %*%  (obj.null$XV %*% G)
-  #G_meanCentered = G - mean(G)
-  #g_meanCentered = G_meanCentered - obj.null$XXVX_inv %*%  (obj.null$XV %*% G_meanCentered)
+Score_Test<-function(obj.null, G, mu, mu2, varRatio){
+  g<-G  -  obj.null$XXVX_inv %*%  (obj.null$XV %*% G)
   q<-crossprod(g, obj.null$y) 
   m1<-crossprod(mu, g)
   var2<-crossprod(mu2, g^2)
-  var2c<-crossprod(mu2, g_mc^2)
-  #var1 = var2 * varRatio
-  var1 = var2c * varRatio
+  var1 = var2 * varRatio
   S = q-m1
 
   pval.noadj<-pchisq((S)^2/var1, lower.tail = FALSE, df=1)
