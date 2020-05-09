@@ -28,6 +28,7 @@
 #' @param IsSparse logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE 
 #' @param IsOutputAFinCaseCtrl logical. Whether to output allele frequency in cases and controls. By default, FALSE
 #' @param IsOutputNinCaseCtrl logical. Whether to output sample sizes in cases and controls. By default, FALSE
+#' @param IsOutputHetHomCountsinCaseCtrl logical. Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls" will be output. 
 #' @param LOCO logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE
 #' @param condition character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input , marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input.
 #' @param sparseSigmaFile character. Path to the file containing the sparseSigma from step 1. The suffix of this file is ".mtx". 
@@ -78,6 +79,7 @@ SPAGMMATtest = function(bgenFile = "",
 		 IsSparse=TRUE,
 		 IsOutputAFinCaseCtrl=FALSE,
 		 IsOutputNinCaseCtrl=FALSE,
+		 IsOutputHetHomCountsinCaseCtrl=FALSE,
 		 LOCO=FALSE,
 		 condition="",	
 		 sparseSigmaFile="",
@@ -169,7 +171,11 @@ SPAGMMATtest = function(bgenFile = "",
     sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
     cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
     traitType = obj.glmm.null$traitType
-    if(!LOCO | is.null(obj.glmm.null$LOCO)){
+    if(traitType == "quantitative"){
+    	IsOutputHetHomCountsinCaseCtrl = FALSE
+    }
+
+   if(!LOCO | is.null(obj.glmm.null$LOCO)){
       obj.glmm.null$LOCO = FALSE
       cat("obj.glmm.null$LOCO: ", obj.glmm.null$LOCO, "\n")
       cat("Leave-one-chromosome-out option is not applied\n")
@@ -326,7 +332,7 @@ SPAGMMATtest = function(bgenFile = "",
 
   if(!isGroupTest){
     if(dosageFileType == "bgen"){
-      dosageFilecolnamesSkip = c("CHR","POS","rsid","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "homN_Allele2", "hetN_Allele2", "imputationInfo")
+      dosageFilecolnamesSkip = c("CHR","POS","rsid","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
     }else if(dosageFileType == "vcf"){
       dosageFilecolnamesSkip = c("CHR","POS","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
     }
@@ -439,7 +445,14 @@ SPAGMMATtest = function(bgenFile = "",
       }
       if(IsOutputNinCaseCtrl){
 	resultHeader = c(resultHeader, "N.Cases", "N.Controls")
-      } 	
+      } 
+
+      if(IsOutputHetHomCountsinCaseCtrl){
+   	resultHeader = c(resultHeader, "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls")
+      }
+
+
+
       write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
     } #if(!isGroupTest){ 
 
@@ -546,6 +559,10 @@ cat("It is a survival trait\n")
       }
       if(IsOutputNinCaseCtrl){
         resultHeader = c(resultHeader, "N.Cases", "N.Controls")
+      }
+
+      if(IsOutputHetHomCountsinCaseCtrl){
+   	resultHeader = c(resultHeader, "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls")
       }
       write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
     } #if(!isGroupTest){
@@ -797,9 +814,19 @@ cat("It is a survival trait\n")
 	}
 
 
+	if(IsOutputHetHomCountsinCaseCtrl){
+		G0round = round(G0)
+	}	
+
+
+
     if(IsDropMissingDosages & length(indexforMissing) > 0){
         missingind = seq(1, length(G0))[-(indexforMissing + 1)]
 	cat("Removing ", length(indexforMissing), " samples with missing dosages/genotypes\n")
+
+	if(IsOutputHetHomCountsinCaseCtrl){
+		G0round = G0round[missingind]
+	}  
 
         G0 = G0[missingind]
 	subsetModelResult = subsetModelFileforMissing(obj.glmm.null, missingind, mu, mu.a ,mu2.a)	
@@ -825,8 +852,24 @@ cat("It is a survival trait\n")
 	N.sub = length(G0)
 	AC_Allele2.sub = sum(G0)
 	AF_Allele2.sub = AC_Allele2.sub/(2*N.sub)
-	rowHeader[6] = AC_Allele2.sub
-	rowHeader[7] = AF_Allele2.sub
+	if(dosageFileType == "bgen"){
+		rowHeader[7] = AC_Allele2.sub
+		rowHeader[8] = AF_Allele2.sub
+
+	}else if(dosageFileType == "vcf"){
+		rowHeader[6] = AC_Allele2.sub
+		rowHeader[7] = AF_Allele2.sub
+	}
+
+	  if(IsOutputHetHomCountsinCaseCtrl){
+	  	homN_Allele2_cases = sum(G0round[y1Index.sub] == 2)
+		hetN_Allele2_cases = sum(G0round[y1Index.sub] == 1) 
+		homN_Allele2_ctrls = sum(G0round[y0Index.sub] == 2)
+		hetN_Allele2_ctrls = sum(G0round[y0Index.sub] == 1) 
+											    #print(which(G0round[y0Index.sub] == 1))
+	  }
+
+
 
         if(traitType == "binary"){
           y1Index.sub = which(y.sub == 1)
@@ -872,7 +915,11 @@ cat("It is a survival trait\n")
 	   if(IsOutputNinCaseCtrl){
 	     OUTvec=c(OUTvec, NCase.sub, NCtrl.sub)			
 	   }
-	   OUT = rbind(OUT, OUTvec)
+   	  if(IsOutputHetHomCountsinCaseCtrl){
+                OUTvec=c(OUTvec, homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls)
+	}
+
+	OUT = rbind(OUT, OUTvec)
 	   OUTvec=NULL
 	  }else{ #if (NCase.sub == 0 | NCtrl.sub == 0) {
 		if(traitType == "binary"){
@@ -903,7 +950,14 @@ cat("It is a survival trait\n")
 	   if(IsOutputNinCaseCtrl){
              OUTvec=c(OUTvec, NCase.sub, NCtrl.sub)
            }
-	   OUT = rbind(OUT, OUTvec)
+
+
+   	  if(IsOutputHetHomCountsinCaseCtrl){
+                OUTvec=c(OUTvec, homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls)
+	}
+
+
+	OUT = rbind(OUT, OUTvec)
 	   OUTvec=NULL
 	  }
          }else if(traitType == "quantitative"){
@@ -942,6 +996,18 @@ cat("It is a survival trait\n")
 	   if(IsOutputNinCaseCtrl){
 	     OUTvec=c(OUTvec, NCase, NCtrl)
            }
+
+	if(IsOutputHetHomCountsinCaseCtrl){
+	     homN_Allele2_cases = sum(G0round[y1Index] == 2)
+	     hetN_Allele2_cases = sum(G0round[y1Index] == 1)
+	     homN_Allele2_ctrls = sum(G0round[y0Index] == 2)
+	     hetN_Allele2_ctrls = sum(G0round[y0Index] == 1)
+	     OUTvec = c(OUTvec, homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls)	
+	}
+
+
+
+
 	   OUT = rbind(OUT, OUTvec)
 	   OUTvec=NULL
 
@@ -965,6 +1031,14 @@ cat("It is a survival trait\n")
            if(IsOutputNinCaseCtrl){
              OUTvec=c(OUTvec, NCase, NCtrl)
            }
+
+	if(IsOutputHetHomCountsinCaseCtrl){
+	     homN_Allele2_cases = sum(G0round[y1Index] == 2)
+	     hetN_Allele2_cases = sum(G0round[y1Index] == 1)
+	     homN_Allele2_ctrls = sum(G0round[y0Index] == 2)
+	     hetN_Allele2_ctrls = sum(G0round[y0Index] == 1)
+	     OUTvec = c(OUTvec, homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls)	
+	}
            OUT = rbind(OUT, OUTvec)
            OUTvec=NULL
 
@@ -1517,7 +1591,7 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 
 Score_Test_Sparse_Survival<-function(obj.null, G, meanG, mu, mu2, varRatio, resq, Wq, qW1, XWq){
   # mu=mu.a; mu2= mu2.a; G=G0; obj.null=obj.noK
-  tp2a0 = proc.time()
+  #tp2a0 = proc.time()
 
 
 
@@ -1573,17 +1647,17 @@ Score_Test_Sparse_Survival<-function(obj.null, G, meanG, mu, mu2, varRatio, resq
   ##cat("dim(Z): ", dim(Z), "\n")
   ##cat("dim(XWq): ", dim(XWq), "\n")
   ##cat("dim(Wq): ", dim(Wq), "\n")
-  tp2a1 = proc.time()
-  print("tp2a1-tp2a0")
-  print(tp2a1-tp2a0)  
+  #tp2a1 = proc.time()
+  #print("tp2a1-tp2a0")
+  #print(tp2a1-tp2a0)  
 
   var1centered1 = t(Z) %*% XWq - t(B) %*% (Wq[idx_no0,])
   var1centered = var2 - 2*meanG*var1centered1 + meanG^2*qW1  
   var1 = var1centered * varRatio
 
-    tp2a2 = proc.time()
-  print("tp2a2-tp2a1")
-  print(tp2a2-tp2a1)
+  #tp2a2 = proc.time()
+  #print("tp2a2-tp2a1")
+  #print(tp2a2-tp2a1)
 
 	
   pval.noadj<-pchisq((S)^2/(var1), lower.tail = FALSE, df=1)
@@ -1591,9 +1665,9 @@ Score_Test_Sparse_Survival<-function(obj.null, G, meanG, mu, mu2, varRatio, resq
   BETA = S/var1
   SE = abs(BETA/qnorm(pval.noadj/2))
   Tstat = S
-    tp2a3 = proc.time()
-  print("tp2a3-tp2a2")
-  print(tp2a3-tp2a2)
+  #tp2a3 = proc.time()
+  #print("tp2a3-tp2a2")
+  #print(tp2a3-tp2a2)
   #return(c(BETA, SE, Tstat, pval.noadj, pval.noadj, 1, var1, var2))
   return(list(BETA=BETA, SE=SE, Tstat=Tstat, pval.noadj=pval.noadj, pval.noadj=pval.noadj, is.converge=TRUE, var1=var1, var2=var2, B=B, Z=Z, g_tilde1=g_tilde1))	
 }

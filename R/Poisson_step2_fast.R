@@ -10,11 +10,11 @@ scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(resq, q0, Wq, qW1, 
   Run1=TRUE
   idx_no0<-which(G0>0)
   G0 = matrix(G0, ncol = 1)
-  tp0 = proc.time()
+  #tp0 = proc.time()
   mug = mean(G0)
-  tp1 = proc.time()
-  print("tp1-tp0")
-  print(tp1-tp0)
+  #tp1 = proc.time()
+  #print("tp1-tp0")
+  #print(tp1-tp0)
   ##########old way to get g_mc
   #G0_mc = matrix(G0-mean(G0), ncol = 1)
   #XVG0_mc = eigenMapMatMult(obj.noK$XV, G0_mc)
@@ -24,14 +24,14 @@ if(!isCondition){
   if(IsSparse==TRUE){
     if(MAF < 0.05){
        out.score<-Score_Test_Sparse_Survival(obj.noK, G0, mug, mu.a, mu2.a, varRatio, resq, Wq, qW1, XWq);
-        tp2a = proc.time()
-	print("tp2a-tp1")
- 	print(tp2a-tp1)
+        #tp2a = proc.time()
+	#print("tp2a-tp1")
+ 	#print(tp2a-tp1)
     }else{
        out.score<-Score_Test_Survival(obj.noK, G0, mug, mu.a, mu2.a, varRatio, resq, Wq, qW1, XWq);
-        tp2b = proc.time()
-	print("tp2b-tp1")
-  	print(tp2b-tp1)
+        #tp2b = proc.time()
+	#print("tp2b-tp1")
+  	#print(tp2b-tp1)
     }
     #cat("out.score$Tstat: ", out.score$Tstat, "\n")
     #cat("out.score1$Tstat: ", out.score1$Tstat, "\n")
@@ -60,16 +60,16 @@ if(!isCondition){
          XVG0 = eigenMapMatMult(obj.noK$XV, G0)
          g = G0 - eigenMapMatMult(obj.noK$XXVX_inv, XVG0)
 
-        tp3a = proc.time()
-	print("tp3a-tp2a")
-  	print(tp3a-tp2a)
+        #tp3a = proc.time()
+	#print("tp3a-tp2a")
+  	#print(tp3a-tp2a)
       #print(g[1:20])
       #print(g_mc[1:20])
        }else{
         g = out.score$g_tilde	
-        tp3b = proc.time()
-	print("tp3b-tp2b")
-  	print(tp3b-tp2b)
+        #tp3b = proc.time()
+	#print("tp3b-tp2b")
+  	#print(tp3b-tp2b)
       }
    }
  }
@@ -82,11 +82,11 @@ if(!isCondition){
     #G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G is X adjusted
     #g = G
     NAset = which(G0==0)
-    tp4 = proc.time()
+    #tp4 = proc.time()
     out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast(g, Score = out.score$Tstat, pval.noadj = out.score$pval.noadj, var1_a = out.score$var1, var2_a = out.score$var2, Wq, qW1,mug, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
-    tp5 = proc.time()
-    print("tp5-tp4")
-        print(tp5-tp4)	
+    #tp5 = proc.time()
+    #print("tp5-tp4")
+    #print(tp5-tp4)	
     if(isCondition){
      outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], p.value.NA = out1["p.value.NA"], Is.converge=out1["Is.converge"], var1 = out1["var1"], var2 = out1["var2"], Tstat_c = out1["Tstat_c"], p.value.c = out1["p.value.c"], var1_c = out1["var1_c"], BETA_c = out1["BETA_c"], SE_c = out1["SE_c"])
 

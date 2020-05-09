@@ -2498,7 +2498,7 @@ createSparseKinParallel = function(nblocks, ncore, relatednessCutoff){
 
   #print(indexVec)
   tp1 = proc.time()
-  cat("tp1 - tp0: ", tp1-tp0, "\n")
+  #cat("tp1 - tp0: ", tp1-tp0, "\n")
 #  cat(indexVec)
   #sparseKinList = refineKin(indexVec-1, relatednessCutoff, W, tauVecNew)
   sparseKinList = refineKin(relatednessCutoff)
@@ -2517,7 +2517,7 @@ createSparseKinParallel = function(nblocks, ncore, relatednessCutoff){
   #GRMvec = refineKinPar(indexVec, relatednessCutoff = relatednessCutoff, W = W, tauVecNew = tauVecNew, nblocks = nblocks, verbose = TRUE, ncore= nblocks) 
   #sparseKinList = shortenList(indexVec-1, GRMvec, relatednessCutoff, W, tauVecNew)
  tp2 = proc.time()
-  cat("tp2 - tp1: ", tp2-tp1, "\n")
+ cat("tp2 - tp1: ", tp2-tp1, "\n")
   return(sparseKinList)
 }
 
