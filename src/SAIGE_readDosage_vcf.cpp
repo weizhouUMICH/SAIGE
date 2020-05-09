@@ -25,7 +25,15 @@ int numSamples_vcf;
 
 using namespace std;
 
+bool isDropMissingDosages_vcf = false;
+bool noMissingDosages_vcf = true;
 
+
+// [[Rcpp::export]]
+void setMissing_vcf(bool isDropMissing, bool noMissingDosages){
+  isDropMissingDosages_vcf = isDropMissing;
+  noMissingDosages_vcf = noMissingDosages;
+}
 
 // [[Rcpp::export]]
 void SetSampleIdx_vcfDosage(Rcpp::IntegerVector sample_idx, int Ntest){
@@ -110,6 +118,7 @@ Rcpp::List getGenoOfnthVar_vcfDosage(int mth) {
   float dosage;
   const std::string * geno;
   float AC = 0;
+  float AF = 0.0;
   int genoi;
   int numGTs;
   //////////
@@ -118,28 +127,42 @@ Rcpp::List getGenoOfnthVar_vcfDosage(int mth) {
 
   std::size_t missing_cnt = 0;
   std::vector< int > indexforMissing;
-  for (std::vector<float>::iterator it = record.data().begin(); it != record.data().end(); ++it) {
+  if(noMissingDosages_vcf){
+    for (std::vector<float>::iterator it = record.data().begin(); it != record.data().end(); ++it) {
     int i = std::distance(record.data().begin(), it);
     if(gm_sample_idx_vcfDosage[i] >= 0) {
-      if (std::isnan(*it)) {
-        dosages[gm_sample_idx_vcfDosage[i]] = -1;
-        ++missing_cnt;
-        indexforMissing.push_back(gm_sample_idx_vcfDosage[i]);
-      } else {
         dosages[gm_sample_idx_vcfDosage[i]] = *it;
         AC = AC + *it;
       }
     }
-  }
+    AF = AC / 2 / (float)(gmtest_samplesize_vcfDosage);
+  }else{
+    for (std::vector<float>::iterator it = record.data().begin(); it != record.data().end(); ++it) {
+      int i = std::distance(record.data().begin(), it);
+      if(gm_sample_idx_vcfDosage[i] >= 0) {
+        if (std::isnan(*it)) {
+          dosages[gm_sample_idx_vcfDosage[i]] = -1;
+          ++missing_cnt;
+          indexforMissing.push_back(gm_sample_idx_vcfDosage[i]);
+        }else {
+          dosages[gm_sample_idx_vcfDosage[i]] = *it;
+          AC = AC + *it;
+        }
+      }
+    }
 
-  float AF = AC / 2 / (float)(gmtest_samplesize_vcfDosage - missing_cnt) ;
+    AF = AC / 2 / (float)(gmtest_samplesize_vcfDosage - missing_cnt) ;
   //set missing dosages to be the 2*AF
-  if(missing_cnt > 0){
-    float imputeDosage = 2*AF;
-    for (unsigned int i = 0; i < indexforMissing.size(); i++)
-    {
-      dosages[indexforMissing[i]] = imputeDosage;
-    }  
+    if(!isDropMissingDosages_vcf){
+      float imputeDosage = 2*AF;
+      if(missing_cnt > 0){
+        for (unsigned int i = 0; i < indexforMissing.size(); i++)
+        {
+          dosages[indexforMissing[i]] = imputeDosage;	
+        }  
+      }
+      AC = AC + imputeDosage*missing_cnt;
+    }
   }
 
     result[ "dosages" ] = dosages;

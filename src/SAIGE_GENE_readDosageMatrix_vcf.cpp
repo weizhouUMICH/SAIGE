@@ -33,6 +33,17 @@ int genetest_samplesize_vcfDosage;
 float minMAF;
 float maxMAF;
 
+bool isDropMissingDosages_Matrix_vcf = false;
+bool noMissingDosages_Matrix_vcf = true;
+
+
+// [[Rcpp::export]]
+void setMissing_Matrix_vcf(bool isDropMissing, bool noMissingDosages){
+  isDropMissingDosages_Matrix_vcf = isDropMissing;
+  noMissingDosages_Matrix_vcf = noMissingDosages;
+}
+
+
 
 // [[Rcpp::export]]
 void SetSampleIdx_forGenetest_vcfDosage(std::vector<int> sample_idx, int Ntest){
@@ -90,6 +101,10 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
     markerIDs.clear();
     markerAFs.clear();
     MACs.clear();
+     float AF;
+      //check if the AF of the marker is within the required range
+      float MAF;
+      float MAC;
     for ( ; it != end; ++it)
     {
 
@@ -109,6 +124,10 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
       //std::cout << it->prop("R2") << std::endl; 
       std::string markerInfo_str = it->prop("R2");
       float markerInfo = strtof((markerInfo_str).c_str(),0);
+
+   if(!noMissingDosages_Matrix_vcf){
+
+
       for (auto dose_it = it->data().begin(); dose_it != it->data().end(); ++dose_it){
 	int lengthi = std::distance(it->data().begin(), it->data().end());
 	int i = dose_it.offset();	
@@ -135,10 +154,8 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
       //group_matrix[cnt * sample_size + dose_it.offset()] = *dose_it;
       }
 
-      float AF = (float)(AC) / 2 / (float)(genetest_samplesize_vcfDosage - missing_cnt) ;
+      AF = (float)(AC) / 2 / (float)(genetest_samplesize_vcfDosage - missing_cnt) ;
       //check if the AF of the marker is within the required range
-      float MAF;
-      float MAC;
       if(AF >= 0.5){
         MAF = 1 - AF;
         MAC = (float)(genetest_samplesize_vcfDosage - missing_cnt) *2 - AC;
@@ -157,7 +174,6 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
             //dosagesforOneMarker[indexforMissing[i]] = imputeDosage;
           }
        }
-
 //	if(AF > 0.5){
 //		std::cout << marker_id << " has AF > 0.5, so the alleles are flipped to use the dosages for minor allele";
 //		dosagesforOneMarker = 2 - dosagesforOneMarker;
@@ -173,6 +189,47 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
         //std::cout << "MAF: " << MAF << " minMAF: " << minMAF << " maxMAF: " << maxMAF << std::endl;
 	//std::cout << "marker_id: " << marker_id << std::endl;
       }
+
+    }else{
+      for (auto dose_it = it->data().begin(); dose_it != it->data().end(); ++dose_it){
+	int lengthi = std::distance(it->data().begin(), it->data().end());
+	int i = dose_it.offset();	
+	//std::cout << "i " << i << std::endl;
+        if(genetest_sample_idx_vcfDosage[i] >= 0) {
+	    if(*dose_it > 0){	
+		dosagesforOneMarker.push_back(*dose_it);
+		jIndexforOneMarker.push_back(cnt+1);
+		iIndexforOneMarker.push_back(genetest_sample_idx_vcfDosage[i]+1);
+            		//dosagesforOneMarker[genetest_sample_idx_vcfDosage[i]] = *dose_it;
+            	AC = AC + *dose_it;
+	    }	
+
+        } 
+      //group_matrix[cnt * sample_size + dose_it.offset()] = *dose_it;
+      }
+
+      AF = (float)(AC) / 2 / (float)(genetest_samplesize_vcfDosage) ;
+      //check if the AF of the marker is within the required range
+      if(AF >= 0.5){
+        MAF = 1 - AF;
+        MAC = (float)(genetest_samplesize_vcfDosage) *2 - AC;
+      }else{
+        MAF = AF;
+	MAC = AC;
+      }
+        group_matrix.insert(std::end(group_matrix), std::begin(dosagesforOneMarker), std::end(dosagesforOneMarker));
+        iIndexVec.insert(std::end(iIndexVec), std::begin(iIndexforOneMarker), std::end(iIndexforOneMarker));
+        jIndexVec.insert(std::end(jIndexVec), std::begin(jIndexforOneMarker), std::end(jIndexforOneMarker));
+        cnt = cnt + 1;
+        markerIDs.push_back(marker_id);
+        markerAFs.push_back(AF);
+        MACs.push_back(MAC);
+        //std::cout << "MAF: " << MAF << " minMAF: " << minMAF << " maxMAF: " << maxMAF << std::endl;
+	//std::cout << "marker_id: " << marker_id << std::endl;
+    }
+
+
+
     } //for ( ; it != end; ++it)  
     //group_matrix.resize(sample_size * cnt);
     result["dosages"] = group_matrix;

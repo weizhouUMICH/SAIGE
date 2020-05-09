@@ -47,6 +47,7 @@
 #' @param IsOutputPvalueNAinGroupTestforBinary logical. In gene- or region-based tests for binary traits. if IsOutputPvalueNAinGroupTestforBinary is TRUE, p-values without accounting for case-control imbalance will be output. By default, FALSE 
 #' @param IsAccountforCasecontrolImbalanceinGroupTest logical. In gene- or region-based tests for binary traits. If IsAccountforCasecontrolImbalanceinGroupTest is TRUE, p-values after accounting for case-control imbalance will be output. By default, TRUE
 #' @param IsOutputBETASEinBurdenTest logical. Output effect size (BETA and SE) for burden tests. By default, FALSE 
+#' @param NoMissingDosage logical. If TRUE, there is no missing dosages in the dosage file. If FALSE, if IsDropMissingDosages=TRUE, missing dosages will be removed from the analysis, otherwise, they will be mean imputed. By default, TRUE 
 #' @return SAIGEOutputFile
 #' @export
 SPAGMMATtest = function(bgenFile = "",
@@ -96,7 +97,8 @@ SPAGMMATtest = function(bgenFile = "",
 		 IsOutputPvalueNAinGroupTestforBinary = FALSE,
 		 IsAccountforCasecontrolImbalanceinGroupTest = TRUE,
 		 IsOutputBETASEinBurdenTest = FALSE,
-		 IsSPAfast = TRUE){
+		 IsSPAfast = TRUE,
+		NoMissingDosage = TRUE){
 
   if(weightMAFcutoff < 0 | weightMAFcutoff > 0.5){
     stop("weightMAFcutoff needs to be between 0 and 0.5\n")
@@ -257,12 +259,23 @@ SPAGMMATtest = function(bgenFile = "",
     }
   }
 
+  if(NoMissingDosage){
+    cat("NoMissingDosage is TRUE and there is no missing doages in the file\n")
+  }else{
+    if(IsDropMissingDosages){
+     cat("Samples with missing dosages will be dropped from the analysis\n")
+    }else{
+     cat("Missing dosages will be mean imputed for the analysis\n")
+    }
+  } 
+
   ##Needs to check the number of columns and the number of samples in sample file
   if(bgenFile != ""){ 
     if(!file.exists(bgenFile)){
       stop("ERROR! bgenFile ", bgenFile, " does not exsit\n")
     }
     dosageFileType = "bgen"
+     setMissing_bgen(IsDropMissingDosages, NoMissingDosage)
 
   }else if(vcfFile != ""){
     if(!file.exists(vcfFile)){
@@ -275,7 +288,8 @@ SPAGMMATtest = function(bgenFile = "",
 
     ###chrom needs to be specified 
     if(chrom == ""){stop("ERROR! chrom needs to be specified for the vcf file\n")}
-
+    setMissing_vcf(IsDropMissingDosages, NoMissingDosage)
+    setMissing_Matrix_vcf(IsDropMissingDosages, NoMissingDosage)
   }else if(savFile != ""){
     if(!file.exists(savFile)){
       stop("ERROR! savFile ", savFile, " does not exsit\n")
@@ -289,15 +303,9 @@ SPAGMMATtest = function(bgenFile = "",
       vcfFileIndex = savFileIndex
     }	
     dosageFileType = "vcf"
+    setMissing_vcf(IsDropMissingDosages, NoMissingDosage)
+    setMissing_Matrix_vcf(IsDropMissingDosages, NoMissingDosage)
   }
-
-
-  if(IsDropMissingDosages){
-     cat("Samples with missing dosages will be dropped from the analysis\n")
-  }else{
-    cat("Missing dosages will be mean imputed for the analysis\n")
-  }
-
 
   ##############START TEST########################
   startTime = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
@@ -567,8 +575,11 @@ cat("It is a survival trait\n")
       obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
       XVvec1 = matrix(rowSums(obj.glmm.null$obj.noK$XV), ncol=1)
       q0 = 1 -  eigenMapMatMult(obj.glmm.null$obj.noK$XXVX_inv, XVvec1)
-      resq = (y - mu.a)*q0
+      resq = sum((y - mu.a)*q0)
       Wq = mu.a*q0
+      cat("Wq[1:10] ", Wq[1:10], "\n")
+      print(length(Wq))
+      print(dim(obj.glmm.null$obj.noK$X1))
       XWq = t(obj.glmm.null$obj.noK$X1) %*% Wq 
       qW1 = sum(Wq)
     }else if(chrom != ""){
@@ -869,7 +880,7 @@ cat("It is a survival trait\n")
 		}else if(traitType == "survival"){
 
 			if(IsSPAfast){
-				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(resq.sub, q0.sub, Wq.sub, qW1.sub, G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
+				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(resq.sub, q0.sub, Wq.sub, qW1.sub, XWq.sub, G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
 			
 			}else{
 				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
@@ -940,7 +951,7 @@ cat("It is a survival trait\n")
            		out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 		}else{
 		#cat("IsSPAfast2: ", IsSPAfast, "\n")
-			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(resq, q0, Wq, qW1, G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(resq, q0, Wq, qW1, XWq, G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 		}
 
            OUTvec=c(rowHeader, N,unlist(out1))
@@ -1461,14 +1472,14 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 
   if(length(idx_no0) > 1){
 #    cat("idx_no0 ", idx_no0, "\n")
-    cat("dim(X1) ", dim(X1), "\n")
-    cat("dim(A1) ", dim(A1), "\n")
+    #cat("dim(X1) ", dim(X1), "\n")
+    #cat("dim(A1) ", dim(A1), "\n")
     Z = t(A1) %*% g1
     B<-X1 %*% Z
-    cat("dim(Z) ", dim(Z), "\n")
-    cat("dim(B) ", dim(B), "\n")
+    #cat("dim(Z) ", dim(Z), "\n")
+    #cat("dim(B) ", dim(B), "\n")
     g_tilde1 = g1 - B
-    print(g_tilde1[1:100])
+    #print(g_tilde1[1:100])
     var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
     var1 = var2 * varRatio
     S1 = crossprod(y1-mu1, g_tilde1)
@@ -1504,8 +1515,12 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 
 
 
-Score_Test_Sparse_Survival<-function(obj.null, G, mu, mu2, varRatio, resq, Wq, qW1, XWq){
+Score_Test_Sparse_Survival<-function(obj.null, G, meanG, mu, mu2, varRatio, resq, Wq, qW1, XWq){
   # mu=mu.a; mu2= mu2.a; G=G0; obj.null=obj.noK
+  tp2a0 = proc.time()
+
+
+
   idx_no0<-which(G>0)
   g1<-G[idx_no0]
   noCov = FALSE
@@ -1514,7 +1529,6 @@ Score_Test_Sparse_Survival<-function(obj.null, G, mu, mu2, varRatio, resq, Wq, q
   }
 
   A1<-obj.null$XVX_inv_XV[idx_no0,]
-
   X1<-obj.null$X1[idx_no0,]
   mu21<-mu2[idx_no0]
   mu1<-mu[idx_no0]
@@ -1522,14 +1536,14 @@ Score_Test_Sparse_Survival<-function(obj.null, G, mu, mu2, varRatio, resq, Wq, q
 
   if(length(idx_no0) > 1){
 #    cat("idx_no0 ", idx_no0, "\n")
-    cat("dim(X1) ", dim(X1), "\n")
-    cat("dim(A1) ", dim(A1), "\n")
+    #cat("dim(X1) ", dim(X1), "\n")
+    #cat("dim(A1) ", dim(A1), "\n")
     Z = t(A1) %*% g1
     B<-X1 %*% Z
-    cat("dim(Z) ", dim(Z), "\n")
-    cat("dim(B) ", dim(B), "\n")
+    #cat("dim(Z) ", dim(Z), "\n")
+    #cat("dim(B) ", dim(B), "\n")
     g_tilde1 = g1 - B
-    print(g_tilde1[1:100])
+    #print(g_tilde1[1:100])
     var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
     #var1 = var2 * varRatio
     S1 = crossprod(y1-mu1, g_tilde1)
@@ -1553,35 +1567,52 @@ Score_Test_Sparse_Survival<-function(obj.null, G, mu, mu2, varRatio, resq, Wq, q
   }
 
   S<- S1+S2
-  meanG = mean(G)
-  S = S - meanG*resq
-  var1centered1 = t(Z) %*% XWq - t(B) %*% Wq
-  var1centered = var2 - 2*meanG*var1centered1 + mug^2*qW1  
+  ##meanG = mean(G)
+  #S = S - meanG*resq
+  ##cat("dim(B): ", dim(B), "\n")
+  ##cat("dim(Z): ", dim(Z), "\n")
+  ##cat("dim(XWq): ", dim(XWq), "\n")
+  ##cat("dim(Wq): ", dim(Wq), "\n")
+  tp2a1 = proc.time()
+  print("tp2a1-tp2a0")
+  print(tp2a1-tp2a0)  
+
+  var1centered1 = t(Z) %*% XWq - t(B) %*% (Wq[idx_no0,])
+  var1centered = var2 - 2*meanG*var1centered1 + meanG^2*qW1  
   var1 = var1centered * varRatio
+
+    tp2a2 = proc.time()
+  print("tp2a2-tp2a1")
+  print(tp2a2-tp2a1)
+
 	
   pval.noadj<-pchisq((S)^2/(var1), lower.tail = FALSE, df=1)
   ##add on 10-25-2017
   BETA = S/var1
   SE = abs(BETA/qnorm(pval.noadj/2))
   Tstat = S
+    tp2a3 = proc.time()
+  print("tp2a3-tp2a2")
+  print(tp2a3-tp2a2)
   #return(c(BETA, SE, Tstat, pval.noadj, pval.noadj, 1, var1, var2))
   return(list(BETA=BETA, SE=SE, Tstat=Tstat, pval.noadj=pval.noadj, pval.noadj=pval.noadj, is.converge=TRUE, var1=var1, var2=var2, B=B, Z=Z, g_tilde1=g_tilde1))	
 }
 
 
-Score_Test_Survival<-function(obj.null, G, mu, mu2, varRatio, resq, Wq, qW1, XWq){
+Score_Test_Survival<-function(obj.null, G, meanG, mu, mu2, varRatio, resq, Wq, qW1, XWq){
+  G = G - meanG
   g<-G  -  obj.null$XXVX_inv %*%  (obj.null$XV %*% G)
   q<-crossprod(g, obj.null$y) 
   m1<-crossprod(mu, g)
   var2<-crossprod(mu2, g^2)
   #var1 = var2 * varRatio
-  S = q-m1
+  S = (q-m1) + meanG*resq
 
-  meanG = mean(G)
-  S = S - meanG*resq
-  var1centered1 = t(Z) %*% XWq - t(B) %*% Wq
-  var1centered = var2 - 2*meanG*var1centered1 + mug^2*qW1
-  var1 = var1centered * varRatio
+  #meanG = mean(G)
+  #S = S - meanG*resq
+  #var1centered1 = t(Z) %*% XWq - t(B) %*% Wq
+  #var1centered = var2 - 2*meanG*var1centered1 + meanG^2*qW1
+  var1 = var2 * varRatio
 
   pval.noadj<-pchisq((S)^2/var1, lower.tail = FALSE, df=1)
 
@@ -1593,7 +1624,7 @@ Score_Test_Survival<-function(obj.null, G, mu, mu2, varRatio, resq, Wq, qW1, XWq
 
   #return(c(BETA, SE, Tstat, pval.noadj, pval.noadj, NA, var1, var2))
   #return(c(pval.noadj, pval.noadj, TRUE, var1, var2))
-  return(list(BETA=BETA, SE=SE, Tstat=Tstat, pval.noadj=pval.noadj, pval.noadj=pval.noadj, is.converge=TRUE, var1=var1, var2=var2,  B=B, Z=Z, g_tilde1=g_tilde1))
+  return(list(BETA=BETA, SE=SE, Tstat=Tstat, pval.noadj=pval.noadj, pval.noadj=pval.noadj, is.converge=TRUE, var1=var1, var2=var2,  g_tilde=g))
 }
 
 
