@@ -690,7 +690,15 @@ ScoreTest_NULL_Model_survival=function (mu, y, X1){
   XV = t(X1 * V)
   XVX_inv = solve(t(X1) %*% (X1 * V))
   XXVX_inv = X1 %*% XVX_inv
-  re = list(y = y, mu = mu, res = res, V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv)
+
+  ###for G_tilde_c
+  X1_fg = cbind(X1, 1)
+  XV_fg = t(X1_fg * V)
+  XVX_inv_fg = solve(t(X1_fg) %*% (X1_fg * V))
+  XXVX_inv_fg = X1_fg %*% XVX_inv_fg
+
+  re = list(y = y, mu = mu, res = res, V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv, X1_fg = X1_fg, XV_fg = XV_fg, XXVX_inv_fg = XXVX_inv_fg, XVX_inv_fg = XVX_inv_fg)
+  #re = list(y = y, mu = mu, res = res, V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv)
   class(re) = "SA_NULL"
   return(re)
 }
@@ -1169,7 +1177,21 @@ fitNULLGLMM = function(plinkFile = "",
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
       setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
       #setisUseSparseSigmaforNullModelFitting(TRUE)
-
+      if(modglmm$traitType == "survival"){	
+        if(is.null(modglmm$obj.noK$X1_fg)){
+		X1 = modglmm$obj.noK$X1
+		V = modglmm$obj.noK$V
+		X1_fg = cbind(X1, 1)
+		XV_fg = t(X1_fg * V)
+		XVX_inv_fg = solve(t(X1_fg) %*% (X1_fg * V))
+		XXVX_inv_fg = X1_fg %*% XVX_inv_fg
+		modglmm$obj.noK$X1_fg = X1_fg
+		modglmm$obj.noK$XV_fg = XV_fg
+		modglmm$obj.noK$XVX_inv_fg = XVX_inv_fg
+		modglmm$obj.noK$XXVX_inv_fg = XXVX_inv_fg
+		#save(modglmm, file="modelOut")
+        }
+      }
     }
     cat("Start estimating variance ratios\n")
 
@@ -1617,8 +1639,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 	   	
           	G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted
 	  }else{
-		G0_meanCentered = G0 - AF*2
-		G = G0_meanCentered - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0_meanCentered)
+		#G0_meanCentered = G0 - AF*2
+		#G = G0_meanCentered - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0_meanCentered)
+		G = G0 - obj.noK$XXVX_inv_fg %*%  (obj.noK$XV_fg %*% G0) #G1 is X and intercept adjusted
 	  }	
           g = G/sqrt(AC)
           q = innerProduct(g,y)

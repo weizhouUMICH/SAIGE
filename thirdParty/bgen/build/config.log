@@ -1,4 +1,4 @@
-# project bgen (1.1.4) configured on Sat May  9 17:54:34 2020 by
+# project bgen (1.1.4) configured on Sun May 10 00:55:33 2020 by
 # waf 2.0.6 (abi 20, python 20711f0 on linux2)
 # using ./waf configure
 #
@@ -714,12 +714,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_368a656db5c85a911f79647894e498ca/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_ab27bdc7cc8ad45a91102306999fbd49/test.cpp[0m
 
-['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_368a656db5c85a911f79647894e498ca/testbuild/test.cpp.1.o', '-I/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/include']
-[2/2] Linking [33mbuild/.conf_check_368a656db5c85a911f79647894e498ca/testbuild/testprog[0m
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_ab27bdc7cc8ad45a91102306999fbd49/testbuild/test.cpp.1.o', '-I/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/include']
+[2/2] Linking [33mbuild/.conf_check_ab27bdc7cc8ad45a91102306999fbd49/testbuild/testprog[0m
 
-['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', 'test.cpp.1.o', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_368a656db5c85a911f79647894e498ca/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lz', '-L/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib']
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', 'test.cpp.1.o', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_ab27bdc7cc8ad45a91102306999fbd49/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lz', '-L/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib']
 yes
 ----------------------------------------
 rt
@@ -731,12 +731,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_764d9fa104dc1c712f283ee6001db3c2/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_d1f54fb6173f5614296f47e32574ce5a/test.cpp[0m
 
-['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_764d9fa104dc1c712f283ee6001db3c2/testbuild/test.cpp.1.o', '-I/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/include']
-[2/2] Linking [33mbuild/.conf_check_764d9fa104dc1c712f283ee6001db3c2/testbuild/testprog[0m
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_d1f54fb6173f5614296f47e32574ce5a/testbuild/test.cpp.1.o', '-I/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/include']
+[2/2] Linking [33mbuild/.conf_check_d1f54fb6173f5614296f47e32574ce5a/testbuild/testprog[0m
 
-['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', 'test.cpp.1.o', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_764d9fa104dc1c712f283ee6001db3c2/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt', '-L/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib']
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', 'test.cpp.1.o', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_d1f54fb6173f5614296f47e32574ce5a/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt', '-L/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib']
 yes
 ----------------------------------------
 pthread
@@ -748,12 +748,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_0d4357fa01e42ed070239ccfde313be5/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_f71ed484250ebe5240c0531c91742745/test.cpp[0m
 
-['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_0d4357fa01e42ed070239ccfde313be5/testbuild/test.cpp.1.o', '-I/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/include']
-[2/2] Linking [33mbuild/.conf_check_0d4357fa01e42ed070239ccfde313be5/testbuild/testprog[0m
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_f71ed484250ebe5240c0531c91742745/testbuild/test.cpp.1.o', '-I/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/include']
+[2/2] Linking [33mbuild/.conf_check_f71ed484250ebe5240c0531c91742745/testbuild/testprog[0m
 
-['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', 'test.cpp.1.o', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_0d4357fa01e42ed070239ccfde313be5/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread', '-L/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib']
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', 'test.cpp.1.o', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_f71ed484250ebe5240c0531c91742745/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread', '-L/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib']
 yes
 ----------------------------------------
 dl
@@ -765,10 +765,10 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_3115ed78003f30f416369934d6dd8686/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_de2027c3bc9e4f258e6bbdc0f56f2a3f/test.cpp[0m
 
-['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_3115ed78003f30f416369934d6dd8686/testbuild/test.cpp.1.o', '-I/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/include']
-[2/2] Linking [33mbuild/.conf_check_3115ed78003f30f416369934d6dd8686/testbuild/testprog[0m
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_de2027c3bc9e4f258e6bbdc0f56f2a3f/testbuild/test.cpp.1.o', '-I/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/include']
+[2/2] Linking [33mbuild/.conf_check_de2027c3bc9e4f258e6bbdc0f56f2a3f/testbuild/testprog[0m
 
-['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', 'test.cpp.1.o', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_3115ed78003f30f416369934d6dd8686/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-ldl', '-L/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib']
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', 'test.cpp.1.o', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE_Poission_Survival/sourceCode_fromgithub/SAIGE/thirdParty/bgen/build/.conf_check_de2027c3bc9e4f258e6bbdc0f56f2a3f/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-ldl', '-L/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib']
 yes

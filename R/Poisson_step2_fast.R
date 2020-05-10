@@ -1,4 +1,4 @@
-scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(resq, q0, Wq, qW1, XWq, G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
 
   N = length(G0)
   if(AF > 0.5){
@@ -11,7 +11,7 @@ scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(resq, q0, Wq, qW1, 
   idx_no0<-which(G0>0)
   G0 = matrix(G0, ncol = 1)
   #tp0 = proc.time()
-  mug = mean(G0)
+  #mug = mean(G0)
   #tp1 = proc.time()
   #print("tp1-tp0")
   #print(tp1-tp0)
@@ -23,12 +23,12 @@ scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(resq, q0, Wq, qW1, 
 if(!isCondition){
   if(IsSparse==TRUE){
     if(MAF < 0.05){
-       out.score<-Score_Test_Sparse_Survival(obj.noK, G0, mug, mu.a, mu2.a, varRatio, resq, Wq, qW1, XWq);
+       out.score<-Score_Test_Sparse_Survival(obj.noK, G0, mu.a, mu2.a, varRatio);
         #tp2a = proc.time()
 	#print("tp2a-tp1")
  	#print(tp2a-tp1)
     }else{
-       out.score<-Score_Test_Survival(obj.noK, G0, mug, mu.a, mu2.a, varRatio, resq, Wq, qW1, XWq);
+       out.score<-Score_Test_Survival(obj.noK, G0, mu.a, mu2.a, varRatio);
         #tp2b = proc.time()
 	#print("tp2b-tp1")
   	#print(tp2b-tp1)
@@ -43,23 +43,12 @@ if(!isCondition){
          out.score$BETA = (-1)*out.score$BETA
          out.score$Tstat = (-1)*out.score$Tstat
        }
-       outVec = list(BETA = out.score$BETA, SE = out.score$SE, Tstat = out.score$Tstat, p.value = out.score$pval.noadj, p.value.NA = out.score$pval.noadj, Is.converge = 1, var1 = out.score$var1, var2 = out.score$var2)
+       outVec = list(BETA = out.score$BETA, SE = out.score$SE, Tstat = out.score$Tstat, p.value = out.score$pval.noadj, p.value.NA = out.score$pval.noadj, Is.converge = 0, var1 = out.score$var1, var2 = out.score$var2)
        Run1=FALSE
    }else{
        if(MAF < 0.05){
-
-	if(FALSE){
-         X1 = obj.noK$X1
-       ##cat("dim(X1) ", dim(X1), "\n")
-       ##cat("dim(out.score$Z) ", dim(out.score$Z), "\n")
-         g = rep(0, nrow(X1))
-         g[idx_no0] = out.score$g_tilde1 + (out.score$B)
-         g = g - X1%*%(out.score$Z)
-         g = g - mug*q0
-	}
-         XVG0 = eigenMapMatMult(obj.noK$XV, G0)
-         g = G0 - eigenMapMatMult(obj.noK$XXVX_inv, XVG0)
-
+         XVG0 = eigenMapMatMult(obj.noK$XV_fg, G0)
+         g = G0 - eigenMapMatMult(obj.noK$XXVX_inv_fg, XVG0)
         #tp3a = proc.time()
 	#print("tp3a-tp2a")
   	#print(tp3a-tp2a)
@@ -83,7 +72,7 @@ if(!isCondition){
     #g = G
     NAset = which(G0==0)
     #tp4 = proc.time()
-    out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast(g, Score = out.score$Tstat, pval.noadj = out.score$pval.noadj, var1_a = out.score$var1, var2_a = out.score$var2, Wq, qW1,mug, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
+    out1 = scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast(g, Score = out.score$Tstat, pval.noadj = out.score$pval.noadj, var1_a = out.score$var1, var2_a = out.score$var2, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
     #tp5 = proc.time()
     #print("tp5-tp4")
     #print(tp5-tp4)	
@@ -102,7 +91,7 @@ if(!isCondition){
 
 
 
-scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, Score, pval.noadj, var1_a, var2_a, Wq, qW1, mug, AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, Score, pval.noadj, var1_a, var2_a, AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
 
   #g = G/sqrt(AC)
   #q = innerProduct(g, y)
@@ -142,13 +131,13 @@ scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, Score, pval.n
   #}
 
   #qtilde = Tstat/sqrt(var1) * sqrt(var2) + m1
-  Score2 = Score/sqrt(var1) * sqrt(var2)
+  #Score2 = Score/sqrt(var1) * sqrt(var2)
   if(length(NAset)/length(g) < 0.5){
     #print("Saddle_Prob_Poisson")
-    out1 = Saddle_Prob_Poisson(Score=Score2, pval.noadj=pval.noadj, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8, m1=m1, var1=var2)
+    out1 = Saddle_Prob_Poisson(Score=Score, pval.noadj=pval.noadj, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8, m1=m1, var1=var2)
   }else{
     #print("Saddle_Prob_Poisson_fast")
-    out1 = Saddle_Prob_Poisson_fast(Score=Score2, pval.noadj=pval.noadj, g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, m1=m1, var1=var2)
+    out1 = Saddle_Prob_Poisson_fast(Score=Score, pval.noadj=pval.noadj, g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, m1=m1, var1=var2)
   }
 
   out1$var1 = var1

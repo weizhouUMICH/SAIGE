@@ -581,24 +581,39 @@ cat("It is a survival trait\n")
 
     cat("Analyzing ", NCase, " events and ",NCtrl, " censored \n")
     N = length(y)
-    obj.glmm.null$obj.noK$XVX_inv_XV = obj.glmm.null$obj.noK$XXVX_inv * obj.glmm.null$obj.noK$V
+
+
+    if(is.null(obj.glmm.null$obj.noK$X1_fg)){
+    	X1 = obj.glmm.null$obj.noK$X1
+	V = obj.glmm.null$obj.noK$V
+	X1_fg = cbind(X1, 1)
+	XV_fg = t(X1_fg * V)
+	XVX_inv_fg = solve(t(X1_fg) %*% (X1_fg * V))
+	XXVX_inv_fg = X1_fg %*% XVX_inv_fg
+	obj.glmm.null$obj.noK$X1_fg = X1_fg
+	obj.glmm.null$obj.noK$XV_fg = XV_fg
+	 obj.glmm.null$obj.noK$XVX_inv_fg = XVX_inv_fg
+	 obj.glmm.null$obj.noK$XXVX_inv_fg = XXVX_inv_fg
+																		}
+
+    obj.glmm.null$obj.noK$XVX_inv_XV_fg = obj.glmm.null$obj.noK$XXVX_inv_fg * obj.glmm.null$obj.noK$V
     indChromCheck = FALSE
     if(!obj.glmm.null$LOCO){
       mu = obj.glmm.null$fitted.values
       mu.a<-as.vector(mu)
       #mu2.a<-mu.a *(1-mu.a)
       mu2.a = mu.a
-      obj.glmm.null$obj.noK$XVX = t(obj.glmm.null$obj.noK$X1) %*% (obj.glmm.null$obj.noK$X1 * mu2.a)
-      obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
-      XVvec1 = matrix(rowSums(obj.glmm.null$obj.noK$XV), ncol=1)
-      q0 = 1 -  eigenMapMatMult(obj.glmm.null$obj.noK$XXVX_inv, XVvec1)
-      resq = sum((y - mu.a)*q0)
-      Wq = mu.a*q0
-      cat("Wq[1:10] ", Wq[1:10], "\n")
-      print(length(Wq))
-      print(dim(obj.glmm.null$obj.noK$X1))
-      XWq = t(obj.glmm.null$obj.noK$X1) %*% Wq 
-      qW1 = sum(Wq)
+      obj.glmm.null$obj.noK$XVX_fg = t(obj.glmm.null$obj.noK$X1_fg) %*% (obj.glmm.null$obj.noK$X1_fg * mu2.a)
+      obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1_fg * (y - mu.a))
+      #XVvec1 = matrix(rowSums(obj.glmm.null$obj.noK$XV), ncol=1)
+      #q0 = 1 -  eigenMapMatMult(obj.glmm.null$obj.noK$XXVX_inv, XVvec1)
+      #resq = sum((y - mu.a)*q0)
+      #Wq = mu.a*q0
+      #cat("Wq[1:10] ", Wq[1:10], "\n")
+      #print(length(Wq))
+      #print(dim(obj.glmm.null$obj.noK$X1))
+      #XWq = t(obj.glmm.null$obj.noK$X1) %*% Wq 
+      #qW1 = sum(Wq)
     }else if(chrom != ""){
       chrom_v2 = as.character(chrom)
       chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
@@ -613,15 +628,15 @@ cat("It is a survival trait\n")
         #mu2.a<-mu.a *(1-mu.a)
         mu2.a = mu.a
       }
-      obj.glmm.null$obj.noK$XVX = t(obj.glmm.null$obj.noK$X1) %*% (obj.glmm.null$obj.noK$X1 * mu2.a)
-      obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1 * (y - mu.a))
-      obj.glmm.null$obj.noK$XV = t(obj.glmm.null$obj.noK$X1 * mu2.a)	
-      obj.glmm.null$obj.noK$XVX_inv = solve(obj.glmm.null$obj.noK$XVX)
-      obj.glmm.null$obj.noK$XXVX_inv = X1 %*% XVX_inv
-      XVvec1 = matrix(rowSums(obj.glmm.null$obj.noK$XV), ncol=1)
-      q0 = 1 -  eigenMapMatMult(obj.glmm.null$obj.noK$XXVX_inv, XVvec1)
-      Wq = mu.a*q0
-      qW1 = sum(Wq)
+      obj.glmm.null$obj.noK$XVX_fg = t(obj.glmm.null$obj.noK$X1_fg) %*% (obj.glmm.null$obj.noK$X1_fg * mu2.a)
+      obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1_fg * (y - mu.a))
+      obj.glmm.null$obj.noK$XV_fg = t(obj.glmm.null$obj.noK$X1_fg * mu2.a)	
+      obj.glmm.null$obj.noK$XVX_inv_fg = solve(obj.glmm.null$obj.noK$XVX_fg)
+      obj.glmm.null$obj.noK$XXVX_inv_fg = obj.glmm.null$obj.noK$X1_fg %*% XVX_inv_fg
+     #XVvec1 = matrix(rowSums(obj.glmm.null$obj.noK$XV), ncol=1)
+      #q0 = 1 -  eigenMapMatMult(obj.glmm.null$obj.noK$XXVX_inv, XVvec1)
+      #Wq = mu.a*q0
+      #qW1 = sum(Wq)
    }else{
       cat("WARNING: LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
       indChromCheck = TRUE
@@ -834,20 +849,20 @@ cat("It is a survival trait\n")
 	mu.a.sub = subsetModelResult$mu.a.sub
 	mu.sub = subsetModelResult$mu.sub
 	mu2.a.sub = subsetModelResult$mu2.a.sub
-	if(traitType=="survival"){
-	  XVvec1.sub = matrix(rowSums(obj.glmm.null.sub$obj.noK$XV), ncol=1)
-	  q0.sub = 1 -  eigenMapMatMult(obj.glmm.null.sub$obj.noK$XXVX_inv, XVvec1.sub)
-	  Wq.sub = mu.a.sub*q0.sub
-	  qW1.sub = sum(Wq.sub)
-	}
+	#if(traitType=="survival"){
+	#  XVvec1.sub = matrix(rowSums(obj.glmm.null.sub$obj.noK$XV), ncol=1)
+	#  q0.sub = 1 -  eigenMapMatMult(obj.glmm.null.sub$obj.noK$XXVX_inv, XVvec1.sub)
+	#  Wq.sub = mu.a.sub*q0.sub
+	#  qW1.sub = sum(Wq.sub)
+	#}
 
 
 	rm(subsetModelResult)
 
         y.sub = obj.glmm.null.sub$obj.glm.null$y
-	if(traitType=="survival"){
-	  resq.sub = (y.sub-mu.a.sub)*q0.sub	
-	}
+	#if(traitType=="survival"){
+	#  resq.sub = (y.sub-mu.a.sub)*q0.sub	
+	#}
 
 	N.sub = length(G0)
 	AC_Allele2.sub = sum(G0)
@@ -927,7 +942,7 @@ cat("It is a survival trait\n")
 		}else if(traitType == "survival"){
 
 			if(IsSPAfast){
-				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(resq.sub, q0.sub, Wq.sub, qW1.sub, XWq.sub, G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
+				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
 			
 			}else{
 				out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
@@ -1017,7 +1032,7 @@ cat("It is a survival trait\n")
            		out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 		}else{
 		#cat("IsSPAfast2: ", IsSPAfast, "\n")
-			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(resq, q0, Wq, qW1, XWq, G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 		}
 
            OUTvec=c(rowHeader, N,unlist(out1))
@@ -1589,21 +1604,18 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 
 
 
-Score_Test_Sparse_Survival<-function(obj.null, G, meanG, mu, mu2, varRatio, resq, Wq, qW1, XWq){
+Score_Test_Sparse_Survival<-function(obj.null, G, mu, mu2, varRatio){
   # mu=mu.a; mu2= mu2.a; G=G0; obj.null=obj.noK
   #tp2a0 = proc.time()
-
-
-
   idx_no0<-which(G>0)
   g1<-G[idx_no0]
   noCov = FALSE
-  if(dim(obj.null$X1)[2] == 1){
+  if(dim(obj.null$X1_fg)[2] == 1){
     noCov = TRUE 
   }
 
-  A1<-obj.null$XVX_inv_XV[idx_no0,]
-  X1<-obj.null$X1[idx_no0,]
+  A1<-obj.null$XVX_inv_XV_fg[idx_no0,]
+  X1_fg<-obj.null$X1_fg[idx_no0,]
   mu21<-mu2[idx_no0]
   mu1<-mu[idx_no0]
   y1<-obj.null$y[idx_no0]
@@ -1613,30 +1625,30 @@ Score_Test_Sparse_Survival<-function(obj.null, G, meanG, mu, mu2, varRatio, resq
     #cat("dim(X1) ", dim(X1), "\n")
     #cat("dim(A1) ", dim(A1), "\n")
     Z = t(A1) %*% g1
-    B<-X1 %*% Z
+    B<-X1_fg %*% Z
     #cat("dim(Z) ", dim(Z), "\n")
     #cat("dim(B) ", dim(B), "\n")
     g_tilde1 = g1 - B
     #print(g_tilde1[1:100])
-    var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
-    #var1 = var2 * varRatio
+    var2 = t(Z) %*% obj.null$XVX_fg %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
+    var1 = var2 * varRatio
     S1 = crossprod(y1-mu1, g_tilde1)
 
     if(!noCov){
-      S_a2 = obj.null$S_a - colSums(X1 * (y1 - mu1))
+      S_a2 = obj.null$S_a - colSums(X1_fg * (y1 - mu1))
     }else{
-      S_a2 = obj.null$S_a - crossprod(X1, y1 - mu1)
+      S_a2 = obj.null$S_a - crossprod(X1_fg, y1 - mu1)
     }
 
     S2 = -S_a2 %*% Z
   }else{
     Z = A1 * g1
-    B<-X1 %*% Z
+    B<-X1_fg %*% Z
     g_tilde1 = g1 - B
-    var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
-    #var1 = var2 * varRatio
+    var2 = t(Z) %*% obj.null$XVX_fg %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
+    var1 = var2 * varRatio
     S1 = crossprod(y1-mu1, g_tilde1)
-    S_a2 = obj.null$S_a - X1 * (y1 - mu1)
+    S_a2 = obj.null$S_a - X1_fg * (y1 - mu1)
     S2 = -S_a2 %*% Z
   }
 
@@ -1651,9 +1663,9 @@ Score_Test_Sparse_Survival<-function(obj.null, G, meanG, mu, mu2, varRatio, resq
   #print("tp2a1-tp2a0")
   #print(tp2a1-tp2a0)  
 
-  var1centered1 = t(Z) %*% XWq - t(B) %*% (Wq[idx_no0,])
-  var1centered = var2 - 2*meanG*var1centered1 + meanG^2*qW1  
-  var1 = var1centered * varRatio
+  #var1centered1 = t(Z) %*% XWq - t(B) %*% (Wq[idx_no0,])
+  #var1centered = var2 - 2*meanG*var1centered1 + meanG^2*qW1  
+  #var1 = var1centered * varRatio
 
   #tp2a2 = proc.time()
   #print("tp2a2-tp2a1")
@@ -1673,15 +1685,15 @@ Score_Test_Sparse_Survival<-function(obj.null, G, meanG, mu, mu2, varRatio, resq
 }
 
 
-Score_Test_Survival<-function(obj.null, G, meanG, mu, mu2, varRatio, resq, Wq, qW1, XWq){
-  G = G - meanG
-  g<-G  -  obj.null$XXVX_inv %*%  (obj.null$XV %*% G)
+Score_Test_Survival<-function(obj.null, G, mu, mu2, varRatio){
+  #G = G - meanG
+  g<-G  -  obj.null$XXVX_inv_fg %*%  (obj.null$XV_fg %*% G)
   q<-crossprod(g, obj.null$y) 
   m1<-crossprod(mu, g)
   var2<-crossprod(mu2, g^2)
   #var1 = var2 * varRatio
-  S = (q-m1) + meanG*resq
-
+  #S = (q-m1) + meanG*resq
+  S = q-m1
   #meanG = mean(G)
   #S = S - meanG*resq
   #var1centered1 = t(Z) %*% XWq - t(B) %*% Wq
@@ -2220,19 +2232,13 @@ subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
                 obj.glmm.null.sub$P = obj.glmm.null.sub$P[missingind, missingind] ##needs to be re-calculated
         }
 	noCov = FALSE
-  if(is.null(dim(obj.glmm.null.sub$obj.noK$X1))){
-	noCov = TRUE
-  }else{
-    if(dim(obj.glmm.null.sub$obj.noK$X1)[2] == 1){
-      noCov = TRUE
-    }
-  }
-
-	#if(noCov){
-    	#	obj.glmm.null.sub$obj.noK$X1 = as.matrix(obj.glmm.null.sub$obj.noK$X1)
-	#	obj.glmm.null.sub$obj.noK$XXVX_inv = as.matrix(obj.glmm.null.sub$obj.noK$XXVX_inv)
-	#	obj.glmm.null.sub$obj.noK$XVX_inv_XV = as.matrix(obj.glmm.null.sub$obj.noK$XVX_inv_XV)
-	#}
+  	if(is.null(dim(obj.glmm.null.sub$obj.noK$X1))){
+		noCov = TRUE
+  	}else{
+    		if(dim(obj.glmm.null.sub$obj.noK$X1)[2] == 1){
+      			noCov = TRUE
+    		}
+  	}
 
         obj.glmm.null.sub$obj.noK$X1 = obj.glmm.null.sub$obj.noK$X1[missingind,]
         obj.glmm.null.sub$obj.noK$V = obj.glmm.null.sub$obj.noK$V[missingind]
@@ -2243,9 +2249,6 @@ subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
 	obj.glmm.null.sub$obj.noK$XVX_inv_XV = obj.glmm.null.sub$obj.noK$XXVX_inv * obj.glmm.null.sub$obj.noK$V
         obj.glmm.null.sub$obj.noK$y = obj.glmm.null.sub$obj.noK$y[missingind]
 
-	#obj.glmm.null.sub$obj.noK$XV = obj.glmm.null.sub$obj.noK$XV[,missingind]
-        #obj.glmm.null.sub$obj.noK$XXVX_inv = obj.glmm.null.sub$obj.noK$XXVX_inv[missingind,]
-        #obj.glmm.null.sub$obj.noK$XVX_inv_XV = obj.glmm.null.sub$obj.noK$XVX_inv_XV[missingind,]
         ##fitted values
         obj.glmm.null.sub$fitted.values = obj.glmm.null.sub$fitted.values[missingind]
         ##
@@ -2270,6 +2273,48 @@ subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
                 obj.glmm.null.sub$obj.noK$XXVX_inv = as.matrix(obj.glmm.null.sub$obj.noK$XXVX_inv)
                 obj.glmm.null.sub$obj.noK$XVX_inv_XV = as.matrix(obj.glmm.null.sub$obj.noK$XVX_inv_XV)
         }
+
+
+
+     if(!is.null(obj.glmm.null.sub$obj.noK$X1_fg)){
+        obj.glmm.null.sub$obj.noK$X1_fg = obj.glmm.null.sub$obj.noK$X1_fg[missingind,]
+        obj.glmm.null.sub$obj.noK$V = obj.glmm.null.sub$obj.noK$V[missingind]
+	obj.glmm.null.sub$obj.noK$XV_fg = t(obj.glmm.null.sub$obj.noK$X1_fg * obj.glmm.null.sub$obj.noK$V)
+	obj.glmm.null.sub$obj.noK$XVX_fg = t(obj.glmm.null.sub$obj.noK$X1_fg)  %*% t(obj.glmm.null.sub$obj.noK$XV_fg)
+	obj.glmm.null.sub$obj.noK$XVX_inv_fg = solve(obj.glmm.null.sub$obj.noK$XVX_fg)
+	obj.glmm.null.sub$obj.noK$XXVX_inv_fg = obj.glmm.null.sub$obj.noK$X1_fg %*% obj.glmm.null.sub$obj.noK$XVX_inv_fg
+	obj.glmm.null.sub$obj.noK$XVX_inv_XV_fg = obj.glmm.null.sub$obj.noK$XXVX_inv_fg * obj.glmm.null.sub$obj.noK$V
+        obj.glmm.null.sub$obj.noK$y = obj.glmm.null.sub$obj.noK$y[missingind]
+
+        ##fitted values
+        obj.glmm.null.sub$fitted.values = obj.glmm.null.sub$fitted.values[missingind]
+        ##
+
+	mu.sub = mu[missingind]
+	mu.a.sub = mu.a[missingind]
+	mu2.a.sub = mu2.a[missingind]
+
+
+	obj.glmm.null.sub$obj.glm.null$y = obj.glmm.null.sub$obj.glm.null$y[missingind]
+	if(!is.null(dim(obj.glmm.null.sub$obj.noK$X1_fg))){
+	  obj.glmm.null.sub$obj.noK$S_a = colSums(obj.glmm.null.sub$obj.noK$X1_fg * (obj.glmm.null.sub$obj.glm.null$y -  mu.a.sub))
+	}else{
+          obj.glmm.null.sub$obj.noK$S_a = sum(obj.glmm.null.sub$obj.noK$X1_fg * (obj.glmm.null.sub$obj.glm.null$y -  mu.a.sub))
+        }
+	if(noCov){
+                obj.glmm.null.sub$obj.noK$X1_fg = as.matrix(obj.glmm.null.sub$obj.noK$X1_fg)
+                obj.glmm.null.sub$obj.noK$XXVX_inv_fg= as.matrix(obj.glmm.null.sub$obj.noK$XXVX_inv_fg)
+                obj.glmm.null.sub$obj.noK$XVX_inv_XV_fg = as.matrix(obj.glmm.null.sub$obj.noK$XVX_inv_XV_fg)
+        }
+
+   }
+
+
+
+
+
+
+
 
         return(subsertforMissingResult = list(obj.glmm.null.sub = obj.glmm.null.sub, mu.sub = mu.sub, mu.a.sub = mu.a.sub, mu2.a.sub = mu2.a.sub))
 }

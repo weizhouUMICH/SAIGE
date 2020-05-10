@@ -22,7 +22,7 @@ if(!isCondition){
     #   out.score<-Score_Test_Sparse(obj.noK, G0, mu.a, mu2.a, varRatio );
     #}else{
        #out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio );
-       out.score<-Score_Test_Survival(obj.noK, g, g_mc, mu.a, mu2.a, varRatio );
+       out.score<-Score_Test_Survival(obj.noK, g,  mu.a, mu2.a, varRatio );
     #}
 #    if(out.score["pval.noadj"] > 0.05){
     if(abs(as.numeric(unlist(out.score["Tstat"])[1])/sqrt(as.numeric(unlist(out.score["var1"])[1]))) < Cutoff){
