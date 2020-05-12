@@ -592,28 +592,18 @@ cat("It is a survival trait\n")
 	XXVX_inv_fg = X1_fg %*% XVX_inv_fg
 	obj.glmm.null$obj.noK$X1_fg = X1_fg
 	obj.glmm.null$obj.noK$XV_fg = XV_fg
-	 obj.glmm.null$obj.noK$XVX_inv_fg = XVX_inv_fg
-	 obj.glmm.null$obj.noK$XXVX_inv_fg = XXVX_inv_fg
+	obj.glmm.null$obj.noK$XVX_inv_fg = XVX_inv_fg
+	obj.glmm.null$obj.noK$XXVX_inv_fg = XXVX_inv_fg
 																		}
 
-    obj.glmm.null$obj.noK$XVX_inv_XV_fg = obj.glmm.null$obj.noK$XXVX_inv_fg * obj.glmm.null$obj.noK$V
-    indChromCheck = FALSE
+        obj.glmm.null$obj.noK$XVX_inv_XV_fg = obj.glmm.null$obj.noK$XXVX_inv_fg * obj.glmm.null$obj.noK$V
+        indChromCheck = FALSE
     if(!obj.glmm.null$LOCO){
       mu = obj.glmm.null$fitted.values
       mu.a<-as.vector(mu)
-      #mu2.a<-mu.a *(1-mu.a)
       mu2.a = mu.a
       obj.glmm.null$obj.noK$XVX_fg = t(obj.glmm.null$obj.noK$X1_fg) %*% (obj.glmm.null$obj.noK$X1_fg * mu2.a)
       obj.glmm.null$obj.noK$S_a = colSums(obj.glmm.null$obj.noK$X1_fg * (y - mu.a))
-      #XVvec1 = matrix(rowSums(obj.glmm.null$obj.noK$XV), ncol=1)
-      #q0 = 1 -  eigenMapMatMult(obj.glmm.null$obj.noK$XXVX_inv, XVvec1)
-      #resq = sum((y - mu.a)*q0)
-      #Wq = mu.a*q0
-      #cat("Wq[1:10] ", Wq[1:10], "\n")
-      #print(length(Wq))
-      #print(dim(obj.glmm.null$obj.noK$X1))
-      #XWq = t(obj.glmm.null$obj.noK$X1) %*% Wq 
-      #qW1 = sum(Wq)
     }else if(chrom != ""){
       chrom_v2 = as.character(chrom)
       chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
@@ -849,20 +839,9 @@ cat("It is a survival trait\n")
 	mu.a.sub = subsetModelResult$mu.a.sub
 	mu.sub = subsetModelResult$mu.sub
 	mu2.a.sub = subsetModelResult$mu2.a.sub
-	#if(traitType=="survival"){
-	#  XVvec1.sub = matrix(rowSums(obj.glmm.null.sub$obj.noK$XV), ncol=1)
-	#  q0.sub = 1 -  eigenMapMatMult(obj.glmm.null.sub$obj.noK$XXVX_inv, XVvec1.sub)
-	#  Wq.sub = mu.a.sub*q0.sub
-	#  qW1.sub = sum(Wq.sub)
-	#}
-
-
 	rm(subsetModelResult)
 
         y.sub = obj.glmm.null.sub$obj.glm.null$y
-	#if(traitType=="survival"){
-	#  resq.sub = (y.sub-mu.a.sub)*q0.sub	
-	#}
 
 	N.sub = length(G0)
 	AC_Allele2.sub = sum(G0)
@@ -953,9 +932,6 @@ cat("It is a survival trait\n")
 
 	  OUTvec=c(rowHeader, N.sub, unlist(out1))
 
-	   #if(!IsOutputAFinCaseCtrl){
-           #  OUT = rbind(OUT, c(rowHeader, N.sub, unlist(out1)))
-           #}else{
 	   if(IsOutputAFinCaseCtrl){
              AFCase = sum(G0[y1Index.sub])/(2*NCase.sub)
              AFCtrl = sum(G0[y0Index.sub])/(2*NCtrl.sub)
@@ -1123,12 +1099,6 @@ cat("It is a survival trait\n")
 	adjustCCratioinGroupTest = FALSE
      }else if(traitType == "binary"){
        cat("It is a binary trait\n")
-       #cat("WARNING!!!! Gene-based tests do not work for binary traits with unbalanced case-control ratios (disease prevalence < 20%)! \n")	
-       #adjustCCratioinGroupTest = TRUE
-       #if(isCondition){	
-#	adjustCCratioinGroupTest = FALSE
-#       	cat("WARNING!!!! Case-control imbalance is not adjusted for binary traits to perform conditional analysis. Do not specify condition= if needs to account for case-control imbalance\n")	
- #      }else 
 	if(adjustCCratioinGroupTest){
           cat("Case-control imbalance is adjusted for binary traits.\n")		
 	}
@@ -1214,20 +1184,9 @@ cat("It is a survival trait\n")
 
       }
 
-	#if(adjustCCratioinGroupTest){
-	#	if(IsOutputPvalueNAinGroupTestforBinary){
-	#		if(method=="optimal.adj"){
-	#			resultHeader = c(resultHeader, "Pvalue_skato_NA", "Pvalue_burden_NA", "Pvalue_skat_NA")
-	#		}else{
-	#			resultHeader = c(resultHeader, "Pvalue_NA")
-	#		}
-	#	}
-		#resultHeader = c(resultHeader, "Pvalue_skato_old", "Pvalue_burden_old", "Pvalue_skat_old", "Pvalue_skato_new", "Pvalue_burden_new", "Pvalue_skat_new", "Pvalue_skato_new2", "Pvalue_burden_new2", "Pvalue_skat_new2")	
-	#}
 
 
        write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
-#	gc(verbose=T, full=T)	
 
        cat("isCondition is ", isCondition, "\n")
 
@@ -1270,8 +1229,6 @@ cat("It is a survival trait\n")
            cntMarker = Gx$cnt
            cat("cntMarker: ", cntMarker, "\n")
            if(cntMarker > 0){
-             #Gmat = matrix(Gx$dosages, byrow=F, ncol = cntMarker)
-	     #Gx$dosages = NULL	
 
 		if(dosageFileType == "vcf"){
 			Gmat = Matrix:::sparseMatrix(i = as.vector(Gx$iIndex), j = as.vector(Gx$jIndex), x = as.vector(Gx$dosages), symmetric = FALSE, dims = c(N, cntMarker))

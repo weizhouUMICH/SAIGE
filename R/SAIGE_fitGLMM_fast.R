@@ -7,10 +7,8 @@ GetLambda0_old<-function(lin.pred,status,time)
     for(j in 1:length(time))
     {
       if(time[j]<=time[i] & status[j]==1){
-        #print(j)
         denom<-sum(explin[which(time>=time[j])])
         Lambda0[i]<-Lambda0[i]+1/denom
-        #print(1/denom)
       }
     }
   }
@@ -46,14 +44,12 @@ GetIndexofCases = function(status, time){
 
 
 GetdenominN = function(uniqTimeIndex, lin.pred.new, newIndexWithTies, caseIndexwithTies , orgIndex){
-  #demonVec = rep(0, length(caseIndex))
   explin<-exp(lin.pred.new)
 
   getdenominN = function(i,uniqTimeIndex, explin, newIndexWithTies, caseIndexwithTies, orgIndex){
     nc = length(explin)
     ntie = sum(caseIndexwithTies == uniqTimeIndex[i])
     x = ntie/(sum(explin[orgIndex[which(newIndexWithTies >= uniqTimeIndex[i])]]))^2	
-    #x = ntie/(sum(explin[which(newIndexWithTies >= uniqTimeIndex[i])]))^2
     return(x)
   }
   demonVec = sapply(seq(1,length(uniqTimeIndex)), getdenominN, uniqTimeIndex, explin, newIndexWithTies, caseIndexwithTies, orgIndex)
@@ -90,8 +86,6 @@ Getrmat_indexvec_new = function(i,inC){
     x = inC$timedata$time[i]
     a = rep(0, length(inC$uniqTimeIndex))
     uniqTimeIndexVec = inC$timedata$time[inC$uniqTimeIndex]
-    #a[which(uniqTimeIndexVec <= x)] = 1
-    #b = c(orgi, a)
     a = which(uniqTimeIndexVec <= x)
     b = c(orgi, a[length(a)])
     return(b)
@@ -150,10 +144,8 @@ Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG
     cat("iGet_Coef: ", i, "\n")
     if(!is.null(inC)){
       Lambda0 = GetLambda0(eta, inC)
-      #print("Lambda0")
-      #print(Lambda0)	
       mu = Lambda0*exp(eta)
-      Y = eta - offset + (y - mu)/mu
+      Y = eta + (y - mu)/mu
       W = as.vector(mu)
     }else{
       mu = family$linkinv(eta)
@@ -176,12 +168,6 @@ Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG
       cat("Fixed-effect coefficients:\n")
       print(alpha)
     }
-    #mu = family$linkinv(eta)
-    #mu.eta = family$mu.eta(eta)
-
-    #Y = eta - offset + (y - mu)/mu.eta
-    #sqrtW = mu.eta/sqrt(family$variance(mu))
-    #W = sqrtW^2
 
     if( max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol.coef))< tol.coef){
 	if(FALSE){
@@ -269,6 +255,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
 
   family = fit0$family
   eta = fit0$linear.predictors
+
   if(is.null(eventTime)){
     mu = fit0$fitted.values
     mu.eta = family$mu.eta(eta)
@@ -285,10 +272,8 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   eta0 = eta
 
   
-  #if(family$family %in% c("poisson", "binomial")) {
-    tau[1] = 1
-    fixtau[1] = 1
-  #}
+  tau[1] = 1
+  fixtau[1] = 1
    
   #change, use 0.5 as a default value, and use Get_Coef before getAIScore
   q = 1
@@ -345,12 +330,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     }
 
 
-    #if(tau[2] == 0) break
-      # Use only tau for convergence evaluation, because alpha was evaluated already in Get_Coef
       if(max(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol) break
-      #print(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol))	
-      #cat("tau: ", tau, "\n")
-      #cat("tau0: ", tau0, "\n")
 
       if(max(tau) > tol^(-2)) {
         warning("Large variance estimate observed in the iterations, model not converged...", call. = FALSE)
@@ -361,13 +341,24 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
 
   if(verbose) cat("\nFinal " ,tau, ":\n")
 
-    #added these steps after tau is estimated 04-14-2018
+  #added these steps after tau is estimated 04-14-2018
   re.coef = Get_Coef(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter, inC = inC, tol.coef=tol)
   cov = re.coef$cov
   alpha = re.coef$alpha
   eta = re.coef$eta
-  Y = re.coef$Y
-  mu = re.coef$mu
+
+   if(!is.null(inC)){
+      	  Lambda0 = GetLambda0(eta, inC)
+          mu = Lambda0*exp(eta)
+          Y = eta - offset + (y - mu)/mu
+          W = as.vector(mu)
+    }else{
+          mu = family$linkinv(eta)
+          mu.eta = family$mu.eta(eta)
+          Y = eta - offset + (y - mu)/mu.eta
+          sqrtW = mu.eta/sqrt(family$variance(mu))
+          W = sqrtW^2
+   }
 
   converged = ifelse(i < maxiter, TRUE, FALSE)
   res = y - mu
@@ -379,8 +370,9 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
 
   if(!is.null(eventTime)){
     obj.noK = ScoreTest_NULL_Model_survival(mu, y, X)
-    glmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID, obj.glm.null=fit0, obj.noK=obj.noK, traitType="survival", cov=cov, Lambda0 = re.coef$Lambda0, eventTime = eventTime) 
+    glmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID, obj.glm.null=fit0, obj.noK=obj.noK, traitType="survival", cov=cov, Lambda0 = Lambda0, eventTime = eventTime) 
   }else{
+    obj.noK = ScoreTest_NULL_Model_binary(mu, y, X)
     glmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID, obj.noK=obj.noK, obj.glm.null=fit0, traitType="binary")
   }
   #LOCO: estimate fixed effect coefficients, random effects, and residuals for each chromoosme  
@@ -398,15 +390,31 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
         cov = re.coef_LOCO$cov
         alpha = re.coef_LOCO$alpha
         eta = re.coef_LOCO$eta
-        Y = re.coef_LOCO$Y
-        mu = re.coef_LOCO$mu
+	if(!is.null(inC)){
+          Lambda0 = GetLambda0(eta, inC)
+          mu = Lambda0*exp(eta)
+          Y = eta - offset + (y - mu)/mu
+          W = as.vector(mu)
+    	}else{
+          mu = family$linkinv(eta)
+          mu.eta = family$mu.eta(eta)
+          Y = eta - offset + (y - mu)/mu.eta
+          sqrtW = mu.eta/sqrt(family$variance(mu))
+          W = sqrtW^2
+   	}
         res = y - mu
+
         if(isCovariateTransform){
         coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
 	}else{
 	coef.alpha = alpha
 	}
-        glmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov)
+	if(!is.null(inC)){
+          glmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, Lambda0 = Lambda0)
+	}else{
+	  glmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov)
+
+	}
       }else{
         glmmResult$LOCOResult[[j]] = list(isLOCO = FALSE)
       }
@@ -675,6 +683,26 @@ ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
 }
 
 
+
+
+ScoreTest_NULL_Model_binary=function (mu, y, X1){
+  V = as.vector(mu*(1-mu))
+  #res = glmfit$y - mu
+  res = y - mu
+  n1 = length(res)
+  cat("dim(X1): ", dim(X1), "\n")
+  cat("length(V): ", length(V), "\n")
+  XV = t(X1 * V)
+  XVX_inv = solve(t(X1) %*% (X1 * V))
+  XXVX_inv = X1 %*% XVX_inv
+
+  re = list(y = y, mu = mu, res = res, V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv)
+  class(re) = "SA_NULL"
+  return(re)
+}
+
+
+
 ScoreTest_NULL_Model_survival=function (mu, y, X1){
   #X1 = model.matrix(formula, data = data)
   #X1 = SPAtest:::ScoreTest_wSaddleApprox_Get_X1(X1)
@@ -797,7 +825,8 @@ fitNULLGLMM = function(plinkFile = "",
 		useSparseGRMforvarRatioDenom = FALSE,
 		minCovariateCount = -1, 
 		minMAFforGRM = 0.01,
-		useSparseGRMtoFitNULL=FALSE){
+		useSparseGRMtoFitNULL=FALSE,
+		updateModelFile = FALSE){
 
   #if traitType != "survival", ignore eventTimeCol
   if(eventTimeCol != "" & traitType != "survival"){
@@ -1131,12 +1160,7 @@ fitNULLGLMM = function(plinkFile = "",
     cat("glm:\n")
     print(fit0)
     
-    #obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.null, data = dataMerge_sort)
-    if(traitType == "binary"){
-      obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.new, data = data.new)
-    }else{
-      obj.noK = NULL
-    }
+     obj.noK = NULL
 
     if(!skipModelFitting){
      if(useSparseSigmaforInitTau){
@@ -1176,22 +1200,27 @@ fitNULLGLMM = function(plinkFile = "",
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
       setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
-      #setisUseSparseSigmaforNullModelFitting(TRUE)
-      if(modglmm$traitType == "survival"){	
-        if(is.null(modglmm$obj.noK$X1_fg)){
-		X1 = modglmm$obj.noK$X1
-		V = modglmm$obj.noK$V
-		X1_fg = cbind(X1, 1)
-		XV_fg = t(X1_fg * V)
-		XVX_inv_fg = solve(t(X1_fg) %*% (X1_fg * V))
-		XXVX_inv_fg = X1_fg %*% XVX_inv_fg
-		modglmm$obj.noK$X1_fg = X1_fg
-		modglmm$obj.noK$XV_fg = XV_fg
-		modglmm$obj.noK$XVX_inv_fg = XVX_inv_fg
-		modglmm$obj.noK$XXVX_inv_fg = XXVX_inv_fg
-		#save(modglmm, file="modelOut")
-        }
-      }
+      #if(modglmm$traitType == "survival"){	
+        #if(updateModelFile){
+	#	print("updateModelFile = TRUE")
+	#	y=modglmm$obj.glm.null$y		   	
+	#	inC = GetIndexofCases(y, modglmm$eventTime)
+	#	eta = modglmm$linear.predictors
+	#	Lambda0 = GetLambda0(eta, inC)
+         # 	mu = Lambda0*exp(eta)
+	#	offset = modglmm$obj.glm.null$offset
+         # 	Y = eta - offset + (y - mu)/mu
+         # 	W = as.vector(mu)
+	#	X1 = modglmm$obj.noK$X1
+	#	modglmm$obj.noK=ScoreTest_NULL_Model_survival(mu, y, X1)
+	#	modglmm$Lambda0 = Lambda0
+	#	modglmm$fitted.values = mu
+	#	modglmm$Y = Y
+	#	res = y - mu
+	#	modglmm$residuals = res
+	#	save(modglmm, file=modelOut)
+        #}
+      #}
     }
     cat("Start estimating variance ratios\n")
 
@@ -1373,6 +1402,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
     sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
     W = sqrtW^2
     tauVecNew = obj.glmm.null$theta
+    obj.noK = obj.glmm.null$obj.noK
     X1 = obj.noK$X1
     #Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
   }
@@ -1385,53 +1415,41 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
      gc()
      Lambda0 = obj.glmm.null$Lambda0
      Dvec = GetdenominN(inC$uniqTimeIndex, eta, inC$timedata$newIndexWithTies, inC$caseIndexwithTies, inC$timedata$orgIndex)
-     print(gc())
-     #print("debug2")
-     print(nrow(inC$timedata))
-     print(length(inC$uniqTimeIndex))
+     #print(gc())
+     #print(nrow(inC$timedata))
+     #print(length(inC$uniqTimeIndex))
      RmatIndex = t(sapply(1:nrow(inC$timedata), Getrmat_indexvec_new, inC))
      RmatIndex = RmatIndex[order(RmatIndex[,1]),]
      RvecIndex =  RmatIndex[order(RmatIndex[,1]),2]
      rm(RmatIndex)
      DvecCumSum = cumsum(Dvec)
      diagofWminusUinv = ((((exp(eta))^2) * (DvecCumSum[RvecIndex]))*(1/W) + 1)*(1/W) 
-     #diagofWminusU = W - ((exp(eta))^2 * (DvecCumSum[RvecIndex]))
-     #getDiagofWminusU(diagofWminusU)
  
      Nvec = exp(eta)
      print(pcgforUhatforSurvAnalysis)
      if(pcgforUhatforSurvAnalysis){
        WinvNvec = 1/(Lambda0)
-       #sqrtWinvNVec = sqrt(exp(eta))/(sqrt(Lambda0))
-       #sqrtWinvNVec = sqrt(1/W)*Nvec
        W0 = W + (1e-4)
        sqrtWinvNVec = sqrt(1/W0)*Nvec
      }else{
-       print("Herehere")
        Rmat = t(sapply(1:nrow(inC$timedata), Getrmat, inC))
        Rmat = Rmat[order(Rmat[,1]),-1]
        Rmat = as(Rmat, "sparseMatrix")  
        cat("dim(Rmat): ", dim(Rmat), "\n")
-       #dim(Rmat):  1000 46
-       #sqrtWinvN = Matrix:::Diagonal(length(Lambda0), x = sqrt(exp(eta))/(Lambda0))
        sqrtWinvN = Matrix:::Diagonal(length(Lambda0), x = sqrt(1/W)*Nvec)
        cat("dim(sqrtWinvN): ", dim(sqrtWinvN), "\n")
        #dim(sqrtWinvN):  1000 1000
        sqrtWinvNR = sqrtWinvN%*%Rmat
        cat("dim(sqrtWinvNR): ", dim(sqrtWinvNR), "\n")
        #dim(sqrtWinvNR):  1000 46
-       #Dinv =  Matrix:::Diagonal(length(Dvec), x = 1/(-Dvec))
        Dinv =  diag(1/(-Dvec))
        cat("dim(Dinv): ", dim(Dinv), "\n")
-       #ACinv = solve(Dinv + t(sqrtWinvNR)%*%sqrtWinvNR)
-       #print(Dinv)
-       #print(t(sqrtWinvNR)%*%sqrtWinvNR)		
-       #x=list(Dinv = Dinv, RNWNR=t(sqrtWinvNR)%*%sqrtWinvNR)
-       #save(x, file = "/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/survival/0.36.4_nointercept/SAIGE/extdata/output_test/x.rda")
        RNWNR=t(sqrtWinvNR)%*%sqrtWinvNR
        ACm = Dinv + RNWNR
        cat("dim(RNWNR): ", dim(RNWNR), "\n")
        cat("dim(ACm): ", dim(ACm), "\n")        
+       #xlist=list(W = W, sqrtWinvNR=sqrtWinvNR, Dvec=Dvec, RNWNR=RNWNR, X = X1)
+       #save(x, file = "/net/hunt/disk2/zhowei/share/Rounak/computationcost/x.rda")
        #ACinv = MASS::ginv(ACm)	
        #ACinv = solve(ACm)	
        ACinv = lintools::pinv(ACm)	
@@ -1447,34 +1465,10 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
        cat("dim(WinvNRt): ", dim(WinvNRt), "\n")
        cat("dim(ACinv): ", dim(ACinv), "\n")
        sqrtDRN = (Matrix:::Diagonal(length(Dvec), x = sqrt(Dvec))) %*% t(Rmat) %*% (Matrix:::Diagonal(length(Nvec), x = Nvec))	
-       sqrtDRN = as.matrix(sqrtDRN)	
+       sqrtDRN = as.matrix(sqrtDRN)
+       #xlist$sqrtDRN = sqrtDRN	
      }
 
-	#a1=getCrossprod_Surv_new(X1[,1], W, tauVecNew, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, length(Dvec),  maxiterPCG, tolPCG)
-	#Nmat =  Matrix:::Diagonal(length(Nvec), x = Nvec)
-        #Dsqrtmat = Matrix:::Diagonal(length(Dvec), x = sqrt(Dvec))
-        #DsqrtRN = Dsqrtmat %*% t(Rmat) %*% Nmat
-        #WminusUX1test = (Matrix:::Diagonal(length(W), x = W))%*%X1[,1] - t(DsqrtRN)%*%DsqrtRN%*%X1[,1]
-	#WminusUinv = solve((Matrix:::Diagonal(length(W), x = W)) - t(DsqrtRN)%*%DsqrtRN)
-	#print(dim(WminusUinv))
-	#a2=WminusUinv %*% X1[,1] 
-
-	#print(a1[1:100])
-	#print(a2[1:100])
-	#Dmatneginv = Matrix:::Diagonal(length(Dvec), x = -1/Dvec)
-	#RNWinvb = t(Rmat) %*% Matrix:::Diagonal(length(W), x = Nvec/W) %*% X1[,1]
-	#AinvRNWinvb = (Dmatneginv + t(Rmat)%*%Nmat%*%Matrix:::Diagonal(length(W), x = 1/W)%*%Nmat%*%Rmat)%*%RNWinvb
-	#cat("RNWinvb: ", RNWinvb[1:10], "\n")
-	#cat("AinvRNWinvb: ", AinvRNWinvb[1:10], "\n")
-	#cat("DinvNegb: ", "\n")
-	#print(Dmatneginv%*%RNWinvb)
-	#print(t(Rmat)%*%Nmat%*%Matrix:::Diagonal(length(W), x = 1/W)%*%Nmat%*%Rmat%*%RNWinvb)
-	#RNWinvb2 = as.vector(RNWinvb)
-	#a3 = getProdAb_Surv(RNWinvb2,RvecIndex,sqrtWinvNVec,Dvec)
-	#cat("a3: ", a3[1:10], "\n")
-#getSigma_X_Surv_new(W, tauVecNew, X1, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)
-
-     #Sigma_iX_noLOCO = getSigma_X_Surv_new(W, tauVecNew, X1, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec,maxiterPCG, tolPCG)
   }
 
   ##randomize the marker orders to be tested
@@ -1498,14 +1492,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 #  listOfMarkersForVarRatio = sample(c(1:mMarkers), size = mMarkers, replace = FALSE)
   listOfMarkersForVarRatio = list()
   MACvector = getMACVec()
-#  freqVec = getAlleleFreqVec()
-#  Nnomissing = length(mu)
-
-#  OUTtotal = NULL
-#  OUT = NULL
-#  indexInMarkerList = 1
-#  numTestedMarker = 0
-#  ratioCV = ratioCVcutoff + 0.1
 
   if(!isCateVarianceRatio){
     cat("Only one variance ratio will be estimated using randomly selected markers with MAC >= 20\n")
@@ -1518,18 +1504,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
     if(is.null(cateVarRatioIndexVec)){cateVarRatioIndexVec = rep(1, length(cateVarRatioMinMACVecExclude))}
     numCate = length(cateVarRatioIndexVec)
     for(i in 1:(numCate-1)){
-       #print("i 1:(numCate-1)")
-       #print(i)
-       #print(cateVarRatioMinMACVecExclude[i])
-       #print(cateVarRatioMaxMACVecInclude[i])
-       #print(length(MACvector))
-       #print(MACvector[1:10])
-       #print(min(MACvector))
 
       MACindex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
-      #print(length(MACindex))
-      #tempindex = which(MACvector > 0.5 & MACvector <= 1.5)
-      #print(length(tempindex))
 
       listOfMarkersForVarRatio[[i]] = sample(MACindex, size = length(MACindex), replace = FALSE)
 
@@ -1570,17 +1546,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
   Nnomissing = length(mu)
   varRatioTable = NULL
 
-  #if(!pcgforUhatforSurvAnalysis){
-    #WminusUX1=getProdWminusUb_Surv(X1[,1], RvecIndex, Nvec, sqrt(Dvec), W)
-    #Nmat =  Matrix:::Diagonal(length(Nvec), x = Nvec)
-    #Dsqrtmat = Matrix:::Diagonal(length(Dvec), x = sqrt(Dvec))
-    #DsqrtRN = Dsqrtmat %*% t(Rmat) %*% Nmat
-    #WminusUX1test = (Matrix:::Diagonal(length(W), x = W))%*%X1[,1] - t(DsqrtRN)%*%DsqrtRN%*%X1[,1]
-    
-
-  #} 
-#  Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
-  #if(is.null(obj.glmm.null$eventTime)){
   if(obj.glmm.null$traitType == "binary"){
     Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
   }else{
@@ -1588,25 +1553,12 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
       Sigma_iX_noLOCO = getSigma_X_Surv_new(W, tauVecNew, X1, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)
     }else{
       Sigma_iX_noLOCO = getSigma_X_Surv(W, tauVecNew, X1,WinvNRt, ACinv, diagofWminusUinv, sqrtDRN, maxiterPCG, tolPCG)
-      #}else{
-	#Nmat =  Matrix:::Diagonal(length(Nvec), x = Nvec)
-	#Dsqrtmat = Matrix:::Diagonal(length(Dvec), x = sqrt(Dvec))  
-        #DsqrtRN = Dsqrtmat %*% t(Rmat) %*% Nmat
-	#Wmat = Matrix:::Diagonal(length(W), x = W)	
-	#Sigma_iX_noLOCO =  Wmat%*%X1 - t(DsqrtRN)%*%DsqrtRN%*%X1
-	#Sigma_iX_noLOCO =  Wmat%*%X1 - t(DsqrtRN)%*%DsqrtRN%*%X1
-
-      #}
 
     }
   }
 
 
   for(k in 1:length(listOfMarkersForVarRatio)){
-    #if(length(listOfMarkersForVarRatio[[k]]) == 0){
-    #  cateVarRatioIndexVec[k] = 0
-    #  cat("no marker is found in the MAC category ", k, "\n")
-    #}
     if(cateVarRatioIndexVec[k] == 1){
 
       numMarkers0 = numMarkers
@@ -1615,14 +1567,15 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
       indexInMarkerList = 1
       numTestedMarker = 0
       ratioCV = ratioCVcutoff + 0.1
-
+	#a00=1
       while(ratioCV > ratioCVcutoff){
         while(numTestedMarker < numMarkers0){
           i = listOfMarkersForVarRatio[[k]][indexInMarkerList]
+	#if(a00==1){i=63823}
+	#a00=a00+1	
           cat(i, "th marker\n")
           G0 = Get_OneSNP_Geno(i-1)
           cat("G0", G0[1:10], "\n")
-          #AC = sum(G0)
           CHR = bimPlink[i,1]
 
 	  if(sum(G0)/(2*Nnomissing) > 0.5){
@@ -1636,41 +1589,22 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
          }else{
           AF = AC/(2*Nnomissing)
 	  if(is.null(obj.glmm.null$eventTime)){
-	   	
           	G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted
 	  }else{
-		#G0_meanCentered = G0 - AF*2
-		#G = G0_meanCentered - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0_meanCentered)
+	#	G0_meanCentered = G0 - AF*2
+	#	Gc = G0_meanCentered - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0_meanCentered)
 		G = G0 - obj.noK$XXVX_inv_fg %*%  (obj.noK$XV_fg %*% G0) #G1 is X and intercept adjusted
 	  }	
           g = G/sqrt(AC)
           q = innerProduct(g,y)
- #     print(g[1:20])
- #     print(y[1:20])
- #     print(q)
           if(!obj.glmm.null$LOCO){
 	      if(is.null(obj.glmm.null$eventTime)){
     		Sigma_iG= getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
   	      }else{
 		if(pcgforUhatforSurvAnalysis){	
     		  Sigma_iG = getSigma_G_Surv_new(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)
-		#print("Sigma_iG HERE")
-    		  #Sigma_iG = getSigma_G_Surv_new2(W, tauVecNew, G, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG, diagofWminusU)
-		  #cat("Sigma_iG ", Sigma_iG, "\n")
 		}else{
-		  #if(tauVecNew[2] != 0){
-		     Sigma_iG = getSigma_G_Surv(W, tauVecNew, G, WinvNRt, ACinv, diagofWminusUinv, sqrtDRN, maxiterPCG, tolPCG)
-		  #}else{
-		  #   Sigma_iG = W*G - t(DsqrtRN)%*%DsqrtRN%*%G
-		     #print(dim(DsqrtRN))
-		     #print(dim(G))
-			#print(dim(t(DsqrtRN)%*%DsqrtRN%*%G))	
-			#print(dim(W*G))
-			#print(dim(W*G - t(DsqrtRN)%*%DsqrtRN%*%G))
-
-			#print(W*G - t(DsqrtRN)%*%DsqrtRN%*%G)
-
-		  #}	
+		  Sigma_iG = getSigma_G_Surv(W, tauVecNew, G, WinvNRt, ACinv, diagofWminusUinv, sqrtDRN, maxiterPCG, tolPCG)
 		}
   	      }	
 	      Sigma_iX = Sigma_iX_noLOCO
@@ -1687,16 +1621,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 		W = as.vector(mu)
 		if(pcgforUhatforSurvAnalysis){
                   Sigma_iG = getSigma_G_Surv_new(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)
-                  #Sigma_iG = getSigma_G_Surv_new2(W, tauVecNew, G, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG, diagofWminusU)
 		}else{
-		 # if(tauVecNew[2] != 0){	
 		  Sigma_iG = getSigma_G_Surv(W, tauVecNew, G, WinvNRt, ACinv, diagofWminusUinv,sqrtDRN,  maxiterPCG, tolPCG)	
-		# }else{
-		#	Sigma_iG = W*G - t(DsqrtRN)%*%DsqrtRN%*%G
-		 #}	
-
 		}
-
 	     }	
              Sigma_iX = Sigma_iX_noLOCO
           }else{
@@ -1704,8 +1631,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
              endIndex = chromosomeEndIndexVec[CHR]
              setStartEndIndex(startIndex, endIndex)
              mu = obj.glmm.null$LOCOResult[[CHR]]$fitted.values
+             eta = obj.glmm.null$LOCOResult[[CHR]]$linear.predictors
 	     if(obj.glmm.null$traitType == "binary"){
-               eta = obj.glmm.null$LOCOResult[[CHR]]$linear.predictors
                mu.eta = family$mu.eta(eta)
                sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
                W = sqrtW^2
@@ -1714,19 +1641,36 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
              }
 	     if(obj.glmm.null$traitType == "survival"){
 		W = as.vector(mu)
+		Lambda0 = obj.glmm.null$LOCOResult[[CHR]]$Lambda0
+		Dvec = GetdenominN(inC$uniqTimeIndex, eta, inC$timedata$newIndexWithTies, inC$caseIndexwithTies, inC$timedata$orgIndex)
+		DvecCumSum = cumsum(Dvec)	
+		diagofWminusUinv = ((((exp(eta))^2) * (DvecCumSum[RvecIndex]))*(1/W) + 1)*(1/W)
+		Nvec = exp(eta)
 		if(pcgforUhatforSurvAnalysis){
+		  WinvNvec = 1/(Lambda0)
+       		  W0 = W + (1e-4)
+       		  sqrtWinvNVec = sqrt(1/W0)*Nvec
 		  Sigma_iX = getSigma_X_Surv_new_LOCO(W, tauVecNew, X1, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG)	
                   Sigma_iG = getSigma_G_Surv_new_LOCO(W, tauVecNew, G, RvecIndex, sqrtWinvNVec, WinvNvec, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG) #not activated
-		  #Sigma_iX = getSigma_X_Surv_new2_LOCO(W, tauVecNew, X1, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG, diagofWminusU)	
-                  #Sigma_iG = getSigma_G_Surv_new2_LOCO(W, tauVecNew, G, RvecIndex, Dvec, diagofWminusUinv, Nvec, maxiterPCG, tolPCG, diagofWminusU) #not activated
 		}else{
-		  #if(tauVecNew[2] != 0){
+		  sqrtWinvN = Matrix:::Diagonal(length(Lambda0), x = sqrt(1/W)*Nvec)		  
+		  sqrtWinvNR = sqrtWinvN%*%Rmat
+		  Dinv =  diag(1/(-Dvec))
+		  RNWNR=t(sqrtWinvNR)%*%sqrtWinvNR
+       		  ACm = Dinv + RNWNR
+ 		  ACinv = lintools::pinv(ACm)
+       		  rm(Dinv)
+       		  rm(sqrtWinvNR)
+       		  rm(sqrtWinvN)
+	       	  WinvN = Matrix:::Diagonal(length(Lambda0), x = 1/(Lambda0))
+		  WinvNRt = WinvN%*%Rmat
+       		  WinvNRt = as.matrix(WinvNRt)
+       		  ACinv =as.matrix(ACinv)
+		  sqrtDRN = (Matrix:::Diagonal(length(Dvec), x = sqrt(Dvec))) %*% t(Rmat) %*% (Matrix:::Diagonal(length(Nvec), x = Nvec))
+       		  sqrtDRN = as.matrix(sqrtDRN)
+
 		  Sigma_iX = getSigma_X_Surv_LOCO(W, tauVecNew, X1, WinvNRt, ACinv,diagofWminusUinv, sqrtDRN, maxiterPCG, tolPCG)
 		  Sigma_iG = getSigma_G_Surv_LOCO(W, tauVecNew, G, WinvNRt, ACinv, diagofWminusUinv, sqrtDRN, maxiterPCG, tolPCG)
-		  #}else{	
-		  #   Sigma_iG = W*G - t(DsqrtRN)%*%DsqrtRN%*%G
-		  #   Sigma_iX = Sigma_iX_noLOCO		     	
-		  #}	
 		}
 
              }
@@ -1737,8 +1681,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 	var1a = as.vector(var1a)
 
         var1 = var1a/AC
+	
         m1 = innerProduct(mu,g)
-
 
         if(useSparseGRMforvarRatioDenom){
              pcginvSigma = solve(sparseSigma, g, sparse=T)
@@ -1768,6 +1712,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
         var2q = innerProduct(mu, g*g)
 	pval.noadj <- pchisq((q - m1)^2/var1, lower.tail = FALSE,
         df = 1)
+        cat("var1 is ", var1, "\n")
         if(abs(q - m1)/sqrt(var1) < Cutoff){
           out.uni1<-getroot_K1_Poi(0, mu=mu, g=g, q=q)
           p1<-Get_Saddle_Prob_Poi(out.uni1$root, mu, g, q)
@@ -1826,8 +1771,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 
   }#end of while(ratioCV > ratioCVcutoff)
 
-  #OUTtotal = as.data.frame(OUTtotal)
-  #colnames(OUTtotal) = resultHeader
   OUT1 = OUTtotal
   OUT1 = as.data.frame(OUT1)
   colnames(OUT1) = resultHeader
