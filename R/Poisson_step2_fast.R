@@ -132,12 +132,13 @@ scoreTest_SPAGMMAT_survivalTrait_cond_sparseSigma_fast=function(g, Score, pval.n
 
   #qtilde = Tstat/sqrt(var1) * sqrt(var2) + m1
   #Score2 = Score/sqrt(var1) * sqrt(var2)
+  Score2 = Score/sqrt(varRatio)
   if(length(NAset)/length(g) < 0.5){
     #print("Saddle_Prob_Poisson")
-    out1 = Saddle_Prob_Poisson(Score=Score, pval.noadj=pval.noadj, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8, m1=m1, var1=var2)
+    out1 = Saddle_Prob_Poisson(Score=Score2, pval.noadj=pval.noadj, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8, m1=m1, var1=var2)
   }else{
     #print("Saddle_Prob_Poisson_fast")
-    out1 = Saddle_Prob_Poisson_fast(Score=Score, pval.noadj=pval.noadj, g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, m1=m1, var1=var2)
+    out1 = Saddle_Prob_Poisson_fast(Score=Score2, pval.noadj=pval.noadj, g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, m1=m1, var1=var2)
   }
 
   out1$var1 = var1
