@@ -1714,11 +1714,13 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
         df = 1)
         cat("var1 is ", var1, "\n")
         if(abs(q - m1)/sqrt(var1) < Cutoff){
+
+
           out.uni1<-getroot_K1_Poi(0, mu=mu, g=g, q=q)
-          p1<-Get_Saddle_Prob_Poi(out.uni1$root, mu, g, q)
+          p1<-tryCatch(Get_Saddle_Prob_Poi(out.uni1$root, mu, g, q), error=function(e) {return(pval.noadj/2)})
           qinv = -sign(q - m1) * abs(q - m1) + m1
           out.uni2 <- getroot_K1_Poi(0, mu = mu, g = g, q = qinv)
-          p2 <- Get_Saddle_Prob_Poi(out.uni2$root, mu, g, qinv)
+          p2 <- tryCatch(Get_Saddle_Prob_Poi(out.uni2$root, mu, g, qinv), error=function(e) {return(pval.noadj/2)})
           pval = abs(p1) + abs(p2)
         }else{
           pval = pval.noadj
