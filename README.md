@@ -162,6 +162,9 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.39 (May-27-2020)
+** fixed an error when conditional analysis is conducted based on vcf input (introduced in 0.38)
+
 * 0.38 (May-4-2020)
 ** further fixed the bug for output the allele 2 when bgen input with missing dosages was used and missing dosages were dropped. 
 ** sampleFile is no longer needed if VCF file is used in Step 2
