@@ -13,4 +13,3 @@ cget install -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" --prefix thirdPar
 cd thirdParty/bgen
 ./waf configure
 ./waf
-

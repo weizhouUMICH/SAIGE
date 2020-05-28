@@ -1587,7 +1587,7 @@ scoreTest_SAIGE_binaryTrait=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, m
   if(IsSparse==TRUE){
     if(MAF < 0.05){ 
        out.score<-Score_Test_Sparse(obj.noK, G0,mu.a, mu2.a, varRatio );
-       if(as.numeric(unlist(out.score["var1"])[1]) < 0){	
+       if(is.na(as.numeric(unlist(out.score["var1"])[1]))){	
          out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio)
        }
      }else{

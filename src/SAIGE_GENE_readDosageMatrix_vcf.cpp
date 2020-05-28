@@ -68,7 +68,10 @@ bool setvcfDosageMatrix(const std::string& vcfFileName,  const std::string& vcfF
   return(isVcfOpen);
 }
 
-
+// [[Rcpp::export]]
+int getNumofSamples_Matrix(){
+  return(marker_file.samples().size());
+}
 
 // [[Rcpp::export]]
 std::vector< std::string > getSampleIDlist_vcfMatrix(){
