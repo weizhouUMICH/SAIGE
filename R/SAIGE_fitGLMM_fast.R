@@ -219,10 +219,11 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   converged = ifelse(i < maxiter, TRUE, FALSE)
   res = y - mu
   if(isCovariateTransform){
-  coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+    coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
   }else{
     coef.alpha = alpha
   }
+  #obj.noK = ScoreTest_NULL_Model_binary(mu, y, X) 
   glmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID, obj.noK=obj.noK, obj.glm.null=fit0, traitType="binary")
 
   #LOCO: estimate fixed effect coefficients, random effects, and residuals for each chromoosme  
@@ -249,6 +250,8 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
 	}else{
 	coef.alpha = alpha
 	}
+        #obj.noK = ScoreTest_NULL_Model_binary(mu, y, X)
+        #glmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, obj.noK = obj.noK)
         glmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov)
       }else{
         glmmResult$LOCOResult[[j]] = list(isLOCO = FALSE)
@@ -1042,7 +1045,6 @@ fitNULLGLMM = function(plinkFile = "",
     cat("Start estimating variance ratios\n")
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,
                                                     obj.glm.null = fit0,
-                                                    obj.noK = obj.noK,
                                                     Cutoff = SPAcutoff,
                                                     maxiterPCG = maxiterPCG,
                                                     tolPCG = tolPCG,
@@ -1128,7 +1130,6 @@ fitNULLGLMM = function(plinkFile = "",
     cat("Start estimating variance ratios\n")
     scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait(obj.glmm.null = modglmm,
                                                     obj.glm.null = fit0,
-                                                    obj.noK = obj.noK,
                                                     Cutoff = SPAcutoff,
                                                     maxiterPCG = maxiterPCG,
                                                     tolPCG = tolPCG,
@@ -1160,7 +1161,6 @@ fitNULLGLMM = function(plinkFile = "",
 
 scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
                                                     obj.glm.null,
-                                                    obj.noK,
                                                     Cutoff = 2,
                                                     maxiterPCG = 500,
                                                     tolPCG = 0.01,
@@ -1185,7 +1185,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 							isDiagofKinSetAsOne,
 							includeNonautoMarkersforVarRatio){
 
-
+  obj.noK = obj.glmm.null$obj.noK
   if(file.exists(testOut)){file.remove(testOut)}
   
 
@@ -1494,7 +1494,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 
 scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                                                     obj.glm.null,
-                                                    obj.noK,
                                                     Cutoff = 2,
                                                     maxiterPCG = 500,
                                                     tolPCG = 0.01,
@@ -1521,7 +1520,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 
 
   if(file.exists(testOut)){file.remove(testOut)}
-
+  obj.noK = obj.glmm.null$obj.noK
 #  if(nThreads > 1){
 #    RcppParallel:::setThreadOptions(numThreads = nThreads)
 #    cat(nThreads, " threads are set to be used ", "\n")
@@ -2343,3 +2342,20 @@ checkPerfectSep<-function(formula, data, minCovariateCount){
 
   return(colnamesDelete)
 }
+
+ScoreTest_NULL_Model_binary=function (mu, y, X1){
+  V = as.vector(mu*(1-mu))
+  #res = glmfit$y - mu
+  res = y - mu
+  n1 = length(res)
+  #cat("dim(X1): ", dim(X1), "\n")
+  #cat("length(V): ", length(V), "\n")
+  XV = t(X1 * V)
+  XVX_inv = solve(t(X1) %*% (X1 * V))
+  XXVX_inv = X1 %*% XVX_inv
+
+  re = list(y = y, mu = mu, res = res, V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv)
+  class(re) = "SA_NULL"
+  return(re)
+}
+

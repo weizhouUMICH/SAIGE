@@ -249,16 +249,19 @@ SPAGMMATtest = function(bgenFile = "",
       colnames(sampleListinDosage)[1] = "IIDDose"
     }
   }
-if(condition != ""){
-  isCondition = TRUE
-}else{
-  isCondition = FALSE
-}
 
-cat("isCondition is ", isCondition, "\n")
+
+  if(condition != ""){
+    isCondition = TRUE
+  }else{
+    isCondition = FALSE
+  }
+
+  cat("isCondition is ", isCondition, "\n")
 
 
   if (dosageFileType == "vcf"){
+    vcffileopen=FALSE
     if(isCondition){ 
       isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField)
       sampleListinDosage_vec = getSampleIDlist_vcfMatrix()
@@ -267,6 +270,7 @@ cat("isCondition is ", isCondition, "\n")
         setgenoTest_vcfDosage(vcfFile,vcfFileIndex,vcfField,ids_to_exclude_vcf = idstoExcludeFile, ids_to_include_vcf = idstoIncludeFile, chrom, start, end)
         isVariant = getGenoOfnthVar_vcfDosage_pre()
         sampleListinDosage_vec = getSampleIDlist() 
+	vcffileopen=TRUE
       }else{
         isVariant = setvcfDosageMatrix(vcfFile, vcfFileIndex, vcfField) 
         sampleListinDosage_vec = getSampleIDlist_vcfMatrix()	
@@ -315,6 +319,7 @@ cat("isCondition is ", isCondition, "\n")
       cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
     }
   }
+
   if(IsDropMissingDosages){
     cat("Samples with missing dosages will be dropped from the analysis\n")
   }else{
@@ -345,7 +350,7 @@ cat("isCondition is ", isCondition, "\n")
 
   if(!isGroupTest){
     if(dosageFileType == "bgen"){
-        dosageFilecolnamesSkip = c("CHR","POS","rsid","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
+      dosageFilecolnamesSkip = c("CHR","POS","rsid","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
 
     }else if(dosageFileType == "vcf"){
       dosageFilecolnamesSkip = c("CHR","POS","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
@@ -357,38 +362,38 @@ cat("isCondition is ", isCondition, "\n")
     condition_original=unlist(strsplit(condition,","))
 
     if(weightsIncludeinGroupFile){
-        if(!is.null(weights_for_G2_cond)){
-	  #weights_for_G2_cond = unlist(strsplit(weights_for_G2_cond,","))
-	  if(length(weights_for_G2_cond) != length(condition_original)){
-	    stop("Number of weights specified for conditioning marker(s) is different from the number of conditioning marker(s)\n")
-	  }	
-          weights_for_G2_cond_specified = tryCatch(expr = as.numeric(weights_for_G2_cond), warning = function(w) { message("The vector is not numeric."); return(NULL)})
-          if(is.null(weights_for_G2_cond_specified)){
-            stop("Weights specified for conditioning marker(s) are not numeric\n")
-          }		
-	}else{
-          stop("Weights is not specified for the conditioning marker(s)\n")
-        }
+      if(!is.null(weights_for_G2_cond)){
+	#weights_for_G2_cond = unlist(strsplit(weights_for_G2_cond,","))
+	if(length(weights_for_G2_cond) != length(condition_original)){
+	  stop("Number of weights specified for conditioning marker(s) is different from the number of conditioning marker(s)\n")
+	}	
+        weights_for_G2_cond_specified = tryCatch(expr = as.numeric(weights_for_G2_cond), warning = function(w) { message("The vector is not numeric."); return(NULL)})
+        if(is.null(weights_for_G2_cond_specified)){
+          stop("Weights specified for conditioning marker(s) are not numeric\n")
+        }		
+      }else{
+        stop("Weights is not specified for the conditioning marker(s)\n")
+      }
     }
 
     if(length(condition_original) > 1){
-    	condition_new=NULL
-    	for(x in 1:length(condition_original)){
-	  condition_new = rbind(condition_new, c(as.numeric(strsplit(strsplit(condition_original[x], ":")[[1]][2][1], "_")[[1]][1]), condition_original[x]))
-    	}
-    	condition_new2 = condition_new[order(as.numeric(condition_new[,1])),]  
+      condition_new=NULL
+      for(x in 1:length(condition_original)){
+        condition_new = rbind(condition_new, c(as.numeric(strsplit(strsplit(condition_original[x], ":")[[1]][2][1], "_")[[1]][1]), condition_original[x]))
+      }
+      condition_new2 = condition_new[order(as.numeric(condition_new[,1])),]  
 
-	if(weightsIncludeinGroupFile){   
-		weights_for_G2_cond_specified = weights_for_G2_cond_specified[order(as.numeric(condition_new[,1]))]
-		condition_specified = condition_new2[,2]
-	}
+      if(weightsIncludeinGroupFile){   
+        weights_for_G2_cond_specified = weights_for_G2_cond_specified[order(as.numeric(condition_new[,1]))]
+	condition_specified = condition_new2[,2]
+      }
+      conditionlist = paste(c("condMarkers",condition_new2[,2]),collapse="\t")
 
-    	conditionlist = paste(c("condMarkers",condition_new2[,2]),collapse="\t")
     }else{
-    	conditionlist= paste(c("condMarkers",unlist(strsplit(condition,","))),collapse="\t") 
-	if(weightsIncludeinGroupFile){
-		condition_specified = unlist(strsplit(condition,","))
-	}   
+      conditionlist= paste(c("condMarkers",unlist(strsplit(condition,","))),collapse="\t") 
+      if(weightsIncludeinGroupFile){
+	condition_specified = unlist(strsplit(condition,","))
+      }   
     }
 #    conditionlist = paste(c("condMarkers",unlist(strsplit(condition,","))),collapse="\t")
     cat("conditionlist is ", conditionlist, "\n")
@@ -402,7 +407,6 @@ cat("isCondition is ", isCondition, "\n")
       if(Gx_cond$cnt > 0){
         dosage_cond = Matrix:::sparseMatrix(i = as.vector(Gx_cond$iIndex), j = as.vector(Gx_cond$jIndex), x = as.vector(Gx_cond$dosages), symmetric = FALSE, dims = c(N, Gx_cond$cnt))
       }
-
     }else if(dosageFileType == "bgen"){
       SetSampleIdx(sampleIndex, N)
       Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist, testMinMAF, 0.5, minInfo)
@@ -421,7 +425,7 @@ cat("isCondition is ", isCondition, "\n")
 
     if(cntMarker == 0){
         
-      cat("WARNING: conditioning markers are not found in the provided dosage file \n")
+      stop("Conditioning markers are not found in the provided dosage file \n")
       isCondition = FALSE
       dosage_cond = NULL
     }
@@ -640,16 +644,19 @@ cat("isCondition is ", isCondition, "\n")
 
 
     }else if(dosageFileType == "vcf"){
-
+      if(!vcffileopen){
+        setgenoTest_vcfDosage(vcfFile,vcfFileIndex,vcfField,ids_to_exclude_vcf = idstoExcludeFile, ids_to_include_vcf = idstoIncludeFile, chrom, start, end)
+        isVariant = getGenoOfnthVar_vcfDosage_pre()	
+      } 
       #setgenoTest_vcfDosage(vcfFile,vcfFileIndex,vcfField,ids_to_exclude_vcf = idstoExcludeFile, ids_to_include_vcf = idstoIncludeFile, chrom, start, end)
       #isVariant = getGenoOfnthVar_vcfDosage_pre()
       SetSampleIdx_vcfDosage(sampleIndex, N)
-      nsamplesinVCF = getSampleSizeinVCF()
-     if(nrow(sampleListinDosage) != nsamplesinVCF){
-        stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the VCF file\nPlease check again. Please note that the sample file needs to have no header.")
-    }
+      #nsamplesinVCF = length(sampleListinDosage_vec)
 
-
+      #cat("nsamplesinVCF: ", nsamplesinVCF, "\n")
+      #if(nrow(sampleListinDosage) != nsamplesinVCF){
+        #stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the VCF file\nPlease check again. Please note that the sample file needs to have no header.")
+      #}
     }
 
     write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
@@ -1578,8 +1585,11 @@ scoreTest_SAIGE_binaryTrait=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, m
   ## Added by SLEE 09/06/2017
   Run1=TRUE
   if(IsSparse==TRUE){
-    if(MAF < 0.05){
+    if(MAF < 0.05){ 
        out.score<-Score_Test_Sparse(obj.noK, G0,mu.a, mu2.a, varRatio );
+       if(as.numeric(unlist(out.score["var1"])[1]) < 0){	
+         out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio)
+       }
      }else{
        out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio );
      }
@@ -2042,10 +2052,10 @@ subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
 	#	obj.glmm.null.sub$obj.noK$XVX_inv_XV = as.matrix(obj.glmm.null.sub$obj.noK$XVX_inv_XV)
 	#}
 
-        obj.glmm.null.sub$obj.noK$X1 = obj.glmm.null.sub$obj.noK$X1[missingind,]
+        obj.glmm.null.sub$obj.noK$X1 = obj.glmm.null.sub$obj.noK$X1[missingind,,drop=FALSE]
         #obj.glmm.null.sub$obj.noK$XXVX_inv_old = obj.glmm.null.sub$obj.noK$XXVX_inv[missingind,]
         obj.glmm.null.sub$obj.noK$V = obj.glmm.null.sub$obj.noK$V[missingind]
-        obj.glmm.null.sub$obj.noK$XV = obj.glmm.null.sub$obj.noK$XV[,missingind]
+        obj.glmm.null.sub$obj.noK$XV = obj.glmm.null.sub$obj.noK$XV[,missingind, drop=FALSE]
 	#obj.glmm.null.sub$obj.noK$XV = t(obj.glmm.null.sub$obj.noK$X1 * obj.glmm.null.sub$obj.noK$V)
         obj.glmm.null.sub$obj.noK$y = obj.glmm.null.sub$obj.noK$y[missingind]
         #obj.glmm.null.sub$obj.noK$XVX_inv_XV_old = obj.glmm.null.sub$obj.noK$XVX_inv_XV[missingind,]
