@@ -12,7 +12,7 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.38 (Updated on May 4, 2020).
+## Current version is 0.39 (Updated on May 27, 2020).
 
 ## For BGEN input in step 2 with missing dosages, Please use version 0.38. The bug for BGEN input with missing dosages was introducted in v0.36.6. 
 
@@ -103,7 +103,7 @@ Thanks to Juha Karjalainen for sharing the Dockerfile.
 The docker image can be pulled
 
 ```
-docker pull wzhou88/saige:0.38
+docker pull wzhou88/saige:0.39
 ```
 
 Functions can be called
