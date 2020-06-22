@@ -20,8 +20,8 @@ scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast=function(G0, AC, AF, MAF, Is
   #XVG0_mc = eigenMapMatMult(obj.noK$XV, G0_mc)
   #g_mc = G0_mc - eigenMapMatMult(obj.noK$XXVX_inv, XVG0_mc)
   #########
-if(!isCondition){
-  if(IsSparse==TRUE){
+#if(!isCondition){
+#  if(IsSparse==TRUE){
     if(MAF < 0.05){
        out.score<-Score_Test_Sparse_Survival(obj.noK, G0, mu.a, mu2.a, varRatio);
         #tp2a = proc.time()
@@ -38,6 +38,8 @@ if(!isCondition){
     #cat("out.score$var2: ", out.score$var2, "\n")
     #cat("out.score1$var2: ", out.score1$var2, "\n")
     ##if(out.score["pval.noadj"] > 0.05){
+   if(!isCondition){
+
     if(abs(as.numeric(unlist(out.score["Tstat"])[1])/sqrt(as.numeric(unlist(out.score["var1"])[1]))) < Cutoff){
        if(AF > 0.5){
          out.score$BETA = (-1)*out.score$BETA
@@ -57,12 +59,27 @@ if(!isCondition){
        }else{
         g = out.score$g_tilde	
         #tp3b = proc.time()
-	#print("tp3b-tp2b")
+	print("tp3b-tp2b")
   	#print(tp3b-tp2b)
       }
    }
- }
-}
+ }else{ #if(!isCondition){
+     if(MAF < 0.05){
+         XVG0 = eigenMapMatMult(obj.noK$XV_fg, G0)
+         g = G0 - eigenMapMatMult(obj.noK$XXVX_inv_fg, XVG0)
+       }else{
+         g = out.score$g_tilde
+        #tp3b = proc.time()
+        #print("tp3b-tp2b")
+        #print(tp3b-tp2b)
+      }
+
+  }
+
+# }
+#}else{ #if(!isCondition){
+
+#}
 
   #cat("Run1: ", Run1, "\n")
   if(Run1){

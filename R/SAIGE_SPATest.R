@@ -2300,7 +2300,10 @@ getCovMandOUT_cond_pre = function(dosage_cond, cateVarRatioMinMACVecExclude, cat
                 }else if(obj.glmm.null$traitType == "quantitative"){
                         out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.glmm.null$obj.noK, AC, AF, obj.glmm.null$obj.glm.null$y, mu, varRatio, tauVec = obj.glmm.null$theta, sparseSigma=sparseSigma)
                         OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
-                }
+                }else if(obj.glmm.null$traitType == "survival"){
+			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, obj.glmm.null$obj.glm.null$y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma)
+			OUT_cond = rbind(OUT_cond, c(as.numeric(out1$BETA), as.numeric(out1$Tstat), as.numeric(out1$var1)))
+		}
 
                 OUT_cond = as.matrix(OUT_cond)
         } #end of for(i in 1:ncol(dosage_cond)){
