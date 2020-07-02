@@ -194,5 +194,6 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 	     weights_for_G2_cond=weights_for_G2_cond,
 		IsOutputBETASEinBurdenTest=opt$IsOutputBETASEinBurdenTest,
 	SPAcutoff=opt$SPAcutoff,
-	IsOutputHetHomCountsinCaseCtrl=opt$IsOutputHetHomCountsinCaseCtrl	
+	IsOutputHetHomCountsinCaseCtrl=opt$IsOutputHetHomCountsinCaseCtrl,
+	     LOCO=opt$LOCO
 )
