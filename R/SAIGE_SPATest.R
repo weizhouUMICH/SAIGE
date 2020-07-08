@@ -28,7 +28,8 @@
 #' @param IsSparse logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE 
 #' @param IsOutputAFinCaseCtrl logical. Whether to output allele frequency in cases and controls. By default, FALSE
 #' @param IsOutputNinCaseCtrl logical. Whether to output sample sizes in cases and controls. By default, FALSE
-#' @param IsOutputHetHomCountsinCaseCtrl logical. Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls" will be output. 
+#' @param IsOutputHetHomCountsinCaseCtrl logical. Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls" will be output.
+#' @param IsOutputlog10Pvalue logical. Whether to output log10(Pvalue) for single-variant assoc tests. By default, FALSE. If TRUE, the log10(Pvalue) instead of original P values will be output 
 #' @param LOCO logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE
 #' @param condition character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input , marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input.
 #' @param sparseSigmaFile character. Path to the file containing the sparseSigma from step 1. The suffix of this file is ".mtx". 
@@ -79,6 +80,7 @@ SPAGMMATtest = function(bgenFile = "",
 		 IsOutputAFinCaseCtrl=FALSE,
 		 IsOutputHetHomCountsinCaseCtrl=FALSE,
 		 IsOutputNinCaseCtrl=FALSE,
+		 IsOutputlog10Pvalue=FALSE,
 		 LOCO=FALSE,
 		 condition="",	
 		 sparseSigmaFile="",
@@ -259,6 +261,10 @@ SPAGMMATtest = function(bgenFile = "",
 
   cat("isCondition is ", isCondition, "\n")
 
+
+  if(IsOutputlog10Pvalue){
+    cat("IsOutputlog10Pvalue = TRUE. NOTE: log10(P) will be output ONLY for single-variant assoc tests\n")
+  }
 
   if (dosageFileType == "vcf"){
     vcffileopen=FALSE
@@ -856,7 +862,7 @@ SPAGMMATtest = function(bgenFile = "",
 	   OUT = rbind(OUT, OUTvec)
 	   OUTvec=NULL
 	  }else{ #if (NCase.sub == 0 | NCtrl.sub == 0) {
-           out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
+           out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null.sub$obj.noK, mu.a.sub, mu2.a.sub, y.sub, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma.sub, isCondition=isCondition, OUT_cond=OUT_cond.sub, G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub, IsOutputlog10Pvalue = IsOutputlog10Pvalue)
 	  OUTvec=c(rowHeader, N.sub, unlist(out1))
 
 	   #if(!IsOutputAFinCaseCtrl){
@@ -909,7 +915,7 @@ SPAGMMATtest = function(bgenFile = "",
 
 
   	 if(traitType == "binary"){
-           out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+           out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv, IsOutputlog10Pvalue=IsOutputlog10Pvalue)
 	   OUTvec=c(rowHeader, N,unlist(out1))
 
     	   if(IsOutputAFinCaseCtrl){	     	
@@ -1289,13 +1295,13 @@ SPAGMMATtest = function(bgenFile = "",
 	    if(cntMarker > 0){
 	      if(IsDropMissingDosages & length(indexforMissing) > 0){
 		  cat("isCondition is ", isCondition, "\n")
-		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, mu.a = mu.a.sub, mu2.a = mu2.a.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond_specified, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest = IsOutputBETASEinBurdenTest)
+		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, mu.a = mu.a.sub, mu2.a = mu2.a.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond_specified, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest = IsOutputBETASEinBurdenTest, IsOutputlog10Pvalue=IsOutputlog10Pvalue )
 	      }else{#if(IsDropMissingDosages & length(indexforMissing) > 0){	
 		cat("isCondition is ", isCondition, "\n")
 		#Gmat0 = as.matrix(Gmat)
 		#write.table(Gmat0, "/net/hunt/disk2/zhowei/project/SAIGE_SKAT/typeIError_simuUsingRealData/quantitative/SAIGE/step2/C1orf122_seed256Phneo.geno.txt", col.names=F, row.names=F, quote=F)	
 		#Gmat = round(Gmat)
-		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, mu.a = mu.a, mu2.a = mu2.a, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond_specified, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest = IsOutputBETASEinBurdenTest)	
+		groupTestResult = groupTest(Gmat = Gmat, obj.glmm.null = obj.glmm.null, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, mu.a = mu.a, mu2.a = mu2.a, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond_specified, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest = IsOutputBETASEinBurdenTest, IsOutputlog10Pvalue = IsOutputlog10Pvalue)	
 	     }
 	    outVec = groupTestResult$outVec
 	    OUT = rbind(OUT, outVec)
@@ -1458,7 +1464,7 @@ scoreTest_SAIGE_quantitativeTrait=function(G0, obj.noK, AC, AF, y, mu, varRatio,
 }
 
 
-Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
+Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio, IsOutputlog10Pvalue){
   # mu=mu.a; mu2= mu2.a; G=G0; obj.null=obj.noK
   idx_no0<-which(G>0)
   g1<-G[idx_no0]
@@ -1505,10 +1511,14 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 
   S<- S1+S2
 	
-  pval.noadj<-pchisq((S)^2/(var1), lower.tail = FALSE, df=1)
+  pval.noadj<-pchisq((S)^2/(var1), lower.tail = FALSE, df=1, log.p=IsOutputlog10Pvalue)
   ##add on 10-25-2017
   BETA = S/var1
-  SE = abs(BETA/qnorm(pval.noadj/2))
+  if(!IsOutputlog10Pvalue){
+    SE = abs(BETA/qnorm(pval.noadj/2))
+  }else{
+    SE = abs(BETA/qnorm(exp(pval.noadj)/2))
+  }
   Tstat = S
   #return(c(BETA, SE, Tstat, pval.noadj, pval.noadj, 1, var1, var2))
   return(list(BETA=BETA, SE=SE, Tstat=Tstat, pval.noadj=pval.noadj, pval.noadj=pval.noadj, is.converge=TRUE, var1=var1, var2=var2))	
@@ -1517,7 +1527,7 @@ Score_Test_Sparse<-function(obj.null, G, mu, mu2, varRatio ){
 
 
 
-Score_Test<-function(obj.null, G, mu, mu2, varRatio){
+Score_Test<-function(obj.null, G, mu, mu2, varRatio, IsOutputlog10Pvalue){
   #print("NO SPARSE")
   g<-G  -  obj.null$XXVX_inv %*%  (obj.null$XV %*% G)
   q<-crossprod(g, obj.null$y) 
@@ -1526,11 +1536,15 @@ Score_Test<-function(obj.null, G, mu, mu2, varRatio){
   var1 = var2 * varRatio
   S = q-m1
   #cat("S is ", S, "\n")
-  pval.noadj<-pchisq((S)^2/var1, lower.tail = FALSE, df=1)
+  pval.noadj<-pchisq((S)^2/var1, lower.tail = FALSE, df=1, log.p=IsOutputlog10Pvalue)
 
   ##add on 10-25-2017
   BETA = S/var1
-  SE = abs(BETA/qnorm(pval.noadj/2))
+  if(!IsOutputlog10Pvalue){
+    SE = abs(BETA/qnorm(pval.noadj/2))
+  }else{
+    SE = abs(BETA/qnorm(exp(pval.noadj)/2))
+  }
   #Tstat = S^2
   Tstat = S
 
@@ -1739,7 +1753,7 @@ if(var1c > (.Machine$double.xmin)^2){
 
 
 
-scoreTest_SAIGE_quantitativeTrait_sparseSigma=function(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+scoreTest_SAIGE_quantitativeTrait_sparseSigma=function(G0, obj.noK, AC, AF, y, mu, varRatio, tauVec, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL, IsOutputlog10Pvalue=FALSE){
 
 #  cat("HERE\n")
 #  cat("AC: ",AC,"\n")
@@ -1854,27 +1868,45 @@ if(AF > 0.5){
 }
 
 if(var1 < (.Machine$double.xmin)){
-  p.value = 1
+  if(!IsOutputlog10Pvalue){
+    p.value = 1
+  }else{
+    p.value=0
+  }
   BETA = NA
   SE = NA
 }else{
-  p.value = pchisq(Tstat^2/var1, lower.tail = FALSE, df=1)
-#  BETA = (Tstat/var1)/sqrt(AC2)
-  BETA = (Tstat/var1)
-  SE = abs(BETA/qnorm(p.value/2))
+  if(!IsOutputlog10Pvalue){
+    p.value = pchisq(Tstat^2/var1, lower.tail = FALSE, df=1)
+    BETA = (Tstat/var1)
+    SE = abs(BETA/qnorm(p.value/2))
+  }else{
+    p.value = pchisq(Tstat^2/var1, lower.tail = FALSE, df=1, log.p=IsOutputlog10Pvalue)
+    BETA = (Tstat/var1)
+    SE = abs(BETA/qnorm(exp(p.value)/2))
+  }
 }
 
 
   if(isCondition){
     if(var1_c <= (.Machine$double.xmin)){
-      p.value.c = 1
+      if(!IsOutputlog10Pvalue){
+        p.value.c = 1
+      }else{
+        p.value.c = 0
+      }
       BETA_c = NA
       SE_c = NA
     }else{
-      p.value.c = pchisq(Tstat_c^2/var1_c, lower.tail = FALSE, df=1)
-#    BETA_c = (Tstat_c/var1_c)/sqrt(AC2)
-      BETA_c = (Tstat_c/var1_c)
-      SE_c = abs(BETA_c/qnorm(p.value.c/2))
+      if(!IsOutputlog10Pvalue){
+        p.value.c = pchisq(Tstat_c^2/var1_c, lower.tail = FALSE, df=1)
+        BETA_c = (Tstat_c/var1_c)
+        SE_c = abs(BETA_c/qnorm(p.value.c/2))
+      }else{ 
+        p.value.c = pchisq(Tstat_c^2/var1_c, lower.tail = FALSE, df=1, log.p=IsOutputlog10Pvalue)
+        BETA_c = (Tstat_c/var1_c)
+        SE_c = abs(BETA_c/qnorm(exp(p.value.c)/2))
+      }
     }
   }
   
@@ -1887,7 +1919,7 @@ if(var1 < (.Machine$double.xmin)){
 }
 
 
-scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y,varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL, IsOutputlog10Pvalue=FALSE){
 
   N = length(G0)
   if(AF > 0.5){
@@ -1903,9 +1935,9 @@ scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse,
 if(!isCondition){
   if(IsSparse==TRUE){
     if(MAF < 0.05){
-       out.score<-Score_Test_Sparse(obj.noK, G0, mu.a, mu2.a, varRatio );
+       out.score<-Score_Test_Sparse(obj.noK, G0, mu.a, mu2.a, varRatio, IsOutputlog10Pvalue=IsOutputlog10Pvalue);
      }else{
-       out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio );
+       out.score<-Score_Test(obj.noK, G0,mu.a, mu2.a, varRatio, IsOutputlog10Pvalue=IsOutputlog10Pvalue);
      }
      #if(out.score["pval.noadj"] > 0.05){
      if(abs(as.numeric(unlist(out.score["Tstat"])[1])/sqrt(as.numeric(unlist(out.score["var1"])[1]))) < Cutoff){
@@ -1935,7 +1967,7 @@ if(!isCondition){
 #      out1$BETA = (-1)*out1$BETA
 #      out1$Tstat = (-1)*out1$Tstat
 #    }
-    out1 = scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma(g, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv)
+    out1 = scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma(g, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv, IsOutputlog10Pvalue=IsOutputlog10Pvalue)
 
     if(isCondition){
      outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], p.value.NA = out1["p.value.NA"], Is.converge=out1["Is.converge"], var1 = out1["var1"], var2 = out1["var2"], Tstat_c = out1["Tstat_c"], p.value.c = out1["p.value.c"], var1_c = out1["var1_c"], BETA_c = out1["BETA_c"], SE_c = out1["SE_c"]) 
@@ -1952,7 +1984,7 @@ if(!isCondition){
 }
 
 
-scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL){
+scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, y, mu, varRatio, Cutoff, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL, IsOutputlog10Pvalue=FALSE){
 
   #g = G/sqrt(AC)
   q = innerProduct(g, y)
@@ -1986,9 +2018,9 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
   qtilde = Tstat/sqrt(var1) * sqrt(var2) + m1
 
   if(length(NAset)/length(g) < 0.5){
-    out1 = SPAtest:::Saddle_Prob(q=qtilde, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
+    out1 = SPAtest:::Saddle_Prob(q=qtilde, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8, log.p=IsOutputlog10Pvalue)
   }else{
-    out1 = SPAtest:::Saddle_Prob_fast(q=qtilde,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="p")
+    out1 = SPAtest:::Saddle_Prob_fast(q=qtilde,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="p", log.p=IsOutputlog10Pvalue)
   }
 
 
@@ -1999,7 +2031,11 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
   #as g is not divided by sqrt(AC), the sqrt(AC) is removed from the denominator
   #logOR = (Tstat/var1)/sqrt(AC)
   logOR = Tstat/var1
-  SE = abs(logOR/qnorm(out1$p.value/2))
+  if(!IsOutputlog10Pvalue){
+    SE = abs(logOR/qnorm(out1$p.value/2))
+  }else{
+    SE = abs(logOR/qnorm(exp(out1$p.value)/2))
+  }
 #  out1 = c(out1, BETA = logOR, SE = SE, Tstat = Tstat)
   out1$BETA=logOR
   out1$SE=SE
@@ -2007,19 +2043,29 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
 
   if(isCondition){
     if(var1_c <= (.Machine$double.xmin)^2){
-      out1 = c(out1, var1_c = var1_c,BETA_c = NA, SE_c = NA, Tstat_c = Tstat_c, p.value.c = 1, p.value.NA.c = 1)	
+      if(!IsOutputlog10Pvalue){
+        out1 = c(out1, var1_c = var1_c,BETA_c = NA, SE_c = NA, Tstat_c = Tstat_c, p.value.c = 1, p.value.NA.c = 1)	
+      }else{
+        out1 = c(out1, var1_c = var1_c,BETA_c = NA, SE_c = NA, Tstat_c = Tstat_c, p.value.c = 0, p.value.NA.c = 0)
+      }
+
     }else{
 
       qtilde_c = Tstat_c/sqrt(var1_c) * sqrt(var2) + m1
       if(length(NAset)/length(g) < 0.5){
-        out1_c = SPAtest:::Saddle_Prob(q=qtilde_c, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8)
+        out1_c = SPAtest:::Saddle_Prob(q=qtilde_c, mu = mu, g = g, Cutoff = Cutoff, alpha=5*10^-8, log.p=IsOutputlog10Pvalue)
       }else{
-        out1_c = SPAtest:::Saddle_Prob_fast(q=qtilde_c,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="p")
+        out1_c = SPAtest:::Saddle_Prob_fast(q=qtilde_c,g = g, mu = mu, gNA = g[NAset], gNB = g[-NAset], muNA = mu[NAset], muNB = mu[-NAset], Cutoff = Cutoff, alpha = 5*10^-8, output="p", log.p=IsOutputlog10Pvalue)
       }
     #01-27-2019
     #logOR_c = (Tstat_c/var1_c)/sqrt(AC)
     logOR_c = Tstat_c/var1_c
-    SE_c = abs(logOR_c/qnorm(out1_c$p.value/2))	
+    if(!IsOutputlog10Pvalue){
+      SE_c = abs(logOR_c/qnorm(out1_c$p.value/2))	
+    }else{
+      SE_c = abs(logOR_c/qnorm(exp(out1_c$p.value)/2))	
+    }
+
     out1 = c(out1, var1_c = var1_c,BETA_c = logOR_c, SE_c = SE_c, Tstat_c = Tstat_c, p.value.c = out1_c$p.value, p.value.NA.c = out1_c$p.value.NA) 
     }
 
@@ -2099,6 +2145,7 @@ subsetModelFileforMissing=function(obj.glmm.null, missingind, mu, mu.a, mu2.a){
         return(subsertforMissingResult = list(obj.glmm.null.sub = obj.glmm.null.sub, mu.sub = mu.sub, mu.a.sub = mu.a.sub, mu2.a.sub = mu2.a.sub))
 }
 
+
 getCovMandOUT_cond_pre = function(dosage_cond, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, obj.glmm.null, sparseSigma, IsSparse=TRUE, mu, mu.a, mu2.a, Cutoff){
         OUT_cond = NULL
         for(i in 1:ncol(dosage_cond)){
@@ -2163,7 +2210,7 @@ getCovMandOUT_cond = function(G0, dosage_cond, cateVarRatioMinMACVecExclude, cat
 
 
 
-groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta.rare, weights.beta.common, weightMAFcutoff, r.corr, max_maf, sparseSigma, mu.a, mu2.a, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary, weights_specified, weights_for_G2_cond, weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest){
+groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta.rare, weights.beta.common, weightMAFcutoff, r.corr, max_maf, sparseSigma, mu.a, mu2.a, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary, weights_specified, weights_for_G2_cond, weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest, IsOutputlog10Pvalue=FALSE){
 
         testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.glmm.null,  cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, mu2 = mu2.a, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = mu.a, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest=IsOutputBETASEinBurdenTest)})
 	
@@ -2209,12 +2256,12 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
                  varRatio = getVarRatio(G0_single, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
 
                  if(obj.glmm.null$traitType == "quantitative"){
-                   out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.glmm.null$obj.noK, AC, AF, y = obj.glmm.null$obj.glm.null$y, mu = mu.a, varRatio, tauVec = obj.glmm.null$theta, sparseSigma=sparseSigma)
+                   out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.glmm.null$obj.noK, AC, AF, y = obj.glmm.null$obj.glm.null$y, mu = mu.a, varRatio, tauVec = obj.glmm.null$theta, sparseSigma=sparseSigma, IsOutputlog10Pvalue)
 
                   }else if(obj.glmm.null$traitType == "binary"){
 		    freqinCase = sum(G0_single[caseIndex])/(2*numofCase)
 		    freqinCtrl = sum(G0_single[ctrlIndex])/(2*numofCtrl)
-                    out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a = mu.a, mu2.a = mu2.a, obj.glmm.null$obj.glm.null$y,varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma)
+                    out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a = mu.a, mu2.a = mu2.a, obj.glmm.null$obj.glm.null$y,varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, IsOutputlog10Pvalue=IsOutputlog10Pvalue)
 
                   }
 
