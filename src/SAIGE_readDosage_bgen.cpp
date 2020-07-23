@@ -530,7 +530,7 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
 
      double thetaHat = sum_eij / (2* (N - missingSamplesize));
      double info = thetaHat==0 || thetaHat==1 ? 1 :
-     1 - sum_fij_minus_eij2 / (2*N*thetaHat*(1-thetaHat));
+     1 - sum_fij_minus_eij2 / (2*(N-missingSamplesize)*thetaHat*(1-thetaHat));
 
      if(missing_cnt > 0){
        double imputeDosage = 2*AF;
