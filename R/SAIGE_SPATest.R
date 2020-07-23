@@ -679,7 +679,11 @@ SPAGMMATtest = function(bgenFile = "",
           Gx = getDosage_bgen_noquery()
         }
         markerInfo = getMarkerInfo()
-        if(!(markerInfo >= 0 & markerInfo <= 1)){markerInfo=1}
+        if(!(markerInfo >= 0 & markerInfo <= 1)){
+		markerInfo0 =1
+	}else{
+		markerInfo0 = markerInfo
+	}	
         G0 = Gx$dosages
         AC = Gx$variants$AC
         AF = Gx$variants$AF
@@ -700,7 +704,12 @@ SPAGMMATtest = function(bgenFile = "",
         AC = Gx$variants$AC
         AF = Gx$variants$AF
         markerInfo = Gx$variants$markerInfo
-        if(!(markerInfo >= 0 & markerInfo <= 1)){markerInfo=1; Gx$variants$markerInfo=1}
+        if(!(markerInfo >= 0 & markerInfo <= 1)){
+		markerInfo0=1
+	}else{	
+		markerInfo0=markerInfo	
+	}	
+	#Gx$variants$markerInfo=1
         rowHeader=as.vector(unlist(Gx$variants))
         if(indChromCheck){
           CHR = Gx$variants$chromosome
@@ -725,7 +734,7 @@ SPAGMMATtest = function(bgenFile = "",
      #	}
      #}  
 
-      if(MAF >= testMinMAF & markerInfo >= minInfo){
+      if(MAF >= testMinMAF & markerInfo0 >= minInfo){
          numPassMarker = numPassMarker + 1
          varRatio = getVarRatio(G0, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
 
