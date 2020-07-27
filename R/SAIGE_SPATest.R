@@ -48,7 +48,10 @@
 #' @param dosageZerodCutoff numeric. In gene- or region-based tests, for each variants with MAC <= 10, dosages <= dosageZerodCutoff with be set to 0. By default, 0.2. 
 #' @param IsOutputPvalueNAinGroupTestforBinary logical. In gene- or region-based tests for binary traits. if IsOutputPvalueNAinGroupTestforBinary is TRUE, p-values without accounting for case-control imbalance will be output. By default, FALSE 
 #' @param IsAccountforCasecontrolImbalanceinGroupTest logical. In gene- or region-based tests for binary traits. If IsAccountforCasecontrolImbalanceinGroupTest is TRUE, p-values after accounting for case-control imbalance will be output. By default, TRUE
-#' @param IsOutputBETASEinBurdenTest logical. Output effect size (BETA and SE) for burden tests. By default, FALSE 
+#' @param IsOutputBETASEinBurdenTest logical. Output effect size (BETA and SE) for burden tests. By default, FALSE
+#' @param X_PARregion character. ranges of (pseudoautosomal) PAR region on chromosome X, which are seperated by comma and in the format start:end. By default: '60001-2699520,154931044-155260560' in the UCSC build hg19. For males, there are two X alleles in the PAR region, so PAR regions are treated the same as autosomes. In the NON-PAR regions (outside the specified PAR regions on chromosome X), for males, there is only one X allele. If is_rewrite_XnonPAR_forMales=TRUE, genotypes/dosages of all variants in the NON-PAR regions on chromosome X will be mutliplied by 2. 
+#' @param is_rewrite_XnonPAR_forMales logical. Whether to rewrite gentoypes or dosages of variants in the NON-PAR regions on chromosome X for males (multiply by 2). By default, FALSE. Note, only use is_rewrite_XnonPAR_forMales=TRUE when the specified VCF or Bgen file only has variants on chromosome X. When is_rewrite_XnonPAR_forMales=TRUE, the program does not check the chromosome value by assuming all variants are on chromosome X 
+#' @param sampleFile_male character. Path to the file containing one column for IDs of MALE samples in the bgen or vcf file with NO header. Order does not matter  
 #' @return SAIGEOutputFile
 #' @export
 SPAGMMATtest = function(bgenFile = "",
@@ -99,7 +102,10 @@ SPAGMMATtest = function(bgenFile = "",
 		 dosageZerodCutoff = 0.2,	
 		 IsOutputPvalueNAinGroupTestforBinary = FALSE,
 		 IsAccountforCasecontrolImbalanceinGroupTest = TRUE,
-		 IsOutputBETASEinBurdenTest = FALSE){
+		 IsOutputBETASEinBurdenTest = FALis_rewrite_XnonPAR_forMalesSE,
+		 X_PARregion="60001-2699520,154931044-155270560",
+		 is_rewrite_XnonPAR_forMales=FALSE,
+		 sampleFile_male=""){
 
 
   if(weightMAFcutoff < 0 | weightMAFcutoff > 0.5){
@@ -308,9 +314,45 @@ SPAGMMATtest = function(bgenFile = "",
     rm(dataMerge_v2)
     rm(dataMerge_sort)
     rm(dataMerge_v2_sort)
-    rm(sampleInModel)
+    #rm(sampleInModel)
   }
 
+  #read in male sample IDs for assoc tests for X chromosome
+  if(is_rewrite_XnonPAR_forMales){
+    cat("is_rewrite_XnonPAR_forMales is TRUE, so genotypes/dosages in the non-PAR regions of X chromosome for males will be multiplied by 2\n")
+    if(!file.exists(sampleFile_male)){
+      stop("ERROR! The sample file for male IDS ", sampleFile_male, " does not exist\n") 
+    }else{
+      sampleList_male = data.frame(data.table:::fread(sampleFile_male, header=F, stringsAsFactors=FALSE, colClasses=c("character"), data.table=F))
+      colnames(sampleList_male) = c("sampleID_male")
+      cat(nrow(sampleList_male), " sample IDs are found in ", sampleFile_male, "\n")
+      indexInModel_male = sampleInModel[sampleInModel$IID %in% (sampleList_male$sampleID_male), c("IndexInModel")]
+      cat(length(indexInModel_male), " males are found in the test\n")	
+      if(length(indexInModel_male) == 0){
+	is_rewrite_XnonPAR_forMales=FALSE
+        if(nrow(sampleList_male) > 0){
+		cat("WARNING: no male IDs specified in the ", sampleFile_male, " are found sample IDs used to fit in the null model in Step 1\n")
+	}	
+      }else{
+        cat("is_rewrite_XnonPAR_forMales=TRUE and minInfo and minMAF won't be applied to all X chromosome variants\n")
+        minInfo = 0
+        minMAF = 0
+      }	      
+    }
+
+    X_PARregion_list = unlist(strsplit(X_PARregion, split=","))
+    X_PARregion_mat = NULL
+    if(length(X_PARregion_list) > 0){
+      for(lxp in 1:length(X_PARregion_list)){
+	X_PARregion_list_sub = as.numeric(unlist(strsplit(X_PARregion_list[lxp], split="-"))) 
+        X_PARregion_mat = rbind(X_PARregion_mat, X_PARregion_list_sub)
+      }
+    }else{
+      cat("PAR region on X chromosome is not specified\n")
+    }	    
+  }
+
+  rm(sampleInModel) 
   ####check and read files
   #sparseSigmaFile
   if(sparseSigmaFile == ""){
@@ -429,13 +471,15 @@ SPAGMMATtest = function(bgenFile = "",
 
     cat("isCondition is ", isCondition, "\n")
 
-    if(cntMarker == 0){
-        
+    if(cntMarker == 0){  
       stop("Conditioning markers are not found in the provided dosage file \n")
       isCondition = FALSE
       dosage_cond = NULL
-    }
-
+    }else{
+      if(is_rewrite_XnonPAR_forMales){
+        dosage_cond = processMale_XnonPAR(indexInModel_male, dosage_cond, Gx_cond$positions, X_PARregion_mat) 
+      }
+    }    
   }else{#end of if(isCondition){
     dosage_cond = NULL
   }
@@ -679,10 +723,13 @@ SPAGMMATtest = function(bgenFile = "",
           Gx = getDosage_bgen_noquery()
         }
         markerInfo = getMarkerInfo()
-        if(!(markerInfo >= 0 & markerInfo <= 1)){
-		markerInfo0 =1
-	}else{
+        if(markerInfo >= 0 & markerInfo <= 1){
 		markerInfo0 = markerInfo
+	}else{
+		markerInfo0 = 1
+		if(markerInfo == ""){
+			markerInfo = NA
+		}
 	}	
         G0 = Gx$dosages
         AC = Gx$variants$AC
@@ -704,10 +751,14 @@ SPAGMMATtest = function(bgenFile = "",
         AC = Gx$variants$AC
         AF = Gx$variants$AF
         markerInfo = Gx$variants$markerInfo
-        if(!(markerInfo >= 0 & markerInfo <= 1)){
-		markerInfo0=1
+        if(markerInfo >= 0 & markerInfo <= 1){
+		markerInfo0=markerInfo
 	}else{	
-		markerInfo0=markerInfo	
+		markerInfo0=1
+		if(markerInfo ==""){
+			markerInfo=NA
+			Gx$variants$markerInfo=markerInfo
+		}	
 	}	
 	#Gx$variants$markerInfo=1
         rowHeader=as.vector(unlist(Gx$variants))
@@ -718,6 +769,12 @@ SPAGMMATtest = function(bgenFile = "",
         isVariant = getGenoOfnthVar_vcfDosage_pre()
         indexforMissing = Gx$indexforMissing
       }
+  
+
+      if(is_rewrite_XnonPAR_forMales){
+	G0 = processMale_XnonPAR(indexInModel_male, G0, Gx$variants$position, X_PARregion_mat)	
+      }
+
 
       MAC = AC
       MAF = AF
@@ -908,6 +965,20 @@ SPAGMMATtest = function(bgenFile = "",
          }
 	
      }else{ #if(IsDropMissingDosages & length(indexforMissing) > 0){
+
+  	  if(is_rewrite_XnonPAR_forMales){
+		AC = sum(G0)
+	  	AF = sum(G0)/(2*length(G0))
+	        MAF = min(AF, 1-AF)	
+	 	if(dosageFileType == "bgen"){
+			rowHeader[7] = AC
+			rowHeader[8] = AF
+
+    	  	}else if(dosageFileType == "vcf"){
+			rowHeader[6] = AC
+			rowHeader[7] = AF
+    	  	}	
+	   }
 	          ##conditional analysis
          if(isCondition){
            condpre2 = getCovMandOUT_cond(G0 = G0, dosage_cond = dosage_cond, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, obj.glmm.null = obj.glmm.null, sparseSigma = sparseSigma, covM = condpre$covM, mu2.a = mu2.a)
@@ -924,8 +995,11 @@ SPAGMMATtest = function(bgenFile = "",
 
 
   	 if(traitType == "binary"){
+	  
+
            out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv, IsOutputlogPforSingle=IsOutputlogPforSingle)
 	   OUTvec=c(rowHeader, N,unlist(out1))
+
 
     	   if(IsOutputAFinCaseCtrl){	     	
       	     AFCase = sum(G0[y1Index])/(2*NCase)
@@ -1172,6 +1246,12 @@ SPAGMMATtest = function(bgenFile = "",
 			Gmat = as(Gmat, "sparseMatrix")	
 		}
 
+		if(is_rewrite_XnonPAR_forMales){
+			Gmat = as.matrix(Gmat)
+			Gmat = processMale_XnonPAR(indexInModel_male, Gmat, Gx$positions, X_PARregion_mat)
+			Gmat = as(Gmat, "sparseMatrix")
+		}
+
 
 
 		if(isCondition){
@@ -1183,6 +1263,12 @@ SPAGMMATtest = function(bgenFile = "",
 		}
 		
 
+		if(is_rewrite_XnonPAR_forMales | (IsDropMissingDosages & length(indexforMissing) > 0)){
+	        	Gx$ACs = colSums(Gmat)
+	        	Gx$markerAFs = Gx$ACs/(2*nrow(Gmat))
+	        	ACtemp = 2*nrow(Gmat) - Gx$ACs
+	        	Gx$MACs = pmin(Gx$ACs, ACtemp)
+		}
 
 
 	     if(IsDropMissingDosages & length(indexforMissing) > 0){	
@@ -1244,6 +1330,9 @@ SPAGMMATtest = function(bgenFile = "",
 		}
 
               } #if(IsDropMissingDosages & length(indexforMissing) > 0){ 
+
+
+
 
 
 	      rmMarkerIndex = NULL
@@ -2554,6 +2643,28 @@ groupTest = function(Gmat, obj.glmm.null, cateVarRatioMinMACVecExclude, cateVarR
 }
 
 
-
+processMale_XnonPAR = function(maleIDindex, Gx, positionL, XPARregion){
+	print(positionL)
+	for(i in 1:length(positionL)){
+		inPAR = FALSE
+		if(!is.null(XPARregion)){
+		  for (j in 1:nrow(XPARregion)){
+		    if(inPAR == FALSE){	
+			if(positionL[i] <= XPARregion[j,2] & positionL[i] >= XPARregion[j,1]){
+				inPAR = TRUE
+			}
+		    }
+		  }
+		}
+		if(!inPAR){
+			if(length(positionL) > 1){
+			  Gx[maleIDindex,i] = 2*Gx[maleIDindex,i] 
+			}else{
+			  Gx[maleIDindex] = 2*Gx[maleIDindex]	
+			}	
+		}	
+	}
+	return(Gx)	
+}	
 
 
