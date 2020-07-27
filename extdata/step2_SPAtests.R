@@ -2,10 +2,10 @@
 
 #options(stringsAsFactors=F, scipen = 999)
 options(stringsAsFactors=F)
-library(SAIGE)
+#library(SAIGE)
 #library(SAIGE, lib.loc="../../install_dir/0.38")
 #library(SAIGE, lib.loc="../../install_dir/0.36.3.3")
-#library(SAIGE, lib.loc="../../install_dir/0.37")
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.39.3")
 print(sessionInfo())
 
 
@@ -111,7 +111,14 @@ mean, p-value based on traditional score test is returned. Default value is 2.")
   make_option("--weights_for_G2_cond",type="character", default=NULL, 
     help="vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. e.g. '1,2,3"),
   make_option("--IsOutputBETASEinBurdenTest", type="logical",default=FALSE,
-    help="Whether to output effect sizes for burden tests. [default=FALSE]")	
+    help="Whether to output effect sizes for burden tests. [default=FALSE]"),
+  make_option("--sampleFile_male", type="character",default="",
+    help="Path to the file containing one column for IDs of MALE samples in the bgen or vcf file with NO header.
+          Order does not matter"),
+  make_option("--X_PARregion", type="character",default="",
+    help="ranges of (pseudoautosomal) PAR region on chromosome X, which are seperated by comma and in the format start:end. By default: '60001-2699520,154931044-155260560' in the UCSC build hg19. For males, there are two X alleles in the PAR region, so PAR regions are treated the same as autosomes. In the NON-PAR regions (outside the specified PAR regions on chromosome X), for males, there is only one X allele. If is_rewrite_XnonPAR_forMales=TRUE, genotypes/dosages of all variants in the NON-PAR regions on chromosome X will be mutliplied by 2."),
+  make_option("--is_rewrite_XnonPAR_forMales", type="logical",default=FALSE,
+    help="Whether to rewrite gentoypes or dosages of variants in the NON-PAR regions on chromosome X for males (multiply by 2). By default, FALSE. Note, only use is_rewrite_XnonPAR_forMales=TRUE when the specified VCF or Bgen file only has variants on chromosome X. When is_rewrite_XnonPAR_forMales=TRUE, the program does not check the chromosome value by assuming all variants are on chromosome X")	      
 )
 
 
@@ -195,5 +202,8 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 		IsOutputBETASEinBurdenTest=opt$IsOutputBETASEinBurdenTest,
 	SPAcutoff=opt$SPAcutoff,
 	IsOutputHetHomCountsinCaseCtrl=opt$IsOutputHetHomCountsinCaseCtrl,
-	     LOCO=opt$LOCO
+	     LOCO=opt$LOCO,
+		sampleFile_male=opt$sampleFile_male,
+		is_rewrite_XnonPAR_forMales=opt$is_rewrite_XnonPAR_forMales,
+		X_PARregion=opt$X_PARregion
 )

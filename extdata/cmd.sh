@@ -90,6 +90,23 @@ Rscript step2_SPAtests.R        \
 	--IsOutputHetHomCountsinCaseCtrl=TRUE 
 
 
+	##recoding non-PAR X chromosome for males (genotype/dosage * 2)
+Rscript step2_SPAtests.R        \
+	--vcfFile=./input/genotype_10markers_chrX.vcf.gz \
+	--vcfFileIndex=./input/genotype_10markers_chrX.vcf.gz.tbi	\
+	--vcfField=GT \
+        --chrom=chrX \
+        --minMAF=0.0001 \
+        --minMAC=1 \
+        --sampleFile_male=./input/sampleid_males.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype.chrX.txt \
+        --numLinesOutput=2 \
+        --IsOutputAFinCaseCtrl=TRUE     \
+	--is_rewrite_XnonPAR_forMales=TRUE	\
+	--X_PARregion=1-9,12-15
+
 
 	##conditional analysis
 	## --condition = Genetic marker ids (chr:pos_ref/alt) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for vcf/sav and bgen input.
