@@ -42,7 +42,10 @@ https://www.biorxiv.org/content/10.1101/583278v2
 * R-3.6.1, gcc >= 5.4.0, cmake 3.14.1, [cget](https://cget.readthedocs.io/en/latest/src/intro.html#installing-cget)
 * R packages: "R.utils", "Rcpp", "RcppParallel", "RcppArmadillo", "data.table", "RcppEigen", "Matrix", "methods", "BH", "optparse", "SPAtest", "SKAT","MetaSKAT"
 * /extdata/install_packages.R can be used to install the R packages
-
+* SAIGE v0.39.2 depends on the SPAtest v3.1.2, which can be installed using R command 
+```
+devtools::install_github("leeshawn/SPAtest")
+```
 
 ###  Install SAIGE using the conda environment
 
@@ -76,7 +79,7 @@ Please make sure to set up the LDFLAGS and CPPFLAGS using export (the last two c
      Method 1: 
 
      ```
-       src_branch=master
+       src_branch=0.39.2
        repo_src_url=https://github.com/weizhouUMICH/SAIGE
        git clone --depth 1 -b $src_branch $repo_src_url
 
@@ -163,7 +166,7 @@ https://www.leelabsg.org/resources
 
 # Log for fixing bugs
 
-* 0.39.1 (July-27-2020)
+* 0.39.2 (July-27-2020)
 ** add three options --sampleFile_male, --X_PARregion, --is_rewrite_XnonPAR_forMales for chromosome X association tests, in which genotypes/dosages of non-PAR region of males will be multiplied by 2 
 
 * 0.39.1 (July-27-2020)
