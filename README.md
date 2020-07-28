@@ -12,7 +12,7 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.39 (Updated on May 27, 2020).
+## Current version is 0.39.2 (Updated on July 27, 2020).
 
 ## For BGEN input in step 2 with missing dosages, Please use version 0.38. The bug for BGEN input with missing dosages was introducted in v0.36.6. 
 
@@ -103,7 +103,7 @@ Thanks to Juha Karjalainen for sharing the Dockerfile.
 The docker image can be pulled
 
 ```
-docker pull wzhou88/saige:0.39
+docker pull wzhou88/saige:0.39.2
 ```
 
 Functions can be called
@@ -162,6 +162,13 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+
+* 0.39.1 (July-27-2020)
+** add three options --sampleFile_male, --X_PARregion, --is_rewrite_XnonPAR_forMales for chromosome X association tests, in which genotypes/dosages of non-PAR region of males will be multiplied by 2 
+
+* 0.39.1 (July-27-2020)
+** add an option --IsOutputlogPforSingle to output log(P) for single-variant assoc tests. v0.39.1 requires SPAtest 3.1.2.  
+
 * 0.39 (May-27-2020)
 ** fixed an error when conditional analysis is conducted based on vcf input (introduced in 0.38)
 
