@@ -13,6 +13,10 @@ setvcfDosageMatrix <- function(vcfFileName, vcfFileIndex, vcfField) {
     .Call('_SAIGE_setvcfDosageMatrix', PACKAGE = 'SAIGE', vcfFileName, vcfFileIndex, vcfField)
 }
 
+getNumofSamples_Matrix <- function() {
+    .Call('_SAIGE_getNumofSamples_Matrix', PACKAGE = 'SAIGE')
+}
+
 getSampleIDlist_vcfMatrix <- function() {
     .Call('_SAIGE_getSampleIDlist_vcfMatrix', PACKAGE = 'SAIGE')
 }
