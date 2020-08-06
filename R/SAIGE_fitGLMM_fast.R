@@ -609,7 +609,12 @@ fitNULLGLMM = function(plinkFile = "",
 		useSparseSigmaforInitTau = FALSE,
 		minCovariateCount = -1, 
 		minMAFforGRM = 0.01,
-		includeNonautoMarkersforVarRatio = FALSE){
+		includeNonautoMarkersforVarRatio = FALSE,
+		sexCol = "",
+		FemaleCode = 1,
+		FemaleOnly = FALSE,
+		MaleCode = 0,	
+		MaleOnly = FALSE){
 
   setminMAFforGRM(minMAFforGRM)
   if(minMAFforGRM > 0){
@@ -671,6 +676,19 @@ fitNULLGLMM = function(plinkFile = "",
   if(nThreads > 1){
     RcppParallel:::setThreadOptions(numThreads = nThreads)
     cat(nThreads, " threads are set to be used ", "\n")
+  }
+
+
+  if(FemaleOnly & MaleOnly){
+    stop("Both FemaleOnly and MaleOnly are TRUE. Please specify only one of them as TRUE to run the sex-specific job\n")
+  }
+
+  if(FemaleOnly){
+    outputPrefix = paste0(outputPrefix, "_FemaleOnly")
+    cat("Female-specific model will be fitted. Samples coded as ", FemaleCode, " in the column ", sexCol, " in the phenotype file will be included\n")
+  }else if(MaleOnly){
+    outputPrefix = paste0(outputPrefix, "_MaleOnly")
+    cat("Male-specific model will be fitted. Samples coded as ", MaleCode, " in the column ", sexCol, " in the phenotype file will be included\n")
   }
 
   #check and read files
@@ -774,8 +792,22 @@ fitNULLGLMM = function(plinkFile = "",
 
     for(i in c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile)){
       if(!(i %in% colnames(data))){
-        stop("ERROR! column for ", i, " does not exsit in the phenoFile \n")
+        stop("ERROR! column for ", i, " does not exist in the phenoFile \n")
       }
+    }
+
+    if(FemaleOnly | MaleOnly){
+      if(!sexCol %in% colnames(data)){	    
+        stop("ERROR! column for sex ", sexCol, " does not exist in the phenoFile \n")
+      }else{
+	if(FemaleOnly){      
+	  data = data[which(data[,which(colnames(data) == sexCol)] == FemaleCode), ]
+          if(nrow(data) == 0){stop("ERROR! no samples in the phenotype are coded as ", FemaleCode, " in the column ", sexCol, "\n")}
+        }else if (MaleOnly){
+	  data = data[which(data[,which(colnames(data) == sexCol)] == MaleCode), ] 
+          if(nrow(data) == 0){stop("ERROR! no samples in the phenotype are coded as ", MaleCode, " in the column ", sexCol, "\n")}
+	} 
+      }	      
     }
 
     #update the categorical variables
