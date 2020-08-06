@@ -13,6 +13,7 @@ getGenoOfGene_bgen = function(bgenFile,bgenFileIndex,marker_group_line, minMAF=0
   markerIDs = NULL
   markerAFs = NULL
   positions = NULL
+  indexforMissing = NULL
   cnt = 0
   result = list()
   MACs = NULL
@@ -35,6 +36,7 @@ getGenoOfGene_bgen = function(bgenFile,bgenFileIndex,marker_group_line, minMAF=0
         markerAFs = c(markerAFs, MAF)
 	positions = c(positions, Gx$variants$position)
 	MACs = c(MACs, MAC)
+	indexforMissing = c(indexforMissing, Gx$indexforMissing)
         cnt = cnt + 1
       }
     }
@@ -44,6 +46,7 @@ getGenoOfGene_bgen = function(bgenFile,bgenFileIndex,marker_group_line, minMAF=0
     result$MACs = MACs
     result$cnt = cnt
     result$positions = positions
+    result$indexforMissing = indexforMissing
   }else{
     result$cnt = 0
   }
