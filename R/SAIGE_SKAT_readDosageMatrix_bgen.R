@@ -105,15 +105,7 @@ getGenoOfGene_bgen_Sparse = function(bgenFile,bgenFileIndex,marker_group_line, m
         Gvec = c(Gvec, Gx$dosages)
 	iIndex = c(iIndex, Gx$iIndexforMarker)
 	jIndex = c(jIndex, rep((cnt+1), length(Gx$dosages)))
-	print(i)
-	print("object.size(Gvec)")
-	print(object.size(Gvec))
-	print("object.size(iIndex)")
-	print(object.size(iIndex))
-	print("object.size(jIndex)")
-	print(object.size(jIndex))
-	
-
+	#print(i)
         markerIDs = c(markerIDs, Gx$variants$rsid)
         markerAFs = c(markerAFs, AF)
         MACs = c(MACs, MAC)

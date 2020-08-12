@@ -165,6 +165,9 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.39.4 (August-11-2020) use sparse matrix to represent genotype matrix for gene-based tests to save memory
+
+* 0.39.3 (August-6-2020)  add five options --sexCol, --FemaleCode, --FemaleOnly, --MaleCode, --MaleOnly to perform sex-specific Step 1.
 
 * 0.39.2 (July-27-2020)
 ** add three options --sampleFile_male, --X_PARregion, --is_rewrite_XnonPAR_forMales for chromosome X association tests, in which genotypes/dosages of non-PAR region of males will be multiplied by 2 

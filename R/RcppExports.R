@@ -381,8 +381,16 @@ getDosage_inner_bgen_withquery_new <- function() {
     .Call('_SAIGE_getDosage_inner_bgen_withquery_new', PACKAGE = 'SAIGE')
 }
 
+getDosage_inner_bgen_withquery_new_Sparse <- function() {
+    .Call('_SAIGE_getDosage_inner_bgen_withquery_new_Sparse', PACKAGE = 'SAIGE')
+}
+
 getDosage_bgen_withquery <- function() {
     .Call('_SAIGE_getDosage_bgen_withquery', PACKAGE = 'SAIGE')
+}
+
+getDosage_bgen_withquery_Sparse <- function() {
+    .Call('_SAIGE_getDosage_bgen_withquery_Sparse', PACKAGE = 'SAIGE')
 }
 
 getDosage_bgen_noquery <- function() {

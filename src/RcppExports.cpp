@@ -1173,6 +1173,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getDosage_inner_bgen_withquery_new_Sparse
+Rcpp::List getDosage_inner_bgen_withquery_new_Sparse();
+RcppExport SEXP _SAIGE_getDosage_inner_bgen_withquery_new_Sparse() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getDosage_inner_bgen_withquery_new_Sparse());
+    return rcpp_result_gen;
+END_RCPP
+}
 // getDosage_bgen_withquery
 Rcpp::List getDosage_bgen_withquery();
 RcppExport SEXP _SAIGE_getDosage_bgen_withquery() {
@@ -1180,6 +1190,16 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     rcpp_result_gen = Rcpp::wrap(getDosage_bgen_withquery());
+    return rcpp_result_gen;
+END_RCPP
+}
+// getDosage_bgen_withquery_Sparse
+Rcpp::List getDosage_bgen_withquery_Sparse();
+RcppExport SEXP _SAIGE_getDosage_bgen_withquery_Sparse() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getDosage_bgen_withquery_Sparse());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1534,7 +1554,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 6},
     {"_SAIGE_getDosage_inner_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery, 0},
     {"_SAIGE_getDosage_inner_bgen_withquery_new", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery_new, 0},
+    {"_SAIGE_getDosage_inner_bgen_withquery_new_Sparse", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery_new_Sparse, 0},
     {"_SAIGE_getDosage_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_bgen_withquery, 0},
+    {"_SAIGE_getDosage_bgen_withquery_Sparse", (DL_FUNC) &_SAIGE_getDosage_bgen_withquery_Sparse, 0},
     {"_SAIGE_getDosage_bgen_noquery", (DL_FUNC) &_SAIGE_getDosage_bgen_noquery, 0},
     {"_SAIGE_getQueryStatus", (DL_FUNC) &_SAIGE_getQueryStatus, 0},
     {"_SAIGE_getisReadVariantBgen", (DL_FUNC) &_SAIGE_getisReadVariantBgen, 0},

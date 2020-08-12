@@ -160,9 +160,17 @@ SPAGMMATtest = function(bgenFile = "",
     stop("ERROR! GMMATmodelFile ", GMMATmodelFile, " does not exsit\n")
   }else{
     load(GMMATmodelFile)
+    ytemp=modglmm$obj.glm.null$y
+    modglmm$obj.glm.null = NULL
+    modglmm$Y = NULL
+    modglmm$obj.glm.null = list(y=ytemp)
+    modglmm$linear.predictors = NULL
+    modglmm$coefficients = NULL
+    modglmm$cov = NULL
+
     obj.glmm.null = modglmm
     rm(modglmm)
-
+    gc(T)
     sampleInModel = NULL
     sampleInModel$IID = obj.glmm.null$sampleID
     sampleInModel = data.frame(sampleInModel)
@@ -1231,7 +1239,8 @@ SPAGMMATtest = function(bgenFile = "",
            }else if(dosageFileType == "bgen"){
 	     print(marker_group_line)
 	     cat("genetic variants with ", testMinMAF, "<= MAF <= ", maxMAFforGroupTest, "are included for gene-based tests\n") 
-             Gx = getGenoOfGene_bgen(bgenFile,bgenFileIndex, marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)
+             #Gx = getGenoOfGene_bgen(bgenFile,bgenFileIndex, marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)
+	     Gx = getGenoOfGene_bgen_Sparse(bgenFile,bgenFileIndex, marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)
            }
            cntMarker = Gx$cnt
            cat("cntMarker: ", cntMarker, "\n")
@@ -1242,9 +1251,13 @@ SPAGMMATtest = function(bgenFile = "",
 		if(dosageFileType == "vcf"){
 			Gmat = Matrix:::sparseMatrix(i = as.vector(Gx$iIndex), j = as.vector(Gx$jIndex), x = as.vector(Gx$dosages), symmetric = FALSE, dims = c(N, cntMarker))
 		}else{
-			Gmat = matrix(Gx$dosages, byrow=F, ncol = cntMarker)
-			Gmat = as(Gmat, "sparseMatrix")	
+			#Gmat = matrix(Gx$dosages, byrow=F, ncol = cntMarker)
+			#Gmat = as(Gmat, "sparseMatrix")
+			Gmat = Matrix:::sparseMatrix(i = as.vector(Gx$iIndex), j = as.vector(Gx$jIndex), x = as.vector(Gx$dosages), symmetric = FALSE, dims = c(N, cntMarker))	
 		}
+		Gx$iIndex=NULL
+		Gx$jIndex=NULL
+		Gx$dosages=NULL
 
 		if(is_rewrite_XnonPAR_forMales){
 			Gmat = as.matrix(Gmat)
@@ -1256,6 +1269,7 @@ SPAGMMATtest = function(bgenFile = "",
 
 		if(isCondition){
 			indexforMissing = unique(c(Gx$indexforMissing, Gx_cond$indexforMissing))
+			cat("indexforMissing: ", indexforMissing, "\n")
 		}else{
 			indexforMissing = unique(Gx$indexforMissing)
 
@@ -1308,7 +1322,8 @@ SPAGMMATtest = function(bgenFile = "",
         	sparseSigma.sub = sparseSigma
         	if(!is.null(sparseSigma)){sparseSigma.sub = sparseSigma[missingind, missingind]}
 	       	#Gmat = Gmat[missingind,]
-		Gmat = array(Gmat, dim = c(N, cntMarker))[missingind, , drop = FALSE]
+		#Gmat = array(Gmat, dim = c(N, cntMarker))[missingind, , drop = FALSE]
+		Gmat = Gmat[missingind,,drop = FALSE]	
 #		if(cntMarker == 1){
 #			Gmat = matrix(Gmat, ncol=1)
 #		}
@@ -1316,8 +1331,9 @@ SPAGMMATtest = function(bgenFile = "",
 		if(isCondition){
                 	cat("Removing ", length(indexforMissing), " samples from the conditional marker\n")
                 	#dosage_cond.sub = dosage_cond[missingind, ]
-			dosage_cond.sub = array(dosage_cond, dim = c(N, Gx_cond$cnt))[missingind, , drop = FALSE]
-                	dosage_cond.sub = as(dosage_cond.sub, "sparseMatrix")
+			#dosage_cond.sub = array(dosage_cond, dim = c(N, Gx_cond$cnt))[missingind, , drop = FALSE]
+                	#dosage_cond.sub = as(dosage_cond.sub, "sparseMatrix")
+			dosage_cond.sub = dosage_cond[missingind, , drop = FALSE]
 
 
 			condpre.sub = getCovMandOUT_cond_pre(dosage_cond=dosage_cond.sub, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude, ratioVec=ratioVec, obj.glmm.null = obj.glmm.null.sub, sparseSigma = sparseSigma.sub, IsSparse=IsSparse,  mu = mu.sub, mu.a = mu.a.sub, mu2.a = mu2.a.sub, Cutoff = Cutoff)
@@ -1339,13 +1355,14 @@ SPAGMMATtest = function(bgenFile = "",
 	      if(dosageZerodCutoff > 0 & sum(Gx$MACs <= 10) > 0){
 		zerodIndex = which(Gx$MACs <= 10)
 		for(z in zerodIndex){
-			cat("z is ", z, "\n")
-			cat("dim(Gmat) is ", dim(Gmat), "\n")
+			#cat("z is ", z, "\n")
+			#cat("dim(Gmat) is ", dim(Gmat), "\n")
 			#if(dim(Gmat)[2] > 1){
-			replaceindex = which(Gmat[,z] <= dosageZerodCutoff)
+			#replaceindex = which(Gmat[,z] <= dosageZerodCutoff)
+			replaceindex = which(Gmat[,z] <= dosageZerodCutoff & Gmat[,z] >0)
 			if(length(replaceindex) > 0){	
 				Gmat[replaceindex,z] = 0 
-				cat("dim(Gmat) is ", dim(Gmat), "\n")
+				#cat("dim(Gmat) is ", dim(Gmat), "\n")
 					#i#if(sum(Gmat[,z])/(2*nrow(Gmat)) < testMinMAF){rmMarkerIndex = c(rmMarkerIndex, z)}
 			}
 			#}else{
@@ -1368,8 +1385,9 @@ SPAGMMATtest = function(bgenFile = "",
 		cat(length(rmMarkerIndex), " marker(s) is(are) further removed\n")
 		cntMarker = cntMarker - length(rmMarkerIndex)
 		if(cntMarker > 0){
-			print(dim(Gmat))
-			Gmat = array(Gmat, dim = c(nrow(Gmat), ncol(Gmat)))[,-rmMarkerIndex,drop = FALSE]
+			#print(dim(Gmat))
+			#Gmat = array(Gmat, dim = c(nrow(Gmat), ncol(Gmat)))[,-rmMarkerIndex,drop = FALSE]
+			Gmat = Gmat[,-rmMarkerIndex,drop = FALSE]
 			print(dim(Gmat))
 			#Gmat = Gmat[,-rmMarkerIndex]
 				#cntMarker = cntMarker - length(rmMarkerIndex)

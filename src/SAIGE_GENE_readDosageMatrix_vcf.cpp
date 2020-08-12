@@ -206,6 +206,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
     result["cnt"] = cnt;
     result["iIndex"] = iIndexVec;
     result["jIndex"] = jIndexVec;
+    result["MACs"] = MACs; 	
     result["positions"] = positions;
   }else{
     //if there is it === end
