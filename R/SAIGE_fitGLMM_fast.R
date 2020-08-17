@@ -218,11 +218,13 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
 
   converged = ifelse(i < maxiter, TRUE, FALSE)
   res = y - mu
-  if(isCovariateTransform){
+  #if(isCovariateTransform & hasCovariate){
+  if(!is.null(out.transform)){
     coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
   }else{
     coef.alpha = alpha
   }
+
   #obj.noK = ScoreTest_NULL_Model_binary(mu, y, X) 
   glmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID, obj.noK=obj.noK, obj.glm.null=fit0, traitType="binary")
 
@@ -245,7 +247,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
         Y = re.coef_LOCO$Y
         mu = re.coef_LOCO$mu
         res = y - mu
-        if(isCovariateTransform){
+        if(!is.null(out.transform)){
         coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
 	}else{
 	coef.alpha = alpha
@@ -441,7 +443,7 @@ if(FALSE){
   converged = ifelse(i < maxiter, TRUE, FALSE)
   res = y - mu
 
-  if(isCovariateTransform){
+  if(!is.null(out.transform)){
     coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
   }else{
     coef.alpha = alpha
@@ -474,7 +476,7 @@ if(FALSE){
         mu = re.coef_LOCO$mu
 
         res = y - mu
-        if(isCovariateTransform){
+        if(!is.null(out.transform)){
         coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
         }else{
         coef.alpha = alpha
@@ -568,6 +570,12 @@ solveSpMatrixUsingArma = function(sparseGRMtest){
 #' @param minCovariateCount integer. If binary covariates have a count less than this, they will be excluded from the model to avoid convergence issues. By default, -1 (no covariates will be excluded)
 #' @param minMAFforGRM numeric. Minimum MAF for markers (in the Plink file) used for construcing the sparse GRM. By default, 0.01
 #' @param includeNonautoMarkersforVarRatio logical. Whether to allow for non-autosomal markers for variance ratio. By default, FALSE
+#' @param FemaleOnly logical. Whether to run Step 1 for females only. If TRUE, sexCol and FemaleCode need to be specified. By default, FALSE
+#' @param MaleOnly logical. Whether to run Step 1 for males only. If TRUE, sexCol and MaleCode need to be specified. By default, FALSE
+#' @param FemaleCode character. Values in the column for sex (sexCol) in the phenotype file are used for females. By default, '1' 
+#' @param MaleCode character. Values in the column for sex (sexCol) in the phenotype file are used for males. By default, '0'
+#' @param sexCol character. Coloumn name for sex in the phenotype file, e.g Sex. By default, '' 
+#' @param noEstFixedEff logical. Whether to estimate fixed effect coeffciets. By default, FALSE.  
 #' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio values, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
 #' @export
 fitNULLGLMM = function(plinkFile = "", 
@@ -614,7 +622,8 @@ fitNULLGLMM = function(plinkFile = "",
 		FemaleCode = 1,
 		FemaleOnly = FALSE,
 		MaleCode = 0,	
-		MaleOnly = FALSE){
+		MaleOnly = FALSE,
+		noEstFixedEff = FALSE){
 
   setminMAFforGRM(minMAFforGRM)
   if(minMAFforGRM > 0){
@@ -857,11 +866,41 @@ fitNULLGLMM = function(plinkFile = "",
     covarColList <- covarColList[!(covarColList %in% out_checksep)]
     formula = paste0(phenoCol,"~", paste0(covarColList,collapse="+"))
     formula.null = as.formula(formula)
+    if(length(covarColList) == 1){
+      hasCovariate=FALSE 
+    }else{
+      hasCovariate=TRUE
+    }    
     dataMerge_sort <- dataMerge_sort[, !(names(dataMerge_sort) %in% out_checksep)]
   }
 
 
-  if(isCovariateTransform){
+  if(!hasCovariate){noEstFixedEff=FALSE}
+
+  if(noEstFixedEff){
+    #if(hasCovariate){
+      print("noEstFixedEff=TRUE, so fixed effects coefficnets won't be estimated.")	    
+      if(traitType == "binary"){ 
+        modwitcov = glm(formula.null, data=dataMerge_sort, family=binomial)
+        covoffset = modwitcov$linear.predictors
+	dataMerge_sort$covoffset = covoffset 
+      }else{
+        modwitcov = lm(formula.null, data=dataMerge_sort)
+        dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = modwitcov$residuals
+      } 
+	formula_nocov = paste0(phenoCol,"~ 1")
+        formula.null = as.formula(formula_nocov)
+        hasCovariate = FALSE	
+    #}
+  }
+  #else{
+  #  if(traitType == "binary"){
+  #    covoffset = 0
+  #  } 	    
+  #}	  
+
+  if(isCovariateTransform & hasCovariate){
+   	  
     cat("qr transformation has been performed on covariates\n")
     out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
     formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
@@ -879,10 +918,14 @@ fitNULLGLMM = function(plinkFile = "",
     cat("colnames(data.new) is ", colnames(data.new), "\n")
     cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
 
+    
   }else{ #if(isCovariateTransform) else
     formula.new = formula.null
     data.new = dataMerge_sort
+    out.transform = NULL
   }
+
+
 
 #  data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
 #  colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
@@ -931,7 +974,12 @@ fitNULLGLMM = function(plinkFile = "",
     }
     #fit0 = glm(formula.null,data=dataMerge_sort, family=binomial)
     #fit0 = glm(out.transform$Y ~ out.transform$X1,family=binomial)
-    fit0 = glm(formula.new, data=data.new, family=binomial)
+    #noEstFixedEff & hasCovariate
+    if(!noEstFixedEff){
+      fit0 = glm(formula.new, data=data.new, family=binomial)
+    }else{
+      fit0 = glm(formula.new, data=data.new, offset=covoffset, family=binomial)
+    }	    
     cat("glm:\n")
     print(fit0)
     

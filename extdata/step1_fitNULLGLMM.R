@@ -5,8 +5,8 @@ options(stringsAsFactors=F)
 ## load R libraries
 #library(SAIGE, lib.loc="../../install_dir/0.38")
 #library(SAIGE, lib.loc="../../install_dir/0.36.6")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.39.3")
-library(SAIGE)
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.39.5")
+#library(SAIGE)
 require(optparse) #install.packages("optparse")
 
 print(sessionInfo())
@@ -98,7 +98,9 @@ option_list <- list(
   make_option("--FemaleCode", type="character", default="1",
    help="Values in the column for sex in the phenotype file are used for females [default, '1']"),
   make_option("--MaleCode", type="character", default="0",
-   help="Values in the column for sex in the phenotype file are used for males [default, '0']")
+   help="Values in the column for sex in the phenotype file are used for males [default, '0']"),
+  make_option("--noEstFixedEff", type="logical", default=FALSE,
+   help="Whether to estimate fixed effect coeffciets. [default, 'FALSE']")
 )
 
 
@@ -172,5 +174,6 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
     	    FemaleCode=opt$FemaleCode,
 	    FemaleOnly=opt$FemaleOnly,
 	    MaleCode=opt$MaleCode,
-	    MaleOnly=opt$MaleOnly	    
+	    MaleOnly=opt$MaleOnly,
+	   noEstFixedEff=opt$noEstFixedEff 
 	)	
