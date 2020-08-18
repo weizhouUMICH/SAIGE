@@ -123,7 +123,7 @@ outputDiagGRM = function(
   if(!file.exists(paste0(plinkFile, ".fam"))){
     stop("ERROR! ", plinkFile, ".fam does not exsit\n")
   }else{
-    sampleListwithGenov0 = data.table:::fread(paste0(plinkFile,".fam"),  header=F)
+    sampleListwithGenov0 = data.table:::fread(paste0(plinkFile,".fam"),  header=F, colClasses=list(character=1:4))
     sampleListwithGenov0 = data.frame(sampleListwithGenov0)
     colnames(sampleListwithGenov0) = c("FIDgeno", "IIDgeno", "father", "mother", "sex", "phe")
     sampleListwithGeno = NULL
