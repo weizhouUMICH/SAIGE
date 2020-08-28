@@ -45,6 +45,7 @@
 #' @param cateVarRatioMinMACVecExclude vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. By default, c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5). If groupFile="", only one variance ratio corresponding to MAC >= 20 is used 
 #' @param cateVarRatioMaxMACVecInclude vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. By default, c(1.5,2.5,3.5,4.5,5.5,10.5,20.5). If groupFile="", only one variance ratio corresponding to MAC >= 20 is used
 #' @param dosageZerodCutoff numeric. In gene- or region-based tests, for each variants with MAC <= 10, dosages <= dosageZerodCutoff with be set to 0. By default, 0.2. 
+#' @param minMACfordosageZerod numeric. For each variant with MAC <= minMACfordosageZerod, dosages <= dosageZerodCutoff with be set to 0. By default, 30
 #' @param IsOutputPvalueNAinGroupTestforBinary logical. In gene- or region-based tests for binary traits. if IsOutputPvalueNAinGroupTestforBinary is TRUE, p-values without accounting for case-control imbalance will be output. By default, FALSE 
 #' @param IsAccountforCasecontrolImbalanceinGroupTest logical. In gene- or region-based tests for binary traits. If IsAccountforCasecontrolImbalanceinGroupTest is TRUE, p-values after accounting for case-control imbalance will be output. By default, TRUE
 #' @param IsOutputBETASEinBurdenTest logical. Output effect size (BETA and SE) for burden tests. By default, FALSE 
@@ -95,7 +96,8 @@ SPAGMMATtest = function(bgenFile = "",
 		 IsSingleVarinGroupTest = TRUE,
 		 cateVarRatioMinMACVecExclude=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5), 
 		 cateVarRatioMaxMACVecInclude=c(1.5,2.5,3.5,4.5,5.5,10.5,20.5),
-		 dosageZerodCutoff = 0.2,	
+		 dosageZerodCutoff = 0.2,
+	 	 minMACfordosageZerod=30,	 
 		 IsOutputPvalueNAinGroupTestforBinary = FALSE,
 		 IsAccountforCasecontrolImbalanceinGroupTest = TRUE,
 		 IsOutputBETASEinBurdenTest = FALSE,
@@ -124,6 +126,16 @@ SPAGMMATtest = function(bgenFile = "",
   if(groupFile == ""){
     isGroupTest = FALSE
     cat("single-variant association test will be performed\n")
+    if(dosageZerodCutoff <= 0){
+        dosageZerodCutoff = 0
+    }else if(dosageZerodCutoff > 0 ){
+	if(minMACfordosageZerod > 0){
+	
+    		cat("Any dosages <= ", dosageZerodCutoff, " for genetic variants with MAC <= ", minMACfordosageZerod, " are set to be 0\n")
+    	}
+    }
+
+
   }else{
     cat("group-based test will be performed\n")
     
@@ -845,6 +857,16 @@ cat("It is a survival trait\n")
 
 	N.sub = length(G0)
 	AC_Allele2.sub = sum(G0)
+
+	
+	if(dosageZerodCutoff > 0 & minMACfordosageZerod > 0){
+		MAC_Allele2.sub = min(AC_Allele2.sub, 2*N.sub-AC_Allele2.sub)
+		if(MAC_Allele2.sub <= minMACfordosageZerod){
+			G0[which(G0 < dosageZerodCutoff)] = 0
+			AC_Allele2.sub = sum(G0)	
+	i	}	
+	}	
+
 	AF_Allele2.sub = AC_Allele2.sub/(2*N.sub)
 	if(dosageFileType == "bgen"){
 		rowHeader[7] = AC_Allele2.sub
@@ -964,7 +986,18 @@ cat("It is a survival trait\n")
 	
      }else{ #if(IsDropMissingDosages & length(indexforMissing) > 0){
 	          ##conditional analysis
-         if(isCondition){
+	 if(dosageZerodCutoff > 0 & minMACfordosageZerod > 0){
+                if(MAC <= minMACfordosageZerod){
+                        G0[which(G0 < dosageZerodCutoff)] = 0
+			AC = sum(G0)
+			AF = AC/(2*N)
+			MAF = min(AF, 1-AF)
+		}	
+        }
+
+
+    
+	 if(isCondition){
            condpre2 = getCovMandOUT_cond(G0 = G0, dosage_cond = dosage_cond, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, obj.glmm.null = obj.glmm.null, sparseSigma = sparseSigma, covM = condpre$covM, mu2.a = mu2.a)
            G1tilde_P_G2tilde = condpre2$G1tilde_P_G2tilde
            GratioMatrixall = condpre2$GratioMatrixall
