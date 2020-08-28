@@ -189,5 +189,6 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 	     weightsIncludeinGroupFile=opt$weightsIncludeinGroupFile,
 	     weights_for_G2_cond=weights_for_G2_cond,
 		IsOutputBETASEinBurdenTest=opt$IsOutputBETASEinBurdenTest,
-		IsSPAfast = opt$IsSPAfast
+		IsSPAfast = opt$IsSPAfast,
+		minMACfordosageZerod = opt$minMACfordosageZerod	
 )
