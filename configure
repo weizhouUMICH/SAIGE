@@ -9,10 +9,10 @@ fi
 #Rscript -e 'devtools::install_github("leeshawn/SPAtest")'
 
 ##install savvy library
-#rm -rf thirdParty/cget
-#cget install -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" --prefix thirdParty/cget -f thirdParty/requirements.txt
+rm -rf thirdParty/cget
+cget install -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" --prefix thirdParty/cget -f thirdParty/requirements.txt
 
 ##install the bgen library
-#cd thirdParty/bgen
-#./waf configure
-#./waf
+cd thirdParty/bgen
+./waf configure
+./waf
