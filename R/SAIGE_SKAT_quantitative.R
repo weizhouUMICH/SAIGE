@@ -2,10 +2,11 @@
 #G1 is genotypes for testing gene, which contains m markers
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
-SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE, weights_specified = NULL, weights_for_G2_cond = NULL, weightsIncludeinGroupFile = FALSE, IsOutputBETASEinBurdenTest=FALSE){
+SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE, weights_specified = NULL, weights_for_G2_cond = NULL, weightsIncludeinGroupFile = FALSE, IsOutputBETASEinBurdenTest=FALSE){
 
         #check the input genotype G1
         obj.noK = obj$obj.noK
+	obj.noK$y = y
         m = ncol(G1)
         n = nrow(G1)
 	MACvec = colSums(G1)
@@ -112,7 +113,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 			}
                 }
 
-
+			
 		Score = as.vector(t(G1) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
 
                 if(!is.null(G2_cond)){
@@ -145,8 +146,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, cateVarRatioMinMACVecExclude, cateV
 		}
 
 		if(adjustCCratioinGroupTest){
-			y = obj$obj.glm.null$y	
-			obj_cc <- obj$obj_cc
+			#y = obj$y	
+			obj_cc <- SKAT::SKAT_Null_Model(y ~ X-1, out_type="D", Adjustment = FALSE) 
 			obj_cc$mu=mu
 			obj_cc$res=y-obj_cc$mu
 			obj_cc$pi_1=obj_cc$mu*(1-obj_cc$mu)

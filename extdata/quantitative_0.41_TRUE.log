@@ -1,0 +1,1106 @@
+R version 3.6.3 (2020-02-29)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.4 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] optparse_1.6.0 SAIGE_0.39.4  
+
+loaded via a namespace (and not attached):
+[1] compiler_3.6.3     Matrix_1.2-14      Rcpp_1.0.0         getopt_1.20.2     
+[5] grid_3.6.3         RcppParallel_4.4.1 lattice_0.20-41   
+$plinkFile
+[1] "./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly_22chr"
+
+$phenoFile
+[1] "./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt"
+
+$phenoCol
+[1] "y_quantitative"
+
+$traitType
+[1] "quantitative"
+
+$invNormalize
+[1] FALSE
+
+$covarColList
+[1] "x1,x2"
+
+$sampleIDColinphenoFile
+[1] "IID"
+
+$tol
+[1] 0.02
+
+$maxiter
+[1] 20
+
+$tolPCG
+[1] 1e-05
+
+$maxiterPCG
+[1] 500
+
+$nThreads
+[1] 4
+
+$SPAcutoff
+[1] 2
+
+$numRandomMarkerforVarianceRatio
+[1] 30
+
+$skipModelFitting
+[1] FALSE
+
+$memoryChunk
+[1] 2
+
+$tauInit
+[1] "0,0"
+
+$LOCO
+[1] TRUE
+
+$traceCVcutoff
+[1] 0.0025
+
+$ratioCVcutoff
+[1] 0.001
+
+$outputPrefix
+[1] "./output/example_quantitative_includenonAutoforvarRatio_0.41_LOCO_TRUE"
+
+$IsOverwriteVarianceRatioFile
+[1] FALSE
+
+$IsSparseKin
+[1] FALSE
+
+$numRandomMarkerforSparseKin
+[1] 2000
+
+$isCateVarianceRatio
+[1] FALSE
+
+$relatednessCutoff
+[1] 0.125
+
+$cateVarRatioMinMACVecExclude
+[1] "0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$cateVarRatioMaxMACVecInclude
+[1] "1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$isCovariateTransform
+[1] TRUE
+
+$isDiagofKinSetAsOne
+[1] FALSE
+
+$useSparseSigmaConditionerforPCG
+[1] FALSE
+
+$useSparseSigmaforInitTau
+[1] FALSE
+
+$minMAFforGRM
+[1] 0.01
+
+$minCovariateCount
+[1] -1
+
+$includeNonautoMarkersforVarRatio
+[1] FALSE
+
+$FemaleOnly
+[1] FALSE
+
+$MaleOnly
+[1] FALSE
+
+$sexCol
+[1] ""
+
+$FemaleCode
+[1] "1"
+
+$MaleCode
+[1] "0"
+
+$noEstFixedEff
+[1] FALSE
+
+$help
+[1] FALSE
+
+tauInit  is  0 0 
+cateVarRatioMinMACVecExclude  is  0.5 1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+cateVarRatioMaxMACVecInclude  is  1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+Markers in the Plink file with MAF >=  0.01  will be used to construct GRM
+4  threads are set to be used  
+WARNING: leave-one-chromosome-out is activated! Note this option will only be applied to autosomal variants
+WARNING: Genetic variants needs to be ordered by chromosome and position in the Plink file
+chromosomeStartIndexVec:  0 5858 11716 17574 23432 29290 35148 41006 46864 52722 58580 64438 70296 76154 82012 87870 93728 99586 105444 111302 117160 123018 
+chromosomeEndIndexVec:  5857 11715 17573 23431 29289 35147 41005 46863 52721 58579 64437 70295 76153 82011 87869 93727 99585 105443 111301 117159 123017 128867 
+1000  samples have genotypes
+formula is  y_quantitative~x1+x2 
+1000  samples have non-missing phenotypes
+1000  samples will be used for analysis
+qr transformation has been performed on covariates
+colnames(data.new) is  Y minus1 x1 x2 
+out.transform$Param.transform$qrr:  3 3 
+y_quantitative  is a quantitative trait
+glm:
+
+Call:  glm(formula = formula.new, family = gaussian(link = "identity"), 
+    data = data.new)
+
+Coefficients:
+    minus1          x1          x2  
+-1.448e-16  -5.059e-01  -2.461e-01  
+
+Degrees of Freedom: 1000 Total (i.e. Null);  997 Residual
+Null Deviance:	    998.7 
+Residual Deviance: 682.2 	AIC: 2463
+Start fitting the NULL GLMM
+   user  system elapsed 
+  2.120   0.252   2.372 
+[1] "Start reading genotype plink file here"
+nbyte: 250
+nbyte: 250
+reserve: 32474736
+
+M: 128868, N: 1000
+size of genoVecofPointers: 1
+setgeno mark1
+setgeno mark2
+111305 markers with MAF >= 0.01 are used for GRM.
+setgeno mark5
+setgeno mark6
+time: 2672.44
+[1] "Genotype reading is done"
+Fixed-effect coefficients:
+       minus1            x1            x2 
+-1.447946e-16 -5.059180e-01 -2.460621e-01 
+initial tau is  1 0 
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+Tau:
+[1] 1 0
+Fixed-effect coefficients:
+              [,1]
+[1,] -5.271177e-09
+[2,] -5.059182e-01
+[3,] -2.460621e-01
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+Variance component estimates:
+[1] 0.6841077 0.0000000
+
+Iteration  1 :
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+Tau:
+[1] 0.6841077 0.0000000
+Fixed-effect coefficients:
+              [,1]
+[1,] -1.963862e-08
+[2,] -5.059176e-01
+[3,] -2.460621e-01
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+iter from getPCG1ofSigmaAndVector 1
+cov:  0.0006841106 -4.90957e-12 -4.686409e-12 -4.90957e-12 0.0006841075 3.34742e-12 -4.686409e-12 3.34742e-12 0.0006841078 
+Variance component estimates:
+[1] 0.1806217 0.3049278
+Fixed-effect coefficients:
+              [,1]
+[1,] -1.963862e-08
+[2,] -5.059176e-01
+[3,] -2.460621e-01
+
+Iteration  2 :
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 7
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 11
+Tau:
+[1] 0.1806217 0.3049278
+Fixed-effect coefficients:
+             [,1]
+[1,]  1.08837e-06
+[2,] -5.19309e-01
+[3,] -2.55371e-01
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 11
+cov:  0.0001806217 2.286319e-11 -3.512087e-10 2.286319e-11 0.0003727826 4.817114e-06 -3.512087e-10 4.817114e-06 0.0003665514 
+Variance component estimates:
+[1] 0.2043511 0.4228401
+Fixed-effect coefficients:
+             [,1]
+[1,]  1.08837e-06
+[2,] -5.19309e-01
+[3,] -2.55371e-01
+
+Iteration  3 :
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 8
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 11
+Tau:
+[1] 0.2043511 0.4228401
+Fixed-effect coefficients:
+              [,1]
+[1,]  1.206432e-06
+[2,] -5.203205e-01
+[3,] -2.560471e-01
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 11
+cov:  0.0002043511 -3.470131e-11 -1.065303e-09 -3.470131e-11 0.0004619152 6.267131e-06 -1.065303e-09 6.267131e-06 0.000453541 
+Variance component estimates:
+[1] 0.2017752 0.4812337
+Fixed-effect coefficients:
+              [,1]
+[1,]  1.206432e-06
+[2,] -5.203205e-01
+[3,] -2.560471e-01
+
+Iteration  4 :
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 8
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.2017752 0.4812337
+Fixed-effect coefficients:
+              [,1]
+[1,]  1.224415e-06
+[2,] -5.210312e-01
+[3,] -2.564954e-01
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 14
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 14
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 14
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 14
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 13
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 11
+cov:  0.0002017752 -5.256615e-11 -7.355517e-10 -5.256615e-11 0.000488204 6.827717e-06 -7.355517e-10 6.827717e-06 0.0004788643 
+Variance component estimates:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  1.224415e-06
+[2,] -5.210312e-01
+[3,] -2.564954e-01
+
+Final  0.1993823 0.4900996 :
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  1.261872e-07
+[2,] -5.211821e-01
+[3,] -2.565891e-01
+leave chromosome  1  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,] -1.053459e-08
+[2,] -5.213344e-01
+[3,] -2.565549e-01
+leave chromosome  2  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  2.289515e-07
+[2,] -5.212431e-01
+[3,] -2.568111e-01
+leave chromosome  3  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  5.990114e-07
+[2,] -5.214558e-01
+[3,] -2.565939e-01
+leave chromosome  4  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  6.457441e-07
+[2,] -5.210728e-01
+[3,] -2.566912e-01
+leave chromosome  5  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  3.061702e-07
+[2,] -5.211346e-01
+[3,] -2.562682e-01
+leave chromosome  6  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  3.144197e-07
+[2,] -5.211422e-01
+[3,] -2.568220e-01
+leave chromosome  7  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  3.402680e-07
+[2,] -5.215530e-01
+[3,] -2.566006e-01
+leave chromosome  8  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  1.622562e-07
+[2,] -5.211226e-01
+[3,] -2.564032e-01
+leave chromosome  9  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  5.476973e-07
+[2,] -5.213991e-01
+[3,] -2.563601e-01
+leave chromosome  10  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  5.645458e-08
+[2,] -5.214279e-01
+[3,] -2.565257e-01
+leave chromosome  11  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  5.843464e-07
+[2,] -5.213238e-01
+[3,] -2.563793e-01
+leave chromosome  12  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  2.203472e-07
+[2,] -5.214431e-01
+[3,] -2.571552e-01
+leave chromosome  13  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  5.822654e-07
+[2,] -5.208942e-01
+[3,] -2.561936e-01
+leave chromosome  14  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  2.578785e-07
+[2,] -5.206920e-01
+[3,] -2.562579e-01
+leave chromosome  15  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  1.380374e-08
+[2,] -5.213200e-01
+[3,] -2.565460e-01
+leave chromosome  16  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  2.736198e-07
+[2,] -5.208520e-01
+[3,] -2.566374e-01
+leave chromosome  17  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  2.506690e-07
+[2,] -5.213063e-01
+[3,] -2.567080e-01
+leave chromosome  18  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  9.366244e-08
+[2,] -5.211101e-01
+[3,] -2.565363e-01
+leave chromosome  19  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  3.369751e-07
+[2,] -5.212927e-01
+[3,] -2.566429e-01
+leave chromosome  20  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  1.347133e-07
+[2,] -5.210392e-01
+[3,] -2.565825e-01
+leave chromosome  21  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  8.048148e-07
+[2,] -5.209018e-01
+[3,] -2.567474e-01
+leave chromosome  22  out
+iGet_Coef:  1 
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+Tau:
+[1] 0.1993823 0.4900996
+Fixed-effect coefficients:
+              [,1]
+[1,]  3.285501e-07
+[2,] -5.209235e-01
+[3,] -2.569205e-01
+    user   system  elapsed 
+1044.296    2.812  290.481 
+t_end - t_begin, fitting the NULL model took
+    user   system  elapsed 
+1042.176    2.560  288.109 
+[1] "step2"
+Start estimating variance ratios
+
+Family: gaussian 
+Link function: identity 
+
+Only one variance ratio will be estimated using randomly selected markers with MAC >= 20
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+81310 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+111416 th marker
+G0 0 1 0 1 0 0 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+37839 th marker
+G0 1 1 0 0 0 1 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+44248 th marker
+G0 2 0 1 1 2 1 2 1 0 1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+111799 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+70674 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+44844 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+90717 th marker
+G0 0 0 0 0 0 1 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+128241 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+24347 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+[1] "OK"
+[1] "OK1"
+111467 th marker
+G0 0 0 0 0 0 1 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+12435 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+101559 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+107454 th marker
+G0 0 1 1 1 0 1 0 1 1 1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+60569 th marker
+G0 0 1 0 1 0 0 0 0 1 1 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+75866 th marker
+G0 0 0 0 0 0 1 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+44558 th marker
+G0 2 0 1 1 1 1 1 2 0 1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+14763 th marker
+G0 0 0 0 0 1 0 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+105100 th marker
+G0 1 2 2 2 0 1 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+116280 th marker
+G0 0 1 1 0 1 1 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+[1] "OK"
+[1] "OK1"
+106706 th marker
+G0 0 0 0 0 2 0 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+3008 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+65323 th marker
+G0 1 1 0 2 2 0 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+92338 th marker
+G0 1 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+73469 th marker
+G0 0 0 0 0 1 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+35435 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+18300 th marker
+G0 0 1 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+39608 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+89691 th marker
+G0 1 1 2 0 0 1 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+78222 th marker
+G0 1 0 1 1 0 0 0 1 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  30  markers is  0.001437719  >  0.001 
+try  40  markers
+64816 th marker
+G0 1 1 2 2 0 1 1 1 1 2 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+119556 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+12185 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+41021 th marker
+G0 0 0 0 0 0 1 0 0 1 1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+115944 th marker
+G0 0 1 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+60896 th marker
+G0 0 1 0 1 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+61416 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+42758 th marker
+G0 0 1 1 1 0 1 1 1 1 1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+85954 th marker
+G0 0 0 0 0 1 1 1 0 1 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+32764 th marker
+G0 1 1 1 1 1 2 2 2 1 2 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  40  markers is  0.001043485  >  0.001 
+try  50  markers
+72856 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+75088 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+24549 th marker
+G0 1 0 0 1 0 0 0 0 0 1 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+121558 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+110113 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+63269 th marker
+G0 0 1 1 1 0 0 0 0 1 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+74818 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+62970 th marker
+G0 0 1 1 1 0 0 1 0 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+37852 th marker
+G0 0 0 0 0 1 0 1 1 0 0 
+iter from getPCG1ofSigmaAndVector 11
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+27274 th marker
+G0 0 0 0 0 0 0 0 0 0 0 
+iter from getPCG1ofSigmaAndVector 10
+iter from getPCG1ofSigmaAndVector 9
+iter from getPCG1ofSigmaAndVector 12
+iter from getPCG1ofSigmaAndVector 12
+[1] "OK"
+[1] "OK1"
+[1] "OK2"
+CV for variance ratio estimate using  50  markers is  0.0008656054  <  0.001 
+varRatio 1.219443 
+[1] 1.219443
+         [,1]
+[1,] 1.219443
+         [,1]
+[1,] 1.219443
+[1] "./output/example_quantitative_includenonAutoforvarRatio_0.41_LOCO_TRUE.varianceRatio.txt"
+        V1
+1 1.219443
+closed the plinkFile!

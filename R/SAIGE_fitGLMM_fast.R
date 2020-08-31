@@ -118,8 +118,6 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   }
 
   re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne)})
-  #testM=getMmafge1perc()  
-  #cat("testM: ", testM,"\n")
   if(verbose){
     print("Genotype reading is done")
   }
@@ -225,8 +223,10 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     coef.alpha = alpha
   }
 
+  mu2 = mu * (1-mu)
+  obj.noK = ScoreTest_NULL_Model(mu, mu2, y, X)
   #obj.noK = ScoreTest_NULL_Model_binary(mu, y, X) 
-  glmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID, obj.noK=obj.noK, obj.glm.null=fit0, traitType="binary")
+  glmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged,sampleID = subPheno$IID, obj.noK=obj.noK, y = y, X = X, traitType="binary")
 
   #LOCO: estimate fixed effect coefficients, random effects, and residuals for each chromoosme  
 
@@ -246,15 +246,17 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
         eta = re.coef_LOCO$eta
         Y = re.coef_LOCO$Y
         mu = re.coef_LOCO$mu
-        res = y - mu
+	mu2 = mu * (1-mu)
+	res = y - mu
         if(!is.null(out.transform)){
-        coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
+          coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
 	}else{
-	coef.alpha = alpha
+	  coef.alpha = alpha
 	}
+	obj.noK = ScoreTest_NULL_Model(mu, mu2, y, X)
         #obj.noK = ScoreTest_NULL_Model_binary(mu, y, X)
-        #glmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, obj.noK = obj.noK)
-        glmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov)
+        glmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, obj.noK = obj.noK)
+        #glmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov)
       }else{
         glmmResult$LOCOResult[[j]] = list(isLOCO = FALSE)
       }
@@ -323,7 +325,7 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 #  print(X)
 
 
-  X1 = SPAtest:::ScoreTest_wSaddleApprox_Get_X1(X)
+  #X1 = SPAtest:::ScoreTest_wSaddleApprox_Get_X1(X)
 
 #  print("X")
 #  print(X)
@@ -400,19 +402,6 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     #mu.eta = family$mu.eta(eta)
     #Y = eta - offset + (y - mu)/mu.eta
     #sqrtW = mu.eta/sqrt(family$variance(mu))
-if(FALSE){
-    cat("abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)\n")
-    print(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol))	
-    cat("tau: ", tau,"\n")
-    cat("tau0: ", tau0,"\n")
-    cat("abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)\n")
-    print(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol))
-    cat("tol: ")
-    print(tol)
-
-    print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
-    print(2*max(max(abs(alpha - alpha0)/(abs(alpha) + abs(alpha0) + tol)), abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol)
-}
 
     if(tau[1]<=0){
       stop("ERROR! The first variance component parameter estimate is 0\n")
@@ -442,6 +431,7 @@ if(FALSE){
 
   converged = ifelse(i < maxiter, TRUE, FALSE)
   res = y - mu
+  mu2 = rep((1/(tau[1])),length(res))
 
   if(!is.null(out.transform)){
     coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
@@ -451,9 +441,9 @@ if(FALSE){
 
   #coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
 
-
+  obj.noK = ScoreTest_NULL_Model(mu, mu2, y, X) 
   #lmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged, sampleID = subPheno$IID, Sigma_iy = Sigma_iy, Sigma_iX = Sigma_iX, obj.noK=obj.noK, obj.glm.null=fit0, traitType="quantitative")
-  lmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged, sampleID = subPheno$IID, obj.noK=obj.noK, obj.glm.null=fit0, traitType="quantitative")
+  lmmResult = list(theta=tau, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, converged=converged, sampleID = subPheno$IID, obj.noK=obj.noK, y=y, X=X, traitType="quantitative")
 
   #LOCO: estimate fixed effect coefficients, random effects, and residuals for each chromoosme
   lmmResult$LOCO = LOCO  
@@ -476,14 +466,16 @@ if(FALSE){
         mu = re.coef_LOCO$mu
 
         res = y - mu
-        if(!is.null(out.transform)){
+	mu2 = rep((1/(tau[1])),length(res))
+
+	if(!is.null(out.transform)){
         coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
         }else{
         coef.alpha = alpha
         }
-
+	obj.noK = ScoreTest_NULL_Model(mu, mu2, y, X)
         #coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
-        lmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov)
+        lmmResult$LOCOResult[[j]] = list(isLOCO = TRUE, coefficients=coef.alpha, linear.predictors=eta, fitted.values=mu, Y=Y, residuals=res, cov=cov, obj.noK = obj.noK)
       }else{
         lmmResult$LOCOResult[[j]] = list(isLOCO = FALSE)
       }
@@ -505,21 +497,38 @@ Saddle_Prob_q <-function(q, mu, g, tauVecNew){
 
 
 
-ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, data = NULL){
-  X1 = model.matrix(formula, data = data)
-  X1 = SPAtest:::ScoreTest_wSaddleApprox_Get_X1(X1)
-  glmfit = glm(formula, data = data, family=gaussian(link = "identity"))
-  mu = glmfit$fitted.values
-  V = 1
-  res = glmfit$y - mu
+#ScoreTest_wSaddleApprox_NULL_Model_q=function (formula, tau, data = NULL){
+ScoreTest_wSaddleApprox_NULL_Model_q=function (mu, y, X, tauVec){
+  V = rep(1/tauVec[1], length(y))
+  res = y - mu
   n1 = length(res)
-  XV = t(X1 * V)
-  XVX_inv = solve(t(X1) %*% (X1 * V))
+  XV = t(X * V)
+  XVX = t(X) %*% (X * V)
+  XVX_inv = solve(XVX)
   XXVX_inv = X1 %*% XVX_inv
-  re = list(y = glmfit$y, mu = mu, res = res, V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv)
+  XVX_inv_XV = XXVX_inv * V 
+  S_a =  colSums(X * res)
+  
+  re = list(XV = XV, XVX = XVX, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv, S_a = S_a, XVX_inv_XV = XVX_inv_XV)
   class(re) = "SA_NULL"
   return(re)
 }
+
+
+ScoreTest_NULL_Model = function(mu, mu2, y, X){
+  V = as.vector(mu2)
+  res = as.vector(y - mu)
+  XV = t(X * V)
+  XVX = t(X) %*% (t(XV))
+  XVX_inv = solve(XVX)
+  XXVX_inv = X %*% XVX_inv
+  XVX_inv_XV = XXVX_inv * V
+  S_a =  colSums(X * res)
+  re = list(XV = XV, XVX = XVX, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv, S_a = S_a, XVX_inv_XV = XVX_inv_XV, V = V)
+  class(re) = "SA_NULL"
+  return(re) 
+}	
+
 
 
 solveSpMatrixUsingArma = function(sparseGRMtest){
@@ -649,38 +658,6 @@ fitNULLGLMM = function(plinkFile = "",
     }
   }
 
-#set.seed(98765)
-#n <- 4e4
-# 5000 x 5000 matrices, 99% sparse
-#a <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
-#b <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
-#ytestvec = rnorm(n)
-#grm = Matrix::readMM(sparseGRMFile)
-#grm = Matrix::readMM("/net/hunt/disk2/zhowei/project/SAIGE_SKAT/realdata/UKB/step1/output/UKB_whiteBritish_Days_per_week_walked_10min_largeGRM.varianceRatio.txt_relatednessCutoff_0.125.sparseGRM.mtx")
-#n = dim(grm)[1]
-#print(n)
-#ytestvec = rnorm(n)
-#print("atime0")
-#atime = system.time({APCG = pcg(grm, ytestvec)})
-#print("atime")
-#print(atime)
-#btime = system.time({BPCG = gen_spsolve_inR(grm, ytestvec)})
-#print("btime")
-#print(btime)
-#cat("sum((APCG-BPCG)^2)\n")
-#print(APCG[1:100])
-#print(BPCG[1:100])
-#print(sum((APCG-BPCG)^2))
-
-#print(atime)
-#print(btime)
-
-#tauVec=c(0.5,0.5)
-#wVec =  rnorm(n)
-
-#ctime = system.time({gen_spsolve_v4(wVec,  tauVec, ytestvec)})
-#print(ctime)
-
   
   if(nThreads > 1){
     RcppParallel:::setThreadOptions(numThreads = nThreads)
@@ -733,11 +710,12 @@ fitNULLGLMM = function(plinkFile = "",
   if(!file.exists(paste0(plinkFile, ".bim"))){
     stop("ERROR! ", plinkFile, ".bim does not exsit\n")
   }else{
-      chromosomeStartIndexVec = NULL
-      chromosomeEndIndexVec = NULL
+    chromosomeStartIndexVec = NULL
+    chromosomeEndIndexVec = NULL
     ###if LOCO, record the indices of markers on each chromosome
     if(LOCO){
-      cat("leave-one-chromosome-out is activated! Note this option will only be applied to autosomal variants\n")
+      cat("WARNING: leave-one-chromosome-out is activated! Note this option will only be applied to autosomal variants\n")
+      cat("WARNING: Genetic variants needs to be ordered by chromosome and position in the Plink file\n")
    
       bimData = data.table:::fread(paste0(plinkFile,".bim"),  header=F)
       for(i in 1:22){
@@ -752,13 +730,12 @@ fitNULLGLMM = function(plinkFile = "",
 	    }
            }
 	  }
-
 	}else{
 	  chromosomeStartIndexVec = c(chromosomeStartIndexVec, NA)
 	  chromosomeEndIndexVec = c(chromosomeEndIndexVec, NA)
-
         }   	
       }
+
       cat("chromosomeStartIndexVec: ", chromosomeStartIndexVec, "\n")
       cat("chromosomeEndIndexVec: ", chromosomeEndIndexVec, "\n")
       if(sum(!is.na(chromosomeStartIndexVec)) <= 1 | sum(!is.na(chromosomeEndIndexVec)) <= 1){
@@ -862,7 +839,7 @@ fitNULLGLMM = function(plinkFile = "",
 
   #check for perfect separation
   if(traitType == "binary" & (length(covarColList) > 0)){
-	out_checksep = checkPerfectSep(formula.null, data=dataMerge_sort, minCovariateCount)
+    out_checksep = checkPerfectSep(formula.null, data=dataMerge_sort, minCovariateCount)
     covarColList <- covarColList[!(covarColList %in% out_checksep)]
     formula = paste0(phenoCol,"~", paste0(covarColList,collapse="+"))
     formula.null = as.formula(formula)
@@ -893,11 +870,6 @@ fitNULLGLMM = function(plinkFile = "",
         hasCovariate = FALSE	
     #}
   }
-  #else{
-  #  if(traitType == "binary"){
-  #    covoffset = 0
-  #  } 	    
-  #}	  
 
   if(isCovariateTransform & hasCovariate){
    	  
@@ -926,12 +898,6 @@ fitNULLGLMM = function(plinkFile = "",
   }
 
 
-
-#  data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
-#  colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
-#  cat("colnames(data.new) is ", colnames(data.new), "\n")
-#  cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
-#if(FALSE){
     if(useSparseSigmaConditionerforPCG | useSparseSigmaforInitTau){
         #setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
 	sparseGRMtest = getsubGRM(sparseGRMFile, sparseGRMSampleIDFile, dataMerge_sort$IID)
@@ -941,11 +907,6 @@ fitNULLGLMM = function(plinkFile = "",
         A = summary(m4)
         locationMatinR = rbind(A$i-1, A$j-1)
         valueVecinR = A$x
-
-
-	#indexDiagSub = which(locationMatinR[1,] == locationMatinR[2,])
-	#indexDiag = locationMatinR[1,][indexDiagSub]+1
-	#valueVecinR[indexDiagSub] = (get_DiagofKin())[indexDiag]
 
         setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
  #       setisUsePrecondM(TRUE);
@@ -957,13 +918,6 @@ fitNULLGLMM = function(plinkFile = "",
       setisUsePrecondM(TRUE);
     }
 	
-#    if(useSparseSigmaforInitTau){
-#      setisUseSparseSigmaforInitTau(TRUE);
-#    } 
-#}
-
-
-
 
   if(traitType == "binary"){
     cat(phenoCol, " is a binary trait\n")
@@ -972,8 +926,6 @@ fitNULLGLMM = function(plinkFile = "",
     if (uniqPheno[1] != 0 | uniqPheno[2] != 1){
       stop("ERROR! phenotype value needs to be 0 or 1 \n")
     }
-    #fit0 = glm(formula.null,data=dataMerge_sort, family=binomial)
-    #fit0 = glm(out.transform$Y ~ out.transform$X1,family=binomial)
     #noEstFixedEff & hasCovariate
     if(!noEstFixedEff){
       fit0 = glm(formula.new, data=data.new, family=binomial)
@@ -984,8 +936,8 @@ fitNULLGLMM = function(plinkFile = "",
     print(fit0)
     
     #obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.null, data = dataMerge_sort)
-    obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.new, data = data.new)
-
+    #obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.new, data = data.new)
+    obj.noK = NULL
 
     if(!skipModelFitting){
      #print("test memory 1")
@@ -1043,84 +995,6 @@ fitNULLGLMM = function(plinkFile = "",
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
       	
 
-#if(FALSE){
-
-#      set.seed(98765)
-#n <- 4e4
-# 5000 x 5000 matrices, 99% sparse
-#a <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
-#b <- rsparsematrix(n, n, 0.01, rand.x=function(n) rpois(n, 1) + 1)
-#ytestvec = rnorm(n)
-
-#atime = system.time({APCG = pcg(a, ytestvec)})
-#btime = system.time({BPCG = gen_spsolve_inR(a, ytestvec)})
-#cat("sum((APCG-BPCG)^2)\n")
-#print(sum((APCG-BPCG)^2))
-#print(atime)
-#print(btime)
-
-#d=a %*% b
-#print("print d")
-#print(dim(d))
-
-#m1 <- mult_sp_sp_to_sp(a, b)
-#print("print m1")
-#print(dim(m1))
-
-#m2 = gen_sp(a)
-#print("print m2")
-#print(dim(m2))
-
-#sparseGRMtest = Matrix:::readMM(sparseGRMFile)
-
-#m3 = gen_sp_v2(a)
-#print("print m3")
-#print(dim(m3))
-
-#m4 = gen_sp_v2(sparseGRMtest)
-#print("print m4")
-#print(dim(m4))
-#A = summary(m4)
-
-#locationMatinR = rbind(A$i-1, A$j-1)
-#valueVecinR = A$x
-#setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
-
-
-
-#B = gen_sp_GRM()
-#print("print B")
-#print(dim(B))
-#cat("sum((B-m4)^2)\n")
-#print(sum((B-m4)^2))
-
-#ytestvec = rnorm(dim(m4)[1])
-#x = gen_spsolve_v3(ytestvec)
-#print(x[1:30])
-#z = pcg(m4, ytestvec)
-#cat("sum((x-z)^2)\n")
-#print(sum((x-z)^2))
-
-#ytestvec = rnorm(dim(m4)[1])
-#timeWoConv = system.time({x = gen_spsolve_v3(ytestvec)})
-#print(x[1:30])
-#z = pcg(m4, ytestvec)
-#cat("sum((x-z)^2)\n")
-#print(sum((x-z)^2))
-
-#timeWithConv = system.time({x2 = gen_spsolve_v4(ytestvec)})
-#print("timeWoConv")
-#print(timeWoConv)
-
-#print("timeWithConv")
-#print(timeWithConv)
-#cat("sum(x-x2)^2 ", sum(x-x2)^2, "\n")
-
-#}
-
-
-
-
     }
     cat("Start estimating variance ratios\n")
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,
@@ -1154,7 +1028,8 @@ fitNULLGLMM = function(plinkFile = "",
 
     cat(phenoCol, " is a quantitative trait\n")
  
-    obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.new, data.new)
+    #obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.new, data.new)
+    obj.noK = NULL
     fit0 = glm(formula.new, data=data.new,family=gaussian(link = "identity"))
     cat("glm:\n")
     print(fit0)
@@ -1198,14 +1073,7 @@ fitNULLGLMM = function(plinkFile = "",
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
 
-      #test time
-#	btest = rnorm(nrow(data.new))
-#	for(i in 1:10){
-#		tTimeVec = testTime(i, btest)	
-#	}
-#      if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
     }
-#    cat("dataMerge_sort$IndexGeno: ", dataMerge_sort$IndexGeno, "\n") 
 
     cat("Start estimating variance ratios\n")
     scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait(obj.glmm.null = modglmm,
@@ -1262,8 +1130,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 						    cateVarRatioMinMACVecExclude,
 						    cateVarRatioMaxMACVecInclude,
 						    minMAFforGRM,
-							isDiagofKinSetAsOne,
-							includeNonautoMarkersforVarRatio){
+						    isDiagofKinSetAsOne,
+						    includeNonautoMarkersforVarRatio){
 
   obj.noK = obj.glmm.null$obj.noK
   if(file.exists(testOut)){file.remove(testOut)}
@@ -1290,8 +1158,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
   sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
   W = sqrtW^2
   tauVecNew = obj.glmm.null$theta
-  X1 = obj.noK$X1
-  Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
+  X = obj.glmm.null$X
+  Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X, maxiterPCG, tolPCG)
   y = obj.glm.null$y
   ##randomize the marker orders to be tested
 
@@ -1385,7 +1253,20 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 
   Nnomissing = length(mu)
   varRatioTable = NULL
-  Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X1, maxiterPCG, tolPCG)
+  Sigma_iX_noLOCO = getSigma_X(W, tauVecNew, X, maxiterPCG, tolPCG)
+
+
+  ###if LOCO, calculate obj.noK for each chromosome
+  #if(obj.glmm.null$LOCO){
+  #  for(i in 1:length(obj.glmm.null$LOCOResult)){
+  #    if(obj.glmm.null$LOCOResult[[CHR]]$isLOCO){
+  #	if(is.null(obj.glmm.null$LOCOResult[[CHR]]$obj.noK)){      
+  #        obj.glmm.null$LOCOResult[[CHR]]$obj.noK = ScoreTest_NULL_Model_binary(obj.glmm.null$LOCOResult[[CHR]]$fitted.values, y, X) 
+  #      }  
+  #    }
+  #  }	    
+  #}
+
 
 
   for(k in 1:length(listOfMarkersForVarRatio)){
@@ -1408,7 +1289,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
           cat(i, "th marker\n")
           G0 = Get_OneSNP_Geno(i-1)
           cat("G0", G0[1:10], "\n")
-          #AC = sum(G0)
           CHR = bimPlink[i,1]
 
 	  if(sum(G0)/(2*Nnomissing) > 0.5){
@@ -1418,31 +1298,40 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
           AC = sum(G0)
 
          #if (CHR < 1 | CHR > 22){
-           indexInMarkerList = indexInMarkerList + 1
+         indexInMarkerList = indexInMarkerList + 1
          #}else{
 	if((CHR >= 1 & CHR <= 22) | includeNonautoMarkersforVarRatio){
           AF = AC/(2*Nnomissing)
-          G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted
-          g = G/sqrt(AC)
-          q = innerProduct(g,y)
 	  if(CHR >= 1 & CHR <= 22){
                autoMarker=TRUE
           }else{
                autoMarker=FALSE
           }
 
-          if(!obj.glmm.null$LOCO | (!autoMarker)){
-            Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
+	  isLOCO = FALSE
+	  if(obj.glmm.null$LOCO){
+		if(autoMarker & obj.glmm.null$LOCOResult[[CHR]]$isLOCO){
+			isLOCO = TRUE
+		}	
+	  } 		  
+
+
+
+          if(!isLOCO){
+            G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted
+            g = G/sqrt(AC)
+            q = innerProduct(g,y)
+	    eta = obj.glmm.null$linear.predictors
+  	    mu = obj.glmm.null$fitted.values
+  	    mu.eta = family$mu.eta(eta)
+  	    sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
+  	    W = sqrtW^2
+	    Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
             Sigma_iX = Sigma_iX_noLOCO
-          }else if(!(obj.glmm.null$LOCOResult[[CHR]]$isLOCO)){
-             eta = obj.glmm.null$linear.predictors
-             mu = obj.glmm.null$fitted.values
-             mu.eta = family$mu.eta(eta)
-             sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
-             W = sqrtW^2
-             Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
-             Sigma_iX = Sigma_iX_noLOCO
           }else{
+             G = G0  -  obj.glmm.null$LOCOResult[[CHR]]$obj.noK$XXVX_inv %*%  (obj.glmm.null$LOCOResult[[CHR]]$obj.noK$XV %*% G0) # G1 is X adjusted
+             g = G/sqrt(AC)
+             q = innerProduct(g,y)
              eta = obj.glmm.null$LOCOResult[[CHR]]$linear.predictors
              mu = obj.glmm.null$LOCOResult[[CHR]]$fitted.values
              mu.eta = family$mu.eta(eta)
@@ -1452,15 +1341,10 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
              endIndex = chromosomeEndIndexVec[CHR]
              setStartEndIndex(startIndex, endIndex)
              Sigma_iG = getSigma_G_LOCO(W, tauVecNew, G, maxiterPCG, tolPCG)
-             Sigma_iX = getSigma_X_LOCO(W, tauVecNew, X1, maxiterPCG, tolPCG)
+             Sigma_iX = getSigma_X_LOCO(W, tauVecNew, X, maxiterPCG, tolPCG)
           }
 
-          var1a = t(G)%*%Sigma_iG - t(G)%*%Sigma_iX%*%(solve(t(X1)%*%Sigma_iX))%*%t(X1)%*%Sigma_iG
-      ###var1 = g'Pg, var2 = g'g
-
-      #cat("Sigma_iG: \n")
-      #print(Sigma_iG/AC)
-
+          var1a = t(G)%*%Sigma_iG - t(G)%*%Sigma_iX%*%(solve(t(X)%*%Sigma_iX))%*%t(X)%*%Sigma_iG
           var1 = var1a/AC
           m1 = innerProduct(mu,g)
 
@@ -1469,17 +1353,12 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
             t1 = proc.time()
             cat("t1\n")
              cat("t1again\n")
-#       pcginvSigma = getPCG1ofSparseSigmaAndVector(sparseSigma, g)
-#       pcginvSigma = pcgSparse(sparseSigma, g)
-             #pcginvSigma = pcg(sparseSigma, g)
              pcginvSigma = solve(sparseSigma, g, sparse=T)
              t2 = proc.time()
              cat("t2-t1\n")
              print(t2-t1)
              var2_a = t(g) %*% pcginvSigma
              var2 = var2_a[1,1]
-        #cat("qrinvSigma: \n")
-        #print(qrinvSigma)
         }else{
           var2 = innerProduct(mu*(1-mu), g*g)
         }
@@ -1601,12 +1480,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 
   if(file.exists(testOut)){file.remove(testOut)}
   obj.noK = obj.glmm.null$obj.noK
-#  if(nThreads > 1){
-#    RcppParallel:::setThreadOptions(numThreads = nThreads)
-#    cat(nThreads, " threads are set to be used ", "\n")
-#  }
-    
-  #resultHeader = c("markerIndex","p.value", "p.value.NA","var1","var2","Tv1", "Tv2", "p.value.Tv2","N", "AC", "AF")
   resultHeader = c("markerIndex","p.value", "p.value.NA","var1","var2","Tv1","N", "AC", "AF")
   write(resultHeader,file = testOut, ncolumns = length(resultHeader))
 
@@ -1629,7 +1502,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
   W = sqrtW^2
   tauVecNew = obj.glmm.null$theta
 
-  X1 = obj.noK$X1
+  X1 = obj.glmm.null$X
   y = obj.glm.null$y
 
     #####sparse Kin
@@ -1666,18 +1539,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
     if(is.null(cateVarRatioIndexVec)){cateVarRatioIndexVec = rep(1, length(cateVarRatioMinMACVecExclude))}
     numCate = length(cateVarRatioIndexVec)
     for(i in 1:(numCate-1)){
-       #print("i 1:(numCate-1)")
-       #print(i)
-       #print(cateVarRatioMinMACVecExclude[i])
-       #print(cateVarRatioMaxMACVecInclude[i])
-       #print(length(MACvector))	
-       #print(MACvector[1:10])	
-       #print(min(MACvector))
 
       MACindex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
-      #print(length(MACindex))	
-      #tempindex = which(MACvector > 0.5 & MACvector <= 1.5)	
-      #print(length(tempindex))
 
       listOfMarkersForVarRatio[[i]] = sample(MACindex, size = length(MACindex), replace = FALSE)
 
@@ -1743,9 +1606,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
           AC = sum(G0)
           CHR = bimPlink[i,1]
 	
-         #if (CHR < 1 | CHR > 22){
-         #  indexInMarkerList = indexInMarkerList + 1
-         #}else{
 	 if((CHR >= 1 & CHR <= 22) | includeNonautoMarkersforVarRatio){
 
 	   if(CHR >= 1 & CHR <= 22){
@@ -1761,17 +1621,23 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
  #     print(g[1:20])
  #     print(y[1:20])
  #     print(q)
-          if(!obj.glmm.null$LOCO | (!autoMarker)){          
-            Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
+	  isLOCO = FALSE
+          if(obj.glmm.null$LOCO){
+                if(autoMarker & obj.glmm.null$LOCOResult[[CHR]]$isLOCO){
+                        isLOCO = TRUE
+                }
+          }	
+
+
+
+	  if(!isLOCO){          
+	    eta = obj.glmm.null$linear.predictors
+            mu = obj.glmm.null$fitted.values
+            mu.eta = family$mu.eta(eta)
+            sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
+            W = sqrtW^2
+     	    Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
             Sigma_iX = Sigma_iX_noLOCO
-          }else if(!(obj.glmm.null$LOCOResult[[CHR]]$isLOCO)){
-             eta = obj.glmm.null$linear.predictors
-             mu = obj.glmm.null$fitted.values
-             mu.eta = family$mu.eta(eta)
-             sqrtW = mu.eta/sqrt(obj.glm.null$family$variance(mu))
-             W = sqrtW^2
-             Sigma_iG = getSigma_G(W, tauVecNew, G, maxiterPCG, tolPCG)
-             Sigma_iX = Sigma_iX_noLOCO
           }else{
              eta = obj.glmm.null$LOCOResult[[CHR]]$linear.predictors
              mu = obj.glmm.null$LOCOResult[[CHR]]$fitted.values
@@ -1786,11 +1652,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
           }
 
           var1a = t(G)%*%Sigma_iG - t(G)%*%Sigma_iX%*%(solve(t(X1)%*%Sigma_iX))%*%t(X1)%*%Sigma_iG
-      ###var1 = g'Pg, var2 = g'g
-
-      #cat("Sigma_iG: \n")
-      #print(Sigma_iG/AC)	
-
           var1 = var1a/AC
           m1 = innerProduct(mu,g)
 
@@ -1798,24 +1659,12 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
           if(IsSparseKin){
 	    t1 = proc.time()
 	    cat("t1\n")
-#	pcginvSigma = getPCG1ofSparseSigmaAndVector(sparseSigma, g)
-#	pcginvSigma = pcgSparse(sparseSigma, g)
-	     #pcginvSigma = pcg(sparseSigma, g)
 	     pcginvSigma = solve(sparseSigma, g, sparse=T)
-	#print(class(sparseSigma))
-	#print(dim(pcginvSigma))
-	#print(class(pcginvSigma))
-	#require(Matrix)	
-	#a1<-methods:::as(sparseSigma, "dsTMatrix")
-#	pcginvSigma = pcg(sparseSigma, g)
-	#pcginvSigma = pcg(a1, g)
 	     t2 = proc.time()
              cat("t2-t1\n")
 	     print(t2-t1)
 	     var2_a = t(g) %*% pcginvSigma
 	     var2 = var2_a[1,1]
-	#cat("qrinvSigma: \n")
-	#print(qrinvSigma)
           }else{
              var2 = innerProduct(g, g)
           }
@@ -2425,16 +2274,14 @@ checkPerfectSep<-function(formula, data, minCovariateCount){
 
 ScoreTest_NULL_Model_binary=function (mu, y, X1){
   V = as.vector(mu*(1-mu))
-  #res = glmfit$y - mu
   res = y - mu
   n1 = length(res)
-  #cat("dim(X1): ", dim(X1), "\n")
-  #cat("length(V): ", length(V), "\n")
   XV = t(X1 * V)
-  XVX_inv = solve(t(X1) %*% (X1 * V))
+  XVX = t(X1) %*% (X1 * V) 
+  XVX_inv = solve(XVX)
   XXVX_inv = X1 %*% XVX_inv
-
-  re = list(y = y, mu = mu, res = res, V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv)
+  S_a = colSums(X1 * res)
+  re = list(XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv, XVX = XVX, S_a = S_a, XVX_inv_XV = XXVX_inv * V)
   class(re) = "SA_NULL"
   return(re)
 }

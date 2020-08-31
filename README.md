@@ -12,7 +12,7 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.39.2 (Updated on July 27, 2020).
+## Current version is 0.41 (Updated on August 30, 2020. This version is still under evaluation).
 
 ## For BGEN input in step 2 with missing dosages, Please use version 0.38. The bug for BGEN input with missing dosages was introducted in v0.36.6. 
 
@@ -165,6 +165,9 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+
+* 0.41 (August-30-2020) improve the LOCO feature, implement LOCO for gene- and region- based tests (require --chrom to be specified), and with minInfo cutoff, if the input VCF files do not contain info scores, info will be output as NA and markers won't be filtered out. fixed an issue when subsetting pre-calcuated terms (regress X out of G) to drop missing dosages. Use sparse matrices for genotypes/dosages in gene- and region- based tests, so memory usage is dramatically decreased
+
 * 0.39.4 (August-11-2020) use sparse matrix to represent genotype matrix for gene-based tests to save memory
 
 * 0.39.3 (August-6-2020)  add five options --sexCol, --FemaleCode, --FemaleOnly, --MaleCode, --MaleOnly to perform sex-specific Step 1.
