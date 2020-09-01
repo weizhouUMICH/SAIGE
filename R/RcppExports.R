@@ -365,8 +365,8 @@ setIsDropMissingDosages_bgen <- function(isdropmissingdosages) {
     invisible(.Call('_SAIGE_setIsDropMissingDosages_bgen', PACKAGE = 'SAIGE', isdropmissingdosages))
 }
 
-setgenoTest_bgenDosage <- function(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude) {
-    .Call('_SAIGE_setgenoTest_bgenDosage', PACKAGE = 'SAIGE', filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude)
+setgenoTest_bgenDosage <- function(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude, analysis_type) {
+    .Call('_SAIGE_setgenoTest_bgenDosage', PACKAGE = 'SAIGE', filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude, analysis_type)
 }
 
 getDosage_inner_bgen_withquery <- function() {
@@ -397,8 +397,8 @@ getMarkerInfo <- function() {
     .Call('_SAIGE_getMarkerInfo', PACKAGE = 'SAIGE')
 }
 
-SetSampleIdx <- function(sample_idx, Ntest) {
-    invisible(.Call('_SAIGE_SetSampleIdx', PACKAGE = 'SAIGE', sample_idx, Ntest))
+SetSampleIdx <- function(sample_idx, cc_index, Ntest) {
+    invisible(.Call('_SAIGE_SetSampleIdx', PACKAGE = 'SAIGE', sample_idx, cc_index, Ntest))
 }
 
 closetestGenoFile_bgenDosage <- function() {

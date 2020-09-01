@@ -945,6 +945,8 @@ fitNULLGLMM = function(plinkFile = "",
      #print("test memory 5")
      #gc(verbose=T)
       modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
+      modglmm$obj.glm.null$qr <- NULL
+      modglmm$obj.glm.null$data <- NULL
       for (x in names(modglmm$obj.glm.null)) {
         attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
       }
@@ -1099,6 +1101,8 @@ fitNULLGLMM = function(plinkFile = "",
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
       
       modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
+      modglmm$obj.glm.null$qr <- NULL
+      modglmm$obj.glm.null$data <- NULL
       for (x in names(modglmm$obj.glm.null)) {
         attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
       }

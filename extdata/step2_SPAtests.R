@@ -111,7 +111,11 @@ mean, p-value based on traditional score test is returned. Default value is 2.")
   make_option("--weights_for_G2_cond",type="character", default=NULL, 
     help="vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. e.g. '1,2,3"),
   make_option("--IsOutputBETASEinBurdenTest", type="logical",default=FALSE,
-    help="Whether to output effect sizes for burden tests. [default=FALSE]")	
+    help="Whether to output effect sizes for burden tests. [default=FALSE]"),
+  make_option("--IsOutputlogPforSingle", type="logical",default=FALSE,
+    help="Whether to output -log10 p-values instead of p-values. [default=FALSE]"),
+  make_option("--analysisType", type="character", default='additive',
+    help="'additive' (default), 'recessive' or 'dominant'")
 )
 
 
@@ -194,6 +198,7 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 	     weights_for_G2_cond=weights_for_G2_cond,
 		IsOutputBETASEinBurdenTest=opt$IsOutputBETASEinBurdenTest,
 	SPAcutoff=opt$SPAcutoff,
-	IsOutputHetHomCountsinCaseCtrl=opt$IsOutputHetHomCountsinCaseCtrl,
-	     LOCO=opt$LOCO
+	     LOCO=opt$LOCO,
+	     IsOutputlogPforSingle=opt$IsOutputlogPforSingle,
+	     analysisType = opt$analysisType
 )

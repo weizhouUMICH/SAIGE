@@ -1128,8 +1128,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // setgenoTest_bgenDosage
-int setgenoTest_bgenDosage(std::string& filename, std::string& index_filename, Rcpp::DataFrame& ranges_to_include, Rcpp::DataFrame& ranges_to_exclude, std::vector< std::string > const& ids_to_include, std::vector< std::string > const& ids_to_exclude);
-RcppExport SEXP _SAIGE_setgenoTest_bgenDosage(SEXP filenameSEXP, SEXP index_filenameSEXP, SEXP ranges_to_includeSEXP, SEXP ranges_to_excludeSEXP, SEXP ids_to_includeSEXP, SEXP ids_to_excludeSEXP) {
+int setgenoTest_bgenDosage(std::string& filename, std::string& index_filename, Rcpp::DataFrame& ranges_to_include, Rcpp::DataFrame& ranges_to_exclude, std::vector< std::string > const& ids_to_include, std::vector< std::string > const& ids_to_exclude, std::string& analysis_type);
+RcppExport SEXP _SAIGE_setgenoTest_bgenDosage(SEXP filenameSEXP, SEXP index_filenameSEXP, SEXP ranges_to_includeSEXP, SEXP ranges_to_excludeSEXP, SEXP ids_to_includeSEXP, SEXP ids_to_excludeSEXP, SEXP analysis_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1139,7 +1139,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_exclude(ranges_to_excludeSEXP);
     Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_include(ids_to_includeSEXP);
     Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_exclude(ids_to_excludeSEXP);
-    rcpp_result_gen = Rcpp::wrap(setgenoTest_bgenDosage(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude));
+    Rcpp::traits::input_parameter< std::string& >::type analysis_type(analysis_typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(setgenoTest_bgenDosage(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude, analysis_type));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1214,13 +1215,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // SetSampleIdx
-void SetSampleIdx(Rcpp::IntegerVector sample_idx, int Ntest);
-RcppExport SEXP _SAIGE_SetSampleIdx(SEXP sample_idxSEXP, SEXP NtestSEXP) {
+void SetSampleIdx(Rcpp::IntegerVector sample_idx, Rcpp::IntegerVector cc_index, int Ntest);
+RcppExport SEXP _SAIGE_SetSampleIdx(SEXP sample_idxSEXP, SEXP cc_indexSEXP, SEXP NtestSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type sample_idx(sample_idxSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type cc_index(cc_indexSEXP);
     Rcpp::traits::input_parameter< int >::type Ntest(NtestSEXP);
-    SetSampleIdx(sample_idx, Ntest);
+    SetSampleIdx(sample_idx, cc_index, Ntest);
     return R_NilValue;
 END_RCPP
 }
@@ -1520,7 +1522,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_get_GRMdiagVec", (DL_FUNC) &_SAIGE_get_GRMdiagVec, 0},
     {"_SAIGE_setminMAFforGRM", (DL_FUNC) &_SAIGE_setminMAFforGRM, 1},
     {"_SAIGE_setIsDropMissingDosages_bgen", (DL_FUNC) &_SAIGE_setIsDropMissingDosages_bgen, 1},
-    {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 6},
+    {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 7},
     {"_SAIGE_getDosage_inner_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery, 0},
     {"_SAIGE_getDosage_inner_bgen_withquery_new", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery_new, 0},
     {"_SAIGE_getDosage_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_bgen_withquery, 0},
@@ -1528,7 +1530,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getQueryStatus", (DL_FUNC) &_SAIGE_getQueryStatus, 0},
     {"_SAIGE_getisReadVariantBgen", (DL_FUNC) &_SAIGE_getisReadVariantBgen, 0},
     {"_SAIGE_getMarkerInfo", (DL_FUNC) &_SAIGE_getMarkerInfo, 0},
-    {"_SAIGE_SetSampleIdx", (DL_FUNC) &_SAIGE_SetSampleIdx, 2},
+    {"_SAIGE_SetSampleIdx", (DL_FUNC) &_SAIGE_SetSampleIdx, 3},
     {"_SAIGE_closetestGenoFile_bgenDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_bgenDosage, 0},
     {"_SAIGE_setgenoTest_bgenDosage_v2", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage_v2, 6},
     {"_SAIGE_getSampleSizeinBgen", (DL_FUNC) &_SAIGE_getSampleSizeinBgen, 0},
