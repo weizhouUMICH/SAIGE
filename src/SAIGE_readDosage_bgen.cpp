@@ -170,6 +170,9 @@ int setgenoTest_bgenDosage(std::string & filename,
   } else if (analysis_type == "dominant") {
     dosage_type = 2;
     std::cout << "running dominant analysis" << std::endl;
+  } else if (analysis_type == "het") {
+    dosage_type = 3;
+    std::cout << "running het vs. wt analysis" << std::endl;
   } else {
     dosage_type = 0;
     std::cout << "running additive analysis" << std::endl;
@@ -506,9 +509,11 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
         dosage = p00;
       } else if (dosage_type == 2 ) {
         dosage = p10+p00;
-      }      
+      } else if (dosage_type == 3 ) {
+        dosage = p10;
+      }
 
-      if(!missingIdxVec[i]){
+      if(!missingIdxVec[i]) {
         eij = p10+p00*2;
         fij = 4*p00 + p10;
         sum_eij += eij;

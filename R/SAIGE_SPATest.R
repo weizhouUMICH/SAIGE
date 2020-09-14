@@ -101,8 +101,8 @@ SPAGMMATtest = function(bgenFile = "",
 		 IsOutputBETASEinBurdenTest = FALSE,
 		 analysisType = "additive"){
 
-  if (analysisType != "additive" & analysisType != "recessive" & analysisType != "dominant") {
-    stop("Unknown analysis type (supported 'additive', 'recessive', and 'dominant'): ", analysisType)
+  if (analysisType != "additive" & analysisType != "recessive" & analysisType != "dominant" & analysisType != "het") {
+    stop("Unknown analysis type (supported 'additive', 'recessive', 'dominant', and 'het'): ", analysisType)
   }
 
   if(weightMAFcutoff < 0 | weightMAFcutoff > 0.5){
