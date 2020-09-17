@@ -1818,28 +1818,28 @@ scoreTest_SAIGE_quantitativeTrait_sparseSigma=function(G0, obj.noK, AC, AF, y, X
   }
   maf = min(AF, 1-AF)
 #  cat("HERE2\n")
-
-isSparse=FALSE
+#isSparse=FALSE
 if(maf < 0.05){isSparse=TRUE}
 
 
 if(isSparse){
-#  cat("HERE2a\n")
+  #cat("HERE2a\n")
     idx_no0<-which(G0>0)
     g1<-G0[idx_no0]
     X = X[idx_no0,,drop=F]
-    V = obj.noK$V[idx_no0]
-    XV = obj.noK$XV[,idx_no0,drop=F]
-    XVX = t(X) %*% t(XV)
+    #V = obj.noK$V[idx_no0]
+    #XV = obj.noK$XV[,idx_no0,drop=F]
+    #XVX = t(X) %*% t(XV)
 
     
-    XVX_inv = try(solve(XVX),silent=T)
-    if(class(XVX_inv) == "try-error"){
-    	isSparse=FALSE
-    }
-    if(isSparse){    
-    XXVX_inv = X %*% XVX_inv
-    A1 = XXVX_inv * V
+    #XVX_inv = try(solve(XVX),silent=T)
+    #if(class(XVX_inv) == "try-error"){
+    #	isSparse=FALSE
+    #}
+    #if(isSparse){    
+    #XXVX_inv = X %*% XVX_inv
+    #A1 = XXVX_inv * V
+    A1 =  obj.noK$XVX_inv_XV[idx_no0,,drop=F]
     mu1<-mu[idx_no0]
     y1<-y[idx_no0]
 ## V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv
@@ -1847,8 +1847,8 @@ if(isSparse){
       Z = t(A1) %*% g1
       B<-X %*% Z
       g_tilde1 = g1 - B
-      var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2) + sum(g_tilde1^2)
-      var1 = var2 * varRatio
+      var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2)*(1/tauVec[2]) + sum(g_tilde1^2)*(1/tauVec[2])
+      var1 = var2 * varRatio*(tauVec[2])
       S1 = crossprod(y1-mu1, g_tilde1)
       #if(!noCov){
       S_a2 = obj.noK$S_a - colSums(X * (y1 - mu1))
@@ -1861,22 +1861,22 @@ if(isSparse){
       Z = A1 * g1
       B<-X %*% Z
       g_tilde1 = g1 - B
-      var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2) + sum(g_tilde1^2)
-      var1 = var2 * varRatio
+      var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2)*(1/tauVec[2]) + sum(g_tilde1^2)*(1/tauVec[2])
+      var1 = var2 * varRatio*(tauVec[2])
       S1 = crossprod(y1-mu1, g_tilde1)
       S_a2 = obj.noK$S_a - X * (y1 - mu1)
       S2 = -S_a2 %*% Z
     }
     S<- S1+S2
     Tstat = S/tauVec[1]
-    }
+    #}
 }
 
 
 
 
 if(!isSparse){
-#    cat("HERE2b\n")
+    #cat("HERE2b\n")
     XVG0 = eigenMapMatMult(obj.noK$XV, G0)
     G = G0  -  eigenMapMatMult(obj.noK$XXVX_inv, XVG0) # G1 is X adjusted
 #    g = G/sqrt(AC2)
