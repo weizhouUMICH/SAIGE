@@ -412,7 +412,7 @@ SPAGMMATtest = function(bgenFile = "",
       }else{
         cat("is_rewrite_XnonPAR_forMales=TRUE and minInfo and minMAF won't be applied to all X chromosome variants\n")
         minInfo = 0
-        minMAF = 0
+        minMAF = 1/(2*N)
       }	      
     }
 
