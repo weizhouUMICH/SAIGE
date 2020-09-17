@@ -12,7 +12,7 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.41 (Updated on August 30, 2020. This version is still under evaluation).
+## Current version is 0.42 (Updated on September 17, 2020. This version is still under evaluation).
 
 ## For BGEN input in step 2 with missing dosages, Please use version 0.38. The bug for BGEN input with missing dosages was introducted in v0.36.6. 
 
@@ -42,10 +42,7 @@ https://www.biorxiv.org/content/10.1101/583278v2
 * R-3.6.1, gcc >= 5.4.0, cmake 3.14.1, [cget](https://cget.readthedocs.io/en/latest/src/intro.html#installing-cget)
 * R packages: "R.utils", "Rcpp", "RcppParallel", "RcppArmadillo", "data.table", "RcppEigen", "Matrix", "methods", "BH", "optparse", "SPAtest", "SKAT","MetaSKAT"
 * /extdata/install_packages.R can be used to install the R packages
-* SAIGE v0.39.2 depends on the SPAtest v3.1.2, which can be installed using R command 
-```
-devtools::install_github("leeshawn/SPAtest")
-```
+* SAIGE v0.39.2 depends on the SPAtest v3.1.2
 
 ###  Install SAIGE using the conda environment
 
