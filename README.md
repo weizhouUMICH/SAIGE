@@ -165,6 +165,7 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.42 (September-16-2020) fix a bug for variance ratio adjustion when account for case-control imbalance for gene-based tests. minMAC is set to 1/(2*N) instead of 0 if is_rewrite_XnonPAR_forMales=TRUE
 
 * 0.41 (August-30-2020) improve the LOCO feature, implement LOCO for gene- and region- based tests (require --chrom to be specified), and with minInfo cutoff, if the input VCF files do not contain info scores, info will be output as NA and markers won't be filtered out. fixed an issue when subsetting pre-calcuated terms (regress X out of G) to drop missing dosages. Use sparse matrices for genotypes/dosages in gene- and region- based tests, so memory usage is dramatically decreased
 
