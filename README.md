@@ -12,7 +12,7 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.42 (Updated on September 17, 2020. This version is still under evaluation).
+## Current version is 0.42.1 (Updated on September 21, 2020. This version is still under evaluation).
 
 ## For BGEN input in step 2 with missing dosages, Please use version 0.38. The bug for BGEN input with missing dosages was introducted in v0.36.6. 
 
@@ -162,6 +162,8 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.42.1 (September-21-2020) uncomment isSparse=FALSE for quantitative traits. This was commented out for testing in 0.42
+
 * 0.42 (September-16-2020) fix a bug for variance ratio adjustion when account for case-control imbalance for gene-based tests. minMAC is set to 1/(2*N) instead of 0 if is_rewrite_XnonPAR_forMales=TRUE
 
 * 0.41 (August-30-2020) improve the LOCO feature, implement LOCO for gene- and region- based tests (require --chrom to be specified), and with minInfo cutoff, if the input VCF files do not contain info scores, info will be output as NA and markers won't be filtered out. fixed an issue when subsetting pre-calcuated terms (regress X out of G) to drop missing dosages. Use sparse matrices for genotypes/dosages in gene- and region- based tests, so memory usage is dramatically decreased
