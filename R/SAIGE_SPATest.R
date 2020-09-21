@@ -1818,7 +1818,7 @@ scoreTest_SAIGE_quantitativeTrait_sparseSigma=function(G0, obj.noK, AC, AF, y, X
   }
   maf = min(AF, 1-AF)
 #  cat("HERE2\n")
-#isSparse=FALSE
+ isSparse=FALSE
 if(maf < 0.05){isSparse=TRUE}
 
 
