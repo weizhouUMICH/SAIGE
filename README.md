@@ -162,6 +162,9 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+
+* 0.42.2 (October-18-2020) Fixed 0 SE when log-pvalue and underflow in reqular p-value
+
 * 0.42.1 (September-21-2020) uncomment isSparse=FALSE for quantitative traits. This was commented out for testing in 0.42
 
 * 0.42 (September-16-2020) fix a bug for variance ratio adjustion when account for case-control imbalance for gene-based tests. minMAC is set to 1/(2*N) instead of 0 if is_rewrite_XnonPAR_forMales=TRUE
