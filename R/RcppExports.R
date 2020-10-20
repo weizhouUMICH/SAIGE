@@ -425,6 +425,14 @@ getSampleSizeinBgen <- function() {
     .Call('_SAIGE_getSampleSizeinBgen', PACKAGE = 'SAIGE')
 }
 
+assignforScoreTest_R <- function(LOCO_ext, LOCOVec_ext, XXVX_inv_noLOCO_ext, XV_inv_noLOCO_ext, res_noLOCO_ext, mu2_noLOCO_ext, varRatio_ext) {
+    invisible(.Call('_SAIGE_assignforScoreTest_R', PACKAGE = 'SAIGE', LOCO_ext, LOCOVec_ext, XXVX_inv_noLOCO_ext, XV_inv_noLOCO_ext, res_noLOCO_ext, mu2_noLOCO_ext, varRatio_ext))
+}
+
+getScoreTest <- function(MtoTest) {
+    .Call('_SAIGE_getScoreTest', PACKAGE = 'SAIGE', MtoTest)
+}
+
 SetSampleIdx_vcfDosage <- function(sample_idx, Ntest) {
     invisible(.Call('_SAIGE_SetSampleIdx_vcfDosage', PACKAGE = 'SAIGE', sample_idx, Ntest))
 }

@@ -1289,6 +1289,33 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// assignforScoreTest_R
+void assignforScoreTest_R(bool LOCO_ext, std::vector<bool>& LOCOVec_ext, arma::fmat& XXVX_inv_noLOCO_ext, arma::fmat& XV_inv_noLOCO_ext, arma::fvec& res_noLOCO_ext, arma::fvec& mu2_noLOCO_ext, double varRatio_ext);
+RcppExport SEXP _SAIGE_assignforScoreTest_R(SEXP LOCO_extSEXP, SEXP LOCOVec_extSEXP, SEXP XXVX_inv_noLOCO_extSEXP, SEXP XV_inv_noLOCO_extSEXP, SEXP res_noLOCO_extSEXP, SEXP mu2_noLOCO_extSEXP, SEXP varRatio_extSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type LOCO_ext(LOCO_extSEXP);
+    Rcpp::traits::input_parameter< std::vector<bool>& >::type LOCOVec_ext(LOCOVec_extSEXP);
+    Rcpp::traits::input_parameter< arma::fmat& >::type XXVX_inv_noLOCO_ext(XXVX_inv_noLOCO_extSEXP);
+    Rcpp::traits::input_parameter< arma::fmat& >::type XV_inv_noLOCO_ext(XV_inv_noLOCO_extSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type res_noLOCO_ext(res_noLOCO_extSEXP);
+    Rcpp::traits::input_parameter< arma::fvec& >::type mu2_noLOCO_ext(mu2_noLOCO_extSEXP);
+    Rcpp::traits::input_parameter< double >::type varRatio_ext(varRatio_extSEXP);
+    assignforScoreTest_R(LOCO_ext, LOCOVec_ext, XXVX_inv_noLOCO_ext, XV_inv_noLOCO_ext, res_noLOCO_ext, mu2_noLOCO_ext, varRatio_ext);
+    return R_NilValue;
+END_RCPP
+}
+// getScoreTest
+Rcpp::List getScoreTest(int MtoTest);
+RcppExport SEXP _SAIGE_getScoreTest(SEXP MtoTestSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type MtoTest(MtoTestSEXP);
+    rcpp_result_gen = Rcpp::wrap(getScoreTest(MtoTest));
+    return rcpp_result_gen;
+END_RCPP
+}
 // SetSampleIdx_vcfDosage
 void SetSampleIdx_vcfDosage(Rcpp::IntegerVector sample_idx, int Ntest);
 RcppExport SEXP _SAIGE_SetSampleIdx_vcfDosage(SEXP sample_idxSEXP, SEXP NtestSEXP) {
@@ -1565,6 +1592,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_closetestGenoFile_bgenDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_bgenDosage, 0},
     {"_SAIGE_setgenoTest_bgenDosage_v2", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage_v2, 6},
     {"_SAIGE_getSampleSizeinBgen", (DL_FUNC) &_SAIGE_getSampleSizeinBgen, 0},
+    {"_SAIGE_assignforScoreTest_R", (DL_FUNC) &_SAIGE_assignforScoreTest_R, 7},
+    {"_SAIGE_getScoreTest", (DL_FUNC) &_SAIGE_getScoreTest, 1},
     {"_SAIGE_SetSampleIdx_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_vcfDosage, 2},
     {"_SAIGE_setTestField", (DL_FUNC) &_SAIGE_setTestField, 1},
     {"_SAIGE_setIsDropMissingDosages_vcf", (DL_FUNC) &_SAIGE_setIsDropMissingDosages_vcf, 1},

@@ -1,0 +1,277 @@
+R version 3.6.3 (2020-02-29)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.4 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] SAIGE_0.42.2
+
+loaded via a namespace (and not attached):
+[1] compiler_3.6.3     Matrix_1.2-14      Rcpp_1.0.0         grid_3.6.3        
+[5] RcppParallel_4.4.1 lattice_0.20-41   
+$vcfFile
+[1] ""
+
+$vcfFileIndex
+[1] ""
+
+$vcfField
+[1] "DS"
+
+$bgenFile
+[1] "./input/genotype_10markers.missingness.bgen"
+
+$bgenFileIndex
+[1] "./input/genotype_10markers.missingness.bgen.bgi"
+
+$savFile
+[1] ""
+
+$savFileIndex
+[1] ""
+
+$idstoExcludeFile
+[1] ""
+
+$idstoIncludeFile
+[1] ""
+
+$rangestoExcludeFile
+[1] ""
+
+$rangestoIncludeFile
+[1] ""
+
+$chrom
+[1] "1"
+
+$start
+[1] 1
+
+$end
+[1] 2.5e+08
+
+$IsDropMissingDosages
+[1] FALSE
+
+$minMAF
+[1] 1e-04
+
+$minMAC
+[1] 1
+
+$maxMAFforGroupTest
+[1] 0.5
+
+$minInfo
+[1] 0
+
+$sampleFile
+[1] "./input/samplefileforbgen_1000samples.txt"
+
+$GMMATmodelFile
+[1] "./output/example_binary_includenonAutoforvarRatio_0.41.rda"
+
+$varianceRatioFile
+[1] "./output/example_binary_includenonAutoforvarRatio_0.41.varianceRatio.txt"
+
+$SAIGEOutputFile
+[1] "./output/example_binary.SAIGE.bgen.genotype.dropmissing_0.42.2.txt"
+
+$numLinesOutput
+[1] 2
+
+$IsSparse
+[1] TRUE
+
+$SPAcutoff
+[1] 2
+
+$IsOutputAFinCaseCtrl
+[1] TRUE
+
+$IsOutputNinCaseCtrl
+[1] FALSE
+
+$IsOutputHetHomCountsinCaseCtrl
+[1] TRUE
+
+$LOCO
+[1] FALSE
+
+$condition
+[1] ""
+
+$sparseSigmaFile
+[1] ""
+
+$groupFile
+[1] ""
+
+$kernel
+[1] "linear.weighted"
+
+$method
+[1] "optimal.adj"
+
+$weights.beta.rare
+[1] "1,25"
+
+$weights.beta.common
+[1] "1,25"
+
+$weightMAFcutoff
+[1] 0.01
+
+$r.corr
+[1] "0"
+
+$IsSingleVarinGroupTest
+[1] FALSE
+
+$cateVarRatioMinMACVecExclude
+[1] "0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$cateVarRatioMaxMACVecInclude
+[1] "1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$dosageZerodCutoff
+[1] 0.2
+
+$IsOutputPvalueNAinGroupTestforBinary
+[1] FALSE
+
+$IsAccountforCasecontrolImbalanceinGroupTest
+[1] TRUE
+
+$weightsIncludeinGroupFile
+[1] FALSE
+
+$IsOutputBETASEinBurdenTest
+[1] FALSE
+
+$sampleFile_male
+[1] ""
+
+$X_PARregion
+[1] ""
+
+$is_rewrite_XnonPAR_forMales
+[1] FALSE
+
+$help
+[1] FALSE
+
+weights.beta.rare  is  1 25 
+weights.beta.common  is  1 25 
+cateVarRatioMinMACVecExclude  is  0.5 1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+cateVarRatioMaxMACVecInclude  is  1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+single-variant association test will be performed
+1000  samples have been used to fit the glmm null model
+[1] "Leave-one-chromosome-out is not applied"
+Single variance ratio is provided, so categorical variance ratio won't be used!
+variance Ratio is  0.940665 
+1000  sample IDs are found in sample file
+isCondition is  FALSE 
+[1] 1000    4
+[1] "IID"          "IndexInModel" "IndexDose.x"  "IndexDose.y" 
+1000  samples were used in fitting the NULL glmm model and are found in sample file
+sparse kinship matrix is not used
+Missing dosages will be mean imputed for the analysis
+Analysis started at  1603232202 Seconds
+minMAC:  1 
+minMAF:  1e-04 
+Minimum MAF of markers to be tested is  5e-04 
+It is a binary trait
+Analyzing  98  cases and  902  controls 
+isCondition is  FALSE 
+Analysis started at  1603232202 Seconds
+no query list is provided
+1000 samples are found in the bgen file
+10 markers are found in the bgen file 
+sample index with missing dosages for snpName rs4 :5,8,102, 
+AC is 19
+AC_new is 19.0572
+All here 
+[1] "OK_test"
+[1] "temp"
+[1] -0.05997309
+sample index with missing dosages for snpName rs9 :8,10, 
+AC is 4
+AC_new is 4.00802
+All here 
+[1] "OK_test"
+[1] "temp"
+[1] -0.5735712
+   user  system elapsed 
+  1.016   0.089   1.128 
+[1] 2
+numPassMarker:  2 
+sample index with missing dosages for snpName rs10 :11, 
+AC is 4
+AC_new is 4.004
+All here 
+[1] "OK_test"
+[1] "temp"
+[1] 0.3070139
+All here 
+[1] "OK_test"
+[1] "temp"
+[1] -0.09184508
+   user  system elapsed 
+  1.020   0.089   1.132 
+[1] 4
+numPassMarker:  4 
+All here 
+[1] "OK_test"
+[1] "temp"
+[1] -0.1988451
+All here 
+[1] "OK_test"
+[1] "temp"
+[1] -0.3535365
+   user  system elapsed 
+  1.022   0.089   1.135 
+[1] 6
+numPassMarker:  6 
+All here 
+[1] "OK_test"
+[1] "temp"
+[1] -4.614493
+All here 
+[1] "OK_test"
+[1] "temp"
+[1] -0.07722316
+   user  system elapsed 
+  1.024   0.089   1.138 
+[1] 8
+numPassMarker:  8 
+All here 
+[1] "OK_test"
+[1] "temp"
+[1] -0.1054968
+All here 
+[1] "OK_test"
+[1] "temp"
+[1] 3.826508
+   user  system elapsed 
+  1.026   0.089   1.140 
+[1] 10
+numPassMarker:  10 
+closed the genofile!
+Analysis ended at  1603232202 Seconds
+Analysis took  0.01912928 Seconds

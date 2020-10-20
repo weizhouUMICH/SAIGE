@@ -989,11 +989,17 @@ SPAGMMATtest = function(bgenFile = "",
 
 
 
-  	 if(traitType == "binary"){
+  	if(traitType == "binary"){
 
-
-           out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.model$obj.noK, obj.model$mu, obj.model$mu2, y, X, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv, IsOutputlogPforSingle=IsOutputlogPforSingle)
-	   OUTvec=c(rowHeader, N,unlist(out1))
+	LOCOVec = rep(FALSE, 22)
+	obj.model$residuals = y - obj.model$mu
+	assignforScoreTest_R(LOCO, LOCOVec, XXVX_inv_noLOCO = obj.model$obj.noK$XXVX_inv, XV_inv_noLOCO = obj.model$obj.noK$XV, res_noLOCO = obj.model$residuals, mu2_noLOCO = obj.model$mu2, varRatio)
+	print("OK_test")	
+	#a=getScoreTest(1)
+	#print(a)
+	out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.model$obj.noK, obj.model$mu, obj.model$mu2, y, X, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv, IsOutputlogPforSingle=IsOutputlogPforSingle)
+	#print(out1)
+	OUTvec=c(rowHeader, N,unlist(out1))
 
 
     	   if(IsOutputAFinCaseCtrl){
@@ -1578,11 +1584,18 @@ Score_Test_Sparse<-function(obj.null, y, X1, G, mu, mu2, varRatio, IsOutputlogPf
 Score_Test<-function(obj.null, G, y, mu, mu2, varRatio, IsOutputlogPforSingle){
   #print("NO SPARSE")
   g<-G  -  obj.null$XXVX_inv %*%  (obj.null$XV %*% G)
-  q<-crossprod(g, y)
+  #print("g")
+  #print(g)
+q<-crossprod(g, y)
   m1<-crossprod(mu, g)
   var2<-crossprod(mu2, g^2)
   var1 = var2 * varRatio
   S = q-m1
+  #print("y-mu")
+  #print(y-mu)
+  temp=g*(y-mu)
+  print("temp")
+  print(sum(temp))
   #cat("S is ", S, "\n")
   pval.noadj<-pchisq((S)^2/var1, lower.tail = FALSE, df=1, log.p=IsOutputlogPforSingle)
 
@@ -1990,15 +2003,15 @@ scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse,
 
 if(!isCondition){
   if(IsSparse==TRUE){
-    if(MAF < 0.05){
-       out.score<-try(Score_Test_Sparse(obj.noK, y, X, G0, mu.a, mu2.a, varRatio, IsOutputlogPforSingle=IsOutputlogPforSingle), silent=TRUE)
-       if(class(out.score) == "try-error"){
+    #if(MAF < 0.05){
+    #   out.score<-try(Score_Test_Sparse(obj.noK, y, X, G0, mu.a, mu2.a, varRatio, IsOutputlogPforSingle=IsOutputlogPforSingle), silent=TRUE)
+    #   if(class(out.score) == "try-error"){
+    #       out.score<-Score_Test(obj.noK, G0, y, mu.a, mu2.a, varRatio, IsOutputlogPforSingle=IsOutputlogPforSingle)
+#	   #print("no sparse score here")
+    #   }
+ #   }else{
            out.score<-Score_Test(obj.noK, G0, y, mu.a, mu2.a, varRatio, IsOutputlogPforSingle=IsOutputlogPforSingle)
-	   #print("no sparse score here")
-       }
-    }else{
-           out.score<-Score_Test(obj.noK, G0, y, mu.a, mu2.a, varRatio, IsOutputlogPforSingle=IsOutputlogPforSingle)
-    }
+ #   }
 
     if(out.score["pval.noadj"] > 0.05){
 

@@ -8,9 +8,8 @@
 #include "../thirdParty/bgen/genfile/include/genfile/bgen/IndexQuery.hpp"
 #include <sstream>
 #include <time.h>
-#include <Rcpp.h>
 #include <stdint.h>
-
+#include "ScoreTest.hpp"
 
 // #define DEBUG 1
 
@@ -52,7 +51,7 @@ bool isDropMissingDosages_bgen = false;
 double markerInfo;
 int numSamples_bgen;
 // bool isDropMissingDosages_bgen = false;
-
+ScoreTest ScoreTestObj;
 
 // // [[Rcpp::export]]
 //void setIsOutputHetHomCountsinCaseCtrl( bool isoutputhethom ) {
@@ -1209,3 +1208,25 @@ int setgenoTest_bgenDosage_v2(std::string & filename,
 int getSampleSizeinBgen(){
         return(numSamples_bgen);
 }
+
+
+
+// [[Rcpp::export]]
+void assignforScoreTest_R(bool LOCO_ext, std::vector<bool> & LOCOVec_ext, arma::fmat & XXVX_inv_noLOCO_ext,  arma::fmat & XV_inv_noLOCO_ext,  arma::fvec & res_noLOCO_ext,  arma::fvec & mu2_noLOCO_ext, double varRatio_ext){
+	std::cout << "All here " << std::endl;
+	ScoreTestObj.assignforScoreTest(LOCO_ext, LOCOVec_ext, XXVX_inv_noLOCO_ext, XV_inv_noLOCO_ext, res_noLOCO_ext, mu2_noLOCO_ext, varRatio_ext);
+}
+
+// [[Rcpp::export]]
+Rcpp::List getScoreTest(int MtoTest) {
+   Rcpp::List Glist;
+   if(isQuery){
+      Glist = getDosage_inner_bgen_withquery_new();
+   }else{
+      Glist = getDosage_inner_bgen_noquery();
+   }
+   
+   Glist["scoreTest"] = ScoreTestObj.Scoretest(Glist["dosages"], 1);
+   return(Glist);
+}
+
