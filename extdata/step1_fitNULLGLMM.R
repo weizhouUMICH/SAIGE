@@ -47,7 +47,7 @@ option_list <- list(
    help="Size (Gb) for each memory chunk [default=2]"),
   make_option("--tauInit", type="character", default="0,0",
    help="Initial values for tau. [default=0,0]"),
-  make_option("--LOCO", type="logical", default=FALSE,
+  make_option("--LOCO", type="logical", default=TRUE,
     help="Whether to apply the leave-one-chromosome-out (LOCO) approach. This option has not been extensively tested [default=FALSE]."),
   make_option("--traceCVcutoff", type="numeric", default=0.0025,
     help="Threshold for coefficient of variation (CV) for the trace estimator. Number of runs for trace estimation will be increased until the CV is below the threshold [default=0.0025]."),
