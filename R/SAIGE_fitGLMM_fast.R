@@ -558,7 +558,7 @@ solveSpMatrixUsingArma = function(sparseGRMtest){
 #' @param skipModelFitting logical.  Whether to skip fitting the null model and only calculating the variance ratio, By default, FALSE. If TURE, the model file ".rda" is needed 
 #' @param memoryChunk integer or float. The size (Gb) for each memory chunk. By default, 2
 #' @param tauInit vector of numbers. e.g. c(1,1), Unitial values for tau. For binary traits, the first element will be always be set to 1. If the tauInit is 0,0, the second element will be 0.5 for binary traits and the initial tau vector for quantitative traits is 1,0 
-#' @param LOCO logical. Whether to apply the leave-one-chromosome-out (LOCO) option. By default, FALSE
+#' @param LOCO logical. Whether to apply the leave-one-chromosome-out (LOCO) option. By default, TRUE
 #' @param traceCVcutoff numeric. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun. By default, 0.0025
 #' @param ratioCVcutoff numeric. The threshold for coefficient of variantion (CV) for the variance ratio estimate. If ratioCV > ratioCVcutoff. numMarkers will be increased by 10. By default, 0.001 
 #' @param outputPrefix character. Path to the output files with prefix.
@@ -605,7 +605,7 @@ fitNULLGLMM = function(plinkFile = "",
                 skipModelFitting = FALSE,
 		memoryChunk = 2,
 		tauInit = c(0,0),
-		LOCO = FALSE,
+		LOCO = TRUE,
 		traceCVcutoff = 0.0025,
 		ratioCVcutoff = 0.001, 
                 outputPrefix = "",

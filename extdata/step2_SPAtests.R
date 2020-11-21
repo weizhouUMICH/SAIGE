@@ -73,7 +73,7 @@ mean, p-value based on traditional score test is returned. Default value is 2.")
     help="Whether to output sample sizes in cases and controls for dichotomous traits [default=FALSE]"),
   make_option("--IsOutputHetHomCountsinCaseCtrl", type="logical",default=FALSE,
     help="Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls will be output [default=FALSE]"),
-  make_option("--LOCO", type="logical", default=FALSE,
+  make_option("--LOCO", type="logical", default=TRUE,
     help="Whether to apply the leave-one-chromosome-out option. This option has not been extensively tested."),
   make_option("--condition", type="character",default="",
     help="For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input, marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input."),

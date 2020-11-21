@@ -12,9 +12,9 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.42.1 (Updated on September 21, 2020. This version is still under evaluation).
+## Current version is 0.43 (Updated on November 21, 2020).
 
-## For BGEN input in step 2 with missing dosages, Please use version 0.38. The bug for BGEN input with missing dosages was introducted in v0.36.6. 
+## For BGEN input in step 2 with missing dosages, Please use version 0.38 or later.
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
@@ -162,6 +162,9 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+
+* 0.43 (November-21-2020) Further modify the sparse version of the score test for quantitative traits. This causes slight different assoc tests for variants with MAF < 0.05 for quantitative traits. Set LOCO = TRUE to the default values for step 1 and step 2. In step 2, --chrom needs to be specified for LOCO=TRUE.
+
 * 0.42.1 (September-21-2020) uncomment isSparse=FALSE for quantitative traits. This was commented out for testing in 0.42
 
 * 0.42 (September-16-2020) fix a bug for variance ratio adjustion when account for case-control imbalance for gene-based tests. minMAC is set to 1/(2*N) instead of 0 if is_rewrite_XnonPAR_forMales=TRUE

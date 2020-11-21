@@ -30,7 +30,7 @@
 #' @param IsOutputNinCaseCtrl logical. Whether to output sample sizes in cases and controls. By default, FALSE
 #' @param IsOutputHetHomCountsinCaseCtrl logical. Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls" will be output.
 #' @param IsOutputlogPforSingle logical. Whether to output log(Pvalue) for single-variant assoc tests. By default, FALSE. If TRUE, the log(Pvalue) instead of original P values will be output
-#' @param LOCO logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE
+#' @param LOCO logical. Whether to apply the leave-one-chromosome-out option. By default, TRUE
 #' @param condition character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input , marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input.
 #' @param sparseSigmaFile character. Path to the file containing the sparseSigma from step 1. The suffix of this file is ".mtx".
 #' @param groupFile character. Path to the file containing the group information for gene-based tests. Each line is for one gene/set of variants. The first element is for gene/set name. The rest of the line is for variant ids included in this gene/set. For vcf/sav, the genetic marker ids are in the format chr:pos_ref/alt. For bgen, the genetic marker ids should match the ids in the bgen file. Each element in the line is seperated by tab.
@@ -84,7 +84,7 @@ SPAGMMATtest = function(bgenFile = "",
 		 IsOutputHetHomCountsinCaseCtrl=FALSE,
 		 IsOutputNinCaseCtrl=FALSE,
 		 IsOutputlogPforSingle=FALSE,
-		 LOCO=FALSE,
+		 LOCO=TRUE,
 		 condition="",
 		 sparseSigmaFile="",
 		 groupFile="",
@@ -214,7 +214,8 @@ SPAGMMATtest = function(bgenFile = "",
 	        cat("Conditional test will be conducted and LOCO is TRUE\n")
                 stop("chromosome is needed by specifying chrom for LOCO in conditioning analysis. We assume conditioning markers and testing markers are on the same chromosome")
 	      }else{
-                cat("WARNING: LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
+                stop("chromosome is needed by specifying chrom for LOCO = TRUE.") 
+                #stop("WARNING: LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
                 indChromCheck = TRUE
                }
 	    }else{
@@ -1818,7 +1819,7 @@ scoreTest_SAIGE_quantitativeTrait_sparseSigma=function(G0, obj.noK, AC, AF, y, X
   }
   maf = min(AF, 1-AF)
 #  cat("HERE2\n")
- isSparse=FALSE
+isSparse=FALSE
 if(maf < 0.05){isSparse=TRUE}
 
 
@@ -1847,8 +1848,11 @@ if(isSparse){
       Z = t(A1) %*% g1
       B<-X %*% Z
       g_tilde1 = g1 - B
-      var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2)*(1/tauVec[2]) + sum(g_tilde1^2)*(1/tauVec[2])
-      var1 = var2 * varRatio*(tauVec[2])
+      #var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2)*(1/tauVec[2]) + sum(g_tilde1^2)*(1/tauVec[2])
+      #var1 = var2 * varRatio*(tauVec[2])
+      var2 = t(Z)%*% obj.noK$XVX %*% Z *tauVec[1] + sum(g1^2) - 2*sum(g1*B)
+      var1 = var2 * varRatio
+
       S1 = crossprod(y1-mu1, g_tilde1)
       #if(!noCov){
       S_a2 = obj.noK$S_a - colSums(X * (y1 - mu1))
@@ -1861,8 +1865,12 @@ if(isSparse){
       Z = A1 * g1
       B<-X %*% Z
       g_tilde1 = g1 - B
-      var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2)*(1/tauVec[2]) + sum(g_tilde1^2)*(1/tauVec[2])
-      var1 = var2 * varRatio*(tauVec[2])
+
+      var2 = t(Z)%*% obj.noK$XVX %*% Z *tauVec[1] + sum(g1^2) - 2*sum(g1*B)
+      var1 = var2 * varRatio
+
+      #var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2)*(1/tauVec[2]) + sum(g_tilde1^2)*(1/tauVec[2])
+      #var1 = var2 * varRatio*(tauVec[2])
       S1 = crossprod(y1-mu1, g_tilde1)
       S_a2 = obj.noK$S_a - X * (y1 - mu1)
       S2 = -S_a2 %*% Z
