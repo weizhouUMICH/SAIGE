@@ -36,7 +36,9 @@ createSparseGRM = function(plinkFile = "",
   }
   #  
   famFile = paste0(plinkFile, ".fam")
+
   fam = data.frame(data.table:::fread(famFile, header=F, stringsAsFactors=FALSE, colClasses = c(rep("character",4), rep("numeric", 2))))
+
   sparseGRMSampleID = fam[,2]
   sparseGRMSampleIDFile = paste0(outputPrefix,"_relatednessCutoff_",relatednessCutoff,"_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt")
 
