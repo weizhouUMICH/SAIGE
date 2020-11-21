@@ -13,6 +13,10 @@ setvcfDosageMatrix <- function(vcfFileName, vcfFileIndex, vcfField) {
     .Call('_SAIGE_setvcfDosageMatrix', PACKAGE = 'SAIGE', vcfFileName, vcfFileIndex, vcfField)
 }
 
+getNumofSamples_Matrix <- function() {
+    .Call('_SAIGE_getNumofSamples_Matrix', PACKAGE = 'SAIGE')
+}
+
 getSampleIDlist_vcfMatrix <- function() {
     .Call('_SAIGE_getSampleIDlist_vcfMatrix', PACKAGE = 'SAIGE')
 }
@@ -377,8 +381,16 @@ getDosage_inner_bgen_withquery_new <- function() {
     .Call('_SAIGE_getDosage_inner_bgen_withquery_new', PACKAGE = 'SAIGE')
 }
 
+getDosage_inner_bgen_withquery_new_Sparse <- function() {
+    .Call('_SAIGE_getDosage_inner_bgen_withquery_new_Sparse', PACKAGE = 'SAIGE')
+}
+
 getDosage_bgen_withquery <- function() {
     .Call('_SAIGE_getDosage_bgen_withquery', PACKAGE = 'SAIGE')
+}
+
+getDosage_bgen_withquery_Sparse <- function() {
+    .Call('_SAIGE_getDosage_bgen_withquery_Sparse', PACKAGE = 'SAIGE')
 }
 
 getDosage_bgen_noquery <- function() {

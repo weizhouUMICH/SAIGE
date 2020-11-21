@@ -8,4 +8,5 @@ for (pack in req_packages) {
     }
 }
 
+devtools::install_github("leeshawn/SPAtest")
 #devtools::install_github("leeshawn/SKAT")

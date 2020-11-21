@@ -4,18 +4,10 @@
 \alias{createSparseGRM}
 \title{Construct a sparse GRM for a given data set}
 \usage{
-createSparseGRM(
-  plinkFile = "",
-  outputPrefix = "",
-  numRandomMarkerforSparseKin = 1000,
-  relatednessCutoff = 0.125,
-  memoryChunk = 2,
-  isDiagofKinSetAsOne = FALSE,
-  nThreads = 1,
-  minMAFforGRM = 0.01,
-  isSetGeno = TRUE,
-  isWritetoFiles = TRUE
-)
+createSparseGRM(plinkFile = "", outputPrefix = "",
+  numRandomMarkerforSparseKin = 1000, relatednessCutoff = 0.125,
+  memoryChunk = 2, isDiagofKinSetAsOne = FALSE, nThreads = 1,
+  minMAFforGRM = 0.01, isSetGeno = TRUE, isWritetoFiles = TRUE)
 }
 \arguments{
 \item{plinkFile}{character. Path to plink file to be used for calculating the sparse GRM}

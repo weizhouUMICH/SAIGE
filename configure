@@ -1,9 +1,15 @@
 #!/bin/bash
 
+# If installing within conda build ignore configure
+[[ ! -z "$CONDA_BUILD" ]] && exit 0
+
 if [[ -z "$(which cget)" ]]; then
   (>&2 echo "cget must be installed to build SAIGE. Run `pip install cget`.")
   exit 1
 fi
+
+##Install SPAtest R library, 3.1.2
+#Rscript -e 'devtools::install_github("leeshawn/SPAtest")'
 
 ##install savvy library
 rm -rf thirdParty/cget

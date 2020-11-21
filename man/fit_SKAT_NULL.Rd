@@ -4,21 +4,12 @@
 \alias{fit_SKAT_NULL}
 \title{Fit the null logistic mixed model and estimate the variance ratio by a set of randomly selected variants}
 \usage{
-fit_SKAT_NULL(
-  kins = NULL,
-  phenoFile = "",
-  phenoCol = "",
-  traitType = "quantitative",
-  invNormalize = FALSE,
-  covarColList = NULL,
-  qCovarCol = NULL,
-  sampleIDColinphenoFile = "",
-  outputPrefix = "",
-  isCovariateTransform = FALSE,
-  sampleFileForDosages = "",
-  methodforRelatedSample = "EMMAX",
-  isDiagofKinSetAsOne = FALSE
-)
+fit_SKAT_NULL(kins = NULL, phenoFile = "", phenoCol = "",
+  traitType = "quantitative", invNormalize = FALSE,
+  covarColList = NULL, qCovarCol = NULL, sampleIDColinphenoFile = "",
+  outputPrefix = "", isCovariateTransform = FALSE,
+  sampleFileForDosages = "", methodforRelatedSample = "EMMAX",
+  isDiagofKinSetAsOne = FALSE)
 }
 \arguments{
 \item{phenoFile}{character. Path to the phenotype file}

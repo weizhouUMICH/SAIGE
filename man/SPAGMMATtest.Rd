@@ -4,56 +4,31 @@
 \alias{SPAGMMATtest}
 \title{Run single variant or gene- or region-based score tests with SPA based on the linear/logistic mixed model.}
 \usage{
-SPAGMMATtest(
-  bgenFile = "",
-  bgenFileIndex = "",
-  vcfFile = "",
-  vcfFileIndex = "",
-  vcfField = "DS",
-  savFile = "",
-  savFileIndex = "",
-  sampleFile = "",
-  idstoExcludeFile = "",
-  idstoIncludeFile = "",
-  rangestoExcludeFile = "",
-  rangestoIncludeFile = "",
-  chrom = "",
-  start = 1,
-  end = 2.5e+08,
-  IsDropMissingDosages = FALSE,
-  minMAC = 0.5,
-  minMAF = 0,
-  maxMAFforGroupTest = 0.5,
-  minInfo = 0,
-  GMMATmodelFile = "",
-  varianceRatioFile = "",
-  SPAcutoff = 2,
-  SAIGEOutputFile = "",
-  numLinesOutput = 10000,
-  IsSparse = TRUE,
-  IsOutputAFinCaseCtrl = FALSE,
-  IsOutputHetHomCountsinCaseCtrl = FALSE,
-  IsOutputNinCaseCtrl = FALSE,
-  LOCO = FALSE,
-  condition = "",
-  sparseSigmaFile = "",
-  groupFile = "",
-  kernel = "linear.weighted",
-  method = "optimal.adj",
-  weights.beta.rare = c(1, 25),
-  weights.beta.common = c(1, 25),
-  weightMAFcutoff = 0.01,
-  weightsIncludeinGroupFile = FALSE,
-  weights_for_G2_cond = NULL,
-  r.corr = 0,
-  IsSingleVarinGroupTest = TRUE,
-  cateVarRatioMinMACVecExclude = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
+SPAGMMATtest(bgenFile = "", bgenFileIndex = "", vcfFile = "",
+  vcfFileIndex = "", vcfField = "DS", savFile = "",
+  savFileIndex = "", sampleFile = "", idstoExcludeFile = "",
+  idstoIncludeFile = "", rangestoExcludeFile = "",
+  rangestoIncludeFile = "", chrom = "", start = 1, end = 2.5e+08,
+  IsDropMissingDosages = FALSE, minMAC = 0.5, minMAF = 0,
+  maxMAFforGroupTest = 0.5, minInfo = 0, GMMATmodelFile = "",
+  varianceRatioFile = "", SPAcutoff = 2, SAIGEOutputFile = "",
+  numLinesOutput = 10000, IsSparse = TRUE,
+  IsOutputAFinCaseCtrl = FALSE, IsOutputHetHomCountsinCaseCtrl = FALSE,
+  IsOutputNinCaseCtrl = FALSE, IsOutputlogPforSingle = FALSE,
+  LOCO = FALSE, condition = "", sparseSigmaFile = "",
+  groupFile = "", kernel = "linear.weighted", method = "optimal.adj",
+  weights.beta.rare = c(1, 25), weights.beta.common = c(1, 25),
+  weightMAFcutoff = 0.01, weightsIncludeinGroupFile = FALSE,
+  weights_for_G2_cond = NULL, r.corr = 0,
+  IsSingleVarinGroupTest = TRUE, cateVarRatioMinMACVecExclude = c(0.5,
+  1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
   cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
   dosageZerodCutoff = 0.2,
   IsOutputPvalueNAinGroupTestforBinary = FALSE,
   IsAccountforCasecontrolImbalanceinGroupTest = TRUE,
-  IsOutputBETASEinBurdenTest = FALSE
-)
+  IsOutputBETASEinBurdenTest = FALis_rewrite_XnonPAR_forMalesSE,
+  X_PARregion = "60001-2699520,154931044-155270560",
+  is_rewrite_XnonPAR_forMales = FALSE, sampleFile_male = "")
 }
 \arguments{
 \item{bgenFile}{character. Path to bgen file. Currently version 1.2 with 8 bit compression is supported}
@@ -114,6 +89,8 @@ SPAGMMATtest(
 
 \item{IsOutputNinCaseCtrl}{logical. Whether to output sample sizes in cases and controls. By default, FALSE}
 
+\item{IsOutputlogPforSingle}{logical. Whether to output log(Pvalue) for single-variant assoc tests. By default, FALSE. If TRUE, the log(Pvalue) instead of original P values will be output}
+
 \item{LOCO}{logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE}
 
 \item{condition}{character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input , marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input.}
@@ -151,6 +128,12 @@ SPAGMMATtest(
 \item{IsAccountforCasecontrolImbalanceinGroupTest}{logical. In gene- or region-based tests for binary traits. If IsAccountforCasecontrolImbalanceinGroupTest is TRUE, p-values after accounting for case-control imbalance will be output. By default, TRUE}
 
 \item{IsOutputBETASEinBurdenTest}{logical. Output effect size (BETA and SE) for burden tests. By default, FALSE}
+
+\item{X_PARregion}{character. ranges of (pseudoautosomal) PAR region on chromosome X, which are seperated by comma and in the format start:end. By default: '60001-2699520,154931044-155260560' in the UCSC build hg19. For males, there are two X alleles in the PAR region, so PAR regions are treated the same as autosomes. In the NON-PAR regions (outside the specified PAR regions on chromosome X), for males, there is only one X allele. If is_rewrite_XnonPAR_forMales=TRUE, genotypes/dosages of all variants in the NON-PAR regions on chromosome X will be multiplied by 2.}
+
+\item{is_rewrite_XnonPAR_forMales}{logical. Whether to rewrite gentoypes or dosages of variants in the NON-PAR regions on chromosome X for males (multiply by 2). By default, FALSE. Note, only use is_rewrite_XnonPAR_forMales=TRUE when the specified VCF or Bgen file only has variants on chromosome X. When is_rewrite_XnonPAR_forMales=TRUE, the program does not check the chromosome value by assuming all variants are on chromosome X}
+
+\item{sampleFile_male}{character. Path to the file containing one column for IDs of MALE samples in the bgen or vcf file with NO header. Order does not matter}
 }
 \value{
 SAIGEOutputFile

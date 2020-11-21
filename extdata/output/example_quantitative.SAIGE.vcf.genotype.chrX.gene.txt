@@ -1,0 +1,3 @@
+Gene Pvalue Nmarker_MACCate_1 Nmarker_MACCate_2 Nmarker_MACCate_3 Nmarker_MACCate_4 Nmarker_MACCate_5 Nmarker_MACCate_6 Nmarker_MACCate_7 Nmarker_MACCate_8 markerIDs markerAFs Pvalue_Burden Pvalue_SKAT
+GENE1 0.407931525002713 0 0 0 2 0 1 1 0 chrX:4_A/C;chrX:9_A/C;chrX:10_A/C;chrX:11_A/C 0.01;0.002;0.004;0.002 0.275438656275696 0.527669483919682
+GENE2 0.748440083268058 0 0 0 0 0 0 1 0 chrX:17_A/C 0.0075 NA NA

@@ -50,7 +50,7 @@ fit_SKAT_NULL = function(kins = NULL,
   if(!file.exists(phenoFile)){
     stop("ERROR! phenoFile ", phenoFile, " does not exsit\n")
   }else{
-    ydat = data.table:::fread(phenoFile, header=T, stringsAsFactors=FALSE)
+    ydat = data.table:::fread(phenoFile, header=T, stringsAsFactors=FALSE, colClasses=list(character = sampleIDColinphenoFile))
     data = data.frame(ydat)
 
     for(i in c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile)){

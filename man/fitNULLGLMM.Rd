@@ -4,48 +4,26 @@
 \alias{fitNULLGLMM}
 \title{Fit the null logistic/linear mixed model and estimate the variance ratios by randomly selected variants}
 \usage{
-fitNULLGLMM(
-  plinkFile = "",
-  phenoFile = "",
-  phenoCol = "",
-  traitType = "binary",
-  invNormalize = FALSE,
-  covarColList = NULL,
-  qCovarCol = NULL,
-  sampleIDColinphenoFile = "",
-  tol = 0.02,
-  maxiter = 20,
-  tolPCG = 1e-05,
-  maxiterPCG = 500,
-  nThreads = 1,
-  SPAcutoff = 2,
-  numMarkers = 30,
-  skipModelFitting = FALSE,
-  memoryChunk = 2,
-  tauInit = c(0, 0),
-  LOCO = FALSE,
-  traceCVcutoff = 0.0025,
-  ratioCVcutoff = 0.001,
-  outputPrefix = "",
-  outputPrefix_varRatio = NULL,
-  IsOverwriteVarianceRatioFile = FALSE,
-  IsSparseKin = FALSE,
-  sparseGRMFile = NULL,
-  sparseGRMSampleIDFile = NULL,
-  numRandomMarkerforSparseKin = 1000,
-  relatednessCutoff = 0.125,
-  isCateVarianceRatio = FALSE,
-  cateVarRatioIndexVec = NULL,
-  cateVarRatioMinMACVecExclude = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
+fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
+  traitType = "binary", invNormalize = FALSE, covarColList = NULL,
+  qCovarCol = NULL, sampleIDColinphenoFile = "", tol = 0.02,
+  maxiter = 20, tolPCG = 1e-05, maxiterPCG = 500, nThreads = 1,
+  SPAcutoff = 2, numMarkers = 30, skipModelFitting = FALSE,
+  memoryChunk = 2, tauInit = c(0, 0), LOCO = FALSE,
+  traceCVcutoff = 0.0025, ratioCVcutoff = 0.001, outputPrefix = "",
+  outputPrefix_varRatio = NULL, IsOverwriteVarianceRatioFile = FALSE,
+  IsSparseKin = FALSE, sparseGRMFile = NULL,
+  sparseGRMSampleIDFile = NULL, numRandomMarkerforSparseKin = 1000,
+  relatednessCutoff = 0.125, isCateVarianceRatio = FALSE,
+  cateVarRatioIndexVec = NULL, cateVarRatioMinMACVecExclude = c(0.5,
+  1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
   cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
-  isCovariateTransform = TRUE,
-  isDiagofKinSetAsOne = FALSE,
+  isCovariateTransform = TRUE, isDiagofKinSetAsOne = FALSE,
   useSparseSigmaConditionerforPCG = FALSE,
-  useSparseSigmaforInitTau = FALSE,
-  minCovariateCount = -1,
-  minMAFforGRM = 0.01,
-  includeNonautoMarkersforVarRatio = FALSE
-)
+  useSparseSigmaforInitTau = FALSE, minCovariateCount = -1,
+  minMAFforGRM = 0.01, includeNonautoMarkersforVarRatio = FALSE,
+  sexCol = "", FemaleCode = 1, FemaleOnly = FALSE, MaleCode = 0,
+  MaleOnly = FALSE, noEstFixedEff = FALSE)
 }
 \arguments{
 \item{plinkFile}{character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM). minMAFforGRM can be used to specify the minimum MAF of markers in he plink file to be used for constructing GRM. Genetic markers are also randomly selected from the plink file to estimate the variance ratios}
@@ -125,6 +103,18 @@ fitNULLGLMM(
 \item{minMAFforGRM}{numeric. Minimum MAF for markers (in the Plink file) used for construcing the sparse GRM. By default, 0.01}
 
 \item{includeNonautoMarkersforVarRatio}{logical. Whether to allow for non-autosomal markers for variance ratio. By default, FALSE}
+
+\item{sexCol}{character. Coloumn name for sex in the phenotype file, e.g Sex. By default, ''}
+
+\item{FemaleCode}{character. Values in the column for sex (sexCol) in the phenotype file are used for females. By default, '1'}
+
+\item{FemaleOnly}{logical. Whether to run Step 1 for females only. If TRUE, sexCol and FemaleCode need to be specified. By default, FALSE}
+
+\item{MaleCode}{character. Values in the column for sex (sexCol) in the phenotype file are used for males. By default, '0'}
+
+\item{MaleOnly}{logical. Whether to run Step 1 for males only. If TRUE, sexCol and MaleCode need to be specified. By default, FALSE}
+
+\item{noEstFixedEff}{logical. Whether to estimate fixed effect coeffciets. By default, FALSE.}
 }
 \value{
 a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio values, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.

@@ -166,7 +166,8 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 		Phi[,vars_inf]=0
 	}
 	if(length(VarS) > 1){
-	G2_adj_n=as.matrix(Phi)%*%diag(VarS/VarS_org)
+	#G2_adj_n=as.matrix(Phi)%*%diag(VarS/VarS_org)
+	G2_adj_n=diag(sqrt(VarS/VarS_org)) %*% as.matrix(Phi) %*% diag(sqrt(VarS/VarS_org))
 	scaleFactor = diag(sqrt(VarS/VarS_org))	
 	}else{
 	G2_adj_n=as.matrix(Phi)%*%(VarS/VarS_org)

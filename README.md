@@ -12,9 +12,9 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.39 (Updated on May 27, 2020).
+## Current version is 0.43 (Updated on November 21, 2020).
 
-## For BGEN input in step 2 with missing dosages, Please use version 0.38. The bug for BGEN input with missing dosages was introducted in v0.36.6. 
+## For BGEN input in step 2 with missing dosages, Please use version 0.38 or later.
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
@@ -42,7 +42,7 @@ https://www.biorxiv.org/content/10.1101/583278v2
 * R-3.6.1, gcc >= 5.4.0, cmake 3.14.1, [cget](https://cget.readthedocs.io/en/latest/src/intro.html#installing-cget)
 * R packages: "R.utils", "Rcpp", "RcppParallel", "RcppArmadillo", "data.table", "RcppEigen", "Matrix", "methods", "BH", "optparse", "SPAtest", "SKAT","MetaSKAT"
 * /extdata/install_packages.R can be used to install the R packages
-
+* SAIGE v0.39.2 depends on the SPAtest v3.1.2
 
 ###  Install SAIGE using the conda environment
 
@@ -76,7 +76,7 @@ Please make sure to set up the LDFLAGS and CPPFLAGS using export (the last two c
      Method 1: 
 
      ```
-       src_branch=master
+       src_branch=0.39.2
        repo_src_url=https://github.com/weizhouUMICH/SAIGE
        git clone --depth 1 -b $src_branch $repo_src_url
 
@@ -103,7 +103,7 @@ Thanks to Juha Karjalainen for sharing the Dockerfile.
 The docker image can be pulled
 
 ```
-docker pull wzhou88/saige:0.39
+docker pull wzhou88/saige:0.42
 ```
 
 Functions can be called
@@ -162,6 +162,25 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+
+* 0.43 (November-21-2020) Further modify the sparse version of the score test for quantitative traits. This causes slight different assoc tests for variants with MAF < 0.05 for quantitative traits. Set LOCO = TRUE to the default values for step 1 and step 2. In step 2, --chrom needs to be specified for LOCO=TRUE.
+
+* 0.42.1 (September-21-2020) uncomment isSparse=FALSE for quantitative traits. This was commented out for testing in 0.42
+
+* 0.42 (September-16-2020) fix a bug for variance ratio adjustion when account for case-control imbalance for gene-based tests. minMAC is set to 1/(2*N) instead of 0 if is_rewrite_XnonPAR_forMales=TRUE
+
+* 0.41 (August-30-2020) improve the LOCO feature, implement LOCO for gene- and region- based tests (require --chrom to be specified), and with minInfo cutoff, if the input VCF files do not contain info scores, info will be output as NA and markers won't be filtered out. fixed an issue when subsetting pre-calcuated terms (regress X out of G) to drop missing dosages. Use sparse matrices for genotypes/dosages in gene- and region- based tests, so memory usage is dramatically decreased
+
+* 0.39.4 (August-11-2020) use sparse matrix to represent genotype matrix for gene-based tests to save memory
+
+* 0.39.3 (August-6-2020)  add five options --sexCol, --FemaleCode, --FemaleOnly, --MaleCode, --MaleOnly to perform sex-specific Step 1.
+
+* 0.39.2 (July-27-2020)
+** add three options --sampleFile_male, --X_PARregion, --is_rewrite_XnonPAR_forMales for chromosome X association tests, in which genotypes/dosages of non-PAR region of males will be multiplied by 2 
+
+* 0.39.1 (July-27-2020)
+** add an option --IsOutputlogPforSingle to output log(P) for single-variant assoc tests. v0.39.1 requires SPAtest 3.1.2.  
+
 * 0.39 (May-27-2020)
 ** fixed an error when conditional analysis is conducted based on vcf input (introduced in 0.38)
 

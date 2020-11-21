@@ -4,42 +4,19 @@
 \alias{SKATtest_usingSKATLib}
 \title{Run single variant score tests with SPA based on the logistic mixed model.}
 \usage{
-SKATtest_usingSKATLib(
-  dosageFile = "",
-  dosageFileNrowSkip = 0,
-  dosageFileNcolSkip = 0,
-  dosageFilecolnamesSkip = c("SNPID", "CHR", "POS", "Allele0", "Allele1"),
-  dosageFileChrCol = "CHR",
-  bgenFile = "",
-  bgenFileIndex = "",
-  vcfFile = "",
-  vcfFileIndex = "",
-  vcfField = "DS",
-  savFile = "",
-  savFileIndex = "",
-  sampleFile = "",
-  idstoExcludeFile = "",
-  idstoIncludeFile = "",
-  rangestoExcludeFile = "",
-  rangestoIncludeFile = "",
-  chrom = "",
-  start = 1,
-  end = 2.5e+08,
-  minMAC = 0.5,
-  minMAF = 0,
-  maxMAFforGroupTest = 1,
-  minInfo = 0,
-  SKATmodelFile = "",
-  SAIGEOutputFile = "",
-  numLinesOutput = 10000,
-  IsOutputAFinCaseCtrl = FALSE,
-  groupFile = "",
-  condition = "",
-  kernel = "linear.weighted",
-  method = "optimal.adj",
-  weights.beta = c(1, 25),
-  r.corr = 0
-)
+SKATtest_usingSKATLib(dosageFile = "", dosageFileNrowSkip = 0,
+  dosageFileNcolSkip = 0, dosageFilecolnamesSkip = c("SNPID", "CHR",
+  "POS", "Allele0", "Allele1"), dosageFileChrCol = "CHR",
+  bgenFile = "", bgenFileIndex = "", vcfFile = "",
+  vcfFileIndex = "", vcfField = "DS", savFile = "",
+  savFileIndex = "", sampleFile = "", idstoExcludeFile = "",
+  idstoIncludeFile = "", rangestoExcludeFile = "",
+  rangestoIncludeFile = "", chrom = "", start = 1, end = 2.5e+08,
+  minMAC = 0.5, minMAF = 0, maxMAFforGroupTest = 1, minInfo = 0,
+  SKATmodelFile = "", SAIGEOutputFile = "", numLinesOutput = 10000,
+  IsOutputAFinCaseCtrl = FALSE, groupFile = "", condition = "",
+  kernel = "linear.weighted", method = "optimal.adj",
+  weights.beta = c(1, 25), r.corr = 0)
 }
 \arguments{
 \item{dosageFile}{character. Path to dosage file. Each line contains dosages for a marker to be tested}
