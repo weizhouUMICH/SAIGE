@@ -3,9 +3,9 @@
 #include <cassert>
 #include <stdexcept>
 #include <memory>
-#include "../thirdParty/bgen/genfile/include/genfile/bgen/bgen.hpp"
-#include "../thirdParty/bgen/genfile/include/genfile/bgen/View.hpp"
-#include "../thirdParty/bgen/genfile/include/genfile/bgen/IndexQuery.hpp"
+#include "genfile/bgen/bgen.hpp"
+#include "genfile/bgen/View.hpp"
+#include "genfile/bgen/IndexQuery.hpp"
 #include <sstream>
 #include <time.h>
 #include <Rcpp.h>
