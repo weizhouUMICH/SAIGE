@@ -226,6 +226,13 @@ SPAGMMATtest = function(bgenFile = "",
                  stop("chromosome ", chrom, " is out of the range of null model LOCO results\n")
                }else{
                  cat("Leave chromosome ", chrom_v3, " out will be applied\n")
+		 for(chr in 1:22){
+		   if (chr != chrom_v3){
+                     obj.glmm.null$LOCOResult[chr] = list(NULL) 
+	    	     cat("chromosome ", chr, " model results are removed to save memory\n")
+		     gc()   
+		   }	   
+		 }	 
                }
 	    }
 
