@@ -23,7 +23,8 @@ Rscript step2_SPAtests_0.41.R        \
         --IsOutputHetHomCountsinCaseCtrl=TRUE
 
 outprefix=example_binary_includenonAutoforvarRatio_0.41_LOCO_TRUE
-Rscript step2_SPAtests_0.41.R	\
+#Rscript step2_SPAtests_0.41.R	\
+Rscript step2_SPAtests.R	\
 	--vcfFile=./input/genotype_10markers.missingness.vcf.gz \
         --vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.tbi \
         --vcfField=GT	\
