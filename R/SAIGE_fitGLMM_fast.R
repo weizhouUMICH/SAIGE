@@ -982,6 +982,17 @@ fitNULLGLMM = function(plinkFile = "",
       }
 
       save(modglmm, file = modelOut)
+      tau = modglmm$theta
+      varAll = tau[2] + (pi^2)/3
+      tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
+      wVec_ss = rep(1,length(modglmm$y))
+      bVec_ss = rep(1,length(modglmm$y))
+      Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, bVec_ss, maxiterPCG, tolPCG)
+      t1_Rinv_1 = sum(Rinv_1)
+      cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
+      Pn = sum(modglmm$y == 1)/(length(modglmm$y))
+      Nglmm = 4*Pn*(1-Pn)*t1_Rinv_1
+      cat("Nglmm ", Nglmm, "\n")
 
       t_end = proc.time()
       print(t_end)
@@ -993,7 +1004,17 @@ fitNULLGLMM = function(plinkFile = "",
       load(modelOut)
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
-      	
+      tau = modglmm$theta
+      varAll = tau[2] + (pi^2)/3
+      tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
+      wVec_ss = rep(1,length(modglmm$y))
+      bVec_ss = rep(1,length(modglmm$y))
+      Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, bVec_ss, maxiterPCG, tolPCG)  	
+      t1_Rinv_1 = sum(Rinv_1)
+      cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
+      Pn = sum(modglmm$y == 1)/(length(modglmm$y))
+      Nglmm = 4*Pn*(1-Pn)*t1_Rinv_1
+      cat("Nglmm ", Nglmm, "\n")
 
     }
     cat("Start estimating variance ratios\n")

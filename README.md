@@ -12,7 +12,7 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.43 (Updated on November 21, 2020).
+## Current version is 0.43.2 (Updated on December 13, 2020).
 
 ## For BGEN input in step 2 with missing dosages, Please use version 0.38 or later.
 
@@ -162,6 +162,10 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+
+* 0.43.2 (December-13-2020)  add scripts to calcuate the effectize sample size in Step 1 for binary traits
+
+* 0.43.1. with LOCO=TRUE, remove model results for other chromosomes to save memory usage for Step 2. 
 
 * 0.43 (November-21-2020) Further modify the sparse version of the score test for quantitative traits. This causes slight different assoc tests for variants with MAF < 0.05 for quantitative traits. Set LOCO = TRUE to the default values for step 1 and step 2. In step 2, --chrom needs to be specified for LOCO=TRUE.
 
