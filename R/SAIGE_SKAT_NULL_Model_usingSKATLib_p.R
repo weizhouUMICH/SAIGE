@@ -96,7 +96,9 @@ SKATtest_usingSKATLib = function(dosageFile = "",
   if(!file.exists(sampleFile)){
     stop("ERROR! sampleFile ", sampleFile, " does not exsit\n")
   }else{
-    sampleListinDosage = data.frame(data.table:::fread(sampleFile, header=F, stringsAsFactors=FALSE, colClasses = c("character")))
+
+    sampleListinDosage = data.frame(data.table:::fread(sampleFile, header=F, stringsAsFactors=FALSE, colClasses=c("character")))
+
     sampleListinDosage$IndexDose = seq(1,nrow(sampleListinDosage), by=1)
     cat(nrow(sampleListinDosage), " sample IDs are found in sample file\n")
     colnames(sampleListinDosage)[1] = "IIDDose"

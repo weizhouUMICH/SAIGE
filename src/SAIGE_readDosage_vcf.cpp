@@ -1,6 +1,6 @@
-#include "../thirdParty/cget/include/savvy/reader.hpp"
-#include "../thirdParty/cget/include/savvy/varint.hpp"
-#include "../thirdParty/cget/include/savvy/sav_reader.hpp"
+#include "savvy/reader.hpp"
+#include "savvy/varint.hpp"
+#include "savvy/sav_reader.hpp"
 
 #include <iostream>
 #include <fstream>

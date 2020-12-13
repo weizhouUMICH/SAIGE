@@ -2183,7 +2183,7 @@ getSparseSigma = function(plinkFile = plinkFile,
       if(!file.exists(sparseGRMSampleIDFile)){
         stop("ERROR! sparseSigmaSampleIDFile ", sparseGRMSampleIDFile, " does not exsit\n")
       }else{
-        sparseGRMSampleID = data.frame(data.table:::fread(sparseGRMSampleIDFile, header=F, stringsAsFactors=FALSE))
+        sparseGRMSampleID = data.frame(data.table:::fread(sparseGRMSampleIDFile, header=F, stringsAsFactors=FALSE, colClasses=c("character")))
         colnames(sparseGRMSampleID) = c("sampleID")
       } 
     }else{#end of if(sparseSigmaSampleIDFile != "")
@@ -2231,9 +2231,9 @@ getsubGRM = function(sparseGRMFile=NULL,
   sparseGRMLarge = Matrix:::readMM(sparseGRMFile)
     #cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
  if(!file.exists(sparseGRMSampleIDFile)){
-        stop("ERROR! sparseSigmaSampleIDFile ", sparseGRMSampleIDFile, " does not exsit\n")
+        stop("ERROR! sparseSigmaSampleIDFile ", sparseGRMSampleIDFile, " does not exist\n")
  }else{
-        sparseGRMSampleID = data.frame(data.table:::fread(sparseGRMSampleIDFile, header=F, stringsAsFactors=FALSE))
+        sparseGRMSampleID = data.frame(data.table:::fread(sparseGRMSampleIDFile, header=F, stringsAsFactors=FALSE, colClasses=c("character")))
         colnames(sparseGRMSampleID) = c("sampleID")
         sparseGRMSampleID$IndexGRM = seq(1,nrow(sparseGRMSampleID), by=1)
 	if(nrow(sparseGRMSampleID) != dim(sparseGRMLarge)[1] | nrow(sparseGRMSampleID) != dim(sparseGRMLarge)[2]){

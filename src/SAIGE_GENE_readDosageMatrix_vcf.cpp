@@ -1,6 +1,6 @@
-#include "../thirdParty/cget/include/savvy/reader.hpp"
-#include "../thirdParty/cget/include/savvy/region.hpp"
-#include "../thirdParty/cget/include/savvy/variant_group_iterator.hpp"
+#include "savvy/reader.hpp"
+#include "savvy/region.hpp"
+#include "savvy/variant_group_iterator.hpp"
 
 #include <iostream>
 #include <fstream>
