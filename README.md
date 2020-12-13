@@ -43,6 +43,11 @@ https://www.biorxiv.org/content/10.1101/583278v2
 * R packages: "R.utils", "Rcpp", "RcppParallel", "RcppArmadillo", "data.table", "RcppEigen", "Matrix", "methods", "BH", "optparse", "SPAtest", "SKAT","MetaSKAT"
 * /extdata/install_packages.R can be used to install the R packages
 * SAIGE v0.39.2 depends on the SPAtest v3.1.2
+* MetaSKAT is currently not available on CRAN. Please install it from github using R
+  ``` 
+   devtools::install_github("leeshawn/MetaSKAT") 
+  ```
+
 
 ###  Install SAIGE using the conda environment
 
@@ -68,7 +73,7 @@ Please make sure to set up the LDFLAGS and CPPFLAGS using export (the last two c
 3. Open R, run following script to install the MetaSKAT R library.
    
      ```
-       install.packages('MetaSKAT')
+       devtools::install_github("leeshawn/MetaSKAT") 
      ```
 
 4. Install SAIGE from the source code. 
@@ -76,7 +81,7 @@ Please make sure to set up the LDFLAGS and CPPFLAGS using export (the last two c
      Method 1: 
 
      ```
-       src_branch=0.39.2
+       src_branch=master
        repo_src_url=https://github.com/weizhouUMICH/SAIGE
        git clone --depth 1 -b $src_branch $repo_src_url
 
@@ -103,7 +108,7 @@ Thanks to Juha Karjalainen for sharing the Dockerfile.
 The docker image can be pulled
 
 ```
-docker pull wzhou88/saige:0.42
+docker pull wzhou88/saige:0.43.2
 ```
 
 Functions can be called
