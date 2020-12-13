@@ -12,7 +12,7 @@ fi
 #Rscript -e 'devtools::install_github("leeshawn/SPAtest")'
 
 ##Install MetaSKAT from github
-devtools::install_github("leeshawn/MetaSKAT")
+#devtools::install_github("leeshawn/MetaSKAT")
 
 ##install savvy library
 rm -rf thirdParty/cget
