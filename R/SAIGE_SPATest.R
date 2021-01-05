@@ -102,7 +102,7 @@ SPAGMMATtest = function(bgenFile = "",
 		 dosageZerodCutoff = 0.2,
 		 IsOutputPvalueNAinGroupTestforBinary = FALSE,
 		 IsAccountforCasecontrolImbalanceinGroupTest = TRUE,
-		 IsOutputBETASEinBurdenTest = FALis_rewrite_XnonPAR_forMalesSE,
+		 IsOutputBETASEinBurdenTest = FALSE,
 		 X_PARregion="60001-2699520,154931044-155270560",
 		 is_rewrite_XnonPAR_forMales=FALSE,
 		 sampleFile_male=""){
@@ -160,6 +160,12 @@ SPAGMMATtest = function(bgenFile = "",
     stop("ERROR! GMMATmodelFile ", GMMATmodelFile, " does not exsit\n")
   }else{
     load(GMMATmodelFile)
+    #offsetEff = modglmm$linear.predictors - (-1)*(modglmm$coefficients[1,1]) 
+    print(dim(modglmm$X))
+    print(modglmm$X[1:10,])
+    print(modglmm$coefficients)
+    #offsetEff = modglmm$X[,2:3] %*% modglmm$coefficients[2:3,]  
+    offsetEff = modglmm$linear.predictors 
     #ytemp=modglmm$y
     #modglmm$obj.glm.null = NULL
     #reduce model size
@@ -372,6 +378,7 @@ SPAGMMATtest = function(bgenFile = "",
         sampleListinDosage_vec = getSampleIDlist_vcfMatrix()
       }
     }
+    sampleListinDosage_vec = paste0("1a", c(1:10000))
     sampleListinDosage = data.frame(IIDDose = sampleListinDosage_vec)
     sampleListinDosage$IndexDose = seq(1,nrow(sampleListinDosage), by=1)
     cat(nrow(sampleListinDosage), " sample IDs are found in the vcf file\n")
@@ -997,10 +1004,12 @@ SPAGMMATtest = function(bgenFile = "",
 
 
 
-  	 if(traitType == "binary"){
+    	 if(traitType == "binary"){
 
+           out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.model$obj.noK, obj.model$mu, obj.model$mu2, y, X, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv, IsOutputlogPforSingle=IsOutputlogPforSingle, offsetEff = offsetEff)
+	  print("OUT1")
+	  print(out1)
 
-           out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.model$obj.noK, obj.model$mu, obj.model$mu2, y, X, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv, IsOutputlogPforSingle=IsOutputlogPforSingle)
 	   OUTvec=c(rowHeader, N,unlist(out1))
 
 
@@ -1986,7 +1995,7 @@ if(var1 < (.Machine$double.xmin)){
 }
 
 
-scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, X, varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL, IsOutputlogPforSingle=FALSE){
+scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, X, varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL, IsOutputlogPforSingle=FALSE, offsetEff){
 
   N = length(G0)
   if(AF > 0.5){
@@ -2036,7 +2045,7 @@ if(!isCondition){
   }
 }
 
-
+Run1 = TRUE
   if(Run1){
     G0 = matrix(G0, ncol = 1)
     XVG0 = eigenMapMatMult(obj.noK$XV, G0)
@@ -2051,11 +2060,20 @@ if(!isCondition){
 #    }
     out1 = scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma(g, AC2, AC,NAset, y, mu.a, varRatio, Cutoff, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv=G2tilde_P_G2tilde_inv, IsOutputlogPforSingle=IsOutputlogPforSingle)
 
+    print(length(g))
+    print(length(y))
+    print(length(offsetEff)) 
+    print(dim(X)) 
+    #out_efffirth<-SPAtest:::fast.logistf.fit(cbind(1,g),y, offset=offsetEff)
+    out_efffirth_new<-SPAtest:::fast.logistf.fit(cbind(1,g),y, offset=offsetEff)
+    out_efffirth_exact<-SPAtest:::fast.logistf.fit(cbind(g, X),y)
+    #print("out_efffirth$beta")
+    #print(out_efffirth$pi)
     if(isCondition){
      outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], p.value.NA = out1["p.value.NA"], Is.converge=out1["Is.converge"], var1 = out1["var1"], var2 = out1["var2"], Tstat_c = out1["Tstat_c"], p.value.c = out1["p.value.c"], var1_c = out1["var1_c"], BETA_c = out1["BETA_c"], SE_c = out1["SE_c"])
 
     }else{
-     outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], p.value.NA = out1["p.value.NA"], Is.converge=out1["Is.converge"], var1 = out1["var1"], var2 = out1["var2"])
+     outVec = list(BETA = out1["BETA"], SE = out1["SE"], Tstat = out1["Tstat"],p.value = out1["p.value"], p.value.NA = out1["p.value.NA"], Is.converge=out1["Is.converge"], var1 = out1["var1"], var2 = out1["var2"], BETANew = out_efffirth_new$beta[2], BETANew_exact = out_efffirth_exact$beta[1])
      #outVec = list(BETA = BETA, SE = SE, Tstat = Tstat,p.value = p.value, var1 = var1, var2 = var2)
    }
 
@@ -2122,6 +2140,14 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
   out1$BETA=logOR
   out1$SE=SE
   out1$Tstat = Tstat
+
+
+###firth beta
+  
+
+
+
+
 
   if(isCondition){
     if(var1_c <= (.Machine$double.xmin)^2){

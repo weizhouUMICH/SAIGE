@@ -12,7 +12,7 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.43.2 (Updated on December 13, 2020).
+## Current version is 0.43.3 (Updated on January 05, 2021).
 
 ## For BGEN input in step 2 with missing dosages, Please use version 0.38 or later.
 
@@ -167,6 +167,8 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+
+* 0.43.3 (January-05-2021)  error "FALis_rewrite_XnonPAR_forMalesSE not found" has been fixed
 
 * 0.43.2 (December-13-2020)  add scripts to calcuate the effectize sample size in Step 1 for binary traits
 
