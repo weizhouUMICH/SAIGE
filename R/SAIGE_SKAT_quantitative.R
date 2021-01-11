@@ -198,6 +198,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
                                 #        Phi_cond = Phi_cond[-indexNeg, -indexNeg]
                                 #        Score_cond = Score_cond[-indexNeg]
                                 #}
+			print("MACvec_indVec")	
+			print(MACvec_indVec)
                         MACvec_indVec = MACvec_indVec[-indexNeg]
                         m = m - length(indexNeg)
                         markerNumbyMAC = NULL
@@ -205,7 +207,10 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
                         	markerNumbyMAC = c(markerNumbyMAC, sum(MACvec_indVec == i))
                         }
                         cat("WARNING: ", indexNeg, " th marker(s) are excluded because of negative variance\n")
-                }
+			print("MACvec_indVec")	
+			print(MACvec_indVec)
+
+		}
 
 
 		
@@ -227,9 +232,13 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
 
 		if(adjustCCratioinGroupTest){
                         if(length(indexNeg) > 0){
-                                Phi_ccadj = Phi_ccadj[-indexNeg, -indexNeg]
+				#print("Phi_ccadj")
+                        	#print(Phi_ccadj)
+                                Phi_ccadj$scaleFactor = Phi_ccadj$scaleFactor[-indexNeg, -indexNeg]
+                                Phi_ccadj$val = Phi_ccadj$val[-indexNeg, -indexNeg]
                                 if(!is.null(G2_cond)){
-                                        Phi_cond_ccadj = Phi_cond_ccadj[-indexNeg, -indexNeg]
+                                        Phi_cond_ccadj$val = Phi_cond_ccadj$val[-indexNeg, -indexNeg]
+                                        Phi_cond_ccadj$scaleFactor = Phi_cond_ccadj$scaleFactor[-indexNeg, -indexNeg]
                                         Score_cond_ccadj = Score_cond_ccadj[-indexNeg]
                                 }
                         }
