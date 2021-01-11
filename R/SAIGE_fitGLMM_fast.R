@@ -830,7 +830,7 @@ fitNULLGLMM = function(plinkFile = "",
 #    cat("dataMerge_sort$IID ", dataMerge_sort$IID, "\n")
   }
 
-  if(invNormalize){
+  if(traitType == "quantitative" & invNormalize){
       cat("Perform the inverse nomalization for ", phenoCol, "\n")
       invPheno = qnorm((rank(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)], na.last="keep")-0.5)/sum(!is.na(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)])))
       dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
