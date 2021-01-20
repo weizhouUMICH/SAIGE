@@ -8,6 +8,8 @@ if [[ -z "$(which cget)" ]]; then
   exit 1
 fi
 
+set -eu
+
 ##Install SPAtest R library, 3.1.2
 #Rscript -e 'devtools::install_github("leeshawn/SPAtest")'
 
@@ -16,6 +18,7 @@ fi
 
 ##install savvy library
 rm -rf thirdParty/cget
+cget ignore xz
 cget install -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" --prefix thirdParty/cget -f thirdParty/requirements.txt
 
 ##install the bgen library

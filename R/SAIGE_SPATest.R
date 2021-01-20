@@ -290,8 +290,8 @@ SPAGMMATtest = function(bgenFile = "",
     if(!file.exists(vcfFile)){
       stop("ERROR! vcfFile ", vcfFile, " does not exsit\n")
     }
-    if(!file.exists(vcfFileIndex)){
-      stop("ERROR! vcfFileIndex ", vcfFileIndex, " does not exsit\n")
+    if(!grepl("\\.sav$", vcfFile) && !file.exists(paste(vcfFile,".csi"))){
+      stop("ERROR! vcfFileIndex ", paste(vcfFile,".csi"), " does not exist\n")
     }
     dosageFileType = "vcf"
 
@@ -305,11 +305,6 @@ SPAGMMATtest = function(bgenFile = "",
       vcfFile = savFile
     }
 
-    if(!file.exists(savFileIndex)){
-      stop("ERROR! savFileIndex ", savFileIndex, " does not exsit\n")
-    }else{
-      vcfFileIndex = savFileIndex
-    }
     dosageFileType = "vcf"
   }
 
