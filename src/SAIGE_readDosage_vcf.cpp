@@ -112,7 +112,7 @@ bool getGenoOfnthVar_vcfDosage_pre(){
       std::cerr << "Error: variants must be biallelic" << std::endl;
       isReadVariant = false;
     }
-  } else {
+  } else if (reader.bad()) {
     std::cerr << "Error: READ FAILED" << std::endl;
   }
   return(isReadVariant);
