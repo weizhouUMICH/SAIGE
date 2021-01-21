@@ -9,6 +9,7 @@
 #include <Rcpp.h>
 #include <stdlib.h>
 #include <cstring>
+#include <limits>
 
 using namespace std;
 //This file is revised from the Variant-Sample Matrix file from the savvy library by Jonathon LeFaive
@@ -138,7 +139,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
       std::string marker_id = it->chromosome() + ":" + std::to_string(it->position()) + "_" + it->ref() + "/" + it->alts()[0];
       //std::cout << it->prop("R2") << std::endl; 
       //std::cout << "marker_id: " << marker_id  << std::endl; 
-      float markerInfo;
+      float markerInfo = std::numeric_limits<float>::quiet_NaN();
       it->get_info("R2", markerInfo);
 
       it->get_format(fmtField, variant_dosages);
@@ -156,15 +157,12 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
             ++missing_cnt;
             indexforMissing.push_back(genetest_sample_idx_vcfDosage[i]);
 	    indexforMissingAll.push_back(genetest_sample_idx_vcfDosage[i]);
-          }else {
-	    if(*dose_it > 0){	
-		dosagesforOneMarker.push_back(*dose_it);
-		jIndexforOneMarker.push_back(cnt+1);
-		iIndexforOneMarker.push_back(genetest_sample_idx_vcfDosage[i]+1);
-            		//dosagesforOneMarker[genetest_sample_idx_vcfDosage[i]] = *dose_it;
-            	AC = AC + *dose_it;
-	    }	
-
+          }else {   	
+	    dosagesforOneMarker.push_back(*dose_it);
+	    jIndexforOneMarker.push_back(cnt+1);
+	    iIndexforOneMarker.push_back(genetest_sample_idx_vcfDosage[i]+1);
+            //dosagesforOneMarker[genetest_sample_idx_vcfDosage[i]] = *dose_it;
+            AC = AC + *dose_it;
           }
         }
 	//std::cout << "missing_cnt: " << missing_cnt << std::endl; 
