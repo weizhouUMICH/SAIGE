@@ -102,7 +102,6 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
   group_matrix.resize(0);
   std::cout << "std::size_t sample_size = marker_file.samples().size();" << marker_file.samples().size() << std::endl;
   std::vector< int > indexforMissingAll;
-
   if (it != end){
     int missing_cnt = 0;
     std::vector< int > indexforMissing;
@@ -139,7 +138,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
       std::string marker_id = it->chromosome() + ":" + std::to_string(it->position()) + "_" + it->ref() + "/" + it->alts()[0];
       //std::cout << it->prop("R2") << std::endl; 
       //std::cout << "marker_id: " << marker_id  << std::endl; 
-      float markerInfo = std::numeric_limits<float>::quiet_NaN();
+      float markerInfo = 0.f;
       it->get_info("R2", markerInfo);
 
       it->get_format(fmtField, variant_dosages);
@@ -173,7 +172,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
         AF = 0;
       }else{	
         AF = (float)(AC) / 2 / (float)(genetest_samplesize_vcfDosage - missing_cnt) ;
-      }	
+      }
 
       //check if the AF of the marker is within the required range
       float MAF;

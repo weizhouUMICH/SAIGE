@@ -132,7 +132,7 @@ Rcpp::List getGenoOfnthVar_vcfDosage(int mth) {
   std::vector< std::string > alleles(numAlt);
   std::string alleles0(record.ref());
   std::string alleles1(record.alts().empty() ? "" : record.alts()[0]);
-  float variant_r2 = std::numeric_limits<float>::quiet_NaN();
+  float variant_r2 = 0.f;
   record.get_info("R2", variant_r2);
   List result ;
 
