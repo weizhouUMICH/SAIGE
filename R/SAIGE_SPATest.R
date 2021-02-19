@@ -1011,8 +1011,8 @@ SPAGMMATtest = function(bgenFile = "",
 
            #out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.model$obj.noK, obj.model$mu, obj.model$mu2, y, X, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv, IsOutputlogPforSingle=IsOutputlogPforSingle, offsetEff = offsetEff)
            out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.model$obj.noK, obj.model$mu, obj.model$mu2, y, X, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv, IsOutputlogPforSingle=IsOutputlogPforSingle)
-	  print("OUT1")
-	  print(out1)
+	  #print("OUT1")
+	  #print(out1)
 
 	   OUTvec=c(rowHeader, N,unlist(out1))
 
@@ -1518,38 +1518,16 @@ Score_Test_Sparse<-function(obj.null, y, X1, G, mu, mu2, varRatio, IsOutputlogPf
   # mu=mu.a; mu2= mu2.a; G=G0; obj.null=obj.noK
   idx_no0<-which(G>0)
   g1<-G[idx_no0]
-  #print(length(g1))
-  #noCov = FALSE
-  #if(dim(obj.null$X1)[2] == 1){
-  #  noCov = TRUE
-  #}
-  #print("OK")
-  #print(dim(X1))
   X1 = X1[idx_no0,,drop=F]
-  #print("OK")
-  #print(dim(X1))
-  #V = obj.null$V[idx_no0]
-  #XV = obj.null$XV[,idx_no0,drop=F]
-  #XV = t(X1 * V)
-  #XVX = t(X1) %*% t(XV)
-  #print(XVX)
-  #XVX_inv = solve(XVX)
-  #if(class(XVX_inv) == "try-error"){
-  #	XVX_inv = ginv(XVX)
-  #}
-	  #else{
-#	XVX_inv = solve(XVX)
- # }
-  #XXVX_inv = X1 %*% XVX_inv
-  #A1 = XXVX_inv * V
-  A1 =  obj.null$XVX_inv_XV[idx_no0,]
+  A1 =  obj.null$XVX_inv_XV[idx_no0,,drop=F]
   #A1<-obj.null$XVX_inv_XV[idx_no0,]
   #X1<-obj.null$X1[idx_no0,]
   mu21<-mu2[idx_no0]
   mu1<-mu[idx_no0]
   y1<-y[idx_no0]
 
-  if(length(idx_no0) > 1){
+
+#  if(length(idx_no0) > 1){
 #    cat("idx_no0 ", idx_no0, "\n")
     Z = t(A1) %*% g1
     #print(dim(Z))
@@ -1567,16 +1545,16 @@ Score_Test_Sparse<-function(obj.null, y, X1, G, mu, mu2, varRatio, IsOutputlogPf
     #}
 
     S2 = -S_a2 %*% Z
-  }else{
-    Z = A1 * g1
-    B<-X1 %*% Z
-    g_tilde1 = g1 - B
-    var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
-    var1 = var2 * varRatio
-    S1 = crossprod(y1-mu1, g_tilde1)
-    S_a2 = obj.null$S_a - X1 * (y1 - mu1)
-    S2 = -S_a2 %*% Z
-  }
+#  }else{
+#    Z = A1 * g1
+#    B<-X1 %*% Z
+#    g_tilde1 = g1 - B
+#    var2 = t(Z) %*% obj.null$XVX %*% Z - t(B^2) %*% mu21 + t(g_tilde1^2) %*% mu21
+#    var1 = var2 * varRatio
+#    S1 = crossprod(y1-mu1, g_tilde1)
+#    S_a2 = obj.null$S_a - X1 * (y1 - mu1)
+#    S2 = -S_a2 %*% Z
+#  }
 
   S<- S1+S2
 
@@ -1848,56 +1826,22 @@ if(isSparse){
     idx_no0<-which(G0>0)
     g1<-G0[idx_no0]
     X = X[idx_no0,,drop=F]
-    #V = obj.noK$V[idx_no0]
-    #XV = obj.noK$XV[,idx_no0,drop=F]
-    #XVX = t(X) %*% t(XV)
-
-
-    #XVX_inv = try(solve(XVX),silent=T)
-    #if(class(XVX_inv) == "try-error"){
-    #	isSparse=FALSE
-    #}
-    #if(isSparse){
-    #XXVX_inv = X %*% XVX_inv
-    #A1 = XXVX_inv * V
     A1 =  obj.noK$XVX_inv_XV[idx_no0,,drop=F]
     mu1<-mu[idx_no0]
     y1<-y[idx_no0]
-## V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv
-    if(length(idx_no0) > 1){
-      Z = t(A1) %*% g1
-      B<-X %*% Z
-      g_tilde1 = g1 - B
-      #var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2)*(1/tauVec[2]) + sum(g_tilde1^2)*(1/tauVec[2])
-      #var1 = var2 * varRatio*(tauVec[2])
-      var2 = t(Z)%*% obj.noK$XVX %*% Z *tauVec[1] + sum(g1^2) - 2*sum(g1*B)
-      var1 = var2 * varRatio
+    ## V = V, X1 = X1, XV = XV, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv
+    #if(length(idx_no0) > 1){
+    Z = t(A1) %*% g1
+    B<-X %*% Z
+    g_tilde1 = g1 - B
+    var2 = t(Z)%*% obj.noK$XVX %*% Z *tauVec[1] + sum(g1^2) - 2*sum(g1*B)
+    var1 = var2 * varRatio
 
-      S1 = crossprod(y1-mu1, g_tilde1)
-      #if(!noCov){
-      S_a2 = obj.noK$S_a - colSums(X * (y1 - mu1))
-      #}else{
-      #  S_a2 = obj.noK$S_a - crossprod(X, y1 - mu1)
-      #}
-      #S_a2 = obj.noK$S_a - colSums(X1 * (y1 - mu1))
-      S2 = -S_a2 %*% Z
-    }else{
-      Z = A1 * g1
-      B<-X %*% Z
-      g_tilde1 = g1 - B
-
-      var2 = t(Z)%*% obj.noK$XVX %*% Z *tauVec[1] + sum(g1^2) - 2*sum(g1*B)
-      var1 = var2 * varRatio
-
-      #var2 = t(Z) %*% obj.noK$XVX %*% Z - sum(B^2)*(1/tauVec[2]) + sum(g_tilde1^2)*(1/tauVec[2])
-      #var1 = var2 * varRatio*(tauVec[2])
-      S1 = crossprod(y1-mu1, g_tilde1)
-      S_a2 = obj.noK$S_a - X * (y1 - mu1)
-      S2 = -S_a2 %*% Z
-    }
+    S1 = crossprod(y1-mu1, g_tilde1)
+    S_a2 = obj.noK$S_a - colSums(X * (y1 - mu1))
+    S2 = -S_a2 %*% Z
     S<- S1+S2
     Tstat = S/tauVec[1]
-    #}
 }
 
 
@@ -1930,7 +1874,6 @@ if(isCondition){
 
   T2stat = OUT_cond[,2]
   #m_all = nrow(GratioMatrixall)
-
 #  cat("Tstat: ", Tstat, "\n")
   G1tilde_P_G2tilde = matrix(G1tilde_P_G2tilde,nrow=1)
   #Tstat_c = Tstat - covM[1,c(2:m_all)] %*% (solve(covM[c(2:m_all),c(2:m_all)])) %*% T2stat
@@ -2001,7 +1944,6 @@ if(var1 < (.Machine$double.xmin)){
 
 #scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, X, varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL, IsOutputlogPforSingle=FALSE, offsetEff){
 scoreTest_SAIGE_binaryTrait_cond_sparseSigma=function(G0, AC, AF, MAF, IsSparse, obj.noK, mu.a, mu2.a, y, X, varRatio, Cutoff, rowHeader, sparseSigma=NULL, isCondition=FALSE, OUT_cond=NULL, G1tilde_P_G2tilde = NULL, G2tilde_P_G2tilde_inv=NULL, IsOutputlogPforSingle=FALSE){
-
   N = length(G0)
   if(AF > 0.5){
     G0 = 2-G0
@@ -2149,12 +2091,6 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
 
 
 ###firth beta
-  
-
-
-
-
-
   if(isCondition){
     if(var1_c <= (.Machine$double.xmin)^2){
       if(!IsOutputlogPforSingle){

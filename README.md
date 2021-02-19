@@ -12,9 +12,12 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.43.3 (Updated on January 05, 2021).
+## Current version is 0.44.1 (Updated on Feb 16, 2021).
+
+## For BGEN input, 8 bits are required. 
 
 ## For BGEN input in step 2 with missing dosages, Please use version 0.38 or later.
+
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
 
@@ -108,7 +111,7 @@ Thanks to Juha Karjalainen for sharing the Dockerfile.
 The docker image can be pulled
 
 ```
-docker pull wzhou88/saige:0.43.2
+docker pull wzhou88/saige:0.44
 ```
 
 Functions can be called
@@ -167,6 +170,10 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+
+* 0.44.1 (Feb-16-2021) fixed the error " X %*% Z : non-conformable arguments" for monomorphic variants 
+
+* 0.44 (January-11-2021) 1. Fixed the error "Phi_ccadj[-indexNeg, -indexNeg]"; 2.  inverse normalization is only performed for quantitative traits; 3. For step 2, bgen input requires the sample file. vcf input does not require a seperate sample file. If sample file is not provided, sample ids will be read from vcf file
 
 * 0.43.3 (January-05-2021)  error "FALis_rewrite_XnonPAR_forMalesSE not found" has been fixed
 
