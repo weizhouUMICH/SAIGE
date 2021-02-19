@@ -171,7 +171,7 @@ https://www.leelabsg.org/resources
 
 # Log for fixing bugs
 
-* 0.44.1 (Feb-16-2021) fixed the error " X %*% Z : non-conformable arguments" for monomorphic variants 
+* 0.44.1 (Feb-16-2021) 1. Fixed the error " X %*% Z : non-conformable arguments" for monomorphic variants. 2. merged Jonathon's codes to update savvy to savvy 2.0. For markers in VCF or SAV files without imputation info R2 values, the imputationInfo column will be 1 in the output file, so the markers will not but removed by minInfo 
 
 * 0.44 (January-11-2021) 1. Fixed the error "Phi_ccadj[-indexNeg, -indexNeg]"; 2.  inverse normalization is only performed for quantitative traits; 3. For step 2, bgen input requires the sample file. vcf input does not require a seperate sample file. If sample file is not provided, sample ids will be read from vcf file
 

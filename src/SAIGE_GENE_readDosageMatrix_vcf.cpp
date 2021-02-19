@@ -138,7 +138,7 @@ Rcpp::List getGenoOfGene_vcf(std::string marker_group_line, float minInfo) {
       std::string marker_id = it->chromosome() + ":" + std::to_string(it->position()) + "_" + it->ref() + "/" + it->alts()[0];
       //std::cout << it->prop("R2") << std::endl; 
       //std::cout << "marker_id: " << marker_id  << std::endl; 
-      float markerInfo = 0.f;
+      float markerInfo = 1.f;
       it->get_info("R2", markerInfo);
 
       it->get_format(fmtField, variant_dosages);
