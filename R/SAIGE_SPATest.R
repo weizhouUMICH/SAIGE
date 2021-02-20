@@ -283,7 +283,9 @@ SPAGMMATtest = function(bgenFile = "",
   if(bgenFile != ""){
     if(!file.exists(bgenFile)){
       stop("ERROR! bgenFile ", bgenFile, " does not exsit\n")
-    }
+    }else{
+      setgenoTest_bgenDosage(bgenFile, bgenFileIndex)
+    }	    
     dosageFileType = "bgen"
 
   }else if(vcfFile != ""){
@@ -546,8 +548,21 @@ SPAGMMATtest = function(bgenFile = "",
       }
     }else if(dosageFileType == "bgen"){
       SetSampleIdx(sampleIndex, N)
-      Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist, testMinMAF, 0.5, minInfo)
-      if(Gx_cond$cnt > 0){
+      #Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist, testMinMAF, 0.5, minInfo)
+      conditionlist = as.character(as.vector(conditionlist))
+      markerIndicesVec = dplyr::filter(db_con_variant, rsid %in% conditionlist) %>% dplyr::pull(file_start_position)
+      if(length(markerIndicesVec) == 0){
+        cntMarker_cond = 0
+      }else{
+        Gx_cond = getGenoOfGene_bgen(markerIndicesVec, testMinMAF, 0.5, minInfo)
+        cntMarker_cond = length(markerIndicesVec)
+        markerIndicesVec = NULL
+             #Gx = getGenoOfGene_bgen_Sparse(bgenFile,bgenFileIndex, marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)
+      }
+
+
+
+      if(cntMarker_cond > 0){
         dosage_cond = matrix(Gx_cond$dosages, byrow=F, ncol = Gx_cond$cnt)
         dosage_cond = as(dosage_cond, "sparseMatrix")
       }
@@ -677,10 +692,25 @@ SPAGMMATtest = function(bgenFile = "",
 
     isVariant = TRUE
     if (dosageFileType == "bgen"){
+      isQuery = FALSE
+      markerIndicesVec = NULL
+      if(idstoExcludeFile != "" | idstoIncludeFile != "" | rangestoExcludeFile != "" | rangestoIncludeFile != ""){ 
+        cat("Query list is specificed\n")
+        isQuery = TRUE
+        if(!file.exists(bgenFileIndex)){
+          stop("ERROR! bgenFileIndex ", bgenFileIndex, " does not exsit\n")
+        }else{
+          db_con <- RSQLite::dbConnect(RSQLite::SQLite(), bgenFileIndex)
+	  on.exit(RSQLite::dbDisconnect(db_con), add = TRUE)
+	  db_con_variant = dplyr::tbl(db_con, "Variant")
+	}	
+      }
+
       if(idstoExcludeFile != ""){
         idsExclude = data.table:::fread(idstoExcludeFile, header=F,sep=" ", stringsAsFactors=FALSE, colClasses=c("character"))
         idsExclude = data.frame(idsExclude)
         ids_to_exclude = as.character(as.vector(idsExclude[,1]))
+	markerIndicesVec = c(markerIndicesVec, dplyr::filter(db_con_variant, !rsid %in% ids_to_exclude) %>% dplyr::pull(file_start_position))
       }else{
         ids_to_exclude = as.character(vector())
       }
@@ -689,6 +719,7 @@ SPAGMMATtest = function(bgenFile = "",
         idsInclude = data.table:::fread(idstoIncludeFile, header=F, sep=" ", stringsAsFactors=FALSE, colClasses=c("character"))
         idsInclude = data.frame(idsInclude)
         ids_to_include = as.character(as.vector(idsInclude[,1]))
+	markerIndicesVec = c(markerIndicesVec, dplyr::filter(db_con_variant, rsid %in% ids_to_include) %>% dplyr::pull(file_start_position)) 
       }else{
         ids_to_include = as.character(vector())
       }
@@ -697,6 +728,18 @@ SPAGMMATtest = function(bgenFile = "",
         rangesExclude = data.table:::fread(rangestoExcludeFile, header=F, colClasses = c("character", "numeric", "numeric"))
         ranges_to_exclude = data.frame(rangesExclude)
         colnames(ranges_to_exclude) = c("chromosome","start","end")
+	temp_conn = db_con_variant
+	#dplyr::filter(x, chromosome == "1" & position <=  767096 & position >= 729632) %>% dplyr::pull(file_start_position)
+	for(i in 1:nrow(ranges_to_exclude)){
+          tempchr = ranges_to_exclude[i,1]
+	  temppos1 = ranges_to_exclude[i,2]
+          temppos2 = ranges_to_exclude[i,3]	  
+	  temp_conn = dplyr::filter(temp_conn, chromosome == tempchr & (position < temppos1 | position > temppos2)  	
+	}
+	markerIndicesVec = c(markerIndicesVec, dplyr::pull(temp_conn, file_start_position))        
+        temp_conn = NULL
+         gc()	
+
       }else{
         ranges_to_exclude = data.frame(chromosome = NULL, start = NULL, end = NULL)
       }
@@ -705,11 +748,20 @@ SPAGMMATtest = function(bgenFile = "",
         rangesInclude = data.table:::fread(rangestoIncludeFile, header=F, colClasses = c("character", "numeric", "numeric"))
         ranges_to_include = data.frame(rangesInclude)
         colnames(ranges_to_include) = c("chromosome","start","end")
+        for(i in 1:nrow(ranges_to_include)){
+          tempchr = ranges_to_include[i,1]
+          temppos1 = ranges_to_include[i,2]
+          temppos2 = ranges_to_include[i,3]
+	  markerIndicesVec = c(markerIndicesVec, dplyr::filter(db_con_variant, chromosome == tempchr & position >= temppos1 & position <= temppos2) %>% dplyr::pull(file_start_position))
+        }
       }else{
         ranges_to_include = data.frame(chromosome = NULL, start = NULL, end = NULL)
       }
 
-      Mtest = setgenoTest_bgenDosage(bgenFile,bgenFileIndex, ranges_to_exclude = ranges_to_exclude, ranges_to_include = ranges_to_include, ids_to_exclude= ids_to_exclude, ids_to_include=ids_to_include)
+      setMarkerIndicesToInclude(markerIndicesVec)
+      #Mtest = setgenoTest_bgenDosage(bgenFile,bgenFileIndex, ranges_to_exclude = ranges_to_exclude, ranges_to_include = ranges_to_include, ids_to_exclude= ids_to_exclude, ids_to_include=ids_to_include)
+      Mtest = length(markerIndicesVec)
+      #Mtest = setgenoTest_bgenDosage(bgenFile,bgenFileIndex)
       if(Mtest == 0){
         isVariant = FALSE
         stop("ERROR! Failed to open ", bgenFile, "\n")
@@ -740,11 +792,14 @@ SPAGMMATtest = function(bgenFile = "",
       mth = mth + 1
       if (dosageFileType == "bgen"){
         if(isQuery){
-          Gx = getDosage_bgen_withquery()
+          #Gx = getDosage_bgen_withquery()
+          Gx = getOneMarker(markerIndicesVec[mth])
         }else{
-          Gx = getDosage_bgen_noquery()
-        }
-        markerInfo = getMarkerInfo()
+          #Gx = getDosage_bgen_noquery()
+	  Gx = getOneMarker(0)
+        
+         }
+        markerInfo = Gx$variants$info
         if(markerInfo >= 0 & markerInfo <= 1){
 		markerInfo0 = markerInfo
 	}else{
@@ -1224,12 +1279,21 @@ SPAGMMATtest = function(bgenFile = "",
 
            if(dosageFileType == "vcf"){
              Gx = getGenoOfGene_vcf(marker_group_line, minInfo)
-
+             cntMarker = Gx$cnt
            }else if(dosageFileType == "bgen"){
 	     print(marker_group_line)
 	     cat("genetic variants with ", testMinMAF, "<= MAF <= ", maxMAFforGroupTest, "are included for gene-based tests\n")
-	     Gx = getGenoOfGene_bgen_Sparse(bgenFile,bgenFileIndex, marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)
-           }
+             idslist = strsplit(marker_group_line, split="\t")[[1]]
+             ids_to_include = as.character(as.vector(idslist[-1]))
+             markerIndicesVec = dplyr::filter(db_con_variant, rsid %in% ids_to_include) %>% dplyr::pull(file_start_position)
+             if(length(markerIndicesVec) == 0){
+		     cntMarker = 0
+	     }else{
+		     Gx = getGenoOfGene_bgen(markerIndicesVec, testMinMAF, maxMAFforGroupTest, minInfo)
+		     markerIndicesVec = NULL
+	     #Gx = getGenoOfGene_bgen_Sparse(bgenFile,bgenFileIndex, marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)
+	     }	
+  	   }
            cntMarker = Gx$cnt
            cat("cntMarker: ", cntMarker, "\n")
            if(cntMarker > 0){
