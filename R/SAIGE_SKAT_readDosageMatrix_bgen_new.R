@@ -18,7 +18,7 @@ getGenoOfGene_bgen = function(markerIndicesVec, minMAF=0, maxMAF=0.5, minInfo=0,
       Gx = getOneMarker(markerIndicesVec[i])	    
       AF = Gx$variants$AF
       AC = Gx$variants$AC
-      markerInfo = Gx$variants$info
+      markerInfo = Gx$info
       if(AF >= 0.5){
         MAF = 1 - AF
         MAC = 1 - AC

@@ -1,3 +1,4 @@
+// [[Rcpp::depends(BH)]]
 #include <cstring>
 #include <cstdio>
 #include <vector>
@@ -13,41 +14,46 @@
 #include <memory>
 #include <time.h>
 #include <stdint.h>
+#include <zlib.h>
+
+#include <boost/iostreams/filter/zstd.hpp>
 
 #include <Rcpp.h>
 
+typedef uLong uLongf;
 
 //A global variable for the dosage file to test
 FILE *m_fin;
-unsigned char * m_buf;
-unsigned char * m_zBuf;
+std::vector <unsigned char> m_buf;
+std::vector <unsigned char> m_zBuf;
 uint m_zBufLens;
 uint m_bufLens;
-
-
 
 int gmtest_samplesize;
 Rcpp::IntegerVector gm_sample_idx;
 
 //genoToTest_bgenDosage
 bool m_isQuery;
+int m_N, m_N0, m_M, m_M0;
+uint Nbgen;
+
 std::vector< int > m_markerIndicesToInclude;
 bool isReadVariantBgen = true;
 //bool isOutputHetHomCountsinCaseCtrl = false;
-bool isDropMissingDosages_bgen = false;
+bool m_isDropMissingDosages = false;
 //double bgenMinMAF = 0;
 //double bgenMinINFO = 0;
 uint numSamples_bgen;
-bool isSparseDosage_bgen = false;
+bool m_isSparseDosages = false;
 
 // [[Rcpp::export]]
 void setIsDropMissingDosages_bgen (bool isdropmissingdosages){
-  isDropMissingDosages_bgen = isdropmissingdosages;
+  m_isDropMissingDosages = isdropmissingdosages;
 }
 
 // [[Rcpp::export]]
 void setIsSparseDosage_bgen (bool isSparseDosage){
-   isSparseDosage_bgen = isSparseDosage;
+   m_isSparseDosages = isSparseDosage;
 }
 
 
@@ -75,27 +81,28 @@ int setgenoTest_bgenDosage(const std::string t_bgenFileName,
     }
 
     /****code from BOLT-LMM v2.3.4***/
-    mkl_set_num_threads(1);
 
     /********** READ HEADER v1.2**********/
     m_fin = fopen(t_bgenFileName.c_str(), "rb");
     uint offset; fread(&offset, 4, 1, m_fin); //cout << "offset: " << offset << endl;
     uint L_H; fread(&L_H, 4, 1, m_fin); //cout << "L_H: " << L_H << endl;
-    uint m_M0; fread(&m_M0, 4, 1, m_fin); cout << "snpBlocks (Mbgen): " << m_M0 << endl;
+    uint m_M0; fread(&m_M0, 4, 1, m_fin); std::cout << "snpBlocks (Mbgen): " << m_M0 << std::endl;
     assert(Mbgen != 0);
-    if(!m_isQuery){mtotest = m_M0};
-    uint Nbgen; fread(&m_N0, 4, 1, m_fin); cout << "samples (Nbgen): " << m_N0 << endl;
-    uint m_Nsample = t_SampleInBgen.size();
-    if (Nbgen != m_Nsample) {
-      cerr << "ERROR: Number of samples in BGEN header does not match sample file" << endl;
-      exit(1);
-    }
+    if(!m_isQuery){mtotest = m_M0;};
+    //uint Nbgen; fread(&Nbgen, 4, 1, m_fin); std::cout << "samples (Nbgen): " << Nbgen << std::endl;
+    fread(&Nbgen, 4, 1, m_fin); std::cout << "samples (Nbgen): " << Nbgen << std::endl;
+    numSamples_bgen = Nbgen; 
+    //uint m_Nsample = t_SampleInBgen.size();
+    //if (Nbgen != m_Nsample) {
+    //  std::cerr << "ERROR: Number of samples in BGEN header does not match sample file" << std::endl;
+    //  exit(1);
+    //}
     char magic[5]; fread(magic, 1, 4, m_fin); magic[4] = '\0'; //cout << "magic bytes: " << string(magic) << endl;
     fseek(m_fin, L_H-20, SEEK_CUR); //cout << "skipping L_H-20 = " << L_H-20 << " bytes (free data area)" << endl;
     uint flags; fread(&flags, 4, 1, m_fin); //cout << "flags: " << flags << endl;
-    uint CompressedSNPBlocks = flags&3; cout << "CompressedSNPBlocks: " << CompressedSNPBlocks << endl;
+    uint CompressedSNPBlocks = flags&3; std::cout << "CompressedSNPBlocks: " << CompressedSNPBlocks << std::endl;
     assert(CompressedSNPBlocks==1); // REQUIRE CompressedSNPBlocks==1
-    uint Layout = (flags>>2)&0xf; cout << "Layout: " << Layout << endl;
+    uint Layout = (flags>>2)&0xf; std::cout << "Layout: " << Layout << std::endl;
     assert(Layout==1 || Layout==2); // REQUIRE Layout==1 or Layout==2
     fseek(m_fin, offset+4, SEEK_SET);
     return(m_M0);
@@ -105,55 +112,59 @@ int setgenoTest_bgenDosage(const std::string t_bgenFileName,
 
 
 
-void Parse2(uchar *buf, uint bufLen, const uchar *zBuf, uint zBufLen,std::string & snpName, uint Nbgen,std::vector< double > & dosages, double & AC, double & AF, std::vector<unsigned int> & indexforMissing, double & info, std::vector< uint > & iIndex) {
+void Parse2(unsigned char *buf, uint bufLen, const unsigned char *zBuf, uint zBufLen,std::string & snpName, uint Nbgen,std::vector< double > & dosages, double & AC, double & AF, std::vector<int> & indexforMissing, double & info, std::vector<unsigned int> & iIndex) {
 
     uLongf destLen = bufLen;
+    int tempa = uncompress(buf, &destLen, zBuf, zBufLen);
+    std::cout << tempa << " tempa" <<  std::endl; 
     if (uncompress(buf, &destLen, zBuf, zBufLen) != Z_OK || destLen != bufLen) {
-      cerr << "ERROR: uncompress() failed" << endl;
+      std::cerr << "ERROR: uncompress() failed" << std::endl;
       exit(1);
     }
-    uchar *bufAt = buf;
+    unsigned char *bufAt = buf;
     uint N = bufAt[0]|(bufAt[1]<<8)|(bufAt[2]<<16)|(bufAt[3]<<24); bufAt += 4;
+    std::cout << "N= " << N << std::endl;
+    std::cout << "Nbgen= " << Nbgen << std::endl; 
     if (N != Nbgen) {
-      cerr << "ERROR: " << snpName << " has N = " << N << " (mismatch with header block)" << endl;
+      std::cerr << "ERROR: " << snpName << " has N = " << N << " (mismatch with header block)" << std::endl;
       exit(1);
     }
     uint K = bufAt[0]|(bufAt[1]<<8); bufAt += 2;
     if (K != 2U) {
-      cerr << "ERROR: " << snpName << " has K = " << K << " (non-bi-allelic)" << endl;
+      std::cerr << "ERROR: " << snpName << " has K = " << K << " (non-bi-allelic)" << std::endl;
       exit(1);
     }
     uint Pmin = *bufAt; bufAt++;
     if (Pmin != 2U) {
-      cerr << "ERROR: " << snpName << " has minimum ploidy = " << Pmin << " (not 2)" << endl;
+      std::cerr << "ERROR: " << snpName << " has minimum ploidy = " << Pmin << " (not 2)" << std::endl;
       exit(1);
     }
     uint Pmax = *bufAt; bufAt++;
     if (Pmax != 2U) {
-      cerr << "ERROR: " << snpName << " has maximum ploidy = " << Pmax << " (not 2)" << endl;
+      std::cerr << "ERROR: " << snpName << " has maximum ploidy = " << Pmax << " (not 2)" << std::endl;
       exit(1);
     }
-    const uchar *ploidyMissBytes = bufAt;
+    const unsigned char *ploidyMissBytes = bufAt;
     for (uint i = 0; i < N; i++) {
       uint ploidyMiss = *bufAt; bufAt++;
       if (ploidyMiss != 2U && ploidyMiss != 130U) {
-        cerr << "ERROR: " << snpName << " has ploidy/missingness byte = " << ploidyMiss
-             << " (not 2 or 130)" << endl;
+        std::cerr << "ERROR: " << snpName << " has ploidy/missingness byte = " << ploidyMiss
+             << " (not 2 or 130)" << std::endl;
         exit(1);
       }
     }
     uint Phased = *bufAt; bufAt++;
     if (Phased != 0U) {
-      cerr << "ERROR: " << snpName << " has Phased = " << Pmax << " (not 0)" << endl;
+      std::cerr << "ERROR: " << snpName << " has Phased = " << Pmax << " (not 0)" << std::endl;
       exit(1);
     }
     uint B = *bufAt; bufAt++;
     if (B != 8U) {
-      cerr << "ERROR: " << snpName << " has B = " << B << " (not 8)" << endl;
+      std::cerr << "ERROR: " << snpName << " has B = " << B << " (not 8)" << std::endl;
       exit(1);
     }
 
-
+    std::cout << "OKKKK" << std::endl;
     // Parse
     double lut[256];
     for (int i = 0; i <= 255; i++)
@@ -169,8 +180,9 @@ void Parse2(uchar *buf, uint bufLen, const uchar *zBuf, uint zBufLen,std::string
     std::size_t missing_cnt = 0;
 
     for (uint i = 0; i < N; i++) {
-     if (ploidyMissBytes[i] == 130U){
-      bufAt += 2;
+     if(i == 1){std::cout << "ploidyMissBytes[i] " << ploidyMissBytes[i] << std::endl;}
+     if (ploidyMissBytes[i] != 130U){
+      //bufAt += 2;
       p11 = lut[*bufAt]; bufAt++;
       p10 = lut[*bufAt]; bufAt++;
       p00 = 1 - p11 - p10;
@@ -202,20 +214,21 @@ void Parse2(uchar *buf, uint bufLen, const uchar *zBuf, uint zBufLen,std::string
         }
      }
     }
-
+    std::cout << "sum_eij_sub: " << sum_eij_sub << std::endl;
     AC = 2* ((double) (m_N - missing_cnt)) - sum_eij_sub;
+    if(m_N == missing_cnt){
+      AF = 0;
+    }else{
+      AF = AC/ 2/ ((double) (m_N - missing_cnt)) ;
+    }
 
     double thetaHat = sum_eij / (2* (m_N - missing_cnt));
     info = thetaHat==0 || thetaHat==1 ? 1 :
     1 - sum_fij_minus_eij2 / (2*(m_N - missing_cnt)*thetaHat*(1-thetaHat));
 
+    std::cout << "OKKKK1" << std::endl;
     if(missing_cnt > 0){
       std::cout << "sample index with missing dosages for snpName " << snpName << " :";
-      if(m_N == missing_cnt){
-        AF = 0;
-      }else{
-        AF = AC/ 2/ ((double) (m_N - missing_cnt)) ;
-      }
 
       if(!m_isDropMissingDosages){
         double imputeDosage = 2*AF;
@@ -233,6 +246,7 @@ void Parse2(uchar *buf, uint bufLen, const uchar *zBuf, uint zBufLen,std::string
       }
     }
 
+    std::cout << "OKKKK2" << std::endl;
     //return(info);
   }
 
@@ -240,39 +254,42 @@ void Parse2(uchar *buf, uint bufLen, const uchar *zBuf, uint zBufLen,std::string
 // [[Rcpp::export]]
 Rcpp::List getOneMarker(int t_fileStartPos)
   {
-
-
+      using namespace Rcpp ;
     if(m_isQuery){fseek(m_fin, t_fileStartPos, SEEK_SET);}
      std::string SNPID, RSID, chromosome, first_allele,second_allele ;
      uint position;
      std::vector< std::string > alleles ;
      std::vector< double > dosages;
-     double AC, AF,
+     double AC, AF, info;
      std::vector< int > indexforMissing;
   std::vector< uint > iIndex;
 
 
     char snpID[65536], rsID[65536], chrStr[65536];
+       uint maxLA = 65536, maxLB = 65536;
     char *allele1, *allele0;
+   allele1 = (char *) malloc(maxLA+1);
+    allele0 = (char *) malloc(maxLB+1);
     ushort LS; size_t numBoolRead = fread(&LS, 2, 1, m_fin); // cout << "LS: " << LS << " " << std::flush;
     bool isBoolRead;
+    Rcpp::List result ;
     if ( numBoolRead > 0 ) {
       isBoolRead = true;
       fread(snpID, 1, LS, m_fin); snpID[LS] = '\0'; // cout << "snpID: " << string(snpID) << " " << std::flush;
       ushort LR; fread(&LR, 2, 1, m_fin); // cout << "LR: " << LR << " " << std::flush;
-      fread(rsID, 1, LR, fin); rsID[LR] = '\0'; // cout << "rsID: " << string(rsID) << " " << std::flush;
-      RSID = string(rsID)=="." ? snpID : rsID;
+      fread(rsID, 1, LR, m_fin); rsID[LR] = '\0'; // cout << "rsID: " << string(rsID) << " " << std::flush;
+      RSID = std::string(rsID)=="." ? snpID : rsID;
       //std::string SNPID = string(snpID);
 
       ushort LC; fread(&LC, 2, 1, m_fin); // cout << "LC: " << LC << " " << std::flush;
       fread(chrStr, 1, LC, m_fin); chrStr[LC] = '\0';
-      chromosome  = string(chrStr);
+      chromosome  = std::string(chrStr);
 
       uint physpos; fread(&physpos, 4, 1, m_fin); // cout << "physpos: " << physpos << " " << std::flush;
       position = physpos;
       ushort K; fread(&K, 2, 1, m_fin); //cout << "K: " << K << endl;
       if (K != 2) {
-        cerr << "ERROR: Non-bi-allelic variant found: " << K << " alleles" << endl;
+        std::cerr << "ERROR: Non-bi-allelic variant found: " << K << " alleles" << std::endl;
         exit(1);
       }
 
@@ -283,28 +300,37 @@ Rcpp::List getOneMarker(int t_fileStartPos)
         allele1 = (char *) malloc(maxLA+1);
       }
       fread(allele1, 1, LA, m_fin); allele1[LA] = '\0';
-      second_allele = string(allele1);
-      uint LB; fread(&LB, 4, 1, fin); // cout << "LB: " << LB << " " << std::flush;
+      second_allele = std::string(allele1);
+      uint LB; fread(&LB, 4, 1, m_fin); // cout << "LB: " << LB << " " << std::flush;
       if (LB > maxLB) {
         maxLB = 2*LB;
         free(allele0);
         allele0 = (char *) malloc(maxLB+1);
       }
       fread(allele0, 1, LB, m_fin); allele0[LB] = '\0';
-      first_allele = string(allele0);
+      first_allele = std::string(allele0);
 
       uint C; fread(&C, 4, 1, m_fin); //cout << "C: " << C << endl;
       if (C > m_zBuf.size()) m_zBuf.resize(C-4);
+      std::cout << "m_zBuf.size() " << m_zBuf.size() << std::endl;
       uint D; fread(&D, 4, 1, m_fin); //cout << "D: " << D << endl;
       m_zBufLens = C-4; m_bufLens = D;
       fread(&m_zBuf[0], 1, C-4, m_fin);
       AC = 0;
       AF = 0;
       info = 0;
+      std::cout << m_bufLens << " m_bufLens" << std::endl;
+      std::cout << m_zBufLens << " m_zBufLens" << std::endl;
+      std::cout << C << " C" << std::endl;
+      std::cout << D << " D" << std::endl;
+      std::cout << first_allele << " first_allele" << std::endl;
+      std::cout << second_allele << " second_allele" << std::endl;
+      std::cout << chromosome << " chromosome" << std::endl;
+      std::cout << RSID << " RSID" << std::endl;
       if (m_bufLens > m_buf.size()) m_buf.resize(m_bufLens);
-           Parse2(&m_buf[0], m_bufLens, &m_zBuf[0], m_zBufLens, RSID, m_N0, dosages, AC, AF, indexforMissing, info, iIndex);
-      }
-        DataFrame variants = DataFrame::create(
+      Parse2(&m_buf[0], m_bufLens, &m_zBuf[0], m_zBufLens, RSID, Nbgen, dosages, AC, AF, indexforMissing, info, iIndex);
+      //}
+        Rcpp::DataFrame variants = Rcpp::DataFrame::create(
                 Named("chromosome") = chromosome,
                 Named("position") = position,
                 Named("rsid") = RSID,
@@ -313,24 +339,24 @@ Rcpp::List getOneMarker(int t_fileStartPos)
                 Named("allele1") = second_allele,
                 _["stringsAsFactors"] = false,
                 Named("AC") = AC,
-                Named("AF") = AF,
-                Named("info") = info,
+                Named("AF") = AF
+               // Named("info") = info
                 //Named("homN_cases") = homN_cases,
                 //Named("hetN_cases") = hetN_cases,
                 //Named("homN_ctrls") = homN_ctrls,
                 //Named("hetN_ctrls") = hetN_ctrls
         );
-
-    }else{
-      isBoolRead = false;
-      DataFrame variants = NULL;
-    }
-    List result ;
     result[ "variants" ] = variants ;
+    result["info"] = info;
     result[ "dosages" ] = dosages ;
     result["iIndex"] = iIndex;
     result["indexforMissing"] = indexforMissing;
+
+    }else{
+      isBoolRead = false;
+      Rcpp::DataFrame variants = NULL;
     result["isBoolRead"] = isBoolRead;
+    }
 
     dosages.clear();
     indexforMissing.clear();
@@ -360,13 +386,13 @@ bool getisReadVariantBgen()
 }
 
 
-
+/*
 // [[Rcpp::export]]
 double getMarkerInfo()
 {
   return(markerInfo);
 }
-
+*/
 /**************************************
         By SLEE 09/06/17
 *************************************/
@@ -374,6 +400,7 @@ double getMarkerInfo()
 // [[Rcpp::export]]
 void SetSampleIdx(Rcpp::IntegerVector sample_idx, int Ntest){
 	gmtest_samplesize = Ntest;
+        m_N = gmtest_samplesize;
 	gm_sample_idx = sample_idx;
 	//cc_idx = cc_index;
 }

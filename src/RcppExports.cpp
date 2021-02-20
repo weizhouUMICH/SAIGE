@@ -1137,79 +1137,46 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// setIsSparseDosage_bgen
+void setIsSparseDosage_bgen(bool isSparseDosage);
+RcppExport SEXP _SAIGE_setIsSparseDosage_bgen(SEXP isSparseDosageSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type isSparseDosage(isSparseDosageSEXP);
+    setIsSparseDosage_bgen(isSparseDosage);
+    return R_NilValue;
+END_RCPP
+}
+// setMarkerIndicesToInclude
+void setMarkerIndicesToInclude(std::vector< int >& markerIndicesToInclude);
+RcppExport SEXP _SAIGE_setMarkerIndicesToInclude(SEXP markerIndicesToIncludeSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector< int >& >::type markerIndicesToInclude(markerIndicesToIncludeSEXP);
+    setMarkerIndicesToInclude(markerIndicesToInclude);
+    return R_NilValue;
+END_RCPP
+}
 // setgenoTest_bgenDosage
-int setgenoTest_bgenDosage(std::string& filename, std::string& index_filename, Rcpp::DataFrame& ranges_to_include, Rcpp::DataFrame& ranges_to_exclude, std::vector< std::string > const& ids_to_include, std::vector< std::string > const& ids_to_exclude);
-RcppExport SEXP _SAIGE_setgenoTest_bgenDosage(SEXP filenameSEXP, SEXP index_filenameSEXP, SEXP ranges_to_includeSEXP, SEXP ranges_to_excludeSEXP, SEXP ids_to_includeSEXP, SEXP ids_to_excludeSEXP) {
+int setgenoTest_bgenDosage(const std::string t_bgenFileName, const std::string t_bgenFileIndex);
+RcppExport SEXP _SAIGE_setgenoTest_bgenDosage(SEXP t_bgenFileNameSEXP, SEXP t_bgenFileIndexSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string& >::type filename(filenameSEXP);
-    Rcpp::traits::input_parameter< std::string& >::type index_filename(index_filenameSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_include(ranges_to_includeSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_exclude(ranges_to_excludeSEXP);
-    Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_include(ids_to_includeSEXP);
-    Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_exclude(ids_to_excludeSEXP);
-    rcpp_result_gen = Rcpp::wrap(setgenoTest_bgenDosage(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude));
+    Rcpp::traits::input_parameter< const std::string >::type t_bgenFileName(t_bgenFileNameSEXP);
+    Rcpp::traits::input_parameter< const std::string >::type t_bgenFileIndex(t_bgenFileIndexSEXP);
+    rcpp_result_gen = Rcpp::wrap(setgenoTest_bgenDosage(t_bgenFileName, t_bgenFileIndex));
     return rcpp_result_gen;
 END_RCPP
 }
-// getDosage_inner_bgen_withquery
-Rcpp::List getDosage_inner_bgen_withquery();
-RcppExport SEXP _SAIGE_getDosage_inner_bgen_withquery() {
+// getOneMarker
+Rcpp::List getOneMarker(int t_fileStartPos);
+RcppExport SEXP _SAIGE_getOneMarker(SEXP t_fileStartPosSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getDosage_inner_bgen_withquery());
-    return rcpp_result_gen;
-END_RCPP
-}
-// getDosage_inner_bgen_withquery_new
-Rcpp::List getDosage_inner_bgen_withquery_new();
-RcppExport SEXP _SAIGE_getDosage_inner_bgen_withquery_new() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getDosage_inner_bgen_withquery_new());
-    return rcpp_result_gen;
-END_RCPP
-}
-// getDosage_inner_bgen_withquery_new_Sparse
-Rcpp::List getDosage_inner_bgen_withquery_new_Sparse();
-RcppExport SEXP _SAIGE_getDosage_inner_bgen_withquery_new_Sparse() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getDosage_inner_bgen_withquery_new_Sparse());
-    return rcpp_result_gen;
-END_RCPP
-}
-// getDosage_bgen_withquery
-Rcpp::List getDosage_bgen_withquery();
-RcppExport SEXP _SAIGE_getDosage_bgen_withquery() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getDosage_bgen_withquery());
-    return rcpp_result_gen;
-END_RCPP
-}
-// getDosage_bgen_withquery_Sparse
-Rcpp::List getDosage_bgen_withquery_Sparse();
-RcppExport SEXP _SAIGE_getDosage_bgen_withquery_Sparse() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getDosage_bgen_withquery_Sparse());
-    return rcpp_result_gen;
-END_RCPP
-}
-// getDosage_bgen_noquery
-Rcpp::List getDosage_bgen_noquery();
-RcppExport SEXP _SAIGE_getDosage_bgen_noquery() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getDosage_bgen_noquery());
+    Rcpp::traits::input_parameter< int >::type t_fileStartPos(t_fileStartPosSEXP);
+    rcpp_result_gen = Rcpp::wrap(getOneMarker(t_fileStartPos));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1223,6 +1190,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// setQueryStatus
+bool setQueryStatus(bool isQuery);
+RcppExport SEXP _SAIGE_setQueryStatus(SEXP isQuerySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type isQuery(isQuerySEXP);
+    rcpp_result_gen = Rcpp::wrap(setQueryStatus(isQuery));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getisReadVariantBgen
 bool getisReadVariantBgen();
 RcppExport SEXP _SAIGE_getisReadVariantBgen() {
@@ -1230,16 +1208,6 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     rcpp_result_gen = Rcpp::wrap(getisReadVariantBgen());
-    return rcpp_result_gen;
-END_RCPP
-}
-// getMarkerInfo
-double getMarkerInfo();
-RcppExport SEXP _SAIGE_getMarkerInfo() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getMarkerInfo());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1261,22 +1229,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     closetestGenoFile_bgenDosage();
     return R_NilValue;
-END_RCPP
-}
-// setgenoTest_bgenDosage_v2
-int setgenoTest_bgenDosage_v2(std::string& filename, std::string& index_filename, Rcpp::DataFrame& ranges_to_include, Rcpp::DataFrame& ranges_to_exclude, std::vector< std::string > const& ids_to_include, std::vector< std::string > const& ids_to_exclude);
-RcppExport SEXP _SAIGE_setgenoTest_bgenDosage_v2(SEXP filenameSEXP, SEXP index_filenameSEXP, SEXP ranges_to_includeSEXP, SEXP ranges_to_excludeSEXP, SEXP ids_to_includeSEXP, SEXP ids_to_excludeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string& >::type filename(filenameSEXP);
-    Rcpp::traits::input_parameter< std::string& >::type index_filename(index_filenameSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_include(ranges_to_includeSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_exclude(ranges_to_excludeSEXP);
-    Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_include(ids_to_includeSEXP);
-    Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_exclude(ids_to_excludeSEXP);
-    rcpp_result_gen = Rcpp::wrap(setgenoTest_bgenDosage_v2(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude));
-    return rcpp_result_gen;
 END_RCPP
 }
 // getSampleSizeinBgen
@@ -1551,19 +1503,15 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_get_GRMdiagVec", (DL_FUNC) &_SAIGE_get_GRMdiagVec, 0},
     {"_SAIGE_setminMAFforGRM", (DL_FUNC) &_SAIGE_setminMAFforGRM, 1},
     {"_SAIGE_setIsDropMissingDosages_bgen", (DL_FUNC) &_SAIGE_setIsDropMissingDosages_bgen, 1},
-    {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 6},
-    {"_SAIGE_getDosage_inner_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery, 0},
-    {"_SAIGE_getDosage_inner_bgen_withquery_new", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery_new, 0},
-    {"_SAIGE_getDosage_inner_bgen_withquery_new_Sparse", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery_new_Sparse, 0},
-    {"_SAIGE_getDosage_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_bgen_withquery, 0},
-    {"_SAIGE_getDosage_bgen_withquery_Sparse", (DL_FUNC) &_SAIGE_getDosage_bgen_withquery_Sparse, 0},
-    {"_SAIGE_getDosage_bgen_noquery", (DL_FUNC) &_SAIGE_getDosage_bgen_noquery, 0},
+    {"_SAIGE_setIsSparseDosage_bgen", (DL_FUNC) &_SAIGE_setIsSparseDosage_bgen, 1},
+    {"_SAIGE_setMarkerIndicesToInclude", (DL_FUNC) &_SAIGE_setMarkerIndicesToInclude, 1},
+    {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 2},
+    {"_SAIGE_getOneMarker", (DL_FUNC) &_SAIGE_getOneMarker, 1},
     {"_SAIGE_getQueryStatus", (DL_FUNC) &_SAIGE_getQueryStatus, 0},
+    {"_SAIGE_setQueryStatus", (DL_FUNC) &_SAIGE_setQueryStatus, 1},
     {"_SAIGE_getisReadVariantBgen", (DL_FUNC) &_SAIGE_getisReadVariantBgen, 0},
-    {"_SAIGE_getMarkerInfo", (DL_FUNC) &_SAIGE_getMarkerInfo, 0},
     {"_SAIGE_SetSampleIdx", (DL_FUNC) &_SAIGE_SetSampleIdx, 2},
     {"_SAIGE_closetestGenoFile_bgenDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_bgenDosage, 0},
-    {"_SAIGE_setgenoTest_bgenDosage_v2", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage_v2, 6},
     {"_SAIGE_getSampleSizeinBgen", (DL_FUNC) &_SAIGE_getSampleSizeinBgen, 0},
     {"_SAIGE_SetSampleIdx_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_vcfDosage, 2},
     {"_SAIGE_setTestField", (DL_FUNC) &_SAIGE_setTestField, 1},
