@@ -190,9 +190,6 @@ SPAGMMATtest = function(bgenFile = "",
     }
 
     y = obj.glmm.null$y
-    print(names(obj.glmm.null))
-    print("y")
-    print(y)
     X = obj.glmm.null$X
     N = length(y)
     tauVec = obj.glmm.null$theta
@@ -807,19 +804,23 @@ SPAGMMATtest = function(bgenFile = "",
     while(isVariant){
       mth = mth + 1
       if (dosageFileType == "bgen"){
-	cat("Mtest: ", Mtest, "\n")
-	cat("mth: ", mth, "\n")
+	#cat("Mtest: ", Mtest, "\n")
+	#cat("mth: ", mth, "\n")
         if(isQuery){
           #Gx = getDosage_bgen_withquery()
           Gx = getOneMarker(markerIndicesVec[mth])
         }else{
           #Gx = getDosage_bgen_noquery()
-	  Gx = getOneMarker(0)
+          #readGxTime = system.time({Gx = getOneMarker(0)})
+          Gx = getOneMarker(0)
+          #print(readGxTime)		
+	  #Gx = getOneMarker(0)
         
          }
         markerInfo = Gx$info
-        print(Gx$variants)
-        if(markerInfo >= 0 & markerInfo <= 1){
+        #print(Gx$variants)
+	#print(Gx$info)
+        if(!is.na(markerInfo) & markerInfo >= 0 & markerInfo <= 1){
 		markerInfo0 = markerInfo
 	}else{
 		markerInfo0 = 1
@@ -830,7 +831,7 @@ SPAGMMATtest = function(bgenFile = "",
         G0 = Gx$dosages
         AC = Gx$variants$AC
         AF = Gx$variants$AF
-        if(mth == 3){print(G0); print(AC); print(AF)}
+        #if(mth == 3){print(G0); print(AC); print(AF)}
         Gx$variants$markerInfo = markerInfo
         rowHeader=as.vector(unlist(Gx$variants))
 	#cat("rowHeader: ", rowHeader, "\n")
@@ -841,15 +842,15 @@ SPAGMMATtest = function(bgenFile = "",
 
         if(Mtest == mth){isVariant = FALSE}
         indexforMissing = Gx$indexforMissing
-	cat("Mtest: ", Mtest, "\n")
-	cat("mth: ", mth, "\n")
+	#cat("Mtest: ", Mtest, "\n")
+	#cat("mth: ", mth, "\n")
       }else if(dosageFileType == "vcf"){
         Gx = getGenoOfnthVar_vcfDosage(mth)
         G0 = Gx$dosages
         AC = Gx$variants$AC
         AF = Gx$variants$AF
         markerInfo = Gx$variants$markerInfo
-        if(markerInfo >= 0 & markerInfo <= 1){
+        if(!is.na(markerInfo) & markerInfo >= 0 & markerInfo <= 1){
 		markerInfo0=markerInfo
 	}else{
 		markerInfo0=1
@@ -1139,6 +1140,14 @@ SPAGMMATtest = function(bgenFile = "",
 
    }else{ #end if(!isGroupTest){
    #########Group Test
+       if(!file.exists(bgenFileIndex)){
+          stop("ERROR! bgenFileIndex ", bgenFileIndex, " does not exsit\n")
+        }else{
+          db_con <- RSQLite::dbConnect(RSQLite::SQLite(), bgenFileIndex)
+          on.exit(RSQLite::dbDisconnect(db_con), add = TRUE)
+          db_con_variant = dplyr::tbl(db_con, "Variant")
+        }
+
 
      OUT_single = NULL
      if(IsSingleVarinGroupTest){
@@ -1308,6 +1317,7 @@ SPAGMMATtest = function(bgenFile = "",
              ids_to_include = as.character(as.vector(idslist[-1]))
              temp_con_variant = dplyr::filter(db_con_variant, rsid %in% ids_to_include)
              markerIndicesVec = dplyr::pull(temp_con_variant, file_start_position)
+	     print(markerIndicesVec[1:10])
              #markerIndicesVec = dplyr::filter(db_con_variant, rsid %in% ids_to_include) %>% dplyr::pull(file_start_position)
              if(length(markerIndicesVec) == 0){
 		     cntMarker = 0

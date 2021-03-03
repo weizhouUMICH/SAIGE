@@ -13,8 +13,11 @@ getGenoOfGene_bgen = function(markerIndicesVec, minMAF=0, maxMAF=0.5, minInfo=0,
   result = list()
   MACs = NULL
   print(gc())
-  if(Mtest > 0){    
+  if(Mtest > 0){
     for(i in 1:Mtest){
+      if(i <= 10){	    
+      print(markerIndicesVec[i])
+      }
       Gx = getOneMarker(markerIndicesVec[i])	    
       AF = Gx$variants$AF
       AC = Gx$variants$AC
@@ -26,10 +29,11 @@ getGenoOfGene_bgen = function(markerIndicesVec, minMAF=0, maxMAF=0.5, minInfo=0,
         MAF = AF
         MAC = AC
       }
+      if(is.na(markerInfo)){markerInfo = 1}
     if(MAF >= minMAF & MAF < maxMAF & markerInfo >= minInfo){
         Gvec = c(Gvec, Gx$dosages)
         if(isSparseDosages){
-	  iIndex = c(iIndex, Gx$iIndexforMarker)
+	  iIndex = c(iIndex, Gx$iIndex)
 	  jIndex = c(jIndex, rep((cnt+1), length(Gx$dosages)))
         }
 	#print(i)
