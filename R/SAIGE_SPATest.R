@@ -171,6 +171,7 @@ SPAGMMATtest = function(bgenFile = "",
     #reduce model size
     modglmm$Y = NULL
     #modglmm$obj.glm.null = list(y=ytemp)
+    modglmm$offset = modglmm$linear.predictors - modglmm$coefficients[1]
     modglmm$linear.predictors = NULL
     modglmm$coefficients = NULL
     modglmm$cov = NULL
@@ -345,7 +346,7 @@ SPAGMMATtest = function(bgenFile = "",
    }else{
       obj.model = list(obj.noK = obj.glmm.null$obj.noK, mu  = as.vector(obj.glmm.null$fitted.values))
    }
-
+  obj.model$offset = obj.glmm.null$offset
   if(!is.null(obj.model)){
     if(traitType == "binary"){
        obj.model$mu2 = (obj.model$mu)* (1-obj.model$mu)
@@ -742,10 +743,11 @@ SPAGMMATtest = function(bgenFile = "",
         if(isQuery){
           Gx = getDosage_bgen_withquery()
         }else{
-          Gx = getDosage_bgen_noquery()
+          readGxTime = system.time({Gx = getDosage_bgen_noquery()})
+	  print(readGxTime)
         }
         markerInfo = getMarkerInfo()
-        if(markerInfo >= 0 & markerInfo <= 1){
+        if(!is.na(markerInfo) & markerInfo >= 0 & markerInfo <= 1){
 		markerInfo0 = markerInfo
 	}else{
 		markerInfo0 = 1
@@ -2241,6 +2243,32 @@ getCovMandOUT_cond = function(G0, dosage_cond, cateVarRatioMinMACVecExclude, cat
 groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta.rare, weights.beta.common, weightMAFcutoff, r.corr, max_maf, sparseSigma, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary, weights_specified, weights_for_G2_cond, weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest, IsOutputlogPforSingle=FALSE){
 	obj.model$theta = tauVec
 	obj.model$residuals = as.vector(y-obj.model$mu)
+
+
+	MACvec = colSums(Gmat)
+	m = ncol(Gmat)
+        n = nrow(Gmat)
+        AF = MACvec/(2*n)
+        #AF = colMeans(G1)/2
+        flipindex = which(AF > 0.5)
+        if(length(flipindex) > 0){
+                Gmat[,flipindex] = 2 - Gmat[,flipindex]
+                MACvec[flipindex] = 2*n - MACvec[flipindex]
+                cat("Note the ", flipindex, "th variants were flipped to use dosages for the minor alleles in gene-based tests\n")
+        }
+        MAF = colMeans(Gmat)/2
+        macle10Index = which(MACvec <= 10)
+	if(length(macle10Index) > 0){
+		#Gnew = rowSums(Gmat[,macle10Index,drop=F])/(length(macle10Index))
+		Gnew = rowSums(Gmat[,macle10Index])
+		Gnew[which(Gnew >= 1)] = 1
+		cat("New Collpase AF", mean(Gnew)/2, "\n")
+        	Gmat_sub = cbind(Gmat[,-macle10Index], Gnew)
+		Gmat = Gmat_sub
+	}
+
+
+
         testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.model, y, X, tauVec, cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, mu2 = obj.model$mu2, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = obj.model$mu, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest=IsOutputBETASEinBurdenTest)})
 
         if(is.null(G2_cond)){

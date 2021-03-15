@@ -3,7 +3,7 @@
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
 SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE, weights_specified = NULL, weights_for_G2_cond = NULL, weightsIncludeinGroupFile = FALSE, IsOutputBETASEinBurdenTest=FALSE){
-
+	#offset = obj$offset
         #check the input genotype G1
         obj.noK = obj$obj.noK
 	obj.noK$y = y
@@ -20,6 +20,19 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
 	}
 
 	MAF = colMeans(G1)/2
+	#print(MAF)
+        #macle10Index = which(MACvec <= 10)
+        #Gnew = colSums(G1[,macle10Index])/(length(macle10Index))	
+        #G1_sub = cbind(G1[,-macle10Index], Gnew) 
+        #G1 = G1_sub
+	#m = ncol(G1)
+        #n = nrow(G1)
+        #MACvec = colSums(G1)
+        #AF = MACvec/(2*n)
+	#MAF = colMeans(G1)/2
+	#print("HERE MAF")
+	#print(MAF)
+
         id_include<-1:n
         out.method<-SKAT:::SKAT_Check_Method(method,r.corr, n=n, m=m)
         method=out.method$method
@@ -72,7 +85,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
 
 	cat("weights: ", weights, "\n")	
 	indexNeg = NULL
-
+        print("DEBUG1")
         G1_org = G1
         #if more than 1 marker is left, continue the test
         if(m  >  0){
@@ -93,6 +106,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
 		
 		#MACvec_indVec_Zall = getCateVarRatio_indVec(Zall, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
 		#rm(Zall)
+		print("DEBUG2")
 		MACvec_indVec_Zall = getCateVarRatio_indVec(MACvector=MACvec, cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude)
 		GratioMatrixall = getGratioMatrix(MACvec_indVec_Zall, ratioVec)
 		if(!is.null(G2_cond)){
@@ -119,7 +133,6 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
                 if(!is.null(G2_cond)){
                         T2 = as.vector(t(G2_cond) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
                 }
-
 
 		if(IsOutputPvalueNAinGroupTestforBinary){
                 	#if no P is provides, use sparseSigma or identity Sigma
@@ -153,9 +166,11 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
 			obj_cc$pi_1=obj_cc$mu*(1-obj_cc$mu)
 
                 	if(is.null(obj$P)){
+                print("DEBUG3")
 
 				if(!IsOutputPvalueNAinGroupTestforBinary){
 					G1_tilde_Ps_G1_tilde = getCovM_nopcg(G1=G1, G2=G1, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
+                print("DEBUG4")
                         		Phi = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m])
 				}
 				Phi_ccadj = SPA_ER_kernel_related_Phiadj(G1_org, obj_cc, obj.noK, Cutoff=2, Phi, weights[1:m], VarRatio_Vec = as.vector(GratioMatrixall[1:m,1]), mu, sparseSigma)
@@ -542,7 +557,6 @@ getCovM_nopcg<-function(G1, G2, XV, XXVX_inv, sparseSigma=NULL, mu2){
                  Mat<-as.matrix(Mat)
 
         }
-
         return(Mat)
 }
 
