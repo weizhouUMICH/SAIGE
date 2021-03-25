@@ -2,7 +2,7 @@
 #G1 is genotypes for testing gene, which contains m markers
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
-SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE, weights_specified = NULL, weights_for_G2_cond = NULL, weightsIncludeinGroupFile = FALSE, IsOutputBETASEinBurdenTest=FALSE){
+SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE, weights_specified = NULL, weights_for_G2_cond = NULL, weightsIncludeinGroupFile = FALSE, IsOutputBETASEinBurdenTest=FALSE,  methodtoCollapseUltaRare = "absence_or_presence"){
 	#offset = obj$offset
         #check the input genotype G1
         obj.noK = obj$obj.noK
@@ -10,28 +10,67 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
         m = ncol(G1)
         n = nrow(G1)
 	MACvec = colSums(G1)
-	AF = MACvec/(2*n)
+	MAF = MACvec/(2*n)
+        AF = MAF
 	#AF = colMeans(G1)/2	
-	flipindex = which(AF > 0.5)
-	if(length(flipindex) > 0){
-		G1[,flipindex] = 2 - G1[,flipindex]
-		MACvec[flipindex] = 2*n - MACvec[flipindex]
-		cat("Note the ", flipindex, "th variants were flipped to use dosages for the minor alleles in gene-based tests\n")
-	}
+	#flipindex = which(AF > 0.5)
+	#if(length(flipindex) > 0){
+	#	G1[,flipindex] = 2 - G1[,flipindex]
+	#	MACvec[flipindex] = 2*n - MACvec[flipindex]
+	#	cat("Note the ", flipindex, "th variants were flipped to use dosages for the minor alleles in gene-based tests\n")
+	#}
 
-	MAF = colMeans(G1)/2
-	#print(MAF)
-        #macle10Index = which(MACvec <= 10)
-        #Gnew = colSums(G1[,macle10Index])/(length(macle10Index))	
-        #G1_sub = cbind(G1[,-macle10Index], Gnew) 
-        #G1 = G1_sub
-	#m = ncol(G1)
-        #n = nrow(G1)
-        #MACvec = colSums(G1)
-        #AF = MACvec/(2*n)
 	#MAF = colMeans(G1)/2
-	#print("HERE MAF")
-	#print(MAF)
+
+
+        macle10Index = which(MACvec <= 10)
+        if(methodtoCollapseUltaRare != "" & length(macle10Index) > 0){
+                #Gnew = rowSums(Gmat[,macle10Index,drop=F])/(length(macle10Index))
+		G1rare=G1[,macle10Index, drop=F]
+                if(methodtoCollapseUltaRare == "absence_or_presence"){
+                	Gnew = rowSums(G1rare)
+                        Gnew[which(Gnew >= 1)] = 1
+                }else if(methodtoCollapseUltaRare == "sum_geno"){ #####NOT active
+      
+			##determine the weights of ultra rare variants
+			MAFle10 = MAF[macle10Index]
+			if(!weightsIncludeinGroupFile){
+                		if(length(MAFle10) > 1){
+                        		weights_MAFle10=rep(0,length(MAFle10))
+                        		index1 = which(MAFle10<=weightMAFcutoff)
+                        		if(length(index1) > 0) {weights_MAFle10[which(MAFle10<=weightMAFcutoff)] = SKAT:::Beta.Weights(MAFle10[which(MAFle10<=weightMAFcutoff)],weights.beta.rare)}
+                        		index2 = which(MAFle10>weightMAFcutoff)
+                        		if(length(index2) > 0) {weights_MAFle10[which(MAFle10>weightMAFcutoff)] = SKAT:::Beta.Weights(MAFle10[which(MAFle10>weightMAFcutoff)],weights.beta.common)}
+                		}else{
+                        		if(MAFle10<=weightMAFcutoff){
+                                		weights_MAFle10 = SKAT:::Beta.Weights(MAFle10,weights.beta.rare)
+                        		}else{
+                                		weights_MAFle10 = SKAT:::Beta.Weights(MAFle10,weights.beta.common)
+
+                        		}
+                		}
+        		}else{
+                		weights_MAFle10 = weights_specified[macle10Index]
+                		cat("weights is specified in the group file for ultra rare variants.\n")
+                        }
+			Gnew = rep(0, n)
+			for (i in 1:length(MAFle10)){
+				Gnew = Gnew + weights_MAFle10[i] * G1rare[,i]
+			}	
+                } #####NOT active
+
+		if(length(macle10Index) < m){
+                        G1 = cbind(Gnew, G1[,-macle10Index, drop=F])
+                }else{
+                        G1_sub = NULL
+                        G1 = cbind(Gnew, G1_sub)
+                }
+
+		m = ncol(G1)
+        	MACvec = colSums(G1)
+        	MAF = MACvec/(2*n)
+        	AF = MAF
+        }
 
         id_include<-1:n
         out.method<-SKAT:::SKAT_Check_Method(method,r.corr, n=n, m=m)

@@ -10,7 +10,7 @@
 #include <time.h>
 #include <Rcpp.h>
 #include <stdint.h>
-
+#include <boost/date_time.hpp>
 
 // #define DEBUG 1
 
@@ -149,6 +149,19 @@ void read_probs( std::vector< std::vector< double > >* probs ) {
 }
 
 
+double get_wall_time2(){
+    struct timeval time;
+    if (gettimeofday(&time,NULL)){
+        //  Handle error
+        return 0;
+    }
+    return (double)time.tv_sec + (double)time.tv_usec * .000001;
+}
+
+
+double get_cpu_time2(){
+    return (double)clock() / CLOCKS_PER_SEC;
+}
 
 
 // [[Rcpp::export]]
@@ -533,18 +546,18 @@ double  Parse(unsigned char * buf, size_t bufLen,  std::string & snpName, uint N
      1 - sum_fij_minus_eij2 / (2*(N-missingSamplesize)*thetaHat*(1-thetaHat));
 
      if(missing_cnt > 0){
-       std::cout << "sample index with missing dosages for snpName " << snpName << " :";	
+       //std::cout << "sample index with missing dosages for snpName " << snpName << " :";	
        double imputeDosage = 2*AF;
        for (unsigned int i = 0; i < indexforMissing.size(); i++)
        {
           dosages[indexforMissing[i]] = imputeDosage;
-	  std::cout << indexforMissing[i]+1 << ",";	  
+	  //std::cout << indexforMissing[i]+1 << ",";	  
        }
-       std::cout << " " << std::endl;	
+       //std::cout << " " << std::endl;	
        if(!isDropMissingDosages_bgen){
-	 std::cout << "AC is " << AC << std::endl;
+	 //std::cout << "AC is " << AC << std::endl;
          AC = AC + missing_cnt * imputeDosage;
-	 std::cout << "AC_new is " << AC << std::endl;
+	 //std::cout << "AC_new is " << AC << std::endl;
        }	
      }
 
@@ -692,7 +705,7 @@ double  Parse_Sparse(unsigned char * buf, size_t bufLen,  std::string & snpName,
      1 - sum_fij_minus_eij2 / (2*(N-missingSamplesize)*thetaHat*(1-thetaHat));
 
      if(missing_cnt > 0){
-       std::cout << "sample index with missing dosages for snpName " << snpName << " :";	
+       //std::cout << "sample index with missing dosages for snpName " << snpName << " :";	
        double imputeDosage = 2*AF;
        for (unsigned int i = 0; i < indexforMissing.size(); i++)
        {
@@ -702,9 +715,9 @@ double  Parse_Sparse(unsigned char * buf, size_t bufLen,  std::string & snpName,
        }
        std::cout << " " << std::endl;
        if(!isDropMissingDosages_bgen){
-         std::cout << "AC is " << AC << std::endl;
+         //std::cout << "AC is " << AC << std::endl;
          AC = AC + missing_cnt * imputeDosage;
-         std::cout << "AC_new is " << AC << std::endl;
+         //std::cout << "AC_new is " << AC << std::endl;
        }
 
      }
@@ -772,7 +785,20 @@ Rcpp::List getDosage_inner_bgen_withquery_new(){
   AC=0; AF=0; 
   //homN_cases=0; hetN_cases=0; homN_ctrls=0; hetN_ctrls=0;
   //markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF, indexforMissing, homN_cases, hetN_cases, homN_ctrls, hetN_ctrls);
+  //
+  //
+  double wall0in = get_wall_time2();
+ double cpu0in  = get_cpu_time2();
   markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF, indexforMissing);
+
+double wall1in = get_wall_time2();
+ double cpu1in  = get_cpu_time2();
+ std::cout << "Wall Time in Parse2 = " << wall1in - wall0in << std::endl;
+ std::cout << "CPU Time  in Parse2= " << cpu1in - cpu0in  << std::endl;
+      //}
+
+
+
 
   //t1=clock();
   //t2=clock();
@@ -982,7 +1008,16 @@ Rcpp::List getDosage_inner_bgen_noquery(){
   AC=0; AF=0; 
   //homN_cases=0; hetN_cases=0; homN_ctrls=0; hetN_ctrls=0;
   std::vector< int > indexforMissing;
+
+  //double wall0in = get_wall_time2();
+ //double cpu0in  = get_cpu_time2();
   markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF, indexforMissing);
+
+//double wall1in = get_wall_time2();
+// double cpu1in  = get_cpu_time2();
+// std::cout << "Wall Time in Parse2 = " << wall1in - wall0in << std::endl;
+// std::cout << "CPU Time  in Parse2= " << cpu1in - cpu0in  << std::endl;
+
   //markerInfo = Parse(buf, buffer2.size(), SNPID, Nbgen, dosages, AC, AF, indexforMissing, homN_cases, hetN_cases, homN_ctrls, hetN_ctrls);
 
   DataFrame variants = DataFrame::create(

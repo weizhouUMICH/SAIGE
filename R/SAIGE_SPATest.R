@@ -2240,7 +2240,7 @@ getCovMandOUT_cond = function(G0, dosage_cond, cateVarRatioMinMACVecExclude, cat
 
 
 
-groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta.rare, weights.beta.common, weightMAFcutoff, r.corr, max_maf, sparseSigma, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary, weights_specified, weights_for_G2_cond, weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest, IsOutputlogPforSingle=FALSE){
+groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta.rare, weights.beta.common, weightMAFcutoff, r.corr, max_maf, sparseSigma, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary, weights_specified, weights_for_G2_cond, weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest, IsOutputlogPforSingle=FALSE, methodtoCollapseUltaRare = "absence_or_presence"){
 	obj.model$theta = tauVec
 	obj.model$residuals = as.vector(y-obj.model$mu)
 
@@ -2257,19 +2257,30 @@ groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMA
                 cat("Note the ", flipindex, "th variants were flipped to use dosages for the minor alleles in gene-based tests\n")
         }
         MAF = colMeans(Gmat)/2
-        macle10Index = which(MACvec <= 10)
-	if(length(macle10Index) > 0){
-		#Gnew = rowSums(Gmat[,macle10Index,drop=F])/(length(macle10Index))
-		Gnew = rowSums(Gmat[,macle10Index])
-		Gnew[which(Gnew >= 1)] = 1
-		cat("New Collpase AF", mean(Gnew)/2, "\n")
-        	Gmat_sub = cbind(Gmat[,-macle10Index], Gnew)
-		Gmat = Gmat_sub
-	}
+
+
+        #macle10Index = which(MACvec <= 10)
+	#if(length(macle10Index) > 0){
+	#	Gnew = rowSums(Gmat[,macle10Index, drop=F])
+	#	if(methodtoCollapseUltaRare == "absence_or_presence"){
+	#		Gnew[which(Gnew >= 1)] = 1
+	#	}else{
+	#		Gnew[which(Gnew >= 1)] = 1
+	#	}	
+	#	#cat("New Collpase AF", mean(Gnew)/2, "\n")
+	#	#cat("New Collpase max geno", max(Gnew), "\n")
+	#	if(length(macle10Index) < ncol(Gmat)){
+        #		Gmat_sub = cbind(Gmat[,-macle10Index, drop=F], Gnew)
+	#	}else{	
+	#		Gmat_sub = NULL
+	#		Gmat_sub = cbind(Gmat_sub, Gnew)
+	#	}	
+	#	Gmat = Gmat_sub
+	#}
 
 
 
-        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.model, y, X, tauVec, cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, mu2 = obj.model$mu2, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = obj.model$mu, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest=IsOutputBETASEinBurdenTest)})
+        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.model, y, X, tauVec, cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, mu2 = obj.model$mu2, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = obj.model$mu, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest=IsOutputBETASEinBurdenTest, methodtoCollapseUltaRare=methodtoCollapseUltaRare)})
 
         if(is.null(G2_cond)){
                 isCondition = FALSE
