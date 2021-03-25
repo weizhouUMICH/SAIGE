@@ -105,7 +105,10 @@ SPAGMMATtest = function(bgenFile = "",
 		 IsOutputBETASEinBurdenTest = FALSE,
 		 X_PARregion="60001-2699520,154931044-155270560",
 		 is_rewrite_XnonPAR_forMales=FALSE,
-		 sampleFile_male=""){
+		 sampleFile_male="",
+		 method_to_CollapseUltraRare="absence_or_presence",
+		 MACCutoff_to_CollapseUltraRare = 10,
+		 DosageCutoff_for_UltraRarePresence = 0.5){
 
 
   if(weightMAFcutoff < 0 | weightMAFcutoff > 0.5){
@@ -1089,9 +1092,11 @@ SPAGMMATtest = function(bgenFile = "",
 
      OUT = NULL
      if(traitType == "quantitative"){
-       cat("It is a quantitative trait\n")
+        cat("It is a quantitative trait\n")
 	IsOutputPvalueNAinGroupTestforBinary=TRUE
 	adjustCCratioinGroupTest = FALSE
+	method_to_CollapseUltraRare = ""
+	cat("Ultra rare variants won't be collpased for set-based association tests\n")
      }else if(traitType == "binary"){
        cat("It is a binary trait\n")
        #cat("WARNING!!!! Gene-based tests do not work for binary traits with unbalanced case-control ratios (disease prevalence < 20%)! \n")
@@ -1106,6 +1111,17 @@ SPAGMMATtest = function(bgenFile = "",
 	if(IsOutputPvalueNAinGroupTestforBinary){
 	  cat("P-values without case-control imbalance will be output.\n")
 	}
+
+	if(method_to_CollapseUltraRare != ""){
+		if(method_to_CollapseUltraRare == "absence_or_presence"){
+			cat("Ultra rare variants with MAC <= ", MACCutoff_to_CollapseUltraRare, " will be collpased for set-based tests in the 'absence or presence' way. ", "For the resulted collpased marker, any individual having dosage >= ", DosageCutoff_for_UltraRarePresence, " for any ultra rare variant has 1 in the genotype vector, otherwise 0. \n")
+		}else if(method_to_CollapseUltraRare == "sum_geno"){
+			cat("Ultra rare variants with MAC <= ", MACCutoff_to_CollapseUltraRare, " will be collpased for set-based tests in the 'sum_geno' way. ", "The resulted collpased marker equals weighted sum of the genotypes of all ultra rare variantsi. NOTE: this option currently is not active\n")
+		}		
+	}else{
+		cat("Ultra rare variants won't be collpased for set-based association tests\n")
+	}	
+
 
 	#obj.model$obj_cc = SKAT::SKAT_Null_Model(y ~ X-1, out_type="D", Adjustment = FALSE)
      }
@@ -1350,10 +1366,10 @@ SPAGMMATtest = function(bgenFile = "",
 	    if(cntMarker > 0){
 	      if(IsDropMissingDosages & length(indexforMissing) > 0){
 		  cat("isCondition is ", isCondition, "\n")
-	  	groupTestResult = groupTest(Gmat = Gmat, obj.model = obj.model.sub, y = y.sub, X = X.sub, tauVec, traitType, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond_specified, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest = IsOutputBETASEinBurdenTest, IsOutputlogPforSingle=IsOutputlogPforSingle )
+	  	groupTestResult = groupTest(Gmat = Gmat, obj.model = obj.model.sub, y = y.sub, X = X.sub, tauVec, traitType, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond.sub, G2_cond_es = OUT_cond.sub[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma.sub, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond_specified, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest = IsOutputBETASEinBurdenTest, IsOutputlogPforSingle=IsOutputlogPforSingle, method_to_CollapseUltraRare=method_to_CollapseUltraRare, MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare, DosageCutoff_for_UltraRarePresence = DosageCutoff_for_UltraRarePresence)
 	      }else{#if(IsDropMissingDosages & length(indexforMissing) > 0){
 		cat("isCondition is ", isCondition, "\n")
-		groupTestResult = groupTest(Gmat = Gmat, obj.model = obj.model, y = y, X = X, tauVec, traitType,cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond_specified, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest = IsOutputBETASEinBurdenTest, IsOutputlogPforSingle = IsOutputlogPforSingle)
+		groupTestResult = groupTest(Gmat = Gmat, obj.model = obj.model, y = y, X = X, tauVec, traitType,cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, ratioVec = ratioVec, G2_cond = dosage_cond, G2_cond_es = OUT_cond[,1], kernel = kernel, method = method, weights.beta.rare = weights.beta.rare, weights.beta.common = weights.beta.common, weightMAFcutoff = weightMAFcutoff, r.corr = r.corr, max_maf = maxMAFforGroupTest, sparseSigma = sparseSigma, IsSingleVarinGroupTest = IsSingleVarinGroupTest, markerIDs = Gx$markerIDs, markerAFs = Gx$markerAFs, IsSparse= IsSparse, geneID = geneID, Cutoff = Cutoff, adjustCCratioinGroupTest = adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond_specified, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest = IsOutputBETASEinBurdenTest, IsOutputlogPforSingle = IsOutputlogPforSingle, method_to_CollapseUltraRare=method_to_CollapseUltraRare, MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare, DosageCutoff_for_UltraRarePresence = DosageCutoff_for_UltraRarePresence)
 
 	     }
 	    outVec = groupTestResult$outVec
@@ -2240,7 +2256,7 @@ getCovMandOUT_cond = function(G0, dosage_cond, cateVarRatioMinMACVecExclude, cat
 
 
 
-groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta.rare, weights.beta.common, weightMAFcutoff, r.corr, max_maf, sparseSigma, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary, weights_specified, weights_for_G2_cond, weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest, IsOutputlogPforSingle=FALSE, methodtoCollapseUltaRare = "absence_or_presence"){
+groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond, G2_cond_es, kernel, method, weights.beta.rare, weights.beta.common, weightMAFcutoff, r.corr, max_maf, sparseSigma, IsSingleVarinGroupTest, markerIDs, markerAFs, IsSparse, geneID, Cutoff, adjustCCratioinGroupTest, IsOutputPvalueNAinGroupTestforBinary, weights_specified, weights_for_G2_cond, weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest, IsOutputlogPforSingle=FALSE, method_to_CollapseUltraRare = "absence_or_presence", MACCutoff_to_CollapseUltraRare = 10, DosageCutoff_for_UltraRarePresence = 0.5){
 	obj.model$theta = tauVec
 	obj.model$residuals = as.vector(y-obj.model$mu)
 
@@ -2262,7 +2278,7 @@ groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMA
         #macle10Index = which(MACvec <= 10)
 	#if(length(macle10Index) > 0){
 	#	Gnew = rowSums(Gmat[,macle10Index, drop=F])
-	#	if(methodtoCollapseUltaRare == "absence_or_presence"){
+	#	if(method_to_CollapseUltraRare == "absence_or_presence"){
 	#		Gnew[which(Gnew >= 1)] = 1
 	#	}else{
 	#		Gnew[which(Gnew >= 1)] = 1
@@ -2280,7 +2296,7 @@ groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMA
 
 
 
-        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.model, y, X, tauVec, cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, mu2 = obj.model$mu2, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = obj.model$mu, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest=IsOutputBETASEinBurdenTest, methodtoCollapseUltaRare=methodtoCollapseUltaRare)})
+        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.model, y, X, tauVec, cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, mu2 = obj.model$mu2, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = obj.model$mu, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest=IsOutputBETASEinBurdenTest, method_to_CollapseUltraRare=method_to_CollapseUltraRare, MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare, DosageCutoff_for_UltraRarePresence = DosageCutoff_for_UltraRarePresence)})
 
         if(is.null(G2_cond)){
                 isCondition = FALSE

@@ -2,7 +2,7 @@
 #G1 is genotypes for testing gene, which contains m markers
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
-SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE, weights_specified = NULL, weights_for_G2_cond = NULL, weightsIncludeinGroupFile = FALSE, IsOutputBETASEinBurdenTest=FALSE,  methodtoCollapseUltaRare = "absence_or_presence"){
+SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE, weights_specified = NULL, weights_for_G2_cond = NULL, weightsIncludeinGroupFile = FALSE, IsOutputBETASEinBurdenTest=FALSE,  method_to_CollapseUltraRare = "absence_or_presence",  MACCutoff_to_CollapseUltraRare = 10, DosageCutoff_for_UltraRarePresence = 0.5){
 	#offset = obj$offset
         #check the input genotype G1
         obj.noK = obj$obj.noK
@@ -23,14 +23,14 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
 	#MAF = colMeans(G1)/2
 
 
-        macle10Index = which(MACvec <= 10)
-        if(methodtoCollapseUltaRare != "" & length(macle10Index) > 0){
+        macle10Index = which(MACvec <= MACCutoff_to_CollapseUltraRare)
+        if(method_to_CollapseUltraRare != "" & length(macle10Index) > 0){
                 #Gnew = rowSums(Gmat[,macle10Index,drop=F])/(length(macle10Index))
 		G1rare=G1[,macle10Index, drop=F]
-                if(methodtoCollapseUltaRare == "absence_or_presence"){
+                if(method_to_CollapseUltraRare == "absence_or_presence"){
                 	Gnew = rowSums(G1rare)
-                        Gnew[which(Gnew >= 1)] = 1
-                }else if(methodtoCollapseUltaRare == "sum_geno"){ #####NOT active
+                        Gnew[which(Gnew >= DosageCutoff_for_UltraRarePresence)] = 1
+                }else if(method_to_CollapseUltraRare == "sum_geno"){ #####NOT active
       
 			##determine the weights of ultra rare variants
 			MAFle10 = MAF[macle10Index]
