@@ -1295,13 +1295,18 @@ void setupSparseGRM(int r, arma::umat & locationMatinR, arma::vec & valueVecinR)
 
 bool isUsePrecondM = false;
 bool isUseSparseSigmaforInitTau = false;
+bool isUseSparseSigmaforModelFitting = false;
+
+
 
 // [[Rcpp::export]]
 arma::fvec getCrossprodMatAndKin(arma::fcolvec& bVec){
        arma::fvec crossProdVec;
 
-if(isUseSparseSigmaforInitTau){
-        cout << "use sparse kinship to estimate initial tau and for getCrossprodMatAndKin" <<  endl;
+if(isUseSparseSigmaforInitTau | isUseSparseSigmaforModelFitting){
+        //cout << "use sparse kinship to estimate initial tau and for getCrossprodMatAndKin" <<  endl;
+
+
 	arma::sp_mat result(locationMat, valueVec, dimNum, dimNum);
 	arma::vec x = result * arma::conv_to<arma::dcolvec>::from(bVec);
 
@@ -1850,6 +1855,15 @@ void setisUsePrecondM(bool isUseSparseSigmaforPCG){
 void setisUseSparseSigmaforInitTau(bool isUseSparseSigmaforInitTau0){
 	isUseSparseSigmaforInitTau = isUseSparseSigmaforInitTau0;
 }
+
+
+
+// [[Rcpp::export]]
+void setisUseSparseSigmaforNullModelFitting(bool isUseSparseSigmaforModelFitting0){
+        isUseSparseSigmaforModelFitting = isUseSparseSigmaforModelFitting0;
+}
+
+
 //Modified on 11-28-2018 to allow for a preconditioner for CG (the sparse Sigma)                                                                                                                                     //Sigma = tau[1] * diag(1/W) + tau[2] * kins
 //This function needs the function getDiagOfSigma and function getCrossprod
 
@@ -1866,6 +1880,9 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
 if(isUseSparseSigmaforInitTau){
 	cout << "use sparse kinship to estimate initial tau " <<  endl;
 	xVec = gen_spsolve_v4(wVec, tauVec, bVec);
+}else if(isUseSparseSigmaforModelFitting){
+	cout << "use sparse kinship to fit the model " << endl;
+        xVec = gen_spsolve_v4(wVec, tauVec, bVec);
 }else{
         arma::fvec rVec = bVec;
         //cout << "HELLOa: "  << endl;
@@ -1881,8 +1898,8 @@ if(isUseSparseSigmaforInitTau){
         arma::fvec zVec(Nnomissing);
         arma::fvec minvVec(Nnomissing);
 
-     double wall1 = get_wall_time();
-       double cpu1  = get_cpu_time();
+        double wall1 = get_wall_time();
+        double cpu1  = get_cpu_time();
 
 //    cout << "Wall Time 1= " << wall1 - wall0 << endl;
 //    cout << "CPU Time 1 = " << cpu1  - cpu0  << endl;

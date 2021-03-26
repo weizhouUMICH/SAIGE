@@ -52,6 +52,9 @@
 #' @param X_PARregion character. ranges of (pseudoautosomal) PAR region on chromosome X, which are seperated by comma and in the format start:end. By default: '60001-2699520,154931044-155260560' in the UCSC build hg19. For males, there are two X alleles in the PAR region, so PAR regions are treated the same as autosomes. In the NON-PAR regions (outside the specified PAR regions on chromosome X), for males, there is only one X allele. If is_rewrite_XnonPAR_forMales=TRUE, genotypes/dosages of all variants in the NON-PAR regions on chromosome X will be multiplied by 2.
 #' @param is_rewrite_XnonPAR_forMales logical. Whether to rewrite gentoypes or dosages of variants in the NON-PAR regions on chromosome X for males (multiply by 2). By default, FALSE. Note, only use is_rewrite_XnonPAR_forMales=TRUE when the specified VCF or Bgen file only has variants on chromosome X. When is_rewrite_XnonPAR_forMales=TRUE, the program does not check the chromosome value by assuming all variants are on chromosome X
 #' @param sampleFile_male character. Path to the file containing one column for IDs of MALE samples in the bgen or vcf file with NO header. Order does not matter
+#' @param method_to_CollapseUltraRare character. Method to collpase the ultra rare variants in the set-based association tests for BINARY traits only. This argument can be "absence_or_presence", "sum_geno", or "". absence_or_presence:  For the resulted collpased marker, any individual having dosage >= DosageCutoff_for_UltraRarePresence for any ultra rare variant has 1 in the genotype vector, otherwise 0. sum_geno: Ultra rare variants with MAC <=  MACCutoff_to_CollapseUltraRare will be collpased for set-based tests in the 'sum_geno' way and the resulted collpased marker's genotype equals weighted sum of the genotypes of all ultra rare variants. NOTE: this option sum_geno currently is NOTE active. By default, "absence_or_presence". 
+#' @param MACCutoff_to_CollapseUltraRare numeric. MAC cutoff to collpase the ultra rare variants (<= MACCutoff_to_CollapseUltraRare) in the set-based association tests. By default, 10. 
+#' @param DosageCutoff_for_UltraRarePresence numeric. Dosage cutoff to determine whether the ultra rare variants are absent or present in the samples. Dosage >= DosageCutoff_for_UltraRarePresence indicates the varaint in present in the sample. 0< DosageCutoff_for_UltraRarePresence <= 2. By default, 0.5.  
 #' @return SAIGEOutputFile
 #' @export
 SPAGMMATtest = function(bgenFile = "",
@@ -1095,10 +1098,13 @@ SPAGMMATtest = function(bgenFile = "",
         cat("It is a quantitative trait\n")
 	IsOutputPvalueNAinGroupTestforBinary=TRUE
 	adjustCCratioinGroupTest = FALSE
-	method_to_CollapseUltraRare = ""
+	if(method_to_CollapseUltraRare != ""){
+		cat("WARNING: method_to_CollapseUltraRare is not applied to quantitative traits\n")
+		method_to_CollapseUltraRare = ""
+	}	
 	cat("Ultra rare variants won't be collpased for set-based association tests\n")
      }else if(traitType == "binary"){
-       cat("It is a binary trait\n")
+        cat("It is a binary trait\n")
        #cat("WARNING!!!! Gene-based tests do not work for binary traits with unbalanced case-control ratios (disease prevalence < 20%)! \n")
        #adjustCCratioinGroupTest = TRUE
        #if(isCondition){
@@ -1113,11 +1119,20 @@ SPAGMMATtest = function(bgenFile = "",
 	}
 
 	if(method_to_CollapseUltraRare != ""){
+		if(MACCutoff_to_CollapseUltraRare <= 0){
+			stop("MACCutoff_to_CollapseUltraRare needs to be larger than 0\n")
+		}
+
+		if(DosageCutoff_for_UltraRarePresence <= 0 | DosageCutoff_for_UltraRarePresence > 2){
+			stop("DosageCutoff_for_UltraRarePresenc needs be to larger than 0 and less or equal to 2\n")
+		}	
+
 		if(method_to_CollapseUltraRare == "absence_or_presence"){
 			cat("Ultra rare variants with MAC <= ", MACCutoff_to_CollapseUltraRare, " will be collpased for set-based tests in the 'absence or presence' way. ", "For the resulted collpased marker, any individual having dosage >= ", DosageCutoff_for_UltraRarePresence, " for any ultra rare variant has 1 in the genotype vector, otherwise 0. \n")
 		}else if(method_to_CollapseUltraRare == "sum_geno"){
 			cat("Ultra rare variants with MAC <= ", MACCutoff_to_CollapseUltraRare, " will be collpased for set-based tests in the 'sum_geno' way. ", "The resulted collpased marker equals weighted sum of the genotypes of all ultra rare variantsi. NOTE: this option currently is not active\n")
 		}		
+
 	}else{
 		cat("Ultra rare variants won't be collpased for set-based association tests\n")
 	}	

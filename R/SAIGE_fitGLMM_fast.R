@@ -626,6 +626,7 @@ fitNULLGLMM = function(plinkFile = "",
 		useSparseSigmaforInitTau = FALSE,
 		minCovariateCount = -1, 
 		minMAFforGRM = 0.01,
+		useSparseGRMtoFitNULL=FALSE,
 		includeNonautoMarkersforVarRatio = FALSE,
 		sexCol = "",
 		FemaleCode = 1,
@@ -640,12 +641,29 @@ fitNULLGLMM = function(plinkFile = "",
   }else{
     cat("Markers in the Plink file with MAF > ", minMAFforGRM, " will be used to construct GRM\n") 
   }
+  if(useSparseGRMtoFitNULL){
+    cat("sparse GRM will be used to fit the NULL model\n")
+    if(!file.exists(sparseGRMFile)){
+      stop("sparseGRMFile ", sparseGRMFile, " does not exist!")
+    }
 
-  useSparseSigmaConditionerforPCG = FALSE
+    if(!file.exists(sparseGRMSampleIDFile)){
+      stop("sparseGRMSampleIDFile ", sparseGRMSampleIDFile, " does not exist!")
+    }
+    useSparseSigmaforInitTau = FALSE
+    useSparseSigmaConditionerforPCG = FALSE
+    LOCO=FALSE
+    cat("Leave-one-chromosome-out is not applied\n")
+  }
+
+  useSparseSigmaConditionerforPCG = FALSE ######This feature is inactivated
   if(useSparseSigmaConditionerforPCG){
     cat("sparse sigma will be used as the conditioner for PCG\n")
     if(!file.exists(sparseGRMFile)){
       stop("sparseGRMFile ", sparseGRMFile, " does not exist!")
+    }
+    if(!file.exists(sparseGRMSampleIDFile)){
+      stop("sparseGRMSampleIDFile ", sparseGRMSampleIDFile, " does not exist!")
     }
   }
 
@@ -656,9 +674,16 @@ fitNULLGLMM = function(plinkFile = "",
     if(!file.exists(sparseGRMFile)){
       stop("sparseGRMFile ", sparseGRMFile, " does not exist!")
     }
+    if(!file.exists(sparseGRMSampleIDFile)){
+      stop("sparseGRMSampleIDFile ", sparseGRMSampleIDFile, " does not exist!")
+    }
   }
 
-  
+   if(useSparseSigmaConditionerforPCG | useSparseSigmaforInitTau  | useSparseGRMtoFitNULL){
+    IsSparseKin = TRUE
+  }
+
+
   if(nThreads > 1){
     RcppParallel:::setThreadOptions(numThreads = nThreads)
     cat(nThreads, " threads are set to be used ", "\n")
@@ -897,8 +922,7 @@ fitNULLGLMM = function(plinkFile = "",
     out.transform = NULL
   }
 
-
-    if(useSparseSigmaConditionerforPCG | useSparseSigmaforInitTau){
+  if(IsSparseKin){
         #setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
 	sparseGRMtest = getsubGRM(sparseGRMFile, sparseGRMSampleIDFile, dataMerge_sort$IID)
         m4 = gen_sp_v2(sparseGRMtest)
@@ -907,16 +931,15 @@ fitNULLGLMM = function(plinkFile = "",
         A = summary(m4)
         locationMatinR = rbind(A$i-1, A$j-1)
         valueVecinR = A$x
-
         setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
  #       setisUsePrecondM(TRUE);
 	rm(sparseGRMtest)
     }
 
-    if(useSparseSigmaConditionerforPCG){
-      cat("sparse sigma will be used as the conditioner for PCG\n")
-      setisUsePrecondM(TRUE);
-    }
+    #if(useSparseSigmaConditionerforPCG){
+    #  cat("sparse sigma will be used as the conditioner for PCG\n")
+    #  setisUsePrecondM(TRUE);
+    #}
 	
 
   if(traitType == "binary"){
@@ -955,22 +978,13 @@ fitNULLGLMM = function(plinkFile = "",
 	closeGenoFile_plink()	
       }
       setisUseSparseSigmaforInitTau(FALSE)
-
+      setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
 
 
       cat("Start fitting the NULL GLMM\n")
       t_begin = proc.time()
       print(t_begin)
 
-      #set up the sparse GRM to speed up the PCG
-     # sparseGRMtest = Matrix:::readMM(sparseGRMFile)
-     # m4 = gen_sp_v2(sparseGRMtest)
-     # print("print m4")
-     # print(dim(m4))
-     # A = summary(m4)
-     # locationMatinR = rbind(A$i-1, A$j-1)
-     # valueVecinR = A$x
-     # setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
      #print("test memory 4")
      #gc(verbose=T)
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
@@ -1015,7 +1029,7 @@ fitNULLGLMM = function(plinkFile = "",
       Pn = sum(modglmm$y == 1)/(length(modglmm$y))
       Nglmm = 4*Pn*(1-Pn)*t1_Rinv_1
       cat("Nglmm ", Nglmm, "\n")
-
+      setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
     }
     cat("Start estimating variance ratios\n")
     scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,
@@ -1071,7 +1085,7 @@ fitNULLGLMM = function(plinkFile = "",
       cat("Start fitting the NULL GLMM\n")
       t_begin = proc.time()
       print(t_begin)
-
+      setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
       system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
       
       modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
@@ -1093,7 +1107,7 @@ fitNULLGLMM = function(plinkFile = "",
       load(modelOut)
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
-
+      setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
     }
 
     cat("Start estimating variance ratios\n")
