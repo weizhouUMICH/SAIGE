@@ -4,26 +4,55 @@
 \alias{fitNULLGLMM}
 \title{Fit the null logistic/linear mixed model and estimate the variance ratios by randomly selected variants}
 \usage{
-fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
-  traitType = "binary", invNormalize = FALSE, covarColList = NULL,
-  qCovarCol = NULL, sampleIDColinphenoFile = "", tol = 0.02,
-  maxiter = 20, tolPCG = 1e-05, maxiterPCG = 500, nThreads = 1,
-  SPAcutoff = 2, numMarkers = 30, skipModelFitting = FALSE,
-  memoryChunk = 2, tauInit = c(0, 0), LOCO = FALSE,
-  traceCVcutoff = 0.0025, ratioCVcutoff = 0.001, outputPrefix = "",
-  outputPrefix_varRatio = NULL, IsOverwriteVarianceRatioFile = FALSE,
-  IsSparseKin = FALSE, sparseGRMFile = NULL,
-  sparseGRMSampleIDFile = NULL, numRandomMarkerforSparseKin = 1000,
-  relatednessCutoff = 0.125, isCateVarianceRatio = FALSE,
-  cateVarRatioIndexVec = NULL, cateVarRatioMinMACVecExclude = c(0.5,
-  1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
+fitNULLGLMM(
+  plinkFile = "",
+  phenoFile = "",
+  phenoCol = "",
+  traitType = "binary",
+  invNormalize = FALSE,
+  covarColList = NULL,
+  qCovarCol = NULL,
+  sampleIDColinphenoFile = "",
+  tol = 0.02,
+  maxiter = 20,
+  tolPCG = 1e-05,
+  maxiterPCG = 500,
+  nThreads = 1,
+  SPAcutoff = 2,
+  numMarkers = 30,
+  skipModelFitting = FALSE,
+  memoryChunk = 2,
+  tauInit = c(0, 0),
+  LOCO = TRUE,
+  traceCVcutoff = 0.0025,
+  ratioCVcutoff = 0.001,
+  outputPrefix = "",
+  outputPrefix_varRatio = NULL,
+  IsOverwriteVarianceRatioFile = FALSE,
+  IsSparseKin = FALSE,
+  sparseGRMFile = NULL,
+  sparseGRMSampleIDFile = NULL,
+  numRandomMarkerforSparseKin = 1000,
+  relatednessCutoff = 0.125,
+  isCateVarianceRatio = FALSE,
+  cateVarRatioIndexVec = NULL,
+  cateVarRatioMinMACVecExclude = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
   cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
-  isCovariateTransform = TRUE, isDiagofKinSetAsOne = FALSE,
+  isCovariateTransform = TRUE,
+  isDiagofKinSetAsOne = FALSE,
   useSparseSigmaConditionerforPCG = FALSE,
-  useSparseSigmaforInitTau = FALSE, minCovariateCount = -1,
-  minMAFforGRM = 0.01, includeNonautoMarkersforVarRatio = FALSE,
-  sexCol = "", FemaleCode = 1, FemaleOnly = FALSE, MaleCode = 0,
-  MaleOnly = FALSE, noEstFixedEff = FALSE)
+  useSparseSigmaforInitTau = FALSE,
+  minCovariateCount = -1,
+  minMAFforGRM = 0.01,
+  useSparseGRMtoFitNULL = FALSE,
+  includeNonautoMarkersforVarRatio = FALSE,
+  sexCol = "",
+  FemaleCode = 1,
+  FemaleOnly = FALSE,
+  MaleCode = 0,
+  MaleOnly = FALSE,
+  noEstFixedEff = FALSE
+)
 }
 \arguments{
 \item{plinkFile}{character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM). minMAFforGRM can be used to specify the minimum MAF of markers in he plink file to be used for constructing GRM. Genetic markers are also randomly selected from the plink file to estimate the variance ratios}
@@ -62,7 +91,7 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
 
 \item{tauInit}{vector of numbers. e.g. c(1,1), Unitial values for tau. For binary traits, the first element will be always be set to 1. If the tauInit is 0,0, the second element will be 0.5 for binary traits and the initial tau vector for quantitative traits is 1,0}
 
-\item{LOCO}{logical. Whether to apply the leave-one-chromosome-out (LOCO) option. By default, FALSE}
+\item{LOCO}{logical. Whether to apply the leave-one-chromosome-out (LOCO) option. By default, TRUE}
 
 \item{traceCVcutoff}{numeric. The threshold for coefficient of variantion (CV) for the trace estimator to increase nrun. By default, 0.0025}
 
@@ -101,6 +130,8 @@ fitNULLGLMM(plinkFile = "", phenoFile = "", phenoCol = "",
 \item{minCovariateCount}{integer. If binary covariates have a count less than this, they will be excluded from the model to avoid convergence issues. By default, -1 (no covariates will be excluded)}
 
 \item{minMAFforGRM}{numeric. Minimum MAF for markers (in the Plink file) used for construcing the sparse GRM. By default, 0.01}
+
+\item{useSparseGRMtoFitNULL}{logical. Whether to use sparse GRM to fit the null GLMM. By default, FALSE}
 
 \item{includeNonautoMarkersforVarRatio}{logical. Whether to allow for non-autosomal markers for variance ratio. By default, FALSE}
 

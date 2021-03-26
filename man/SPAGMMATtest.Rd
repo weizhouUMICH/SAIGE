@@ -4,31 +4,63 @@
 \alias{SPAGMMATtest}
 \title{Run single variant or gene- or region-based score tests with SPA based on the linear/logistic mixed model.}
 \usage{
-SPAGMMATtest(bgenFile = "", bgenFileIndex = "", vcfFile = "",
-  vcfFileIndex = "", vcfField = "DS", savFile = "",
-  savFileIndex = "", sampleFile = "", idstoExcludeFile = "",
-  idstoIncludeFile = "", rangestoExcludeFile = "",
-  rangestoIncludeFile = "", chrom = "", start = 1, end = 2.5e+08,
-  IsDropMissingDosages = FALSE, minMAC = 0.5, minMAF = 0,
-  maxMAFforGroupTest = 0.5, minInfo = 0, GMMATmodelFile = "",
-  varianceRatioFile = "", SPAcutoff = 2, SAIGEOutputFile = "",
-  numLinesOutput = 10000, IsSparse = TRUE,
-  IsOutputAFinCaseCtrl = FALSE, IsOutputHetHomCountsinCaseCtrl = FALSE,
-  IsOutputNinCaseCtrl = FALSE, IsOutputlogPforSingle = FALSE,
-  LOCO = FALSE, condition = "", sparseSigmaFile = "",
-  groupFile = "", kernel = "linear.weighted", method = "optimal.adj",
-  weights.beta.rare = c(1, 25), weights.beta.common = c(1, 25),
-  weightMAFcutoff = 0.01, weightsIncludeinGroupFile = FALSE,
-  weights_for_G2_cond = NULL, r.corr = 0,
-  IsSingleVarinGroupTest = TRUE, cateVarRatioMinMACVecExclude = c(0.5,
-  1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
+SPAGMMATtest(
+  bgenFile = "",
+  bgenFileIndex = "",
+  vcfFile = "",
+  vcfFileIndex = "",
+  vcfField = "DS",
+  savFile = "",
+  savFileIndex = "",
+  sampleFile = "",
+  idstoExcludeFile = "",
+  idstoIncludeFile = "",
+  rangestoExcludeFile = "",
+  rangestoIncludeFile = "",
+  chrom = "",
+  start = 1,
+  end = 2.5e+08,
+  IsDropMissingDosages = FALSE,
+  minMAC = 0.5,
+  minMAF = 0,
+  maxMAFforGroupTest = 0.5,
+  minInfo = 0,
+  GMMATmodelFile = "",
+  varianceRatioFile = "",
+  SPAcutoff = 2,
+  SAIGEOutputFile = "",
+  numLinesOutput = 10000,
+  IsSparse = TRUE,
+  IsOutputAFinCaseCtrl = FALSE,
+  IsOutputHetHomCountsinCaseCtrl = FALSE,
+  IsOutputNinCaseCtrl = FALSE,
+  IsOutputlogPforSingle = FALSE,
+  LOCO = TRUE,
+  condition = "",
+  sparseSigmaFile = "",
+  groupFile = "",
+  kernel = "linear.weighted",
+  method = "optimal.adj",
+  weights.beta.rare = c(1, 25),
+  weights.beta.common = c(1, 25),
+  weightMAFcutoff = 0.01,
+  weightsIncludeinGroupFile = FALSE,
+  weights_for_G2_cond = NULL,
+  r.corr = 0,
+  IsSingleVarinGroupTest = TRUE,
+  cateVarRatioMinMACVecExclude = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
   cateVarRatioMaxMACVecInclude = c(1.5, 2.5, 3.5, 4.5, 5.5, 10.5, 20.5),
   dosageZerodCutoff = 0.2,
   IsOutputPvalueNAinGroupTestforBinary = FALSE,
   IsAccountforCasecontrolImbalanceinGroupTest = TRUE,
-  IsOutputBETASEinBurdenTest = FALis_rewrite_XnonPAR_forMalesSE,
+  IsOutputBETASEinBurdenTest = FALSE,
   X_PARregion = "60001-2699520,154931044-155270560",
-  is_rewrite_XnonPAR_forMales = FALSE, sampleFile_male = "")
+  is_rewrite_XnonPAR_forMales = FALSE,
+  sampleFile_male = "",
+  method_to_CollapseUltraRare = "absence_or_presence",
+  MACCutoff_to_CollapseUltraRare = 10,
+  DosageCutoff_for_UltraRarePresence = 0.5
+)
 }
 \arguments{
 \item{bgenFile}{character. Path to bgen file. Currently version 1.2 with 8 bit compression is supported}
@@ -91,7 +123,7 @@ SPAGMMATtest(bgenFile = "", bgenFileIndex = "", vcfFile = "",
 
 \item{IsOutputlogPforSingle}{logical. Whether to output log(Pvalue) for single-variant assoc tests. By default, FALSE. If TRUE, the log(Pvalue) instead of original P values will be output}
 
-\item{LOCO}{logical. Whether to apply the leave-one-chromosome-out option. By default, FALSE}
+\item{LOCO}{logical. Whether to apply the leave-one-chromosome-out option. By default, TRUE}
 
 \item{condition}{character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input , marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input.}
 
@@ -134,6 +166,12 @@ SPAGMMATtest(bgenFile = "", bgenFileIndex = "", vcfFile = "",
 \item{is_rewrite_XnonPAR_forMales}{logical. Whether to rewrite gentoypes or dosages of variants in the NON-PAR regions on chromosome X for males (multiply by 2). By default, FALSE. Note, only use is_rewrite_XnonPAR_forMales=TRUE when the specified VCF or Bgen file only has variants on chromosome X. When is_rewrite_XnonPAR_forMales=TRUE, the program does not check the chromosome value by assuming all variants are on chromosome X}
 
 \item{sampleFile_male}{character. Path to the file containing one column for IDs of MALE samples in the bgen or vcf file with NO header. Order does not matter}
+
+\item{method_to_CollapseUltraRare}{character. Method to collpase the ultra rare variants in the set-based association tests for BINARY traits only. This argument can be "absence_or_presence", "sum_geno", or "". absence_or_presence:  For the resulted collpased marker, any individual having dosage >= DosageCutoff_for_UltraRarePresence for any ultra rare variant has 1 in the genotype vector, otherwise 0. sum_geno: Ultra rare variants with MAC <=  MACCutoff_to_CollapseUltraRare will be collpased for set-based tests in the 'sum_geno' way and the resulted collpased marker's genotype equals weighted sum of the genotypes of all ultra rare variants. NOTE: this option sum_geno currently is NOTE active. By default, "absence_or_presence".}
+
+\item{MACCutoff_to_CollapseUltraRare}{numeric. MAC cutoff to collpase the ultra rare variants (<= MACCutoff_to_CollapseUltraRare) in the set-based association tests. By default, 10.}
+
+\item{DosageCutoff_for_UltraRarePresence}{numeric. Dosage cutoff to determine whether the ultra rare variants are absent or present in the samples. Dosage >= DosageCutoff_for_UltraRarePresence indicates the varaint in present in the sample. 0< DosageCutoff_for_UltraRarePresence <= 2. By default, 0.5.}
 }
 \value{
 SAIGEOutputFile
