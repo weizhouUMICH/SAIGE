@@ -52,7 +52,7 @@
 #' @param X_PARregion character. ranges of (pseudoautosomal) PAR region on chromosome X, which are seperated by comma and in the format start:end. By default: '60001-2699520,154931044-155260560' in the UCSC build hg19. For males, there are two X alleles in the PAR region, so PAR regions are treated the same as autosomes. In the NON-PAR regions (outside the specified PAR regions on chromosome X), for males, there is only one X allele. If is_rewrite_XnonPAR_forMales=TRUE, genotypes/dosages of all variants in the NON-PAR regions on chromosome X will be multiplied by 2.
 #' @param is_rewrite_XnonPAR_forMales logical. Whether to rewrite gentoypes or dosages of variants in the NON-PAR regions on chromosome X for males (multiply by 2). By default, FALSE. Note, only use is_rewrite_XnonPAR_forMales=TRUE when the specified VCF or Bgen file only has variants on chromosome X. When is_rewrite_XnonPAR_forMales=TRUE, the program does not check the chromosome value by assuming all variants are on chromosome X
 #' @param sampleFile_male character. Path to the file containing one column for IDs of MALE samples in the bgen or vcf file with NO header. Order does not matter
-#' @param method_to_CollapseUltraRare character. Method to collpase the ultra rare variants in the set-based association tests for BINARY traits only. This argument can be "absence_or_presence", "sum_geno", or "". absence_or_presence:  For the resulted collpased marker, any individual having dosage >= DosageCutoff_for_UltraRarePresence for any ultra rare variant has 1 in the genotype vector, otherwise 0. sum_geno: Ultra rare variants with MAC <=  MACCutoff_to_CollapseUltraRare will be collpased for set-based tests in the 'sum_geno' way and the resulted collpased marker's genotype equals weighted sum of the genotypes of all ultra rare variants. NOTE: this option sum_geno currently is NOTE active. By default, "absence_or_presence". 
+#' @param method_to_CollapseUltraRare character. Method to collpase the ultra rare variants in the set-based association tests for BINARY traits only. This argument can be "absence_or_presence", "sum_geno", or "". absence_or_presence:  For the resulted collpased marker, any individual having dosage >= DosageCutoff_for_UltraRarePresence for any ultra rare variant has 1 in the genotype vector, otherwise 0. sum_geno: Ultra rare variants with MAC <=  MACCutoff_to_CollapseUltraRare will be collpased for set-based tests in the 'sum_geno' way and the resulted collpased marker's genotype equals weighted sum of the genotypes of all ultra rare variants. NOTE: this option sum_geno currently is NOTE active. By default, "". 
 #' @param MACCutoff_to_CollapseUltraRare numeric. MAC cutoff to collpase the ultra rare variants (<= MACCutoff_to_CollapseUltraRare) in the set-based association tests. By default, 10. 
 #' @param DosageCutoff_for_UltraRarePresence numeric. Dosage cutoff to determine whether the ultra rare variants are absent or present in the samples. Dosage >= DosageCutoff_for_UltraRarePresence indicates the varaint in present in the sample. 0< DosageCutoff_for_UltraRarePresence <= 2. By default, 0.5.  
 #' @return SAIGEOutputFile
@@ -109,7 +109,7 @@ SPAGMMATtest = function(bgenFile = "",
 		 X_PARregion="60001-2699520,154931044-155270560",
 		 is_rewrite_XnonPAR_forMales=FALSE,
 		 sampleFile_male="",
-		 method_to_CollapseUltraRare="absence_or_presence",
+		 method_to_CollapseUltraRare="",
 		 MACCutoff_to_CollapseUltraRare = 10,
 		 DosageCutoff_for_UltraRarePresence = 0.5){
 

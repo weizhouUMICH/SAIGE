@@ -57,7 +57,7 @@ SPAGMMATtest(
   X_PARregion = "60001-2699520,154931044-155270560",
   is_rewrite_XnonPAR_forMales = FALSE,
   sampleFile_male = "",
-  method_to_CollapseUltraRare = "absence_or_presence",
+  method_to_CollapseUltraRare = "",
   MACCutoff_to_CollapseUltraRare = 10,
   DosageCutoff_for_UltraRarePresence = 0.5
 )
@@ -167,7 +167,7 @@ SPAGMMATtest(
 
 \item{sampleFile_male}{character. Path to the file containing one column for IDs of MALE samples in the bgen or vcf file with NO header. Order does not matter}
 
-\item{method_to_CollapseUltraRare}{character. Method to collpase the ultra rare variants in the set-based association tests for BINARY traits only. This argument can be "absence_or_presence", "sum_geno", or "". absence_or_presence:  For the resulted collpased marker, any individual having dosage >= DosageCutoff_for_UltraRarePresence for any ultra rare variant has 1 in the genotype vector, otherwise 0. sum_geno: Ultra rare variants with MAC <=  MACCutoff_to_CollapseUltraRare will be collpased for set-based tests in the 'sum_geno' way and the resulted collpased marker's genotype equals weighted sum of the genotypes of all ultra rare variants. NOTE: this option sum_geno currently is NOTE active. By default, "absence_or_presence".}
+\item{method_to_CollapseUltraRare}{character. Method to collpase the ultra rare variants in the set-based association tests for BINARY traits only. This argument can be "absence_or_presence", "sum_geno", or "". absence_or_presence:  For the resulted collpased marker, any individual having dosage >= DosageCutoff_for_UltraRarePresence for any ultra rare variant has 1 in the genotype vector, otherwise 0. sum_geno: Ultra rare variants with MAC <=  MACCutoff_to_CollapseUltraRare will be collpased for set-based tests in the 'sum_geno' way and the resulted collpased marker's genotype equals weighted sum of the genotypes of all ultra rare variants. NOTE: this option sum_geno currently is NOTE active. By default, "".}
 
 \item{MACCutoff_to_CollapseUltraRare}{numeric. MAC cutoff to collpase the ultra rare variants (<= MACCutoff_to_CollapseUltraRare) in the set-based association tests. By default, 10.}
 
