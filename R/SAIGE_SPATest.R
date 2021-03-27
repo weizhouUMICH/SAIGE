@@ -290,7 +290,9 @@ SPAGMMATtest = function(bgenFile = "",
   if(bgenFile != ""){
     if(!file.exists(bgenFile)){
       stop("ERROR! bgenFile ", bgenFile, " does not exsit\n")
-    }
+    }else{
+      Mtest = setgenoTest_bgenDosage(bgenFile, bgenFileIndex)
+    }	    
     dosageFileType = "bgen"
 
   }else if(vcfFile != ""){
@@ -494,7 +496,7 @@ SPAGMMATtest = function(bgenFile = "",
 
   if(!isGroupTest){
     if(dosageFileType == "bgen"){
-      dosageFilecolnamesSkip = c("CHR","POS","rsid","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
+      dosageFilecolnamesSkip = c("CHR","POS","rsid","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
 
     }else if(dosageFileType == "vcf"){
       dosageFilecolnamesSkip = c("CHR","POS","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
@@ -553,8 +555,21 @@ SPAGMMATtest = function(bgenFile = "",
       }
     }else if(dosageFileType == "bgen"){
       SetSampleIdx(sampleIndex, N)
-      Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist, testMinMAF, 0.5, minInfo)
-      if(Gx_cond$cnt > 0){
+      #Gx_cond = getGenoOfGene_bgen(bgenFile,bgenFileIndex, conditionlist, testMinMAF, 0.5, minInfo)
+      conditionlist = as.character(as.vector(conditionlist))
+      temp_cond_variant = dplyr::filter(db_con_variant, rsid %in% conditionlist)
+      markerIndicesVec = dplyr::pull(temp_cond_variant, file_start_position)	
+
+      if(length(markerIndicesVec) == 0){
+        cntMarker_cond = 0
+      }else{
+        Gx_cond = getGenoOfGene_bgen(markerIndicesVec, testMinMAF, 0.5, minInfo)
+        cntMarker_cond = length(markerIndicesVec)
+        markerIndicesVec = NULL
+             #Gx = getGenoOfGene_bgen_Sparse(bgenFile,bgenFileIndex, marker_group_line, testMinMAF, maxMAFforGroupTest, minInfo)
+      }
+
+      if(cntMarker_cond > 0){
         dosage_cond = matrix(Gx_cond$dosages, byrow=F, ncol = Gx_cond$cnt)
         dosage_cond = as(dosage_cond, "sparseMatrix")
       }
@@ -681,13 +696,32 @@ SPAGMMATtest = function(bgenFile = "",
   cat("Analysis started at ", startTime, "Seconds\n")
 
   if(!isGroupTest){
-
     isVariant = TRUE
     if (dosageFileType == "bgen"){
+      isQuery = FALSE
+      markerIndicesVec = NULL
+      if(idstoExcludeFile != "" | idstoIncludeFile != "" | rangestoExcludeFile != "" | rangestoIncludeFile != ""){
+        cat("Query list is specificed\n")
+        isQuery = TRUE
+        if(!file.exists(bgenFileIndex)){
+          stop("ERROR! bgenFileIndex ", bgenFileIndex, " does not exsit\n")
+        }else{
+          db_con <- RSQLite::dbConnect(RSQLite::SQLite(), bgenFileIndex)
+          on.exit(RSQLite::dbDisconnect(db_con), add = TRUE)
+          db_con_variant = dplyr::tbl(db_con, "Variant")
+        }
+      }
+      setQueryStatus(isQuery)
+      cat("isQuery\n")
+      print(isQuery)
+
       if(idstoExcludeFile != ""){
         idsExclude = data.table:::fread(idstoExcludeFile, header=F,sep=" ", stringsAsFactors=FALSE, colClasses=c("character"))
         idsExclude = data.frame(idsExclude)
         ids_to_exclude = as.character(as.vector(idsExclude[,1]))
+        temp_cond_variant = dplyr::filter(db_con_variant, !rsid %in% ids_to_exclude)
+        markerIndicesVec = c(markerIndicesVec, dplyr::pull(temp_cond_variant, file_start_position))
+        #markerIndicesVec = c(markerIndicesVec, dplyr::filter(db_con_variant, !rsid %in% ids_to_exclude) %>% dplyr::pull(file_start_position))
       }else{
         ids_to_exclude = as.character(vector())
       }
@@ -696,6 +730,9 @@ SPAGMMATtest = function(bgenFile = "",
         idsInclude = data.table:::fread(idstoIncludeFile, header=F, sep=" ", stringsAsFactors=FALSE, colClasses=c("character"))
         idsInclude = data.frame(idsInclude)
         ids_to_include = as.character(as.vector(idsInclude[,1]))
+        temp_cond_variant = dplyr::filter(db_con_variant, rsid %in% ids_to_include)
+        markerIndicesVec = c(markerIndicesVec, dplyr::pull(temp_cond_variant, file_start_position))
+        #markerIndicesVec = c(markerIndicesVec, dplyr::filter(db_con_variant, rsid %in% ids_to_include) %>% dplyr::pull(file_start_position))
       }else{
         ids_to_include = as.character(vector())
       }
@@ -704,6 +741,18 @@ SPAGMMATtest = function(bgenFile = "",
         rangesExclude = data.table:::fread(rangestoExcludeFile, header=F, colClasses = c("character", "numeric", "numeric"))
         ranges_to_exclude = data.frame(rangesExclude)
         colnames(ranges_to_exclude) = c("chromosome","start","end")
+        temp_conn = db_con_variant
+        #dplyr::filter(x, chromosome == "1" & position <=  767096 & position >= 729632) %>% dplyr::pull(file_start_position)
+        for(i in 1:nrow(ranges_to_exclude)){
+          tempchr = ranges_to_exclude[i,1]
+          temppos1 = ranges_to_exclude[i,2]
+          temppos2 = ranges_to_exclude[i,3]
+          temp_conn = dplyr::filter(temp_conn, chromosome == tempchr & (position < temppos1 | position > temppos2)  )
+        }
+        markerIndicesVec = c(markerIndicesVec, dplyr::pull(temp_conn, file_start_position))
+        temp_conn = NULL
+         gc()
+
       }else{
         ranges_to_exclude = data.frame(chromosome = NULL, start = NULL, end = NULL)
       }
@@ -712,11 +761,23 @@ SPAGMMATtest = function(bgenFile = "",
         rangesInclude = data.table:::fread(rangestoIncludeFile, header=F, colClasses = c("character", "numeric", "numeric"))
         ranges_to_include = data.frame(rangesInclude)
         colnames(ranges_to_include) = c("chromosome","start","end")
+        for(i in 1:nrow(ranges_to_include)){
+          tempchr = ranges_to_include[i,1]
+          temppos1 = ranges_to_include[i,2]
+          temppos2 = ranges_to_include[i,3]
+          temp_con_variant = dplyr::filter(db_con_variant, chromosome == tempchr & position >= temppos1 & position <= temppos2)
+          markerIndicesVec = c(markerIndicesVec, dplyr::pull(temp_con_variant, file_start_position))
+          #markerIndicesVec = c(markerIndicesVec, dplyr::filter(db_con_variant, chromosome == tempchr & position >= temppos1 & position <= temppos2) %>% dplyr::pull(file_start_position))
+        }
       }else{
         ranges_to_include = data.frame(chromosome = NULL, start = NULL, end = NULL)
       }
 
-      Mtest = setgenoTest_bgenDosage(bgenFile,bgenFileIndex, ranges_to_exclude = ranges_to_exclude, ranges_to_include = ranges_to_include, ids_to_exclude= ids_to_exclude, ids_to_include=ids_to_include)
+      if(isQuery){
+        setMarkerIndicesToInclude(markerIndicesVec)
+        Mtest = length(markerIndicesVec)
+      }	
+
       if(Mtest == 0){
         isVariant = FALSE
         stop("ERROR! Failed to open ", bgenFile, "\n")
@@ -725,6 +786,7 @@ SPAGMMATtest = function(bgenFile = "",
       SetSampleIdx(sampleIndex, N)
 
       nsamplesinBgen = getSampleSizeinBgen()
+      print(nrow(sampleListinDosage))
       if(nrow(sampleListinDosage) != nsamplesinBgen){
 	stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the bgen file\n")
       }
@@ -747,12 +809,11 @@ SPAGMMATtest = function(bgenFile = "",
       mth = mth + 1
       if (dosageFileType == "bgen"){
         if(isQuery){
-          Gx = getDosage_bgen_withquery()
+	  Gx = getOneMarker(markerIndicesVec[mth])
         }else{
-          readGxTime = system.time({Gx = getDosage_bgen_noquery()})
-	  print(readGxTime)
+	  Gx = getOneMarker(0)
         }
-        markerInfo = getMarkerInfo()
+        markerInfo = Gx$info
         if(!is.na(markerInfo) & markerInfo >= 0 & markerInfo <= 1){
 		markerInfo0 = markerInfo
 	}else{
@@ -1011,40 +1072,76 @@ SPAGMMATtest = function(bgenFile = "",
 
 
     	 if(traitType == "binary"){
+	is_scoreTestRcpp = TRUE
+	if(is_scoreTestRcpp){
+        LOCOVec = rep(FALSE, 22)
+        obj.model$residuals = y - obj.model$mu
+        print("OK_test1")
+        print(names(obj.model$obj.noK))
+        assignforScoreTest_R(LOCO, LOCOVec, t_XVX=obj.model$obj.noK$XVX, t_XXVX_inv=obj.model$obj.noK$XXVX_inv, t_XV=obj.model$obj.noK$XV, t_XVX_inv_XV=obj.model$obj.noK$XVX_inv_XV, t_X=X, t_S_a=obj.model$obj.noK$S_a, t_res=obj.model$residuals, t_mu2=obj.model$mu2, t_mu=obj.model$mu,varRatio, tauVec, traitType, IsOutputAFinCaseCtrl, IsOutputHetHomCountsinCaseCtrl, y)
+        print("OK_test")
+	if(isQuery){
+        #time1=system.time({a=getScoreTest(markerIndicesVec[mth])})
+        time1=system.time({a=getScoreTest_SPA(markerIndicesVec[mth], traitType)})
+	}else{
+        time1=system.time({a=getScoreTest_SPA(0, traitType)})
+	}
 
-           #out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.model$obj.noK, obj.model$mu, obj.model$mu2, y, X, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv, IsOutputlogPforSingle=IsOutputlogPforSingle, offsetEff = offsetEff)
-           out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.model$obj.noK, obj.model$mu, obj.model$mu2, y, X, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv, IsOutputlogPforSingle=IsOutputlogPforSingle)
-	  #print("OUT1")
-	  #print(out1)
+        print(a)
+        print("time1")
+        print(time1)
+	}
 
-	   OUTvec=c(rowHeader, N,unlist(out1))
-
+        #time2=system.time({out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.model$obj.noK, obj.model$mu, obj.model$mu2, y, X, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv, IsOutputlogPforSingle=IsOutputlogPforSingle)})
+        #print("time2")
+        #print(time2)
+        #print("OUT1")
+        #print(out1)
+        #OUTvec=c(rowHeader, N,unlist(out1))
+	rowHeader = c(unlist(a$variants), a$info)
+	if(is.null(a$isSPAConverge)){a$pval_SPA = a$pval}
+        OUTvec=c(rowHeader, N,c(a$Beta, a$se, a$Tstat, a$pval_SPA, a$pval, a$isSPAConverge, a$var1, a$var2))
 
     	   if(IsOutputAFinCaseCtrl){
-      	     AFCase = sum(G0[y1Index])/(2*NCase)
-      	     AFCtrl = sum(G0[y0Index])/(2*NCtrl)
-		OUTvec=c(OUTvec, AFCase, AFCtrl)
+      	   #  AFCase = sum(G0[y1Index])/(2*NCase)
+      	   #  AFCtrl = sum(G0[y0Index])/(2*NCtrl)
+		#OUTvec=c(OUTvec, AFCase, AFCtrl)
+		OUTvec=c(OUTvec, unlist(a$AF_case_ctrl))
            }
 
-	   if(IsOutputNinCaseCtrl){
-	     OUTvec=c(OUTvec, NCase, NCtrl)
-           }
+#	   if(IsOutputNinCaseCtrl){
+#	     OUTvec=c(OUTvec, NCase, NCtrl)
+ #          }
 
 
 	   if(IsOutputHetHomCountsinCaseCtrl){
-            homN_Allele2_cases = sum(G0round[y1Index] == 2)
-            hetN_Allele2_cases = sum(G0round[y1Index] == 1)
-            homN_Allele2_ctrls = sum(G0round[y0Index] == 2)
-            hetN_Allele2_ctrls = sum(G0round[y0Index] == 1)
-	    OUTvec = c(OUTvec, homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls)
+            #homN_Allele2_cases = sum(G0round[y1Index] == 2)
+            #hetN_Allele2_cases = sum(G0round[y1Index] == 1)
+            #homN_Allele2_ctrls = sum(G0round[y0Index] == 2)
+            #hetN_Allele2_ctrls = sum(G0round[y0Index] == 1)
+	    #OUTvec = c(OUTvec, homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls)
+		   OUTvec = c(OUTvec, unlist(a$N_case_ctrl_het_hom))
           }
 
 	   OUT = rbind(OUT, OUTvec)
 	   OUTvec=NULL
 
          }else if(traitType == "quantitative"){
+if(is_scoreTestRcpp){
+        LOCOVec = rep(FALSE, 22)
+        obj.model$residuals = y - obj.model$mu
 
-           out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.model$obj.noK, AC, AF, y, X, obj.model$mu, varRatio, tauVec, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+        print("OK_test1")
+        print(names(obj.model$obj.noK))
+        assignforScoreTest_R(LOCO, LOCOVec, t_XVX=obj.model$obj.noK$XVX, t_XXVX_inv=obj.model$obj.noK$XXVX_inv, t_XV=obj.model$obj.noK$XV, t_XVX_inv_XV=obj.model$obj.noK$XVX_inv_XV, t_X=X, t_S_a=obj.model$obj.noK$S_a, t_res=obj.model$residuals, t_mu2=obj.model$mu2, t_mu=obj.model$mu, varRatio, tauVec, traitType, IsOutputAFinCaseCtrl, IsOutputHetHomCountsinCaseCtrl, y)
+        print("OK_test")
+        time1=system.time({a=getScoreTest_SPA(markerIndicesVec[mth], traitType)})
+        #time1=system.time({a=getScoreTest(markerIndicesVec[mth])})
+        print(a)
+        print("time1")
+        print(time1)
+}
+        out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0, obj.model$obj.noK, AC, AF, y, X, obj.model$mu, varRatio, tauVec, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 
            if(!isCondition){
              OUT = rbind(OUT, c(rowHeader, N, out1$BETA, out1$SE, out1$Tstat, out1$p.value, out1$var1, out1$var2))
@@ -1071,6 +1168,16 @@ SPAGMMATtest = function(bgenFile = "",
 
    }else{ #end if(!isGroupTest){
    #########Group Test
+if(dosageFileType == "bgen"){	   
+	if(!file.exists(bgenFileIndex)){
+          stop("ERROR! bgenFileIndex ", bgenFileIndex, " does not exsit\n")
+        }else{
+          db_con <- RSQLite::dbConnect(RSQLite::SQLite(), bgenFileIndex)
+          on.exit(RSQLite::dbDisconnect(db_con), add = TRUE)
+          db_con_variant = dplyr::tbl(db_con, "Variant")
+        }
+}
+
 
      OUT_single = NULL
      if(IsSingleVarinGroupTest){

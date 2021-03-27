@@ -9,7 +9,7 @@ Description: an R package that implements the Scalable and Accurate Implementati
 License: GPL (>= 2)
 Imports: Rcpp (>= 0.12.12), RcppParallel, Matrix
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel, data.table, SPAtest (== 3.1.2),
-        RcppEigen, Matrix, methods, BH, optparse, SKAT, MetaSKAT
+        RcppEigen, Matrix, methods, BH, optparse, SKAT, MetaSKAT, tidyr, dbplyr, RSQLite
 SystemRequirements: GNU make
 RoxygenNote: 7.1.1
 NeedsCompilation: yes

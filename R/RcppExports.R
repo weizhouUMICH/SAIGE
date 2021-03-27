@@ -373,44 +373,32 @@ setIsDropMissingDosages_bgen <- function(isdropmissingdosages) {
     invisible(.Call('_SAIGE_setIsDropMissingDosages_bgen', PACKAGE = 'SAIGE', isdropmissingdosages))
 }
 
-setgenoTest_bgenDosage <- function(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude) {
-    .Call('_SAIGE_setgenoTest_bgenDosage', PACKAGE = 'SAIGE', filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude)
+setIsSparseDosage_bgen <- function(isSparseDosage) {
+    invisible(.Call('_SAIGE_setIsSparseDosage_bgen', PACKAGE = 'SAIGE', isSparseDosage))
 }
 
-getDosage_inner_bgen_withquery <- function() {
-    .Call('_SAIGE_getDosage_inner_bgen_withquery', PACKAGE = 'SAIGE')
+setMarkerIndicesToInclude <- function(markerIndicesToInclude) {
+    invisible(.Call('_SAIGE_setMarkerIndicesToInclude', PACKAGE = 'SAIGE', markerIndicesToInclude))
 }
 
-getDosage_inner_bgen_withquery_new <- function() {
-    .Call('_SAIGE_getDosage_inner_bgen_withquery_new', PACKAGE = 'SAIGE')
+setgenoTest_bgenDosage <- function(t_bgenFileName, t_bgenFileIndex) {
+    .Call('_SAIGE_setgenoTest_bgenDosage', PACKAGE = 'SAIGE', t_bgenFileName, t_bgenFileIndex)
 }
 
-getDosage_inner_bgen_withquery_new_Sparse <- function() {
-    .Call('_SAIGE_getDosage_inner_bgen_withquery_new_Sparse', PACKAGE = 'SAIGE')
-}
-
-getDosage_bgen_withquery <- function() {
-    .Call('_SAIGE_getDosage_bgen_withquery', PACKAGE = 'SAIGE')
-}
-
-getDosage_bgen_withquery_Sparse <- function() {
-    .Call('_SAIGE_getDosage_bgen_withquery_Sparse', PACKAGE = 'SAIGE')
-}
-
-getDosage_bgen_noquery <- function() {
-    .Call('_SAIGE_getDosage_bgen_noquery', PACKAGE = 'SAIGE')
+getOneMarker <- function(t_fileStartPos) {
+    .Call('_SAIGE_getOneMarker', PACKAGE = 'SAIGE', t_fileStartPos)
 }
 
 getQueryStatus <- function() {
     .Call('_SAIGE_getQueryStatus', PACKAGE = 'SAIGE')
 }
 
-getisReadVariantBgen <- function() {
-    .Call('_SAIGE_getisReadVariantBgen', PACKAGE = 'SAIGE')
+setQueryStatus <- function(isQuery) {
+    .Call('_SAIGE_setQueryStatus', PACKAGE = 'SAIGE', isQuery)
 }
 
-getMarkerInfo <- function() {
-    .Call('_SAIGE_getMarkerInfo', PACKAGE = 'SAIGE')
+getisReadVariantBgen <- function() {
+    .Call('_SAIGE_getisReadVariantBgen', PACKAGE = 'SAIGE')
 }
 
 SetSampleIdx <- function(sample_idx, Ntest) {
@@ -421,12 +409,16 @@ closetestGenoFile_bgenDosage <- function() {
     invisible(.Call('_SAIGE_closetestGenoFile_bgenDosage', PACKAGE = 'SAIGE'))
 }
 
-setgenoTest_bgenDosage_v2 <- function(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude) {
-    .Call('_SAIGE_setgenoTest_bgenDosage_v2', PACKAGE = 'SAIGE', filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude)
-}
-
 getSampleSizeinBgen <- function() {
     .Call('_SAIGE_getSampleSizeinBgen', PACKAGE = 'SAIGE')
+}
+
+assignforScoreTest_R <- function(t_LOCO, t_LOCOVec, t_XVX, t_XXVX_inv, t_XV, t_XVX_inv_XV, t_X, t_S_a, t_res, t_mu2, t_mu, t_varRatio, t_tauvec, t_traitType, t_isOutputAFinCaseCtrl, t_isOutputHetHomCountsinCaseCtrl, t_y) {
+    invisible(.Call('_SAIGE_assignforScoreTest_R', PACKAGE = 'SAIGE', t_LOCO, t_LOCOVec, t_XVX, t_XXVX_inv, t_XV, t_XVX_inv_XV, t_X, t_S_a, t_res, t_mu2, t_mu, t_varRatio, t_tauvec, t_traitType, t_isOutputAFinCaseCtrl, t_isOutputHetHomCountsinCaseCtrl, t_y))
+}
+
+getScoreTest_SPA <- function(t_fileStartPos, traitType) {
+    .Call('_SAIGE_getScoreTest_SPA', PACKAGE = 'SAIGE', t_fileStartPos, traitType)
 }
 
 SetSampleIdx_vcfDosage <- function(sample_idx, Ntest) {
@@ -469,6 +461,110 @@ getSampleSizeinVCF <- function() {
     .Call('_SAIGE_getSampleSizeinVCF', PACKAGE = 'SAIGE')
 }
 
+SPA <- function(mu, g, q, qinv, pval_noadj, tol, logp, traitType, pval, isSPAConverge) {
+    invisible(.Call('_SAIGE_SPA', PACKAGE = 'SAIGE', mu, g, q, qinv, pval_noadj, tol, logp, traitType, pval, isSPAConverge))
+}
+
+SPA_fast <- function(mu, g, q, qinv, pval_noadj, logp, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol, traitType, pval, isSPAConverge) {
+    invisible(.Call('_SAIGE_SPA_fast', PACKAGE = 'SAIGE', mu, g, q, qinv, pval_noadj, logp, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol, traitType, pval, isSPAConverge))
+}
+
+Korg_Binom <- function(t1, mu, g) {
+    .Call('_SAIGE_Korg_Binom', PACKAGE = 'SAIGE', t1, mu, g)
+}
+
+K1_adj_Binom <- function(t1, mu, g, q) {
+    .Call('_SAIGE_K1_adj_Binom', PACKAGE = 'SAIGE', t1, mu, g, q)
+}
+
+K2_Binom <- function(t1, mu, g) {
+    .Call('_SAIGE_K2_Binom', PACKAGE = 'SAIGE', t1, mu, g)
+}
+
+getroot_K1_Binom <- function(init, mu, g, q, tol, maxiter) {
+    .Call('_SAIGE_getroot_K1_Binom', PACKAGE = 'SAIGE', init, mu, g, q, tol, maxiter)
+}
+
+Get_Saddle_Prob_Binom <- function(zeta, mu, g, q, logp) {
+    .Call('_SAIGE_Get_Saddle_Prob_Binom', PACKAGE = 'SAIGE', zeta, mu, g, q, logp)
+}
+
+SPA_binary <- function(mu, g, q, qinv, pval_noadj, tol, logp) {
+    .Call('_SAIGE_SPA_binary', PACKAGE = 'SAIGE', mu, g, q, qinv, pval_noadj, tol, logp)
+}
+
+Korg_fast_Binom <- function(t1, mu, g, gNA, gNB, muNA, muNB, NAmu, NAsigma) {
+    .Call('_SAIGE_Korg_fast_Binom', PACKAGE = 'SAIGE', t1, mu, g, gNA, gNB, muNA, muNB, NAmu, NAsigma)
+}
+
+K1_adj_fast_Binom <- function(t1, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma) {
+    .Call('_SAIGE_K1_adj_fast_Binom', PACKAGE = 'SAIGE', t1, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma)
+}
+
+K2_fast_Binom <- function(t1, mu, g, gNA, gNB, muNA, muNB, NAmu, NAsigma) {
+    .Call('_SAIGE_K2_fast_Binom', PACKAGE = 'SAIGE', t1, mu, g, gNA, gNB, muNA, muNB, NAmu, NAsigma)
+}
+
+getroot_K1_fast_Binom <- function(init, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol, maxiter) {
+    .Call('_SAIGE_getroot_K1_fast_Binom', PACKAGE = 'SAIGE', init, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol, maxiter)
+}
+
+Get_Saddle_Prob_fast_Binom <- function(zeta, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma, logp) {
+    .Call('_SAIGE_Get_Saddle_Prob_fast_Binom', PACKAGE = 'SAIGE', zeta, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma, logp)
+}
+
+SPA_binary_fast <- function(mu, g, q, qinv, pval_noadj, logp, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol) {
+    .Call('_SAIGE_SPA_binary_fast', PACKAGE = 'SAIGE', mu, g, q, qinv, pval_noadj, logp, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol)
+}
+
+Korg_Poi <- function(t1, mu, g) {
+    .Call('_SAIGE_Korg_Poi', PACKAGE = 'SAIGE', t1, mu, g)
+}
+
+K1_adj_Poi <- function(t1, mu, g, q) {
+    .Call('_SAIGE_K1_adj_Poi', PACKAGE = 'SAIGE', t1, mu, g, q)
+}
+
+K2_Poi <- function(t1, mu, g) {
+    .Call('_SAIGE_K2_Poi', PACKAGE = 'SAIGE', t1, mu, g)
+}
+
+getroot_K1_Poi <- function(init, mu, g, q, tol, maxiter) {
+    .Call('_SAIGE_getroot_K1_Poi', PACKAGE = 'SAIGE', init, mu, g, q, tol, maxiter)
+}
+
+Get_Saddle_Prob_Poi <- function(zeta, mu, g, q, logp) {
+    .Call('_SAIGE_Get_Saddle_Prob_Poi', PACKAGE = 'SAIGE', zeta, mu, g, q, logp)
+}
+
+SPA_survival <- function(mu, g, q, qinv, pval_noadj, tol, logp) {
+    .Call('_SAIGE_SPA_survival', PACKAGE = 'SAIGE', mu, g, q, qinv, pval_noadj, tol, logp)
+}
+
+Korg_fast_Poi <- function(t1, mu, g, gNA, gNB, muNA, muNB, NAmu, NAsigma) {
+    .Call('_SAIGE_Korg_fast_Poi', PACKAGE = 'SAIGE', t1, mu, g, gNA, gNB, muNA, muNB, NAmu, NAsigma)
+}
+
+K1_adj_fast_Poi <- function(t1, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma) {
+    .Call('_SAIGE_K1_adj_fast_Poi', PACKAGE = 'SAIGE', t1, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma)
+}
+
+K2_fast_Poi <- function(t1, mu, g, gNA, gNB, muNA, muNB, NAmu, NAsigma) {
+    .Call('_SAIGE_K2_fast_Poi', PACKAGE = 'SAIGE', t1, mu, g, gNA, gNB, muNA, muNB, NAmu, NAsigma)
+}
+
+getroot_K1_fast_Poi <- function(init, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol, maxiter) {
+    .Call('_SAIGE_getroot_K1_fast_Poi', PACKAGE = 'SAIGE', init, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol, maxiter)
+}
+
+Get_Saddle_Prob_fast_Poi <- function(zeta, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma, logp) {
+    .Call('_SAIGE_Get_Saddle_Prob_fast_Poi', PACKAGE = 'SAIGE', zeta, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma, logp)
+}
+
+SPA_survival_fast <- function(mu, g, q, qinv, pval_noadj, logp, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol) {
+    .Call('_SAIGE_SPA_survival_fast', PACKAGE = 'SAIGE', mu, g, q, qinv, pval_noadj, logp, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol)
+}
+
 eigenMapMatMult <- function(A, B) {
     .Call('_SAIGE_eigenMapMatMult', PACKAGE = 'SAIGE', A, B)
 }
@@ -487,5 +583,17 @@ mult_den_sp_to_sp <- function(a, b) {
 
 gen_sp <- function(a) {
     .Call('_SAIGE_gen_sp', PACKAGE = 'SAIGE', a)
+}
+
+sum_arma1 <- function(X) {
+    .Call('_SAIGE_sum_arma1', PACKAGE = 'SAIGE', X)
+}
+
+add_logp <- function(p1, p2) {
+    .Call('_SAIGE_add_logp', PACKAGE = 'SAIGE', p1, p2)
+}
+
+arma_sub_cond <- function(x, iu) {
+    .Call('_SAIGE_arma_sub_cond', PACKAGE = 'SAIGE', x, iu)
 }
 

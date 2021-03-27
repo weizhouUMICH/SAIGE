@@ -1147,79 +1147,46 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// setIsSparseDosage_bgen
+void setIsSparseDosage_bgen(bool isSparseDosage);
+RcppExport SEXP _SAIGE_setIsSparseDosage_bgen(SEXP isSparseDosageSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type isSparseDosage(isSparseDosageSEXP);
+    setIsSparseDosage_bgen(isSparseDosage);
+    return R_NilValue;
+END_RCPP
+}
+// setMarkerIndicesToInclude
+void setMarkerIndicesToInclude(std::vector< int >& markerIndicesToInclude);
+RcppExport SEXP _SAIGE_setMarkerIndicesToInclude(SEXP markerIndicesToIncludeSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector< int >& >::type markerIndicesToInclude(markerIndicesToIncludeSEXP);
+    setMarkerIndicesToInclude(markerIndicesToInclude);
+    return R_NilValue;
+END_RCPP
+}
 // setgenoTest_bgenDosage
-int setgenoTest_bgenDosage(std::string& filename, std::string& index_filename, Rcpp::DataFrame& ranges_to_include, Rcpp::DataFrame& ranges_to_exclude, std::vector< std::string > const& ids_to_include, std::vector< std::string > const& ids_to_exclude);
-RcppExport SEXP _SAIGE_setgenoTest_bgenDosage(SEXP filenameSEXP, SEXP index_filenameSEXP, SEXP ranges_to_includeSEXP, SEXP ranges_to_excludeSEXP, SEXP ids_to_includeSEXP, SEXP ids_to_excludeSEXP) {
+int setgenoTest_bgenDosage(const std::string t_bgenFileName, const std::string t_bgenFileIndex);
+RcppExport SEXP _SAIGE_setgenoTest_bgenDosage(SEXP t_bgenFileNameSEXP, SEXP t_bgenFileIndexSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string& >::type filename(filenameSEXP);
-    Rcpp::traits::input_parameter< std::string& >::type index_filename(index_filenameSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_include(ranges_to_includeSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_exclude(ranges_to_excludeSEXP);
-    Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_include(ids_to_includeSEXP);
-    Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_exclude(ids_to_excludeSEXP);
-    rcpp_result_gen = Rcpp::wrap(setgenoTest_bgenDosage(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude));
+    Rcpp::traits::input_parameter< const std::string >::type t_bgenFileName(t_bgenFileNameSEXP);
+    Rcpp::traits::input_parameter< const std::string >::type t_bgenFileIndex(t_bgenFileIndexSEXP);
+    rcpp_result_gen = Rcpp::wrap(setgenoTest_bgenDosage(t_bgenFileName, t_bgenFileIndex));
     return rcpp_result_gen;
 END_RCPP
 }
-// getDosage_inner_bgen_withquery
-Rcpp::List getDosage_inner_bgen_withquery();
-RcppExport SEXP _SAIGE_getDosage_inner_bgen_withquery() {
+// getOneMarker
+Rcpp::List getOneMarker(int t_fileStartPos);
+RcppExport SEXP _SAIGE_getOneMarker(SEXP t_fileStartPosSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getDosage_inner_bgen_withquery());
-    return rcpp_result_gen;
-END_RCPP
-}
-// getDosage_inner_bgen_withquery_new
-Rcpp::List getDosage_inner_bgen_withquery_new();
-RcppExport SEXP _SAIGE_getDosage_inner_bgen_withquery_new() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getDosage_inner_bgen_withquery_new());
-    return rcpp_result_gen;
-END_RCPP
-}
-// getDosage_inner_bgen_withquery_new_Sparse
-Rcpp::List getDosage_inner_bgen_withquery_new_Sparse();
-RcppExport SEXP _SAIGE_getDosage_inner_bgen_withquery_new_Sparse() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getDosage_inner_bgen_withquery_new_Sparse());
-    return rcpp_result_gen;
-END_RCPP
-}
-// getDosage_bgen_withquery
-Rcpp::List getDosage_bgen_withquery();
-RcppExport SEXP _SAIGE_getDosage_bgen_withquery() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getDosage_bgen_withquery());
-    return rcpp_result_gen;
-END_RCPP
-}
-// getDosage_bgen_withquery_Sparse
-Rcpp::List getDosage_bgen_withquery_Sparse();
-RcppExport SEXP _SAIGE_getDosage_bgen_withquery_Sparse() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getDosage_bgen_withquery_Sparse());
-    return rcpp_result_gen;
-END_RCPP
-}
-// getDosage_bgen_noquery
-Rcpp::List getDosage_bgen_noquery();
-RcppExport SEXP _SAIGE_getDosage_bgen_noquery() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getDosage_bgen_noquery());
+    Rcpp::traits::input_parameter< int >::type t_fileStartPos(t_fileStartPosSEXP);
+    rcpp_result_gen = Rcpp::wrap(getOneMarker(t_fileStartPos));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1233,6 +1200,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// setQueryStatus
+bool setQueryStatus(bool isQuery);
+RcppExport SEXP _SAIGE_setQueryStatus(SEXP isQuerySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type isQuery(isQuerySEXP);
+    rcpp_result_gen = Rcpp::wrap(setQueryStatus(isQuery));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getisReadVariantBgen
 bool getisReadVariantBgen();
 RcppExport SEXP _SAIGE_getisReadVariantBgen() {
@@ -1240,16 +1218,6 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     rcpp_result_gen = Rcpp::wrap(getisReadVariantBgen());
-    return rcpp_result_gen;
-END_RCPP
-}
-// getMarkerInfo
-double getMarkerInfo();
-RcppExport SEXP _SAIGE_getMarkerInfo() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getMarkerInfo());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1273,22 +1241,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// setgenoTest_bgenDosage_v2
-int setgenoTest_bgenDosage_v2(std::string& filename, std::string& index_filename, Rcpp::DataFrame& ranges_to_include, Rcpp::DataFrame& ranges_to_exclude, std::vector< std::string > const& ids_to_include, std::vector< std::string > const& ids_to_exclude);
-RcppExport SEXP _SAIGE_setgenoTest_bgenDosage_v2(SEXP filenameSEXP, SEXP index_filenameSEXP, SEXP ranges_to_includeSEXP, SEXP ranges_to_excludeSEXP, SEXP ids_to_includeSEXP, SEXP ids_to_excludeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string& >::type filename(filenameSEXP);
-    Rcpp::traits::input_parameter< std::string& >::type index_filename(index_filenameSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_include(ranges_to_includeSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ranges_to_exclude(ranges_to_excludeSEXP);
-    Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_include(ids_to_includeSEXP);
-    Rcpp::traits::input_parameter< std::vector< std::string > const& >::type ids_to_exclude(ids_to_excludeSEXP);
-    rcpp_result_gen = Rcpp::wrap(setgenoTest_bgenDosage_v2(filename, index_filename, ranges_to_include, ranges_to_exclude, ids_to_include, ids_to_exclude));
-    return rcpp_result_gen;
-END_RCPP
-}
 // getSampleSizeinBgen
 int getSampleSizeinBgen();
 RcppExport SEXP _SAIGE_getSampleSizeinBgen() {
@@ -1296,6 +1248,44 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     rcpp_result_gen = Rcpp::wrap(getSampleSizeinBgen());
+    return rcpp_result_gen;
+END_RCPP
+}
+// assignforScoreTest_R
+void assignforScoreTest_R(bool t_LOCO, std::vector<bool>& t_LOCOVec, arma::mat& t_XVX, arma::mat& t_XXVX_inv, arma::mat& t_XV, arma::mat& t_XVX_inv_XV, arma::mat& t_X, arma::vec& t_S_a, arma::vec& t_res, arma::vec& t_mu2, arma::vec& t_mu, double t_varRatio, arma::vec& t_tauvec, std::string t_traitType, bool t_isOutputAFinCaseCtrl, bool t_isOutputHetHomCountsinCaseCtrl, arma::vec& t_y);
+RcppExport SEXP _SAIGE_assignforScoreTest_R(SEXP t_LOCOSEXP, SEXP t_LOCOVecSEXP, SEXP t_XVXSEXP, SEXP t_XXVX_invSEXP, SEXP t_XVSEXP, SEXP t_XVX_inv_XVSEXP, SEXP t_XSEXP, SEXP t_S_aSEXP, SEXP t_resSEXP, SEXP t_mu2SEXP, SEXP t_muSEXP, SEXP t_varRatioSEXP, SEXP t_tauvecSEXP, SEXP t_traitTypeSEXP, SEXP t_isOutputAFinCaseCtrlSEXP, SEXP t_isOutputHetHomCountsinCaseCtrlSEXP, SEXP t_ySEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type t_LOCO(t_LOCOSEXP);
+    Rcpp::traits::input_parameter< std::vector<bool>& >::type t_LOCOVec(t_LOCOVecSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type t_XVX(t_XVXSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type t_XXVX_inv(t_XXVX_invSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type t_XV(t_XVSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type t_XVX_inv_XV(t_XVX_inv_XVSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type t_X(t_XSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type t_S_a(t_S_aSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type t_res(t_resSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type t_mu2(t_mu2SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type t_mu(t_muSEXP);
+    Rcpp::traits::input_parameter< double >::type t_varRatio(t_varRatioSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type t_tauvec(t_tauvecSEXP);
+    Rcpp::traits::input_parameter< std::string >::type t_traitType(t_traitTypeSEXP);
+    Rcpp::traits::input_parameter< bool >::type t_isOutputAFinCaseCtrl(t_isOutputAFinCaseCtrlSEXP);
+    Rcpp::traits::input_parameter< bool >::type t_isOutputHetHomCountsinCaseCtrl(t_isOutputHetHomCountsinCaseCtrlSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type t_y(t_ySEXP);
+    assignforScoreTest_R(t_LOCO, t_LOCOVec, t_XVX, t_XXVX_inv, t_XV, t_XVX_inv_XV, t_X, t_S_a, t_res, t_mu2, t_mu, t_varRatio, t_tauvec, t_traitType, t_isOutputAFinCaseCtrl, t_isOutputHetHomCountsinCaseCtrl, t_y);
+    return R_NilValue;
+END_RCPP
+}
+// getScoreTest_SPA
+Rcpp::List getScoreTest_SPA(int t_fileStartPos, std::string traitType);
+RcppExport SEXP _SAIGE_getScoreTest_SPA(SEXP t_fileStartPosSEXP, SEXP traitTypeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type t_fileStartPos(t_fileStartPosSEXP);
+    Rcpp::traits::input_parameter< std::string >::type traitType(traitTypeSEXP);
+    rcpp_result_gen = Rcpp::wrap(getScoreTest_SPA(t_fileStartPos, traitType));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1408,6 +1398,474 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// SPA
+void SPA(arma::vec& mu, arma::vec& g, double q, double qinv, double pval_noadj, double tol, bool logp, std::string traitType, double& pval, bool& isSPAConverge);
+RcppExport SEXP _SAIGE_SPA(SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP qinvSEXP, SEXP pval_noadjSEXP, SEXP tolSEXP, SEXP logpSEXP, SEXP traitTypeSEXP, SEXP pvalSEXP, SEXP isSPAConvergeSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< double >::type qinv(qinvSEXP);
+    Rcpp::traits::input_parameter< double >::type pval_noadj(pval_noadjSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type logp(logpSEXP);
+    Rcpp::traits::input_parameter< std::string >::type traitType(traitTypeSEXP);
+    Rcpp::traits::input_parameter< double& >::type pval(pvalSEXP);
+    Rcpp::traits::input_parameter< bool& >::type isSPAConverge(isSPAConvergeSEXP);
+    SPA(mu, g, q, qinv, pval_noadj, tol, logp, traitType, pval, isSPAConverge);
+    return R_NilValue;
+END_RCPP
+}
+// SPA_fast
+void SPA_fast(arma::vec& mu, arma::vec& g, double q, double qinv, double pval_noadj, bool logp, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma, double tol, std::string traitType, double& pval, bool& isSPAConverge);
+RcppExport SEXP _SAIGE_SPA_fast(SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP qinvSEXP, SEXP pval_noadjSEXP, SEXP logpSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP, SEXP tolSEXP, SEXP traitTypeSEXP, SEXP pvalSEXP, SEXP isSPAConvergeSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< double >::type qinv(qinvSEXP);
+    Rcpp::traits::input_parameter< double >::type pval_noadj(pval_noadjSEXP);
+    Rcpp::traits::input_parameter< bool >::type logp(logpSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< std::string >::type traitType(traitTypeSEXP);
+    Rcpp::traits::input_parameter< double& >::type pval(pvalSEXP);
+    Rcpp::traits::input_parameter< bool& >::type isSPAConverge(isSPAConvergeSEXP);
+    SPA_fast(mu, g, q, qinv, pval_noadj, logp, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol, traitType, pval, isSPAConverge);
+    return R_NilValue;
+END_RCPP
+}
+// Korg_Binom
+double Korg_Binom(double t1, arma::vec& mu, arma::vec& g);
+RcppExport SEXP _SAIGE_Korg_Binom(SEXP t1SEXP, SEXP muSEXP, SEXP gSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    rcpp_result_gen = Rcpp::wrap(Korg_Binom(t1, mu, g));
+    return rcpp_result_gen;
+END_RCPP
+}
+// K1_adj_Binom
+double K1_adj_Binom(double t1, arma::vec& mu, arma::vec& g, double q);
+RcppExport SEXP _SAIGE_K1_adj_Binom(SEXP t1SEXP, SEXP muSEXP, SEXP gSEXP, SEXP qSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    rcpp_result_gen = Rcpp::wrap(K1_adj_Binom(t1, mu, g, q));
+    return rcpp_result_gen;
+END_RCPP
+}
+// K2_Binom
+double K2_Binom(double t1, arma::vec& mu, arma::vec& g);
+RcppExport SEXP _SAIGE_K2_Binom(SEXP t1SEXP, SEXP muSEXP, SEXP gSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    rcpp_result_gen = Rcpp::wrap(K2_Binom(t1, mu, g));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getroot_K1_Binom
+Rcpp::List getroot_K1_Binom(double init, arma::vec& mu, arma::vec& g, double q, double tol, int maxiter);
+RcppExport SEXP _SAIGE_getroot_K1_Binom(SEXP initSEXP, SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP tolSEXP, SEXP maxiterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type init(initSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
+    rcpp_result_gen = Rcpp::wrap(getroot_K1_Binom(init, mu, g, q, tol, maxiter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Get_Saddle_Prob_Binom
+Rcpp::List Get_Saddle_Prob_Binom(double zeta, arma::vec& mu, arma::vec& g, double q, bool logp);
+RcppExport SEXP _SAIGE_Get_Saddle_Prob_Binom(SEXP zetaSEXP, SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP logpSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type zeta(zetaSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< bool >::type logp(logpSEXP);
+    rcpp_result_gen = Rcpp::wrap(Get_Saddle_Prob_Binom(zeta, mu, g, q, logp));
+    return rcpp_result_gen;
+END_RCPP
+}
+// SPA_binary
+Rcpp::List SPA_binary(arma::vec& mu, arma::vec& g, double q, double qinv, double pval_noadj, double tol, bool logp);
+RcppExport SEXP _SAIGE_SPA_binary(SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP qinvSEXP, SEXP pval_noadjSEXP, SEXP tolSEXP, SEXP logpSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< double >::type qinv(qinvSEXP);
+    Rcpp::traits::input_parameter< double >::type pval_noadj(pval_noadjSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type logp(logpSEXP);
+    rcpp_result_gen = Rcpp::wrap(SPA_binary(mu, g, q, qinv, pval_noadj, tol, logp));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Korg_fast_Binom
+double Korg_fast_Binom(double t1, arma::vec& mu, arma::vec& g, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma);
+RcppExport SEXP _SAIGE_Korg_fast_Binom(SEXP t1SEXP, SEXP muSEXP, SEXP gSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    rcpp_result_gen = Rcpp::wrap(Korg_fast_Binom(t1, mu, g, gNA, gNB, muNA, muNB, NAmu, NAsigma));
+    return rcpp_result_gen;
+END_RCPP
+}
+// K1_adj_fast_Binom
+double K1_adj_fast_Binom(double t1, arma::vec& mu, arma::vec& g, double q, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma);
+RcppExport SEXP _SAIGE_K1_adj_fast_Binom(SEXP t1SEXP, SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    rcpp_result_gen = Rcpp::wrap(K1_adj_fast_Binom(t1, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma));
+    return rcpp_result_gen;
+END_RCPP
+}
+// K2_fast_Binom
+double K2_fast_Binom(double t1, arma::vec& mu, arma::vec& g, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma);
+RcppExport SEXP _SAIGE_K2_fast_Binom(SEXP t1SEXP, SEXP muSEXP, SEXP gSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    rcpp_result_gen = Rcpp::wrap(K2_fast_Binom(t1, mu, g, gNA, gNB, muNA, muNB, NAmu, NAsigma));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getroot_K1_fast_Binom
+Rcpp::List getroot_K1_fast_Binom(double init, arma::vec& mu, arma::vec& g, double q, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma, double tol, int maxiter);
+RcppExport SEXP _SAIGE_getroot_K1_fast_Binom(SEXP initSEXP, SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP, SEXP tolSEXP, SEXP maxiterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type init(initSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
+    rcpp_result_gen = Rcpp::wrap(getroot_K1_fast_Binom(init, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol, maxiter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Get_Saddle_Prob_fast_Binom
+Rcpp::List Get_Saddle_Prob_fast_Binom(double zeta, arma::vec& mu, arma::vec& g, double q, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma, bool logp);
+RcppExport SEXP _SAIGE_Get_Saddle_Prob_fast_Binom(SEXP zetaSEXP, SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP, SEXP logpSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type zeta(zetaSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    Rcpp::traits::input_parameter< bool >::type logp(logpSEXP);
+    rcpp_result_gen = Rcpp::wrap(Get_Saddle_Prob_fast_Binom(zeta, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma, logp));
+    return rcpp_result_gen;
+END_RCPP
+}
+// SPA_binary_fast
+Rcpp::List SPA_binary_fast(arma::vec& mu, arma::vec& g, double q, double qinv, double pval_noadj, bool logp, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma, double tol);
+RcppExport SEXP _SAIGE_SPA_binary_fast(SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP qinvSEXP, SEXP pval_noadjSEXP, SEXP logpSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< double >::type qinv(qinvSEXP);
+    Rcpp::traits::input_parameter< double >::type pval_noadj(pval_noadjSEXP);
+    Rcpp::traits::input_parameter< bool >::type logp(logpSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    rcpp_result_gen = Rcpp::wrap(SPA_binary_fast(mu, g, q, qinv, pval_noadj, logp, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Korg_Poi
+double Korg_Poi(double t1, arma::vec& mu, arma::vec& g);
+RcppExport SEXP _SAIGE_Korg_Poi(SEXP t1SEXP, SEXP muSEXP, SEXP gSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    rcpp_result_gen = Rcpp::wrap(Korg_Poi(t1, mu, g));
+    return rcpp_result_gen;
+END_RCPP
+}
+// K1_adj_Poi
+double K1_adj_Poi(double t1, arma::vec& mu, arma::vec& g, double q);
+RcppExport SEXP _SAIGE_K1_adj_Poi(SEXP t1SEXP, SEXP muSEXP, SEXP gSEXP, SEXP qSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    rcpp_result_gen = Rcpp::wrap(K1_adj_Poi(t1, mu, g, q));
+    return rcpp_result_gen;
+END_RCPP
+}
+// K2_Poi
+double K2_Poi(double t1, arma::vec& mu, arma::vec& g);
+RcppExport SEXP _SAIGE_K2_Poi(SEXP t1SEXP, SEXP muSEXP, SEXP gSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    rcpp_result_gen = Rcpp::wrap(K2_Poi(t1, mu, g));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getroot_K1_Poi
+Rcpp::List getroot_K1_Poi(double init, arma::vec& mu, arma::vec& g, double q, double tol, int maxiter);
+RcppExport SEXP _SAIGE_getroot_K1_Poi(SEXP initSEXP, SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP tolSEXP, SEXP maxiterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type init(initSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
+    rcpp_result_gen = Rcpp::wrap(getroot_K1_Poi(init, mu, g, q, tol, maxiter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Get_Saddle_Prob_Poi
+Rcpp::List Get_Saddle_Prob_Poi(double zeta, arma::vec& mu, arma::vec& g, double q, bool logp);
+RcppExport SEXP _SAIGE_Get_Saddle_Prob_Poi(SEXP zetaSEXP, SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP logpSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type zeta(zetaSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< bool >::type logp(logpSEXP);
+    rcpp_result_gen = Rcpp::wrap(Get_Saddle_Prob_Poi(zeta, mu, g, q, logp));
+    return rcpp_result_gen;
+END_RCPP
+}
+// SPA_survival
+Rcpp::List SPA_survival(arma::vec& mu, arma::vec& g, double q, double qinv, double pval_noadj, double tol, bool logp);
+RcppExport SEXP _SAIGE_SPA_survival(SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP qinvSEXP, SEXP pval_noadjSEXP, SEXP tolSEXP, SEXP logpSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< double >::type qinv(qinvSEXP);
+    Rcpp::traits::input_parameter< double >::type pval_noadj(pval_noadjSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type logp(logpSEXP);
+    rcpp_result_gen = Rcpp::wrap(SPA_survival(mu, g, q, qinv, pval_noadj, tol, logp));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Korg_fast_Poi
+double Korg_fast_Poi(double t1, arma::vec& mu, arma::vec& g, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma);
+RcppExport SEXP _SAIGE_Korg_fast_Poi(SEXP t1SEXP, SEXP muSEXP, SEXP gSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    rcpp_result_gen = Rcpp::wrap(Korg_fast_Poi(t1, mu, g, gNA, gNB, muNA, muNB, NAmu, NAsigma));
+    return rcpp_result_gen;
+END_RCPP
+}
+// K1_adj_fast_Poi
+double K1_adj_fast_Poi(double t1, arma::vec& mu, arma::vec& g, double q, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma);
+RcppExport SEXP _SAIGE_K1_adj_fast_Poi(SEXP t1SEXP, SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    rcpp_result_gen = Rcpp::wrap(K1_adj_fast_Poi(t1, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma));
+    return rcpp_result_gen;
+END_RCPP
+}
+// K2_fast_Poi
+double K2_fast_Poi(double t1, arma::vec& mu, arma::vec& g, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma);
+RcppExport SEXP _SAIGE_K2_fast_Poi(SEXP t1SEXP, SEXP muSEXP, SEXP gSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    rcpp_result_gen = Rcpp::wrap(K2_fast_Poi(t1, mu, g, gNA, gNB, muNA, muNB, NAmu, NAsigma));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getroot_K1_fast_Poi
+Rcpp::List getroot_K1_fast_Poi(double init, arma::vec& mu, arma::vec& g, double q, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma, double tol, int maxiter);
+RcppExport SEXP _SAIGE_getroot_K1_fast_Poi(SEXP initSEXP, SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP, SEXP tolSEXP, SEXP maxiterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type init(initSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
+    rcpp_result_gen = Rcpp::wrap(getroot_K1_fast_Poi(init, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol, maxiter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Get_Saddle_Prob_fast_Poi
+Rcpp::List Get_Saddle_Prob_fast_Poi(double zeta, arma::vec& mu, arma::vec& g, double q, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma, bool logp);
+RcppExport SEXP _SAIGE_Get_Saddle_Prob_fast_Poi(SEXP zetaSEXP, SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP, SEXP logpSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type zeta(zetaSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    Rcpp::traits::input_parameter< bool >::type logp(logpSEXP);
+    rcpp_result_gen = Rcpp::wrap(Get_Saddle_Prob_fast_Poi(zeta, mu, g, q, gNA, gNB, muNA, muNB, NAmu, NAsigma, logp));
+    return rcpp_result_gen;
+END_RCPP
+}
+// SPA_survival_fast
+Rcpp::List SPA_survival_fast(arma::vec& mu, arma::vec& g, double q, double qinv, double pval_noadj, bool logp, arma::vec& gNA, arma::vec& gNB, arma::vec& muNA, arma::vec& muNB, double NAmu, double NAsigma, double tol);
+RcppExport SEXP _SAIGE_SPA_survival_fast(SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP qinvSEXP, SEXP pval_noadjSEXP, SEXP logpSEXP, SEXP gNASEXP, SEXP gNBSEXP, SEXP muNASEXP, SEXP muNBSEXP, SEXP NAmuSEXP, SEXP NAsigmaSEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec& >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type g(gSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< double >::type qinv(qinvSEXP);
+    Rcpp::traits::input_parameter< double >::type pval_noadj(pval_noadjSEXP);
+    Rcpp::traits::input_parameter< bool >::type logp(logpSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNA(gNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type gNB(gNBSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNA(muNASEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type muNB(muNBSEXP);
+    Rcpp::traits::input_parameter< double >::type NAmu(NAmuSEXP);
+    Rcpp::traits::input_parameter< double >::type NAsigma(NAsigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    rcpp_result_gen = Rcpp::wrap(SPA_survival_fast(mu, g, q, qinv, pval_noadj, logp, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
 // eigenMapMatMult
 SEXP eigenMapMatMult(const Eigen::Map<Eigen::MatrixXd>& A, Eigen::Map<Eigen::MatrixXd>& B);
 RcppExport SEXP _SAIGE_eigenMapMatMult(SEXP ASEXP, SEXP BSEXP) {
@@ -1464,6 +1922,41 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::sp_mat& >::type a(aSEXP);
     rcpp_result_gen = Rcpp::wrap(gen_sp(a));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sum_arma1
+double sum_arma1(arma::vec& X);
+RcppExport SEXP _SAIGE_sum_arma1(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec& >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(sum_arma1(X));
+    return rcpp_result_gen;
+END_RCPP
+}
+// add_logp
+double add_logp(double p1, double p2);
+RcppExport SEXP _SAIGE_add_logp(SEXP p1SEXP, SEXP p2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type p1(p1SEXP);
+    Rcpp::traits::input_parameter< double >::type p2(p2SEXP);
+    rcpp_result_gen = Rcpp::wrap(add_logp(p1, p2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// arma_sub_cond
+arma::vec arma_sub_cond(arma::vec x, arma::uvec iu);
+RcppExport SEXP _SAIGE_arma_sub_cond(SEXP xSEXP, SEXP iuSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type iu(iuSEXP);
+    rcpp_result_gen = Rcpp::wrap(arma_sub_cond(x, iu));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1562,20 +2055,18 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_get_GRMdiagVec", (DL_FUNC) &_SAIGE_get_GRMdiagVec, 0},
     {"_SAIGE_setminMAFforGRM", (DL_FUNC) &_SAIGE_setminMAFforGRM, 1},
     {"_SAIGE_setIsDropMissingDosages_bgen", (DL_FUNC) &_SAIGE_setIsDropMissingDosages_bgen, 1},
-    {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 6},
-    {"_SAIGE_getDosage_inner_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery, 0},
-    {"_SAIGE_getDosage_inner_bgen_withquery_new", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery_new, 0},
-    {"_SAIGE_getDosage_inner_bgen_withquery_new_Sparse", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery_new_Sparse, 0},
-    {"_SAIGE_getDosage_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_bgen_withquery, 0},
-    {"_SAIGE_getDosage_bgen_withquery_Sparse", (DL_FUNC) &_SAIGE_getDosage_bgen_withquery_Sparse, 0},
-    {"_SAIGE_getDosage_bgen_noquery", (DL_FUNC) &_SAIGE_getDosage_bgen_noquery, 0},
+    {"_SAIGE_setIsSparseDosage_bgen", (DL_FUNC) &_SAIGE_setIsSparseDosage_bgen, 1},
+    {"_SAIGE_setMarkerIndicesToInclude", (DL_FUNC) &_SAIGE_setMarkerIndicesToInclude, 1},
+    {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 2},
+    {"_SAIGE_getOneMarker", (DL_FUNC) &_SAIGE_getOneMarker, 1},
     {"_SAIGE_getQueryStatus", (DL_FUNC) &_SAIGE_getQueryStatus, 0},
+    {"_SAIGE_setQueryStatus", (DL_FUNC) &_SAIGE_setQueryStatus, 1},
     {"_SAIGE_getisReadVariantBgen", (DL_FUNC) &_SAIGE_getisReadVariantBgen, 0},
-    {"_SAIGE_getMarkerInfo", (DL_FUNC) &_SAIGE_getMarkerInfo, 0},
     {"_SAIGE_SetSampleIdx", (DL_FUNC) &_SAIGE_SetSampleIdx, 2},
     {"_SAIGE_closetestGenoFile_bgenDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_bgenDosage, 0},
-    {"_SAIGE_setgenoTest_bgenDosage_v2", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage_v2, 6},
     {"_SAIGE_getSampleSizeinBgen", (DL_FUNC) &_SAIGE_getSampleSizeinBgen, 0},
+    {"_SAIGE_assignforScoreTest_R", (DL_FUNC) &_SAIGE_assignforScoreTest_R, 17},
+    {"_SAIGE_getScoreTest_SPA", (DL_FUNC) &_SAIGE_getScoreTest_SPA, 2},
     {"_SAIGE_SetSampleIdx_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_vcfDosage, 2},
     {"_SAIGE_setTestField", (DL_FUNC) &_SAIGE_setTestField, 1},
     {"_SAIGE_setIsDropMissingDosages_vcf", (DL_FUNC) &_SAIGE_setIsDropMissingDosages_vcf, 1},
@@ -1586,11 +2077,40 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getGenoOfnthVar_vcfDosage", (DL_FUNC) &_SAIGE_getGenoOfnthVar_vcfDosage, 1},
     {"_SAIGE_closetestGenoFile_vcfDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_vcfDosage, 0},
     {"_SAIGE_getSampleSizeinVCF", (DL_FUNC) &_SAIGE_getSampleSizeinVCF, 0},
+    {"_SAIGE_SPA", (DL_FUNC) &_SAIGE_SPA, 10},
+    {"_SAIGE_SPA_fast", (DL_FUNC) &_SAIGE_SPA_fast, 16},
+    {"_SAIGE_Korg_Binom", (DL_FUNC) &_SAIGE_Korg_Binom, 3},
+    {"_SAIGE_K1_adj_Binom", (DL_FUNC) &_SAIGE_K1_adj_Binom, 4},
+    {"_SAIGE_K2_Binom", (DL_FUNC) &_SAIGE_K2_Binom, 3},
+    {"_SAIGE_getroot_K1_Binom", (DL_FUNC) &_SAIGE_getroot_K1_Binom, 6},
+    {"_SAIGE_Get_Saddle_Prob_Binom", (DL_FUNC) &_SAIGE_Get_Saddle_Prob_Binom, 5},
+    {"_SAIGE_SPA_binary", (DL_FUNC) &_SAIGE_SPA_binary, 7},
+    {"_SAIGE_Korg_fast_Binom", (DL_FUNC) &_SAIGE_Korg_fast_Binom, 9},
+    {"_SAIGE_K1_adj_fast_Binom", (DL_FUNC) &_SAIGE_K1_adj_fast_Binom, 10},
+    {"_SAIGE_K2_fast_Binom", (DL_FUNC) &_SAIGE_K2_fast_Binom, 9},
+    {"_SAIGE_getroot_K1_fast_Binom", (DL_FUNC) &_SAIGE_getroot_K1_fast_Binom, 12},
+    {"_SAIGE_Get_Saddle_Prob_fast_Binom", (DL_FUNC) &_SAIGE_Get_Saddle_Prob_fast_Binom, 11},
+    {"_SAIGE_SPA_binary_fast", (DL_FUNC) &_SAIGE_SPA_binary_fast, 13},
+    {"_SAIGE_Korg_Poi", (DL_FUNC) &_SAIGE_Korg_Poi, 3},
+    {"_SAIGE_K1_adj_Poi", (DL_FUNC) &_SAIGE_K1_adj_Poi, 4},
+    {"_SAIGE_K2_Poi", (DL_FUNC) &_SAIGE_K2_Poi, 3},
+    {"_SAIGE_getroot_K1_Poi", (DL_FUNC) &_SAIGE_getroot_K1_Poi, 6},
+    {"_SAIGE_Get_Saddle_Prob_Poi", (DL_FUNC) &_SAIGE_Get_Saddle_Prob_Poi, 5},
+    {"_SAIGE_SPA_survival", (DL_FUNC) &_SAIGE_SPA_survival, 7},
+    {"_SAIGE_Korg_fast_Poi", (DL_FUNC) &_SAIGE_Korg_fast_Poi, 9},
+    {"_SAIGE_K1_adj_fast_Poi", (DL_FUNC) &_SAIGE_K1_adj_fast_Poi, 10},
+    {"_SAIGE_K2_fast_Poi", (DL_FUNC) &_SAIGE_K2_fast_Poi, 9},
+    {"_SAIGE_getroot_K1_fast_Poi", (DL_FUNC) &_SAIGE_getroot_K1_fast_Poi, 12},
+    {"_SAIGE_Get_Saddle_Prob_fast_Poi", (DL_FUNC) &_SAIGE_Get_Saddle_Prob_fast_Poi, 11},
+    {"_SAIGE_SPA_survival_fast", (DL_FUNC) &_SAIGE_SPA_survival_fast, 13},
     {"_SAIGE_eigenMapMatMult", (DL_FUNC) &_SAIGE_eigenMapMatMult, 2},
     {"_SAIGE_mult_sp_sp_to_sp", (DL_FUNC) &_SAIGE_mult_sp_sp_to_sp, 2},
     {"_SAIGE_mult_sp_den_to_sp", (DL_FUNC) &_SAIGE_mult_sp_den_to_sp, 2},
     {"_SAIGE_mult_den_sp_to_sp", (DL_FUNC) &_SAIGE_mult_den_sp_to_sp, 2},
     {"_SAIGE_gen_sp", (DL_FUNC) &_SAIGE_gen_sp, 1},
+    {"_SAIGE_sum_arma1", (DL_FUNC) &_SAIGE_sum_arma1, 1},
+    {"_SAIGE_add_logp", (DL_FUNC) &_SAIGE_add_logp, 2},
+    {"_SAIGE_arma_sub_cond", (DL_FUNC) &_SAIGE_arma_sub_cond, 2},
     {NULL, NULL, 0}
 };
 
