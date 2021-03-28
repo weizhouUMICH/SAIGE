@@ -1137,6 +1137,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// set_minInfo_minMAF
+void set_minInfo_minMAF(double t_minInfo, double t_minMAF);
+RcppExport SEXP _SAIGE_set_minInfo_minMAF(SEXP t_minInfoSEXP, SEXP t_minMAFSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type t_minInfo(t_minInfoSEXP);
+    Rcpp::traits::input_parameter< double >::type t_minMAF(t_minMAFSEXP);
+    set_minInfo_minMAF(t_minInfo, t_minMAF);
+    return R_NilValue;
+END_RCPP
+}
 // setIsDropMissingDosages_bgen
 void setIsDropMissingDosages_bgen(bool isdropmissingdosages);
 RcppExport SEXP _SAIGE_setIsDropMissingDosages_bgen(SEXP isdropmissingdosagesSEXP) {
@@ -1277,15 +1288,63 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// getScoreTest_SPA
-Rcpp::List getScoreTest_SPA(int t_fileStartPos, std::string traitType);
-RcppExport SEXP _SAIGE_getScoreTest_SPA(SEXP t_fileStartPosSEXP, SEXP traitTypeSEXP) {
+// getScoreTest_SPA_old
+Rcpp::List getScoreTest_SPA_old(int t_fileStartPos, std::string traitType);
+RcppExport SEXP _SAIGE_getScoreTest_SPA_old(SEXP t_fileStartPosSEXP, SEXP traitTypeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type t_fileStartPos(t_fileStartPosSEXP);
     Rcpp::traits::input_parameter< std::string >::type traitType(traitTypeSEXP);
-    rcpp_result_gen = Rcpp::wrap(getScoreTest_SPA(t_fileStartPos, traitType));
+    rcpp_result_gen = Rcpp::wrap(getScoreTest_SPA_old(t_fileStartPos, traitType));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getScoreTest_SPA
+bool getScoreTest_SPA(int t_fileStartPos, std::string traitType, std::string& t_chromosome, uint& t_position, std::string& t_rsid, std::string& t_allele0, std::string& t_allele1, double& t_AF, double& t_AC, double& t_info, int& t_Ntest, double& t_Beta, double& t_se, double& t_Tstat, double& t_var1, double& t_var2, std::string& t_noSPApval, double& t_SPApval, bool& t_isSPAConverge, double& t_AF_case, double& t_AF_ctrl, int& t_N_case_hom, int& t_N_case_het, int& t_N_ctrl_hom, int& t_N_ctrl_het);
+RcppExport SEXP _SAIGE_getScoreTest_SPA(SEXP t_fileStartPosSEXP, SEXP traitTypeSEXP, SEXP t_chromosomeSEXP, SEXP t_positionSEXP, SEXP t_rsidSEXP, SEXP t_allele0SEXP, SEXP t_allele1SEXP, SEXP t_AFSEXP, SEXP t_ACSEXP, SEXP t_infoSEXP, SEXP t_NtestSEXP, SEXP t_BetaSEXP, SEXP t_seSEXP, SEXP t_TstatSEXP, SEXP t_var1SEXP, SEXP t_var2SEXP, SEXP t_noSPApvalSEXP, SEXP t_SPApvalSEXP, SEXP t_isSPAConvergeSEXP, SEXP t_AF_caseSEXP, SEXP t_AF_ctrlSEXP, SEXP t_N_case_homSEXP, SEXP t_N_case_hetSEXP, SEXP t_N_ctrl_homSEXP, SEXP t_N_ctrl_hetSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type t_fileStartPos(t_fileStartPosSEXP);
+    Rcpp::traits::input_parameter< std::string >::type traitType(traitTypeSEXP);
+    Rcpp::traits::input_parameter< std::string& >::type t_chromosome(t_chromosomeSEXP);
+    Rcpp::traits::input_parameter< uint& >::type t_position(t_positionSEXP);
+    Rcpp::traits::input_parameter< std::string& >::type t_rsid(t_rsidSEXP);
+    Rcpp::traits::input_parameter< std::string& >::type t_allele0(t_allele0SEXP);
+    Rcpp::traits::input_parameter< std::string& >::type t_allele1(t_allele1SEXP);
+    Rcpp::traits::input_parameter< double& >::type t_AF(t_AFSEXP);
+    Rcpp::traits::input_parameter< double& >::type t_AC(t_ACSEXP);
+    Rcpp::traits::input_parameter< double& >::type t_info(t_infoSEXP);
+    Rcpp::traits::input_parameter< int& >::type t_Ntest(t_NtestSEXP);
+    Rcpp::traits::input_parameter< double& >::type t_Beta(t_BetaSEXP);
+    Rcpp::traits::input_parameter< double& >::type t_se(t_seSEXP);
+    Rcpp::traits::input_parameter< double& >::type t_Tstat(t_TstatSEXP);
+    Rcpp::traits::input_parameter< double& >::type t_var1(t_var1SEXP);
+    Rcpp::traits::input_parameter< double& >::type t_var2(t_var2SEXP);
+    Rcpp::traits::input_parameter< std::string& >::type t_noSPApval(t_noSPApvalSEXP);
+    Rcpp::traits::input_parameter< double& >::type t_SPApval(t_SPApvalSEXP);
+    Rcpp::traits::input_parameter< bool& >::type t_isSPAConverge(t_isSPAConvergeSEXP);
+    Rcpp::traits::input_parameter< double& >::type t_AF_case(t_AF_caseSEXP);
+    Rcpp::traits::input_parameter< double& >::type t_AF_ctrl(t_AF_ctrlSEXP);
+    Rcpp::traits::input_parameter< int& >::type t_N_case_hom(t_N_case_homSEXP);
+    Rcpp::traits::input_parameter< int& >::type t_N_case_het(t_N_case_hetSEXP);
+    Rcpp::traits::input_parameter< int& >::type t_N_ctrl_hom(t_N_ctrl_homSEXP);
+    Rcpp::traits::input_parameter< int& >::type t_N_ctrl_het(t_N_ctrl_hetSEXP);
+    rcpp_result_gen = Rcpp::wrap(getScoreTest_SPA(t_fileStartPos, traitType, t_chromosome, t_position, t_rsid, t_allele0, t_allele1, t_AF, t_AC, t_info, t_Ntest, t_Beta, t_se, t_Tstat, t_var1, t_var2, t_noSPApval, t_SPApval, t_isSPAConverge, t_AF_case, t_AF_ctrl, t_N_case_hom, t_N_case_het, t_N_ctrl_hom, t_N_ctrl_het));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getScoreTest_SPA_multi
+Rcpp::DataFrame getScoreTest_SPA_multi(int mth_start, int m_to_test, std::string traitType);
+RcppExport SEXP _SAIGE_getScoreTest_SPA_multi(SEXP mth_startSEXP, SEXP m_to_testSEXP, SEXP traitTypeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type mth_start(mth_startSEXP);
+    Rcpp::traits::input_parameter< int >::type m_to_test(m_to_testSEXP);
+    Rcpp::traits::input_parameter< std::string >::type traitType(traitTypeSEXP);
+    rcpp_result_gen = Rcpp::wrap(getScoreTest_SPA_multi(mth_start, m_to_test, traitType));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2054,6 +2113,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getCrossprodMatAndKin_mailman", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin_mailman, 1},
     {"_SAIGE_get_GRMdiagVec", (DL_FUNC) &_SAIGE_get_GRMdiagVec, 0},
     {"_SAIGE_setminMAFforGRM", (DL_FUNC) &_SAIGE_setminMAFforGRM, 1},
+    {"_SAIGE_set_minInfo_minMAF", (DL_FUNC) &_SAIGE_set_minInfo_minMAF, 2},
     {"_SAIGE_setIsDropMissingDosages_bgen", (DL_FUNC) &_SAIGE_setIsDropMissingDosages_bgen, 1},
     {"_SAIGE_setIsSparseDosage_bgen", (DL_FUNC) &_SAIGE_setIsSparseDosage_bgen, 1},
     {"_SAIGE_setMarkerIndicesToInclude", (DL_FUNC) &_SAIGE_setMarkerIndicesToInclude, 1},
@@ -2066,7 +2126,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_closetestGenoFile_bgenDosage", (DL_FUNC) &_SAIGE_closetestGenoFile_bgenDosage, 0},
     {"_SAIGE_getSampleSizeinBgen", (DL_FUNC) &_SAIGE_getSampleSizeinBgen, 0},
     {"_SAIGE_assignforScoreTest_R", (DL_FUNC) &_SAIGE_assignforScoreTest_R, 17},
-    {"_SAIGE_getScoreTest_SPA", (DL_FUNC) &_SAIGE_getScoreTest_SPA, 2},
+    {"_SAIGE_getScoreTest_SPA_old", (DL_FUNC) &_SAIGE_getScoreTest_SPA_old, 2},
+    {"_SAIGE_getScoreTest_SPA", (DL_FUNC) &_SAIGE_getScoreTest_SPA, 25},
+    {"_SAIGE_getScoreTest_SPA_multi", (DL_FUNC) &_SAIGE_getScoreTest_SPA_multi, 3},
     {"_SAIGE_SetSampleIdx_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_vcfDosage, 2},
     {"_SAIGE_setTestField", (DL_FUNC) &_SAIGE_setTestField, 1},
     {"_SAIGE_setIsDropMissingDosages_vcf", (DL_FUNC) &_SAIGE_setIsDropMissingDosages_vcf, 1},

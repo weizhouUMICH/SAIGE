@@ -96,9 +96,9 @@ void ScoreClass::scoreTest(arma::vec t_GVec,
     t_Tstat = S;
     t_var1 = var1;
     t_var2 = var2;
-    std::cout << "S: " << S << std::endl;
-    std::cout << "var1: " << var1 << std::endl;
-    std::cout << "var2: " << var2 << std::endl;
+    //std::cout << "S: " << S << std::endl;
+    //std::cout << "var1: " << var1 << std::endl;
+    //std::cout << "var2: " << var2 << std::endl;
 }
 
 
@@ -163,10 +163,10 @@ void ScoreClass::scoreTestFast(arma::vec t_GVec,
     t_Tstat = S;
     t_var1 = var1;
     t_var2 = var2;
-    std::cout << "S: " << S << std::endl;
-    std::cout << "var1: " << var1 << std::endl;
-    std::cout << "var2: " << var2 << std::endl;
-    std::cout << "t_Tstat: " << t_Tstat << std::endl;
+    //std::cout << "S: " << S << std::endl;
+    //std::cout << "var1: " << var1 << std::endl;
+    //std::cout << "var2: " << var2 << std::endl;
+    //std::cout << "t_Tstat: " << t_Tstat << std::endl;
 }
 
 void ScoreClass::get_mu(arma::vec & t_mu){

@@ -369,6 +369,10 @@ setminMAFforGRM <- function(minMAFforGRM) {
     invisible(.Call('_SAIGE_setminMAFforGRM', PACKAGE = 'SAIGE', minMAFforGRM))
 }
 
+set_minInfo_minMAF <- function(t_minInfo, t_minMAF) {
+    invisible(.Call('_SAIGE_set_minInfo_minMAF', PACKAGE = 'SAIGE', t_minInfo, t_minMAF))
+}
+
 setIsDropMissingDosages_bgen <- function(isdropmissingdosages) {
     invisible(.Call('_SAIGE_setIsDropMissingDosages_bgen', PACKAGE = 'SAIGE', isdropmissingdosages))
 }
@@ -417,8 +421,16 @@ assignforScoreTest_R <- function(t_LOCO, t_LOCOVec, t_XVX, t_XXVX_inv, t_XV, t_X
     invisible(.Call('_SAIGE_assignforScoreTest_R', PACKAGE = 'SAIGE', t_LOCO, t_LOCOVec, t_XVX, t_XXVX_inv, t_XV, t_XVX_inv_XV, t_X, t_S_a, t_res, t_mu2, t_mu, t_varRatio, t_tauvec, t_traitType, t_isOutputAFinCaseCtrl, t_isOutputHetHomCountsinCaseCtrl, t_y))
 }
 
-getScoreTest_SPA <- function(t_fileStartPos, traitType) {
-    .Call('_SAIGE_getScoreTest_SPA', PACKAGE = 'SAIGE', t_fileStartPos, traitType)
+getScoreTest_SPA_old <- function(t_fileStartPos, traitType) {
+    .Call('_SAIGE_getScoreTest_SPA_old', PACKAGE = 'SAIGE', t_fileStartPos, traitType)
+}
+
+getScoreTest_SPA <- function(t_fileStartPos, traitType, t_chromosome, t_position, t_rsid, t_allele0, t_allele1, t_AF, t_AC, t_info, t_Ntest, t_Beta, t_se, t_Tstat, t_var1, t_var2, t_noSPApval, t_SPApval, t_isSPAConverge, t_AF_case, t_AF_ctrl, t_N_case_hom, t_N_case_het, t_N_ctrl_hom, t_N_ctrl_het) {
+    .Call('_SAIGE_getScoreTest_SPA', PACKAGE = 'SAIGE', t_fileStartPos, traitType, t_chromosome, t_position, t_rsid, t_allele0, t_allele1, t_AF, t_AC, t_info, t_Ntest, t_Beta, t_se, t_Tstat, t_var1, t_var2, t_noSPApval, t_SPApval, t_isSPAConverge, t_AF_case, t_AF_ctrl, t_N_case_hom, t_N_case_het, t_N_ctrl_hom, t_N_ctrl_het)
+}
+
+getScoreTest_SPA_multi <- function(mth_start, m_to_test, traitType) {
+    .Call('_SAIGE_getScoreTest_SPA_multi', PACKAGE = 'SAIGE', mth_start, m_to_test, traitType)
 }
 
 SetSampleIdx_vcfDosage <- function(sample_idx, Ntest) {

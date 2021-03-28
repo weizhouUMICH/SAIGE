@@ -2763,3 +2763,516 @@ processMale_XnonPAR = function(maleIDindex, Gx, positionL, XPARregion){
 	}
 	return(Gx)
 }
+#' Run single variant or gene- or region-based score tests with SPA based on the linear/logistic mixed model.
+#'
+#' @param bgenFile character. Path to bgen file. Currently version 1.2 with 8 bit compression is supported
+#' @param bgenFileIndex character. Path to the .bgi file (index of the bgen file)
+#' @param idstoExcludeFile character. Path to the file containing variant ids to be excluded from the bgen file. The file does not have a header and each line is for a marker ID.
+#' @param idstoIncludeFile character. Path to the file containing variant ids to be included from the bgen file. The file does not have a header and each line is for a marker ID.
+#' @param rangestoExcludeFile character. Path to the file containing genome regions to be excluded from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header
+#' @param rangestoIncludeFile character. Path to the file containing genome regions to be included from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header
+#' @param chrom character. string for the chromosome to include from vcf file. Required for vcf file. Note: the string needs to exactly match the chromosome string in the vcf/sav file. For example, "1" does not match "chr1". If LOCO is specified, providing chrom will save computation cost
+#' @param start numeric. start genome position to include from vcf file. By default, 1
+#' @param end numeric. end genome position to include from vcf file. By default, 250000000
+#' @param minMAC numeric. Minimum minor allele count of markers to test. By default, 0.5. The higher threshold between minMAC and minMAF will be used
+#' @param minMAF numeric. Minimum minor allele frequency of markers to test. By default 0. The higher threshold between minMAC and minMAF will be used
+#' @param minInfo numeric. Minimum imputation info of markers to test. By default, 0. This option only works for bgen, vcf, and sav input
+#' @param sampleFile character. Path to the file that contains one column for IDs of samples in the bgen file with NO header
+#' @param GMMATmodelFile character. Path to the input file containing the glmm model, which is output from previous step. Will be used by load()
+#' @param varianceRatioFile character. Path to the input file containing the variance ratio, which is output from the previous step
+#' @param SPAcutoff by default = 2 (SPA test would be used when p value < 0.05 under the normal approximation)
+#' @param SAIGEOutputFile character. Path to the output file containing assoc test results
+#' @param numLinesOutput numeric. Number of  markers to be output each time. By default, 10000
+#' @param IsSparse logical. Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for dichotomous traits. By default, TRUE
+#' @param IsOutputAFinCaseCtrl logical. Whether to output allele frequency in cases and controls. By default, FALSE
+#' @param IsOutputNinCaseCtrl logical. Whether to output sample sizes in cases and controls. By default, FALSE
+#' @param IsOutputHetHomCountsinCaseCtrl logical. Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls" will be output.
+#' @param IsOutputlogPforSingle logical. Whether to output log(Pvalue) for single-variant assoc tests. By default, FALSE. If TRUE, the log(Pvalue) instead of original P values will be output
+#' @param LOCO logical. Whether to apply the leave-one-chromosome-out option. By default, TRUE
+#' @return SAIGEOutputFile
+#' @export
+SPAGMMATtest_new = function(bgenFile = "",
+		 bgenFileIndex = "",
+		 sampleFile = "",
+		 idstoExcludeFile = "",
+		 idstoIncludeFile = "",
+		 rangestoExcludeFile = "",
+		 rangestoIncludeFile = "",
+		 chrom = "",
+		 start = 1,
+		 end = 250000000,
+		 minMAC = 0.5,
+                 minMAF = 0,
+        	 minInfo = 0,
+                 GMMATmodelFile = "",
+                 varianceRatioFile = "",
+                 SPAcutoff=2,
+                 SAIGEOutputFile = "",
+		 numLinesOutput = 10000,
+		 IsSparse=TRUE,
+		 IsOutputAFinCaseCtrl=FALSE,
+		 IsOutputHetHomCountsinCaseCtrl=FALSE,
+		 IsOutputNinCaseCtrl=FALSE,
+		 IsOutputlogPforSingle=FALSE,
+		 LOCO=TRUE){
+
+  IsDropMissingDosages=FALSE
+  if(IsDropMissingDosages){
+    cat("Samples with missing dosages will be dropped from the analysis\n")
+  }else{
+    cat("Missing dosages will be mean imputed for the analysis\n")
+  }
+
+  setIsDropMissingDosages_bgen(IsDropMissingDosages)
+
+
+  cat("single-variant association test will be performed\n")
+
+  if(file.exists(SAIGEOutputFile)){
+    file.remove(SAIGEOutputFile)
+  }
+
+  if(!file.exists(SAIGEOutputFile)){
+    file.create(SAIGEOutputFile, showWarnings = TRUE)
+  }
+
+
+  #file for the glmm null model
+  if(!file.exists(GMMATmodelFile)){
+    stop("ERROR! GMMATmodelFile ", GMMATmodelFile, " does not exsit\n")
+  }else{
+    load(GMMATmodelFile)
+    modglmm$Y = NULL
+    modglmm$offset = modglmm$linear.predictors - modglmm$coefficients[1]
+    modglmm$linear.predictors = NULL
+    modglmm$coefficients = NULL
+    modglmm$cov = NULL
+    obj.glmm.null = modglmm
+    rm(modglmm)
+    gc(T)
+
+    sampleInModel = NULL
+    sampleInModel$IID = obj.glmm.null$sampleID
+    sampleInModel = data.frame(sampleInModel)
+    sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
+    cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
+    traitType = obj.glmm.null$traitType
+    if(traitType == "quantitative"){
+      IsOutputHetHomCountsinCaseCtrl = FALSE
+    }
+
+    y = obj.glmm.null$y
+    X = obj.glmm.null$X
+    N = length(y)
+    tauVec = obj.glmm.null$theta
+
+
+    indChromCheck = FALSE
+    if(!LOCO){
+      print("Leave-one-chromosome-out is not applied")
+    }else{
+        if(!obj.glmm.null$LOCO){
+          stop("LOCO is TRUE but the null model file .rda does not contain LOCO results. In order to apply Leave-one-chromosome-out, please run Step 1 using LOCO. Otherwise, please set LOCO=FALSE in this step (Step 2).\n")
+	}else{
+            if(chrom == ""){
+                stop("chromosome is needed by specifying chrom for LOCO = TRUE.") 
+                #stop("WARNING: LOCO will be used, but chromosome for the dosage file is not specified. Will check each marker for its chromosome for LOCO!\n")
+                indChromCheck = TRUE
+	    }else{
+               chrom_v2 = as.character(chrom)
+	       chrom_v2 = gsub("CHR", "", chrom_v2, ignore.case=T)
+	       chrom_v3 = as.numeric(gsub("[^0-9.]", "", chrom_v2))
+               if(chrom_v3 > length(obj.glmm.null$LOCOResult) | chrom_v3 < 1){
+                 stop("chromosome ", chrom, " is out of the range of null model LOCO results\n")
+               }else{
+                 cat("Leave chromosome ", chrom_v3, " out will be applied\n")
+		 for(chr in 1:22){
+		   if (chr != chrom_v3){
+                     obj.glmm.null$LOCOResult[chr] = list(NULL) 
+	    	     cat("chromosome ", chr, " model results are removed to save memory\n")
+		     gc()   
+		   }	   
+		 }	 
+               }
+	    }
+
+	}
+     }
+ }#if(file.exists(GMMATmodelFile)){
+
+
+  #allowing for categorical variance ratio
+  if(!file.exists(varianceRatioFile)){
+    stop("ERROR! varianceRatioFile ", varianceRatioFile, " does not exsit\n")
+  }else{
+    varRatioData = data.frame(data.table:::fread(varianceRatioFile, header=F, stringsAsFactors=FALSE))
+    if(nrow(varRatioData) == 1){
+      #ratioVec = rep(varRatioData[1,1],6)
+      ratioVec = varRatioData[1,1]
+      varRatio = ratioVec
+      cat("Single variance ratio is provided, so categorical variance ratio won't be used!\n")
+    }else{       	    
+      stop("ERROR! The number of variance ratios are different from the length of cateVarRatioMinMACVecExclude\n")
+    }
+    cat("variance Ratio is ", ratioVec, "\n")
+  }
+
+
+  ##Needs to check the number of columns and the number of samples in sample file
+  if(bgenFile != ""){
+    if(!file.exists(bgenFile)){
+      stop("ERROR! bgenFile ", bgenFile, " does not exsit\n")
+    }else{
+      Mtest = setgenoTest_bgenDosage(bgenFile, bgenFileIndex)
+    }	    
+    dosageFileType = "bgen"
+
+  }
+
+  #sample file
+  sampleListinDosage = NULL
+  #if (dosageFileType == "bgen"){
+  if(!file.exists(sampleFile)){
+    if(dosageFileType == "bgen"){
+    	  stop("ERROR! The dosage file type is bgen but sampleFile ", sampleFile, " does not exsit\n")
+    }
+  }else{
+      sampleListinDosage = data.frame(data.table:::fread(sampleFile, header=F, stringsAsFactors=FALSE, colClasses=c("character")))
+      sampleListinDosage$IndexDose = seq(1,nrow(sampleListinDosage), by=1)
+      cat(nrow(sampleListinDosage), " sample IDs are found in sample file\n")
+      colnames(sampleListinDosage)[1] = "IIDDose"
+  }	  
+
+
+   CHRv2 = NULL
+   obj.model = NULL
+   if(LOCO){
+      if(!indChromCheck){
+        if(obj.glmm.null$LOCOResult[[chrom_v3]]$isLOCO){
+          obj.model = list(obj.noK = obj.glmm.null$LOCOResult[[chrom_v3]]$obj.noK, mu = as.vector(obj.glmm.null$LOCOResult[[chrom_v3]]$fitted.values))
+	  #CHRv2 = chrom_v3
+        }else{
+	  obj.model = list(obj.noK = obj.glmm.null$obj.noK, mu  = as.vector(obj.glmm.null$fitted.values))
+        }
+      }
+   }else{
+      obj.model = list(obj.noK = obj.glmm.null$obj.noK, mu  = as.vector(obj.glmm.null$fitted.values))
+   }
+  obj.model$offset = obj.glmm.null$offset
+  if(!is.null(obj.model)){
+    if(traitType == "binary"){
+       obj.model$mu2 = (obj.model$mu)* (1-obj.model$mu)
+    }else if(traitType == "quantitative"){
+       obj.model$mu2 = (1/tauVec[1])*rep(1, N)
+    }
+  }
+        obj.model$residuals = y - obj.model$mu
+        print("OK_test1")
+        print(names(obj.model$obj.noK))
+	LOCOVec = rep(1,22)  ##will update here
+        assignforScoreTest_R(LOCO, LOCOVec, t_XVX=obj.model$obj.noK$XVX, t_XXVX_inv=obj.model$obj.noK$XXVX_inv, t_XV=obj.model$obj.noK$XV, t_XVX_inv_XV=obj.model$obj.noK$XVX_inv_XV, t_X=X, t_S_a=obj.model$obj.noK$S_a, t_res=obj.model$residuals, t_mu2=obj.model$mu2, t_mu=obj.model$mu,varRatio, tauVec, traitType, IsOutputAFinCaseCtrl, IsOutputHetHomCountsinCaseCtrl, y)
+        print("OK_test")
+
+  dataMerge = merge(sampleInModel, sampleListinDosage, by.x="IID", by.y = "IIDDose")
+  dataMerge_sort = dataMerge[with(dataMerge, order(IndexInModel)), ]
+  if(nrow(dataMerge_sort) < nrow(sampleInModel)){
+    stop("ERROR!", nrow(sampleInModel) - nrow(dataMerge_sort), " samples used in glmm model fit do not have dosages\n")
+  }else{
+    #0909 modified by WZ
+    dataMerge_v2 = merge(dataMerge_sort, sampleListinDosage, by.x="IID", by.y = "IIDDose", all.y = TRUE)
+    print(dim(dataMerge_v2))
+    print(colnames(dataMerge_v2))
+    dataMerge_v2_sort = dataMerge_v2[with(dataMerge_v2, order(IndexDose.y)), ]
+    sampleIndex = dataMerge_v2_sort$IndexInModel
+    N = sum(!is.na(sampleIndex))
+    cat(N, " samples were used in fitting the NULL glmm model and are found in sample file\n")
+    sampleIndex[is.na(sampleIndex)] = -10  ##with a negative number
+    sampleIndex = sampleIndex - 1
+      #rm(sampleListinDosage)
+    rm(dataMerge)
+    rm(dataMerge_v2)
+    rm(dataMerge_sort)
+    rm(dataMerge_v2_sort)
+    #rm(sampleInModel)
+  }
+
+  rm(sampleInModel)
+  ####check and read files
+  #sparseSigmaFile
+  ##############START TEST########################
+  startTime = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
+  cat("Analysis started at ", startTime, "Seconds\n")
+
+  if(minMAC == 0){
+    minMAC = 0.5
+    cat("As minMAC is set to be 0, minMAC = 0.5 will be used\n")
+  } ##01-19-2018
+
+  cat("minMAC: ",minMAC,"\n")
+  cat("minMAF: ",minMAF,"\n")
+  minMAFBasedOnMAC = minMAC/(2*N)
+  testMinMAF = max(minMAFBasedOnMAC, minMAF)
+  cat("Minimum MAF of markers to be tested is ", testMinMAF, "\n")
+
+#  if(file.exists(SAIGEOutputFile)){file.remove(SAIGEOutputFile)}
+#  gc(verbose=T, full=T)
+   set_minInfo_minMAF(minInfo, testMinMAF);
+
+
+
+    if(dosageFileType == "bgen"){
+      dosageFilecolnamesSkip = c("CHR","POS","rsid","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
+
+    }
+    
+  ########Binary traits####################
+  if(traitType == "binary"){
+    cat("It is a binary trait\n")
+	resultHeader = c(dosageFilecolnamesSkip, "N", "BETA", "SE", "Tstat", "p.value", "p.value.NA", "Is.SPA.converge","varT","varTstar")
+
+      if(IsOutputAFinCaseCtrl){
+        resultHeader = c(resultHeader, "AF.Cases", "AF.Controls")
+      }
+      if(IsOutputNinCaseCtrl){
+	resultHeader = c(resultHeader, "N.Cases", "N.Controls")
+      }
+
+      if(IsOutputHetHomCountsinCaseCtrl){
+	resultHeader = c(resultHeader, "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls")
+      }
+
+      write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
+
+    if(SPAcutoff < 10^-2){
+      Cutoff=10^-2
+    }else{
+      Cutoff = SPAcutoff
+    }
+
+    #y = obj.glmm.null$y
+    y1Index = which(y == 1)
+    NCase = length(y1Index)
+    y0Index = which(y == 0)
+    NCtrl = length(y0Index)
+
+    cat("Analyzing ", NCase, " cases and ",NCtrl, " controls \n")
+    #N = length(y)
+    #if(!LOCO | (LOCO & !indChromCheck)){
+    #  mu2.a<-mu.a *(1-mu.a)
+    #}
+
+
+  }else if(traitType == "quantitative"){
+    cat("It is a quantitative trait\n")
+    resultHeader = c(dosageFilecolnamesSkip,  "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
+    write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
+  }else{
+    stop("ERROR! The type of the trait has to be either binary or quantitative\n")
+  }
+
+
+  ##############START TEST########################
+  startTime = as.numeric(Sys.time())  # start time of the SPAGMMAT tests
+  cat("Analysis started at ", startTime, "Seconds\n")
+
+    isVariant = TRUE
+    if (dosageFileType == "bgen"){
+      isQuery = FALSE
+      markerIndicesVec = NULL
+      if(idstoExcludeFile != "" | idstoIncludeFile != "" | rangestoExcludeFile != "" | rangestoIncludeFile != ""){
+        cat("Query list is specificed\n")
+        isQuery = TRUE
+        if(!file.exists(bgenFileIndex)){
+          stop("ERROR! bgenFileIndex ", bgenFileIndex, " does not exsit\n")
+        }else{
+          db_con <- RSQLite::dbConnect(RSQLite::SQLite(), bgenFileIndex)
+          on.exit(RSQLite::dbDisconnect(db_con), add = TRUE)
+          db_con_variant = dplyr::tbl(db_con, "Variant")
+        }
+      }
+      setQueryStatus(isQuery)
+      cat("isQuery\n")
+      print(isQuery)
+
+      if(idstoExcludeFile != ""){
+        idsExclude = data.table:::fread(idstoExcludeFile, header=F,sep=" ", stringsAsFactors=FALSE, colClasses=c("character"))
+        idsExclude = data.frame(idsExclude)
+        ids_to_exclude = as.character(as.vector(idsExclude[,1]))
+        temp_cond_variant = dplyr::filter(db_con_variant, !rsid %in% ids_to_exclude)
+        markerIndicesVec = c(markerIndicesVec, dplyr::pull(temp_cond_variant, file_start_position))
+        #markerIndicesVec = c(markerIndicesVec, dplyr::filter(db_con_variant, !rsid %in% ids_to_exclude) %>% dplyr::pull(file_start_position))
+      }else{
+        ids_to_exclude = as.character(vector())
+      }
+
+      if(idstoIncludeFile != ""){
+        idsInclude = data.table:::fread(idstoIncludeFile, header=F, sep=" ", stringsAsFactors=FALSE, colClasses=c("character"))
+        idsInclude = data.frame(idsInclude)
+        ids_to_include = as.character(as.vector(idsInclude[,1]))
+        temp_cond_variant = dplyr::filter(db_con_variant, rsid %in% ids_to_include)
+        markerIndicesVec = c(markerIndicesVec, dplyr::pull(temp_cond_variant, file_start_position))
+        #markerIndicesVec = c(markerIndicesVec, dplyr::filter(db_con_variant, rsid %in% ids_to_include) %>% dplyr::pull(file_start_position))
+      }else{
+        ids_to_include = as.character(vector())
+      }
+
+      if(rangestoExcludeFile != ""){
+        rangesExclude = data.table:::fread(rangestoExcludeFile, header=F, colClasses = c("character", "numeric", "numeric"))
+        ranges_to_exclude = data.frame(rangesExclude)
+        colnames(ranges_to_exclude) = c("chromosome","start","end")
+        temp_conn = db_con_variant
+        #dplyr::filter(x, chromosome == "1" & position <=  767096 & position >= 729632) %>% dplyr::pull(file_start_position)
+        for(i in 1:nrow(ranges_to_exclude)){
+          tempchr = ranges_to_exclude[i,1]
+          temppos1 = ranges_to_exclude[i,2]
+          temppos2 = ranges_to_exclude[i,3]
+          temp_conn = dplyr::filter(temp_conn, chromosome == tempchr & (position < temppos1 | position > temppos2)  )
+        }
+        markerIndicesVec = c(markerIndicesVec, dplyr::pull(temp_conn, file_start_position))
+        temp_conn = NULL
+         gc()
+
+      }else{
+        ranges_to_exclude = data.frame(chromosome = NULL, start = NULL, end = NULL)
+      }
+
+      if(rangestoIncludeFile != ""){
+        rangesInclude = data.table:::fread(rangestoIncludeFile, header=F, colClasses = c("character", "numeric", "numeric"))
+        ranges_to_include = data.frame(rangesInclude)
+        colnames(ranges_to_include) = c("chromosome","start","end")
+        for(i in 1:nrow(ranges_to_include)){
+          tempchr = ranges_to_include[i,1]
+          temppos1 = ranges_to_include[i,2]
+          temppos2 = ranges_to_include[i,3]
+          temp_con_variant = dplyr::filter(db_con_variant, chromosome == tempchr & position >= temppos1 & position <= temppos2)
+          markerIndicesVec = c(markerIndicesVec, dplyr::pull(temp_con_variant, file_start_position))
+          #markerIndicesVec = c(markerIndicesVec, dplyr::filter(db_con_variant, chromosome == tempchr & position >= temppos1 & position <= temppos2) %>% dplyr::pull(file_start_position))
+        }
+      }else{
+        ranges_to_include = data.frame(chromosome = NULL, start = NULL, end = NULL)
+      }
+
+      if(isQuery){
+        setMarkerIndicesToInclude(markerIndicesVec)
+        Mtest = length(markerIndicesVec)
+      }	
+
+      if(Mtest == 0){
+        isVariant = FALSE
+        stop("ERROR! Failed to open ", bgenFile, "\n")
+      }
+      isQuery = getQueryStatus()
+      SetSampleIdx(sampleIndex, N)
+
+      nsamplesinBgen = getSampleSizeinBgen()
+      print(nrow(sampleListinDosage))
+      if(nrow(sampleListinDosage) != nsamplesinBgen){
+	stop("ERROR! The number of samples specified in the sample file does not equal to the number of samples in the bgen file\n")
+      }
+
+
+    }
+    
+    write(resultHeader,file = SAIGEOutputFile, ncolumns = length(resultHeader))
+    OUT = NULL
+    numPassMarker = 0
+    mth = 0
+
+    while(isVariant){
+ #   print(Mtest)
+ #   print(numLinesOutput)
+ #   print(mth)
+     if(mth + numLinesOutput > Mtest){
+       numLinesOutput0 = Mtest - mth
+     }else{
+       numLinesOutput0 = numLinesOutput
+     } 		     
+      #if (dosageFileType == "bgen"){
+        if(Mtest == (mth + numLinesOutput0)){isVariant = FALSE}
+      #}
+
+ #    ptm <- proc.time()
+#     print("3")
+ #    print(ptm)
+#     print(numLinesOutput0)
+        if(isQuery){
+                #time1=system.time({a=getScoreTest_SPA(markerIndicesVec[mth], traitType)})
+		a = as.data.frame(getScoreTest_SPA_multi(mth, numLinesOutput0, traitType))
+        }else{
+		a = as.data.frame(getScoreTest_SPA_multi(0, numLinesOutput0, traitType))
+                #time1=system.time({a=getScoreTest_SPA(0, traitType)})
+        }
+#	print(as.data.frame(a))
+	a = a[which(a$CHR != "-1"), ]
+	if(nrow(a) > 0){
+	#if(a$isTest){
+	#print("time1")
+	#print(time1)
+	#time2=system.time({rowHeader = c(unlist(a$variants), a$info)})
+	#print("time2")
+	#print(time2)
+
+      #if(traitType == "binary"){
+
+        #print(a)
+        #print("time1")
+        #print(time1)
+    # ptm <- proc.time()
+    # print("1")
+     #print(ptm)
+
+#	if(is.null(a$isSPAConverge)){a$pval_SPA = a$pval}
+ #       OUTvec=c(rowHeader, N,c(a$Beta, a$se, a$Tstat, a$pval_SPA, a$pval, a$isSPAConverge, a$var1, a$var2))
+
+  #  	   if(IsOutputAFinCaseCtrl){
+#		OUTvec=c(OUTvec, unlist(a$AF_case_ctrl))
+ #          }
+
+#	   if(IsOutputHetHomCountsinCaseCtrl){
+#		OUTvec = c(OUTvec, unlist(a$N_case_ctrl_het_hom))
+ #         }
+
+	   OUT = rbind(OUT, a)
+         numPassMarker = numPassMarker + nrow(a)
+         ptm <- proc.time()
+         print(ptm)
+	 mth = mth +  numLinesOutput0
+         print(mth)
+         cat("numPassMarker: ", numPassMarker, "\n")
+         OUT = as.data.frame(OUT)
+         write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
+         OUT = NULL
+	}
+     ptm <- proc.time()
+#     print("2")
+#    print(ptm)
+#	   OUTvec=NULL
+
+#         }else if(traitType == "quantitative"){
+
+       # print(a)
+        #print("time1")
+        #print(time1)
+#	OUTvec=c(rowHeader, N,c(a$Beta, a$se, a$Tstat, a$pval, a$isSPAConverge, a$var1, a$var2))
+#	}
+
+#     mth = mth +  numLinesOutput0
+#}     
+      #if(mth %% 100000 == 0 | mth == Mtest){
+       #if(mth %% numLinesOutput == 0 | !isVariant){
+       #}
+     } ####end of while(isVariant)
+
+
+  if (dosageFileType == "bgen"){
+    closetestGenoFile_bgenDosage()
+  }else if(dosageFileType == "vcf"){
+    closetestGenoFile_vcfDosage()
+  }
+  summary(warnings())
+  endTime = as.numeric(Sys.time()) #end time of the SPAGMMAT tests
+  cat("Analysis ended at ", endTime, "Seconds\n")
+  tookTime = endTime - startTime
+  cat("Analysis took ", tookTime, "Seconds\n")
+
+}
