@@ -171,6 +171,8 @@ https://www.leelabsg.org/resources
 
 # Log for fixing bugs
 
+* 0.44.3 (March-29-2021). does not use the bgen C++ library for reading the bgen files in Step 2 any more. re-code the score tests and SPA using C++ to speed up Step 2. This version can only take BGEN files as input for Step 2 for Single-variant association tests and can not drop samples with missing dosages from the tests.  The function SPAGMMATtest_new should be used for Step 2.
+
 * 0.44.1 (Feb-16-2021) 1. Fixed the error " X %*% Z : non-conformable arguments" for monomorphic variants. 2. merged Jonathon's codes to update savvy to savvy 2.0. For markers in VCF or SAV files without imputation info R2 values, the imputationInfo column will be 1 in the output file, so the markers will not but removed by minInfo 
 
 * 0.44 (January-11-2021) 1. Fixed the error "Phi_ccadj[-indexNeg, -indexNeg]"; 2.  inverse normalization is only performed for quantitative traits; 3. For step 2, bgen input requires the sample file. vcf input does not require a seperate sample file. If sample file is not provided, sample ids will be read from vcf file

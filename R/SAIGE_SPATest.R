@@ -1133,6 +1133,8 @@ if(is_scoreTestRcpp){
 
         print("OK_test1")
         print(names(obj.model$obj.noK))
+	IsOutputAFinCaseCtrl = FALSE
+	IsOutputHetHomCountsinCaseCtrl = FALSE
         assignforScoreTest_R(LOCO, LOCOVec, t_XVX=obj.model$obj.noK$XVX, t_XXVX_inv=obj.model$obj.noK$XXVX_inv, t_XV=obj.model$obj.noK$XV, t_XVX_inv_XV=obj.model$obj.noK$XVX_inv_XV, t_X=X, t_S_a=obj.model$obj.noK$S_a, t_res=obj.model$residuals, t_mu2=obj.model$mu2, t_mu=obj.model$mu, varRatio, tauVec, traitType, IsOutputAFinCaseCtrl, IsOutputHetHomCountsinCaseCtrl, y)
         print("OK_test")
         time1=system.time({a=getScoreTest_SPA(markerIndicesVec[mth], traitType)})
@@ -2964,6 +2966,8 @@ SPAGMMATtest_new = function(bgenFile = "",
        obj.model$mu2 = (obj.model$mu)* (1-obj.model$mu)
     }else if(traitType == "quantitative"){
        obj.model$mu2 = (1/tauVec[1])*rep(1, N)
+         IsOutputAFinCaseCtrl = FALSE
+        IsOutputHetHomCountsinCaseCtrl = FALSE
     }
   }
         obj.model$residuals = y - obj.model$mu

@@ -592,7 +592,7 @@ Rcpp::List getScoreTest_SPA_old(int t_fileStartPos, std::string traitType) {
    double wall2in = get_wall_time2();
 double cpu2in  = get_cpu_time2();
 */
-arma::vec dosages = Glist["dosages"];
+   arma::vec dosages = Glist["dosages"];
    arma::vec t_gtilde;
    arma::uvec iIndexvec;
 /*
