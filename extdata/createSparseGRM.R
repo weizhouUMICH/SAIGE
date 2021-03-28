@@ -5,6 +5,7 @@ options(stringsAsFactors=F)
 ## load R libraries
 #library(SAIGE, lib.loc="/home/wei/install_dir/0.36.5.1")
 library(SAIGE)
+#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.44.4")
 require(optparse) #install.packages("optparse")
 
 print(sessionInfo())
