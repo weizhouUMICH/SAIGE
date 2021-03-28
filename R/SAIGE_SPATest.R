@@ -3192,6 +3192,9 @@ SPAGMMATtest_new = function(bgenFile = "",
        numLinesOutput0 = numLinesOutput
      } 		     
       #if (dosageFileType == "bgen"){
+        cat("Mtest ", Mtest, "\n")
+        cat("mth ", mth, "\n")
+        cat("numLinesOutput0 ", numLinesOutput0, "\n")
         if(Mtest == (mth + numLinesOutput0)){isVariant = FALSE}
       #}
 
@@ -3240,13 +3243,13 @@ SPAGMMATtest_new = function(bgenFile = "",
          numPassMarker = numPassMarker + nrow(a)
          ptm <- proc.time()
          print(ptm)
-	 mth = mth +  numLinesOutput0
-         print(mth)
          cat("numPassMarker: ", numPassMarker, "\n")
          OUT = as.data.frame(OUT)
          write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
          OUT = NULL
 	}
+	 mth = mth +  numLinesOutput0
+         print(mth)
      ptm <- proc.time()
 #     print("2")
 #    print(ptm)

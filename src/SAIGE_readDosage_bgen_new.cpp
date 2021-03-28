@@ -803,9 +803,9 @@ bool getScoreTest_SPA(int t_fileStartPos, std::string traitType,
    Glist = getOneMarker(t_fileStartPos);
    bool isTest = false;
 
+   if(Glist["isBoolRead"]){
    bool isFlip = Glist["isFlip"];
 //  std::cout << "isFlip " << isFlip << std::endl;
-   if(Glist["isBoolRead"]){
 
 
 //	  std::cout << "here0a" << std::endl; 
