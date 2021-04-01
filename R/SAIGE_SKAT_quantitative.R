@@ -1,3 +1,18 @@
+get_absence_or_presence = function(x, DosageCutoff_for_UltraRarePresence){
+
+        a=sum(x < (1+DosageCutoff_for_UltraRarePresence) & x>= DosageCutoff_for_UltraRarePresence)
+        b=sum(x >= (1+DosageCutoff_for_UltraRarePresence))
+        if(b > 0){
+                g = 2
+        }else if(a > 0){
+                g = 1
+        }else{
+                g = 0
+        }
+        return(g)
+}
+
+
 #obj is the rda. file output from SAIGE step 1
 #G1 is genotypes for testing gene, which contains m markers
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
@@ -28,8 +43,9 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
                 #Gnew = rowSums(Gmat[,macle10Index,drop=F])/(length(macle10Index))
 		G1rare=G1[,macle10Index, drop=F]
                 if(method_to_CollapseUltraRare == "absence_or_presence"){
-                	Gnew = rowSums(G1rare)
-                        Gnew[which(Gnew >= DosageCutoff_for_UltraRarePresence)] = 1
+                	#Gnew = rowSums(G1rare)
+                        #Gnew[which(Gnew >= DosageCutoff_for_UltraRarePresence)] = 1
+			Gnew = apply(G1rare, 1, get_absence_or_presence, DosageCutoff_for_UltraRarePresence)
                 }else if(method_to_CollapseUltraRare == "sum_geno"){ #####NOT active
       
 			##determine the weights of ultra rare variants
