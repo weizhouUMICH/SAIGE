@@ -5,7 +5,7 @@ options(stringsAsFactors=F)
 library(SAIGE)
 #library(SAIGE, lib.loc="../../install_dir/0.43.1")
 #library(SAIGE, lib.loc="../../install_dir/0.36.3.3")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.43.1")
+#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.44.2")
 print(sessionInfo())
 
 
@@ -118,7 +118,13 @@ mean, p-value based on traditional score test is returned. Default value is 2.")
   make_option("--X_PARregion", type="character",default="",
     help="ranges of (pseudoautosomal) PAR region on chromosome X, which are seperated by comma and in the format start:end. By default: '60001-2699520,154931044-155260560' in the UCSC build hg19. For males, there are two X alleles in the PAR region, so PAR regions are treated the same as autosomes. In the NON-PAR regions (outside the specified PAR regions on chromosome X), for males, there is only one X allele. If is_rewrite_XnonPAR_forMales=TRUE, genotypes/dosages of all variants in the NON-PAR regions on chromosome X will be mutliplied by 2."),
   make_option("--is_rewrite_XnonPAR_forMales", type="logical",default=FALSE,
-    help="Whether to rewrite gentoypes or dosages of variants in the NON-PAR regions on chromosome X for males (multiply by 2). By default, FALSE. Note, only use is_rewrite_XnonPAR_forMales=TRUE when the specified VCF or Bgen file only has variants on chromosome X. When is_rewrite_XnonPAR_forMales=TRUE, the program does not check the chromosome value by assuming all variants are on chromosome X")	      
+    help="Whether to rewrite gentoypes or dosages of variants in the NON-PAR regions on chromosome X for males (multiply by 2). By default, FALSE. Note, only use is_rewrite_XnonPAR_forMales=TRUE when the specified VCF or Bgen file only has variants on chromosome X. When is_rewrite_XnonPAR_forMales=TRUE, the program does not check the chromosome value by assuming all variants are on chromosome X"),
+  make_option("--method_to_CollapseUltraRare", type="character",default="",
+    help="Method to collpase the ultra rare variants in the set-based association tests for BINARY traits only. This argument can be 'absence_or_presence', 'sum_geno', or ''. absence_or_presence:  For the resulted collpased marker, any individual having DosageCutoff_for_UltraRarePresence <= dosage < 1+DosageCutoff_for_UltraRarePresence for any ultra rare variant has 1 in the genotype vector, having dosage >= 1+DosageCutoff_for_UltraRarePresence for any ultra rare variant has 2 in the genotype vector, otherwise 0. sum_geno: Ultra rare variants with MAC <=  MACCutoff_to_CollapseUltraRare will be collpased for set-based tests in the 'sum_geno' way and the resulted collpased marker's genotype equals weighted sum of the genotypes of all ultra rare variants. NOTE: this option sum_geno currently is NOT active. By default, '' "),
+  make_option("--MACCutoff_to_CollapseUltraRare", type="numeric", default=10,
+    help="MAC cutoff to collpase the ultra rare variants (<= MACCutoff_to_CollapseUltraRare) in the set-based association tests. By default, 10."),
+  make_option("--DosageCutoff_for_UltraRarePresence", type="numeric", default=0.5,
+    help="Dosage cutoff to determine whether the ultra rare variants are absent or present in the samples. Dosage >= DosageCutoff_for_UltraRarePresence indicates the varaint in present in the sample. 0< DosageCutoff_for_UltraRarePresence <= 2. By default, 0.5")	      
 )
 
 
@@ -205,5 +211,8 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 	     LOCO=opt$LOCO,
 		sampleFile_male=opt$sampleFile_male,
 		is_rewrite_XnonPAR_forMales=opt$is_rewrite_XnonPAR_forMales,
-		X_PARregion=opt$X_PARregion
+		X_PARregion=opt$X_PARregion,
+		 method_to_CollapseUltraRare=opt$method_to_CollapseUltraRare,
+                 MACCutoff_to_CollapseUltraRare = opt$MACCutoff_to_CollapseUltraRare,
+                 DosageCutoff_for_UltraRarePresence = opt$DosageCutoff_for_UltraRarePresence
 )

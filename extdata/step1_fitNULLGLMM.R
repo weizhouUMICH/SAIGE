@@ -5,7 +5,7 @@ options(stringsAsFactors=F)
 ## load R libraries
 #library(SAIGE, lib.loc="../../install_dir/0.38")
 #library(SAIGE, lib.loc="../../install_dir/0.36.6")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.43.1")
+#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.44.4")
 library(SAIGE)
 require(optparse) #install.packages("optparse")
 
@@ -83,6 +83,8 @@ option_list <- list(
     help="Whether to sparse GRM to speed up the PCG. Current this option is deactivated. [default='FALSE']."),
   make_option("--useSparseSigmaforInitTau", type="logical", default=FALSE,
     help="Whether to use sparse Sigma to estiamte initial tau [default='FALSE']."),
+  make_option("--useSparseGRMtoFitNULL", type="logical", default=FALSE,
+    help="Whether to use sparse GRM to fit the null model [default='FALSE']."),	
   make_option("--minMAFforGRM", type="numeric", default=0.01,
     help="Minimum MAF of markers used for GRM"),
   make_option("--minCovariateCount", type="numeric", default=-1,
@@ -175,5 +177,6 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
 	    FemaleOnly=opt$FemaleOnly,
 	    MaleCode=opt$MaleCode,
 	    MaleOnly=opt$MaleOnly,
-	   noEstFixedEff=opt$noEstFixedEff 
+	    noEstFixedEff=opt$noEstFixedEff,
+	    useSparseGRMtoFitNULL=opt$useSparseGRMtoFitNULL 
 	)	
