@@ -1135,7 +1135,7 @@ SPAGMMATtest = function(bgenFile = "",
 		}	
 
 		if(method_to_CollapseUltraRare == "absence_or_presence"){
-			cat("Ultra rare variants with MAC <= ", MACCutoff_to_CollapseUltraRare, " will be collpased for set-based tests in the 'absence or presence' way. ", "For the resulted collpased marker, any individual having dosage >= ", DosageCutoff_for_UltraRarePresence, " for any ultra rare variant has 1 in the genotype vector, otherwise 0. \n")
+			cat("Ultra rare variants with MAC <= ", MACCutoff_to_CollapseUltraRare, " will be collpased for set-based tests in the 'absence or presence' way. ", "For the resulted collpased marker, any individual having ", DosageCutoff_for_UltraRarePresence, "<= dosage < ", (1+DosageCutoff_for_UltraRarePresence), " for any ultra rare variant has 1 in the genotype vector, having dosage >= ", (1+DosageCutoff_for_UltraRarePresence), " for any ultra rare variant has 2 in the genotype vector, otherwise 0. \n")
 		}else if(method_to_CollapseUltraRare == "sum_geno"){
 			cat("Ultra rare variants with MAC <= ", MACCutoff_to_CollapseUltraRare, " will be collpased for set-based tests in the 'sum_geno' way. ", "The resulted collpased marker equals weighted sum of the genotypes of all ultra rare variantsi. NOTE: this option currently is not active\n")
 		}		
@@ -1356,12 +1356,19 @@ SPAGMMATtest = function(bgenFile = "",
 	      if(dosageZerodCutoff > 0 & sum(Gx$MACs <= 10) > 0){
 		zerodIndex = which(Gx$MACs <= 10)
 		for(z in zerodIndex){
-			replaceindex = which(Gmat[,z] <= dosageZerodCutoff & Gmat[,z] >0)
-			if(length(replaceindex) > 0){
+			if(Gx$markerAFs[z] <= 0.5){
+			  replaceindex = which(Gmat[,z] <= dosageZerodCutoff & Gmat[,z] >0)
+			  if(length(replaceindex) > 0){
 				Gmat[replaceindex,z] = 0
-			}
+			  }
+			}else{
+			  replaceindex = which(Gmat[,z] >= (2-dosageZerodCutoff) & Gmat[,z] < 2)
+                          if(length(replaceindex) > 0){
+                                Gmat[replaceindex,z] = 2
+                          }    
+			}	
 		}
-	      }
+	     }
 	     cm = colMeans(Gmat)/2
 	     cm[which(cm > 0.5)] = 1 - cm[which(cm > 0.5)]
 	     rmMarkerIndex = which(cm < testMinMAF | cm > maxMAFforGroupTest)
