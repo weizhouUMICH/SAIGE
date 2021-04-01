@@ -12,7 +12,7 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.44.1 (Updated on Feb 16, 2021).
+## Current version is 0.44.2 (Updated on March 31, 2021).
 
 ## For BGEN input, 8 bits are required. 
 
@@ -111,7 +111,7 @@ Thanks to Juha Karjalainen for sharing the Dockerfile.
 The docker image can be pulled
 
 ```
-docker pull wzhou88/saige:0.44
+docker pull wzhou88/saige:0.44.2
 ```
 
 Functions can be called
@@ -170,6 +170,8 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+
+* 0.44.2 (March-31-2021) 1.add an option useSparseGRMtoFitNULL to allow for fitting the null model using the sparse GRM and 2. add options to collapse the ultra-rare variants in the set-based tests. --method_to_CollapseUltraRare, --MACCutoff_to_CollapseUltraRare, --DosageCutoff_for_UltraRarePresence
 
 * 0.44.1 (Feb-16-2021) 1. Fixed the error " X %*% Z : non-conformable arguments" for monomorphic variants. 2. merged Jonathon's codes to update savvy to savvy 2.0. For markers in VCF or SAV files without imputation info R2 values, the imputationInfo column will be 1 in the output file, so the markers will not but removed by minInfo 
 

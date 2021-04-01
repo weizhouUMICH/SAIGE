@@ -52,8 +52,8 @@ getGenoOfGene_bgen = function(bgenFile,bgenFileIndex,marker_group_line, minMAF=0
     result$MACs = MACs
     result$cnt = cnt
     result$indexforMissing = indexforMissing
-    print("indexforMissing test")	
-    print(indexforMissing)
+    #print("indexforMissing test")	
+    #print(indexforMissing)
   }else{
     result$cnt = 0
   }

@@ -709,7 +709,7 @@ double  Parse_Sparse(unsigned char * buf, size_t bufLen,  std::string & snpName,
        double imputeDosage = 2*AF;
        for (unsigned int i = 0; i < indexforMissing.size(); i++)
        {
-	  std::cout << indexforMissing[i]+1 << ",";
+	  //std::cout << indexforMissing[i]+1 << ",";
           iIndex.push_back(indexforMissing[i]+1);
           dosages.push_back(imputeDosage);
        }
