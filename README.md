@@ -12,7 +12,8 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.44.2 (Updated on March 31, 2021).
+## Current version is 0.44.2 (Updated on April 1, 2021, cleared print messages that slowed down the single-variant association tests).
+## Please re-install 0.44.2 if you installed this verion on March 31. 
 
 ## For BGEN input, 8 bits are required. 
 
