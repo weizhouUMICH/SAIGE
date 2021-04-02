@@ -152,7 +152,8 @@ Rscript step2_SPAtests.R        \
         --SAIGEOutputFile=./output/example_binary_positive_signal.assoc.step2.txt \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE     \
-        --IsDropMissingDosages=TRUE
+        --IsDropMissingDosages=TRUE	\
+	--LOCO=FALSE
 
 #For gene-based test
 #step 0: create a sparse GRM for a data set. This sparse GRM only needs to be created once for each data set, e.g. a biobank,  and can be used for all different phenotypes as long as all tested samples are in the sparse GRM. 

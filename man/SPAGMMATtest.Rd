@@ -54,6 +54,7 @@ SPAGMMATtest(
   IsOutputPvalueNAinGroupTestforBinary = FALSE,
   IsAccountforCasecontrolImbalanceinGroupTest = TRUE,
   IsOutputBETASEinBurdenTest = FALSE,
+  IsOutputMAFinCaseCtrlinGroupTest = FALSE,
   X_PARregion = "60001-2699520,154931044-155270560",
   is_rewrite_XnonPAR_forMales = FALSE,
   sampleFile_male = "",
@@ -160,6 +161,8 @@ SPAGMMATtest(
 \item{IsAccountforCasecontrolImbalanceinGroupTest}{logical. In gene- or region-based tests for binary traits. If IsAccountforCasecontrolImbalanceinGroupTest is TRUE, p-values after accounting for case-control imbalance will be output. By default, TRUE}
 
 \item{IsOutputBETASEinBurdenTest}{logical. Output effect size (BETA and SE) for burden tests. By default, FALSE}
+
+\item{IsOutputMAFinCaseCtrlinGroupTest}{logical. Whether to output minor allele frequency in cases and controls in set-based tests By default, FALSE}
 
 \item{X_PARregion}{character. ranges of (pseudoautosomal) PAR region on chromosome X, which are seperated by comma and in the format start:end. By default: '60001-2699520,154931044-155260560' in the UCSC build hg19. For males, there are two X alleles in the PAR region, so PAR regions are treated the same as autosomes. In the NON-PAR regions (outside the specified PAR regions on chromosome X), for males, there is only one X allele. If is_rewrite_XnonPAR_forMales=TRUE, genotypes/dosages of all variants in the NON-PAR regions on chromosome X will be multiplied by 2.}
 

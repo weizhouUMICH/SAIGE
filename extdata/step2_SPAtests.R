@@ -5,7 +5,7 @@ options(stringsAsFactors=F)
 library(SAIGE)
 #library(SAIGE, lib.loc="../../install_dir/0.43.1")
 #library(SAIGE, lib.loc="../../install_dir/0.36.3.3")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.44.2")
+#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.44.2.b")
 print(sessionInfo())
 
 
@@ -95,6 +95,8 @@ mean, p-value based on traditional score test is returned. Default value is 2.")
     help="More options can be seen in the SKAT library"),
   make_option("--IsSingleVarinGroupTest",type="logical", default=FALSE,
     help="Whether to perform single-variant assoc tests for genetic markers included in the gene-based tests. By default, FALSE"),
+  make_option("--IsOutputMAFinCaseCtrlinGroupTest", type="logical", default=FALSE,
+    help="Whether to output minor allele frequency in cases and controls in set-based tests By default, FALSE"),
   make_option("--cateVarRatioMinMACVecExclude",type="character", default="0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5",
     help="vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. [default='0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5']"),
   make_option("--cateVarRatioMaxMACVecInclude",type="character", default="1.5,2.5,3.5,4.5,5.5,10.5,20.5",
@@ -214,5 +216,6 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 		X_PARregion=opt$X_PARregion,
 		 method_to_CollapseUltraRare=opt$method_to_CollapseUltraRare,
                  MACCutoff_to_CollapseUltraRare = opt$MACCutoff_to_CollapseUltraRare,
-                 DosageCutoff_for_UltraRarePresence = opt$DosageCutoff_for_UltraRarePresence
+                 DosageCutoff_for_UltraRarePresence = opt$DosageCutoff_for_UltraRarePresence,
+		 IsOutputMAFinCaseCtrlinGroupTest = opt$IsOutputMAFinCaseCtrlinGroupTest
 )

@@ -713,7 +713,7 @@ double  Parse_Sparse(unsigned char * buf, size_t bufLen,  std::string & snpName,
           iIndex.push_back(indexforMissing[i]+1);
           dosages.push_back(imputeDosage);
        }
-       std::cout << " " << std::endl;
+       //std::cout << " " << std::endl;
        if(!isDropMissingDosages_bgen){
          //std::cout << "AC is " << AC << std::endl;
          AC = AC + missing_cnt * imputeDosage;

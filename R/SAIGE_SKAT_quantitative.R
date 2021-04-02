@@ -88,6 +88,8 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
         	AF = MAF
         }
 
+
+
         id_include<-1:n
         out.method<-SKAT:::SKAT_Check_Method(method,r.corr, n=n, m=m)
         method=out.method$method
@@ -277,6 +279,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
                         	markerNumbyMAC = c(markerNumbyMAC, sum(MACvec_indVec == i))
                         }
                         cat("WARNING: ", indexNeg, " th marker(s) are excluded because of negative variance\n")
+			G1_org = G1_org[,-indexNeg]
 			print("MACvec_indVec")	
 			print(MACvec_indVec)
 
