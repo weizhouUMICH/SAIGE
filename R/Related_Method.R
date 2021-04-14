@@ -199,6 +199,7 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 		scaleFactor = scaleFactor * (1/sqrt(r))
 	}
 	outlist$scaleFactor = scaleFactor
+	outlist$p.new = p.new
 	#outlist$zscore.all_0=zscore.all_0
 	#outlist$mu=mu.qtemp
 	#outlist$g.sum=g.sum
@@ -206,7 +207,7 @@ SPA_ER_kernel_related_Phiadj <- function(G, obj, obj.noK, Cutoff=2, Phi, weight,
 	#outlist$p.old=p.old
 	#outlist$p.new=p.new
 	#outlist$zscore.all_1=zscore.all_1
-	return(outlist);
+	return(outlist)
 }
 
 

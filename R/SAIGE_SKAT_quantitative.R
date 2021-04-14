@@ -17,7 +17,7 @@ get_absence_or_presence = function(x, DosageCutoff_for_UltraRarePresence){
 #G1 is genotypes for testing gene, which contains m markers
 #G2_cond is G2 in the word document, genotypes for m_cond conditioning marker(s)
 #G2_cond_es is beta_2_hat (effect size for the conditioning marker(s))
-SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE, weights_specified = NULL, weights_for_G2_cond = NULL, weightsIncludeinGroupFile = FALSE, IsOutputBETASEinBurdenTest=FALSE,  method_to_CollapseUltraRare = "absence_or_presence",  MACCutoff_to_CollapseUltraRare = 10, DosageCutoff_for_UltraRarePresence = 0.5){
+SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec, G2_cond = NULL, G2_cond_es, kernel= "linear.weighted", method="optimal.adj", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,impute.method="fixed", r.corr=0, is_check_genotype=FALSE, is_dosage = TRUE, missing_cutoff=0.15, max_maf=1, estimate_MAF=1, SetID = NULL, sparseSigma = NULL, mu2 = NULL, adjustCCratioinGroupTest = FALSE, mu=NULL, IsOutputPvalueNAinGroupTestforBinary = FALSE, weights_specified = NULL, weights_for_G2_cond = NULL, weightsIncludeinGroupFile = FALSE, IsOutputBETASEinBurdenTest=FALSE,  method_to_CollapseUltraRare = "absence_or_presence",  MACCutoff_to_CollapseUltraRare = 10, DosageCutoff_for_UltraRarePresence = 0.5, IsSingleVarinGroupTest = FALSE, IsOutputlogPforSingle=FALSE){
 	#offset = obj$offset
         #check the input genotype G1
         obj.noK = obj$obj.noK
@@ -37,7 +37,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
 
 	#MAF = colMeans(G1)/2
 
-
+if(FALSE){
         macle10Index = which(MACvec <= MACCutoff_to_CollapseUltraRare)
         if(method_to_CollapseUltraRare != "" & length(macle10Index) > 0){
                 #Gnew = rowSums(Gmat[,macle10Index,drop=F])/(length(macle10Index))
@@ -88,7 +88,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
         	AF = MAF
         }
 
-
+}#if(FALSE)
 
         id_include<-1:n
         out.method<-SKAT:::SKAT_Check_Method(method,r.corr, n=n, m=m)
@@ -272,6 +272,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
                                 #}
 			print("MACvec_indVec")	
 			print(MACvec_indVec)
+			weights = weights[-indexNeg]
                         MACvec_indVec = MACvec_indVec[-indexNeg]
                         m = m - length(indexNeg)
                         markerNumbyMAC = NULL
@@ -309,6 +310,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
                         	#print(Phi_ccadj)
                                 Phi_ccadj$scaleFactor = Phi_ccadj$scaleFactor[-indexNeg, -indexNeg]
                                 Phi_ccadj$val = Phi_ccadj$val[-indexNeg, -indexNeg]
+				Phi_ccadj$p.new = Phi_ccadj$p.new[-indexNeg, -indexNeg]
                                 if(!is.null(G2_cond)){
                                         Phi_cond_ccadj$val = Phi_cond_ccadj$val[-indexNeg, -indexNeg]
                                         Phi_cond_ccadj$scaleFactor = Phi_cond_ccadj$scaleFactor[-indexNeg, -indexNeg]
@@ -365,6 +367,18 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
 					re$Phi_sum = sum(Phi)
 					re$Score_sum = sum(Score)
 				}
+				if(IsSingleVarinGroupTest){
+					re$Phi_single=diag(Phi/((weights[1:m])^2))
+					re$Score_single=Score/(weights[1:m])
+					re$Beta_single=re$Score_single/(re$Phi_single)
+					re$Pval_single= pchisq((re$Score_single)^2/(re$Phi_single), lower.tail = FALSE, df=1, log.p=IsOutputlogPforSingle)
+					if(IsOutputlogPforSingle){	
+						re$SE_single = abs((re$Beta_single)/qnorm(exp(re$Pval_single)/2))
+					}else{
+						re$SE_single = abs((re$Beta_single)/qnorm(re$Pval_single/2))	
+					}	
+				}	
+
                          }
 
 
@@ -433,6 +447,22 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
 					re$Phi_ccadj_sum = sum(Phi_ccadj$val)
 					re$Score_sum = sum(Score)
 				}
+				if(IsSingleVarinGroupTest){
+					#print("length(Phi_ccadj$val)")
+					#print(length(diag(Phi_ccadj$val)))
+					#print(length(weights))
+                                        re$Phi_single=diag((Phi_ccadj$val)/(weights[1:m]^2))
+                                        re$Score_single=Score/weights[1:m]
+					re$Beta_single=(re$Score_single)/(re$Phi_single)
+					re$Pval_single = Phi_ccadj$p.new 
+					if(IsOutputlogPforSingle){	
+						re$SE_single = abs((re$Beta_single)/qnorm(exp(re$Pval_single)/2))
+					}else{
+						re$SE_single = abs((re$Beta_single)/qnorm(re$Pval_single/2))
+					}		
+                                }
+
+
 			}
 
 
@@ -481,14 +511,24 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
 						re$Score_cond_sum = sum(Score_cond)
 						re$Phi_cond_sum = sum(Phi_cond)
 					}
+					#if(IsSingleVarinGroupTest){
+                                        #	re$Phi_single=diag(Phi_cond/(weights[1:m]^2))
+                                        #	re$Score_single=Score_cond/weights[1:m]
+                                        #	re$Beta_single=re$Score_single/(re$Phi_single)	
+                                        #	re$Pval_single =  pchisq((re$Score_single)^2/(re$Phi_single), lower.tail = FALSE, df=1, log.p=IsOutputlogPforSingle)
+
+					#if(IsOutputlogPforSingle){	
+					#	re$SE_single = abs((re$Beta_single)/qnorm(exp(re$Pval_single)/2))
+					#}else{
+					#	re$SE_single = abs((re$Beta_single)/qnorm(re$Pval_single/2))	
+					#}	
+                                	#}
 
 				}
 
-
-
 				if(adjustCCratioinGroupTest){
 					if(m_new == 1){
-                                                #if(sum(diag(Phi_cond) < 10^-60) > 0){
+                                                #if(sum(diag(P(.Machine$double.xmin)^(1/4)hi_cond) < 10^-60) > 0){
                                                 if(sum(diag(Phi_cond_ccadj) < (.Machine$double.xmin)^(1/4)) > 0){
                                                         re_cond_ccadj = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA)
 
@@ -525,7 +565,21 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
 					if(IsOutputBETASEinBurdenTest){
 						re$Score_cond_ccadj_sum = sum(Score_cond_ccadj)
 						re$Phi_cond_ccadj_sum = sum(Phi_cond_ccadj)
-					}	
+					}
+				#	if(IsSingleVarinGroupTest){
+						#print("diag(Phi_cond_ccadj)")
+						#print(diag(Phi_cond_ccadj$val))
+                                        	#re$Phi_single=diag(Phi_cond_ccadj/(weights[1:m]^2))
+                                        	#re$Score_single=Score_cond_ccadj/weights[1:m]
+						#re$Beta_single=(re$Score_single)/(re$Phi_single)
+						#re$Pval_single= pchisq((re$Score_single)^2/(re$Phi_single), lower.tail = FALSE, df=1, log.p=IsOutputlogPforSingle)
+					#if(IsOutputlogPforSingle){	
+					#	re$SE_single = abs((re$Beta_single)/qnorm(exp(re$Pval_single)/2))
+					#}else{
+				#		re$SE_single = abs((re$Beta_single)/qnorm(re$Pval_single/2))	
+				#	}	
+                                #	}
+						
 
 				}
                 	}	
@@ -556,7 +610,7 @@ SAIGE_SKAT_withRatioVec  = function(G1, obj, y, X, tauVec, cateVarRatioMinMACVec
 	re$m = m
 	re$indexNeg = indexNeg
 
-        print(re)
+        #print(re)
         return(re)
 
 }

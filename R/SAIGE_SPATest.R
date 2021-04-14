@@ -139,6 +139,8 @@ SPAGMMATtest = function(bgenFile = "",
     cat("single-variant association test will be performed\n")
   }else{
     cat("group-based test will be performed\n")
+    IsOutputlogPforSingle = FALSE 
+
 
     if(dosageZerodCutoff < 0){
       dosageZerodCutoff = 0
@@ -372,6 +374,10 @@ SPAGMMATtest = function(bgenFile = "",
 
   if(IsOutputlogPforSingle){
     cat("IsOutputlogPforSingle = TRUE. NOTE: log(Pvalue) will be output ONLY for single-variant assoc tests\n")
+    if(isGroupTest){
+       IsOutputlogPforSingle = FALSE
+       cat("log(Pvalue) will not be output for single-variant assoc tests in group tests\n")
+    }	    
   }
 
   if (dosageFileType == "vcf"){
@@ -1084,7 +1090,8 @@ SPAGMMATtest = function(bgenFile = "",
      if(IsSingleVarinGroupTest){
        SAIGEOutputFile_single = paste0(SAIGEOutputFile, "_single")
 
-       headerline = c("markerID", "AC", "AF", "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
+       #headerline = c("markerID", "AC", "AF", "N", "BETA", "SE", "Tstat", "p.value","varT","varTstar")
+       headerline = c("markerID", "AC", "AF", "N", "BETA", "SE", "Tstat", "p.value")
 	 if(traitType=="binary"){
 	   headerline = c(headerline, "AF.Cases", "AF.Controls", "N.Cases", "N.Controls")
 	 }
@@ -2314,8 +2321,63 @@ groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMA
                 cat("Note the ", flipindex, "th variants were flipped to use dosages for the minor alleles in gene-based tests\n")
         }
         MAF = colMeans(Gmat)/2
+	flipInd = (AF > 0.5)
 
 
+        macle10Index = which(MACvec <= MACCutoff_to_CollapseUltraRare)
+        if(method_to_CollapseUltraRare != "" & length(macle10Index) > 0){
+                #Gnew = rowSums(Gmat[,macle10Index,drop=F])/(length(macle10Index))
+                G1rare=Gmat[,macle10Index, drop=F]
+                if(method_to_CollapseUltraRare == "absence_or_presence"){
+                        #Gnew = rowSums(G1rare)
+                        #Gnew[which(Gnew >= DosageCutoff_for_UltraRarePresence)] = 1
+                        Gnew = apply(G1rare, 1, get_absence_or_presence, DosageCutoff_for_UltraRarePresence)
+                }else if(method_to_CollapseUltraRare == "sum_geno"){ #####NOT active
+
+                        ##determine the weights of ultra rare variants
+                        MAFle10 = MAF[macle10Index]
+                        if(!weightsIncludeinGroupFile){
+                                if(length(MAFle10) > 1){
+                                        weights_MAFle10=rep(0,length(MAFle10))
+                                        index1 = which(MAFle10<=weightMAFcutoff)
+                                        if(length(index1) > 0) {weights_MAFle10[which(MAFle10<=weightMAFcutoff)] = SKAT:::Beta.Weights(MAFle10[which(MAFle10<=weightMAFcutoff)],weights.beta.rare)}
+                                        index2 = which(MAFle10>weightMAFcutoff)
+                                        if(length(index2) > 0) {weights_MAFle10[which(MAFle10>weightMAFcutoff)] = SKAT:::Beta.Weights(MAFle10[which(MAFle10>weightMAFcutoff)],weights.beta.common)}
+                                }else{
+                                        if(MAFle10<=weightMAFcutoff){
+                                                weights_MAFle10 = SKAT:::Beta.Weights(MAFle10,weights.beta.rare)
+                                        }else{
+                                                weights_MAFle10 = SKAT:::Beta.Weights(MAFle10,weights.beta.common)
+
+                                        }
+                                }
+                        }else{
+                                weights_MAFle10 = weights_specified[macle10Index]
+                                cat("weights is specified in the group file for ultra rare variants.\n")
+                        }
+                        Gnew = rep(0, n)
+                        for (i in 1:length(MAFle10)){
+                                Gnew = Gnew + weights_MAFle10[i] * G1rare[,i]
+                        }
+                } #####NOT active
+		newAFs = sum(Gnew)/(2*n)
+                if(length(macle10Index) < m){
+                        Gmat = cbind(Gnew, Gmat[,-macle10Index, drop=F])
+			markerIDs = c(paste(c("ultra_rare_collpase",markerIDs[macle10Index]), collapse="_"), markerIDs[-macle10Index])
+			markerAFs = c(newAFs, markerAFs[-macle10Index])
+                }else{
+                        Gmat_sub = NULL
+                        Gmat = cbind(Gnew, Gmat_sub)
+			markerIDs = paste(c("ultra_rare_collpase",markerIDs[macle10Index]), collapse="_")
+			markerAFs = newAFs
+                }
+
+                m = ncol(Gmat)
+                MACvec = colSums(Gmat)
+                MAF = MACvec/(2*n)
+                AF = MAF
+        }
+       
         #macle10Index = which(MACvec <= 10)
 	#if(length(macle10Index) > 0){
 	#	Gnew = rowSums(Gmat[,macle10Index, drop=F])
@@ -2337,7 +2399,7 @@ groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMA
 
 
 
-        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.model, y, X, tauVec, cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, mu2 = obj.model$mu2, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = obj.model$mu, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest=IsOutputBETASEinBurdenTest, method_to_CollapseUltraRare=method_to_CollapseUltraRare, MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare, DosageCutoff_for_UltraRarePresence = DosageCutoff_for_UltraRarePresence)})
+        testtime <- system.time({saigeskatTest = SAIGE_SKAT_withRatioVec(Gmat, obj.model, y, X, tauVec, cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude,ratioVec, G2_cond=G2_cond, G2_cond_es=G2_cond_es, kernel=kernel, method = method, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,  r.corr = r.corr, max_maf = max_maf, sparseSigma = sparseSigma, mu2 = obj.model$mu2, adjustCCratioinGroupTest = adjustCCratioinGroupTest, mu = obj.model$mu, IsOutputPvalueNAinGroupTestforBinary = IsOutputPvalueNAinGroupTestforBinary, weights_specified = weights_specified, weights_for_G2_cond = weights_for_G2_cond, weightsIncludeinGroupFile = weightsIncludeinGroupFile, IsOutputBETASEinBurdenTest=IsOutputBETASEinBurdenTest, method_to_CollapseUltraRare=method_to_CollapseUltraRare, MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare, DosageCutoff_for_UltraRarePresence = DosageCutoff_for_UltraRarePresence, IsSingleVarinGroupTest = IsSingleVarinGroupTest, IsOutputlogPforSingle=IsOutputlogPforSingle)})
 
         if(is.null(G2_cond)){
                 isCondition = FALSE
@@ -2351,6 +2413,13 @@ groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMA
 
         cat("time for SAIGE_SKAT_withRatioVec\n")
         print(testtime)
+	if(IsSingleVarinGroupTest){
+        	Score_single=saigeskatTest$Score_single
+                Phi_single=saigeskatTest$Phi_single
+		Beta_single=saigeskatTest$Beta_single
+		Pval_single=saigeskatTest$Pval_single
+		SE_single=saigeskatTest$SE_single
+        }
         if(length(saigeskatTest$indexNeg) > 0){
                 #Gmat = Gmat[,-saigeskatTest$indexNeg]
 		Gmat = array(Gmat, dim = c(nrow(Gmat), ncol(Gmat)))[,-saigeskatTest$indexNeg, drop=F]
@@ -2358,6 +2427,16 @@ groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMA
                 Gmat = as.matrix(Gmat)
                 markerIDs = markerIDs[-saigeskatTest$indexNeg]
                 markerAFs = markerAFs[-saigeskatTest$indexNeg]
+		flipInd = flipInd[-saigeskatTest$indexNeg]
+		AF = AF[-saigeskatTest$indexNeg]
+		MACvec = MACvec[-saigeskatTest$indexNeg]
+		if(IsSingleVarinGroupTest){
+			Score_single=Score_single[-saigeskatTest$indexNeg]
+			Phi_single=Phi_single[-saigeskatTest$indexNeg]
+			Beta_single=Beta_single[-saigeskatTest$indexNeg]
+			Pval_single=Pval_single[-saigeskatTest$indexNeg]
+			SE_single=SE_single[-saigeskatTest$indexNeg]
+		}	
         }
         #cat("saigeskatTest$p.value: ", saigeskatTest$p.value, "\n")
 	print("OK1")
@@ -2374,23 +2453,31 @@ groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMA
                for(nc in 1:ncol(Gmat)){
                  G0_single = Gmat[,nc]
 
-                 AC = sum(G0_single)
-                 AF = AC/(2*length(G0_single))
-                 MAC = min(AC, 2*length(G0_single)-AC)
-                 MAF = MAC/(2*N)
-                 varRatio = getVarRatio(G0_single, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
+               #  AC = sum(G0_single)
+               #  AF = AC/(2*length(G0_single))
+               #  MAC = min(AC, 2*length(G0_single)-AC)
+               #  MAF = MAC/(2*N)
+               #  varRatio = getVarRatio(G0_single, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec)
 
-                 if(traitType == "quantitative"){
-                   out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.model$obj.noK, AC, AF, y = y, X=X,  mu = obj.model$mu, varRatio, tauVec = tauVec, sparseSigma=sparseSigma, IsOutputlogPforSingle)
+               #  if(traitType == "quantitative"){
+               #    out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.model$obj.noK, AC, AF, y = y, X=X,  mu = obj.model$mu, varRatio, tauVec = tauVec, sparseSigma=sparseSigma, IsOutputlogPforSingle)
 
-                  }else if(traitType == "binary"){
+                #  }else if(traitType == "binary"){
+                if(traitType == "binary"){
 		    freqinCase = sum(G0_single[caseIndex])/(2*numofCase)
 		    freqinCtrl = sum(G0_single[ctrlIndex])/(2*numofCtrl)
-                    out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.model$obj.noK, mu.a = obj.model$mu, mu2.a = obj.model$mu2, y, X, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, IsOutputlogPforSingle=IsOutputlogPforSingle)
+                    #out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.model$obj.noK, mu.a = obj.model$mu, mu2.a = obj.model$mu2, y, X, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, IsOutputlogPforSingle=IsOutputlogPforSingle)
 
-                  }
+                }
+		if(flipInd[nc]){
+			freqinCase = 1- freqinCase
+			freqinCtrl = 1- freqinCtrl
+			outsingle = c(as.character((markerIDs)[nc]), as.numeric(2*n-MACvec[nc]), as.numeric((markerAFs)[nc]), as.numeric(N), -as.numeric(Beta_single[nc]), as.numeric(SE_single[nc]),-as.numeric(Score_single[nc]), as.numeric(Pval_single[nc]))
+		}else{
 
-		outsingle = c(as.character((markerIDs)[nc]), as.numeric(AC), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(out1$BETA), as.numeric(out1$SE), as.numeric(out1$Tstat), as.numeric(out1$p.value), as.numeric(out1$var1), as.numeric(out1$var2))
+			outsingle = c(as.character((markerIDs)[nc]), as.numeric(MACvec[nc]), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(Beta_single[nc]), as.numeric(SE_single[nc]),as.numeric(Score_single[nc]), as.numeric(Pval_single[nc]))
+		}	
+
 
 		  if(traitType == "binary"){
 			outsingle = c(outsingle, freqinCase, freqinCtrl, numofCase, numofCtrl)

@@ -244,4 +244,3 @@ outputDiagGRM = function(
   }
 
 }
-
