@@ -48,6 +48,8 @@ public:
   	arma::ivec	m_OneSNP_Geno;
   	arma::fvec	m_OneSNP_StdGeno;
   	arma::fvec	m_DiagStd;
+  	arma::fmat	mtx_DiagStd_LOCO;
+
 
 	arma::ivec	MACVec; //for variance ratio based on different MAC categories
 	arma::ivec	subMarkerIndex; //for sparse GRM
@@ -75,7 +77,15 @@ public:
         size_t Msub;
         int startIndex;
         int endIndex;
+	int chromIndex;
+
+        
+        arma::ivec startIndexVec;
+        arma::ivec endIndexVec;
+
+
         int Msub_MAFge_minMAFtoConstructGRM;
+	arma::ivec Msub_MAFge_minMAFtoConstructGRM_LOCO;
 	//end for LOCO
 
 	unsigned char m_genotype_buffer[4];
@@ -355,8 +365,6 @@ public:
 	}
 
 	
-	
-
  	
 
 	arma::fvec * Get_Diagof_StdGeno_LOCO(){
@@ -364,21 +372,48 @@ public:
                 arma::fvec * temp = &m_OneSNP_StdGeno;
 		Msub_MAFge_minMAFtoConstructGRM = 0;
                 // Not yet calculated
-                if(size(m_DiagStd)[0] == Nnomissing){
+                if(size(m_DiagStd)[0] != Nnomissing){
                         m_DiagStd.zeros(Nnomissing);
                         for(size_t i=0; i< M; i++){
-				if(i < startIndex || i > endIndex){
-					if(alleleFreqVec[i] >= minMAFtoConstructGRM && alleleFreqVec[i] <= 1-minMAFtoConstructGRM){
-                                  		Get_OneSNP_StdGeno(i, temp);
-                                  		m_DiagStd = m_DiagStd + (*temp) % (*temp);
-						Msub_MAFge_minMAFtoConstructGRM = Msub_MAFge_minMAFtoConstructGRM + 1;
-					}
-				}
+                                if(alleleFreqVec[i] >= minMAFtoConstructGRM && alleleFreqVec[i] <= 1-minMAFtoConstructGRM){
+
+
+                                Get_OneSNP_StdGeno(i, temp);
+
+                                /*if(i == 0){
+                                        cout << "setgeno mark7 " << i <<  endl;
+                                        for(int j=0; j<10; ++j)
+                                        {
+                                                cout << (*temp)[j] << ' ';
+                                        }
+                                        cout << endl;
+                                }
+                                */
+                                m_DiagStd = m_DiagStd + (*temp) % (*temp);
+
+                                }
                         }
 
                 }
 
-                return & m_DiagStd;
+                //if(size(m_DiagStd_LOCO)[0] != Nnomissing){
+		//m_DiagStd_LOCO.zeros(Nnomissing);
+                  //      for(size_t i=startIndex; i<= endIndex; i++){
+				//if(i < startIndex || i > endIndex){
+		//			if(alleleFreqVec[i] >= minMAFtoConstructGRM && alleleFreqVec[i] <= 1-minMAFtoConstructGRM){
+                  //                		Get_OneSNP_StdGeno(i, temp);
+                    //              		m_DiagStd_LOCO = m_DiagStd_LOCO + (*temp) % (*temp);
+		//				Msub_MAFge_minMAFtoConstructGRM = Msub_MAFge_minMAFtoConstructGRM + 1;
+		//			}
+				//}
+                 //       }
+
+
+		m_DiagStd_LOCO = m_DiagStd - geno.mtx_DiagStd_LOCO.col(geno.chromIndex);
+                Msub_MAFge_minMAFtoConstructGRM = geno.Msub_MAFge_minMAFtoConstructGRM_LOCO(geno.chromIndex); 
+                //}
+
+                return & m_DiagStd_LOCO;
         }
 
 
@@ -1235,7 +1270,7 @@ float innerProductFun(std::vector<float> &x, std::vector<float> & y) {
 }
 
 
-
+/*
 // [[Rcpp::export]]
 arma::fvec parallelCrossProd_LOCO(arma::fcolvec & bVec) {
 
@@ -1250,13 +1285,87 @@ arma::fvec parallelCrossProd_LOCO(arma::fcolvec & bVec) {
 
   // return the computed product
 	//cout << "Msub: " << Msub << endl;
+
+	for(int i=0; i<10; ++i)
+        {
+		std::cout << (CorssProd_LOCO.m_bout)[i] << ' ';
+        }
+	std::cout << std::endl;
+	std::cout << "CorssProd_LOCO.m_Msub_mafge1perc: " << CorssProd_LOCO.m_Msub_mafge1perc << std::endl;
+        //return CorssProd_LOCO.m_bout/Msub;
+	return CorssProd_LOCO.m_bout/(CorssProd_LOCO.m_Msub_mafge1perc);
+}
+
+*/
+
+
+// [[Rcpp::export]]
+arma::fvec parallelCrossProd_full(arma::fcolvec & bVec, int & markerNum) {
+
+  // declare the InnerProduct instance that takes a pointer to the vector data
+        int M = geno.getM();
+        //int Msub_mafge1perc = geno.getMmafge1perc();
+        CorssProd CorssProd(bVec);
+
+  // call paralleReduce to start the work
+        parallelReduce(0, M, CorssProd);
+        markerNum = CorssProd.Msub_mafge1perc;
+        
+
+        //cout << "print test; M: " << M << endl;
+        //for(int i=0; i<10; ++i)
+        //{
+        //        cout << (CorssProd.m_bout)[i] << ' ' << endl;
+        //        cout << bVec[i] << ' ' << endl;
+        //        cout << (CorssProd.m_bout/M)[i] << ' ' << endl;
+        //}
+        ////cout << endl;
+  // return the computed product
+        //std::cout << "number of markers with maf ge " << minMAFtoConstructGRM << " is " << CorssProd.Msub_mafge1perc << std::endl;
+        return CorssProd.m_bout;
+        //return CorssProd.m_bout;
+}
+
+
+// [[Rcpp::export]]
+arma::fvec parallelCrossProd_LOCO(arma::fcolvec & bVec) {
+
+  // declare the InnerProduct instance that takes a pointer to the vector data
+        //int Msub = geno.getMsub();
+	int M = geno.getM();
+        int numberMarker_full = 0;
+        arma::fvec outvec = parallelCrossProd_full(bVec, numberMarker_full);
+
+        //CorssProd_LOCO CorssProd_LOCO(bVec);
+	CorssProd CorssProd(bVec);
+  // call paralleReduce to start the work
+	int startIndex = geno.getStartIndex();
+        int endIndex = geno.getEndIndex();
+	parallelReduce(startIndex, endIndex+1, CorssProd);
+
+	outvec = outvec - CorssProd.m_bout;
+/*
+	for(int i=0; i<10; ++i)
+        {
+                std::cout << (outvec)[i] << ' ';
+        }
+        std::cout << std::endl;
+
+        std::cout << "numberMarker_full: " << numberMarker_full << std::endl;
+        std::cout << "CorssProd.Msub_mafge1perc: " << CorssProd.Msub_mafge1perc << std::endl;
+*/
+	int markerNum = numberMarker_full - CorssProd.Msub_mafge1perc;
+	//std::cout << "markerNum: " << markerNum << std::endl; 
+      	// return the computed product
+	//cout << "Msub: " << Msub << endl;
         //for(int i=0; i<100; ++i)
         //{
         //	cout << (CorssProd_LOCO.m_bout/Msub)[i] << ' ';
         //}
 	//cout << endl;
         //return CorssProd_LOCO.m_bout/Msub;
-        return CorssProd_LOCO.m_bout/(CorssProd_LOCO.m_Msub_mafge1perc);
+        //return CorssProd_LOCO.m_bout/(CorssProd_LOCO.m_Msub_mafge1perc);
+	return outvec/markerNum;
 }
 
 
@@ -1334,6 +1443,14 @@ if(isUseSparseSigmaforInitTau | isUseSparseSigmaforModelFitting){
 arma::fvec getCrossprodMatAndKin_LOCO(arma::fcolvec& bVec){
 
         arma::fvec crossProdVec = parallelCrossProd_LOCO(bVec) ;
+        //arma::fvec crossProdVec_2 = parallelCrossProd_LOCO_2(bVec) ;
+
+	//for(int k=0; k < 10; k++) {
+        //	std::cout << "old crossProdVec " << k << " " << crossProdVec[k] << std::endl;
+        //	std::cout << "new crossProdVec " << k << " " << crossProdVec_2[k] << std::endl;
+
+	//}	
+
 
         return(crossProdVec);
 }
@@ -1898,13 +2015,19 @@ if(isUseSparseSigmaforInitTau){
         arma::fvec zVec(Nnomissing);
         arma::fvec minvVec(Nnomissing);
 
-        double wall1 = get_wall_time();
-        double cpu1  = get_cpu_time();
+ //       double wall1 = get_wall_time();
+ //       double cpu1  = get_cpu_time();
 
 //    cout << "Wall Time 1= " << wall1 - wall0 << endl;
 //    cout << "CPU Time 1 = " << cpu1  - cpu0  << endl;
         if (!isUsePrecondM){
+		double wall1_gDiag = get_wall_time();
+		double cpu1_gDiag  = get_cpu_time();
                 minvVec = 1/getDiagOfSigma(wVec, tauVec);
+		double wall1_gDiag_2 = get_wall_time();
+		double cpu1_gDiag_2  = get_cpu_time();
+		 cout << "Wall Time getDiagOfSigma = " << wall1_gDiag_2 - wall1_gDiag << endl;
+ cout << "CPU Time getDiagOfSigma = " << cpu1_gDiag_2 - cpu1_gDiag  << endl;
                 zVec = minvVec % rVec;
         }else{
 
@@ -1921,10 +2044,10 @@ if(isUseSparseSigmaforInitTau){
                 //(sparseGRMinC).diag() = (sparseGRMinC).diag() + dtVec;
                 //zVec = gen_spsolve_v4(sparseGRMinC, rVec) ;
         }
- double wall2 = get_wall_time();
- double cpu2  = get_cpu_time();
-// cout << "Wall Time 2 = " << wall2 - wall1 << endl;
-// cout << "CPU Time 2 = " << cpu2  - cpu1  << endl;
+ double wall1 = get_wall_time();
+ double cpu1  = get_cpu_time();
+ cout << "Wall Time 1 = " << wall1 - wall0 << endl;
+ cout << "CPU Time 1 = " << cpu1  - cpu0  << endl;
 
 
 //      cout << "HELL3: "  << endl;
@@ -1956,9 +2079,23 @@ if(isUseSparseSigmaforInitTau){
 
         int iter = 0;
         while (sumr2 > tolPCG && iter < maxiterPCG) {
+ double wall2 = get_wall_time();
+        double cpu2  = get_cpu_time();
+
+    cout << "Wall Time 2= " << wall2 - wall1 << endl;
+    cout << "CPU Time 2 = " << cpu2  - cpu1  << endl;
+
+
+
                 iter = iter + 1;
                 arma::fcolvec ApVec = getCrossprod(pVec, wVec, tauVec);
                 arma::fvec preA = (rVec.t() * zVec)/(pVec.t() * ApVec);
+
+ double wall3 = get_wall_time();
+        double cpu3  = get_cpu_time();
+
+    cout << "Wall Time 3= " << wall3 - wall2 << endl;
+    cout << "CPU Time 3 = " << cpu3  - cpu2  << endl;
 
                 float a = preA(0);
 
@@ -2019,6 +2156,12 @@ if(isUseSparseSigmaforInitTau){
                 zVec = z1Vec;
                 rVec = r1Vec;
 
+ double wall4 = get_wall_time();
+        double cpu4  = get_cpu_time();
+
+    cout << "Wall Time 4= " << wall4 - wall3 << endl;
+    cout << "CPU Time 4 = " << cpu4  - cpu3  << endl;
+
                 sumr2 = sum(rVec % rVec);
                 //        std::cout << "sumr2: " << sumr2 << std::endl;
                 //        std::cout << "tolPCG: " << tolPCG << std::endl;
@@ -2036,11 +2179,11 @@ if(isUseSparseSigmaforInitTau){
         }
         cout << "iter from getPCG1ofSigmaAndVector " << iter << endl;
 } //else if(isUseSparseKinforInitTau){
-//        double wall1 = get_wall_time();
-//    double cpu1  = get_cpu_time();
+  double wall5 = get_wall_time();
+    double cpu5  = get_cpu_time();
+    cout << "Wall Time getPCG1ofSigmaAndVector = " << wall5 - wall0 << endl;
+    cout << "CPU Time  getPCG1ofSigmaAndVector = " << cpu5  - cpu0  << endl;
 
-//    cout << "Wall Time = " << wall1 - wall0 << endl;
-//    cout << "CPU Time  = " << cpu1  - cpu0  << endl;
 
 //      std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
 //        std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() <<std::endl;
@@ -2180,13 +2323,30 @@ arma::fvec getPCG1ofSigmaAndVector_old(arma::fvec& wVec,  arma::fvec& tauVec, ar
 //This function needs the function getDiagOfSigma and function getCrossprod
 // [[Rcpp::export]]
 arma::fvec getPCG1ofSigmaAndVector_LOCO(arma::fvec& wVec,  arma::fvec& tauVec, arma::fvec& bVec, int maxiterPCG, float tolPCG){
+	 double wall0 = get_wall_time();
+    double cpu0  = get_cpu_time();
   	arma::fvec rVec = bVec;
   	arma::fvec r1Vec;
   	int Nnomissing = geno.getNnomissing();
 
   	arma::fvec crossProdVec(Nnomissing);
+
+
+                double wall1_gDiag = get_wall_time();
+                double cpu1_gDiag  = get_cpu_time();
   	arma::fvec minvVec = 1/getDiagOfSigma_LOCO(wVec, tauVec);
-        //for(int i = 0; i < 10; i++){
+                double wall1_gDiag_2 = get_wall_time();
+                double cpu1_gDiag_2  = get_cpu_time();
+                 cout << "Wall Time getDiagOfSigma_LOCO = " << wall1_gDiag_2 - wall1_gDiag << endl;
+ cout << "CPU Time getDiagOfSigma = " << cpu1_gDiag_2 - cpu1_gDiag  << endl;
+
+              double wall1 = get_wall_time();
+        double cpu1  = get_cpu_time();
+
+    cout << "Wall Time 1= " << wall1 - wall0 << endl;
+    cout << "CPU Time 1 = " << cpu1  - cpu0  << endl;
+
+	//for(int i = 0; i < 10; i++){
 	//	cout << "minvVec[i]: " << minvVec[i] << endl;
         //} 
  
@@ -2200,10 +2360,25 @@ arma::fvec getPCG1ofSigmaAndVector_LOCO(arma::fvec& wVec,  arma::fvec& tauVec, a
   	xVec.zeros();
   
   	int iter = 0;
-  	while (sumr2 > tolPCG && iter < maxiterPCG) {
+
+
+
+	while (sumr2 > tolPCG && iter < maxiterPCG) {
+ double wall2 = get_wall_time();
+        double cpu2  = get_cpu_time();
+
+    cout << "Wall Time 2= " << wall2 - wall1 << endl;
+    cout << "CPU Time 2 = " << cpu2  - cpu1  << endl;
     		iter = iter + 1;
     		arma::fcolvec ApVec = getCrossprod_LOCO(pVec, wVec, tauVec);
     		arma::fvec preA = (rVec.t() * zVec)/(pVec.t() * ApVec);
+
+ double wall3 = get_wall_time();
+        double cpu3  = get_cpu_time();
+
+    cout << "Wall Time 3= " << wall3 - wall2 << endl;
+    cout << "CPU Time 3 = " << cpu3  - cpu2  << endl;
+
 
     		float a = preA(0);
     
@@ -2217,7 +2392,11 @@ arma::fvec getPCG1ofSigmaAndVector_LOCO(arma::fvec& wVec,  arma::fvec& tauVec, a
     		pVec = z1Vec+ bet*pVec;
     		zVec = z1Vec;
     		rVec = r1Vec;
-    
+     double wall4 = get_wall_time();
+        double cpu4  = get_cpu_time();
+
+    cout << "Wall Time 4= " << wall4 - wall3 << endl;
+    cout << "CPU Time 4 = " << cpu4  - cpu3  << endl;
     		sumr2 = sum(rVec % rVec);
   	}
   
@@ -2226,7 +2405,14 @@ arma::fvec getPCG1ofSigmaAndVector_LOCO(arma::fvec& wVec,  arma::fvec& tauVec, a
      
   	}
   	cout << "iter from getPCG1ofSigmaAndVector " << iter << endl;
-  	return(xVec);
+        double wall5 = get_wall_time();
+    double cpu5  = get_cpu_time();
+
+    cout << "Wall Time getPCG1ofSigmaAndVector_LOCO = " << wall5 - wall0 << endl;
+    cout << "CPU Time  getPCG1ofSigmaAndVector_LOCO = " << cpu5  - cpu0  << endl;
+
+
+	return(xVec);
 }
 
 
@@ -2255,10 +2441,11 @@ void setChromosomeIndicesforLOCO(vector<int> chromosomeStartIndexVec, vector<int
 */
 
 // [[Rcpp::export]]
-void setStartEndIndex(int startIndex, int endIndex){
+void setStartEndIndex(int startIndex, int endIndex, int chromIndex){
   geno.startIndex = startIndex;
   geno.endIndex = endIndex;
   geno.Msub = 0;
+  geno.chromIndex = chromIndex;
 
   for(size_t i=0; i< geno.M; i++){
 	if(i < startIndex || i > endIndex){
@@ -2270,6 +2457,17 @@ void setStartEndIndex(int startIndex, int endIndex){
   }
   //geno.Msub = geno.M - (endIndex - startIndex + 1);
 }
+
+
+
+// [[Rcpp::export]]
+void setStartEndIndexVec(int startIndex_vec, int endIndex_vec){
+  geno.startIndexVec = startIndex_vec;
+  geno.endIndexVec = endIndex_vec;
+  //geno.Msub = geno.M - (endIndex - startIndex + 1);
+}
+
+
 
 //This function calculates the coefficients of variation for mean of a vector
 // [[Rcpp::export]]
@@ -4026,6 +4224,37 @@ arma::fvec get_GRMdiagVec(){
 void setminMAFforGRM(float minMAFforGRM){
   minMAFtoConstructGRM = minMAFforGRM;
 }
+
+
+// [[Rcpp::export]]
+void set_Diagof_StdGeno_LOCO(){
+
+      
+  int Nnomissing = geno.getNnomissing();
+  int chrlength = geno.startIndexVec.n_elem;
+  (geno.mtx_DiagStd_LOCO).zeros(Nnomissing, chrlength);
+  (geno.Msub_MAFge_minMAFtoConstructGRM_LOCO).zeros(chrlength);
+
+    int starti, endi;
+    arma::fvec * temp = &geno.m_OneSNP_StdGeno;
+for(size_t k=0; k<= chrlength; k++){
+   starti = geno.startIndexVec[k];
+   endi = geno.endIndexVec[k];
+
+  for(int i=starti; i<= endi; i++){
+    if(geno.alleleFreqVec[i] >= minMAFtoConstructGRM && geno.alleleFreqVec[i] <= 1-minMAFtoConstructGRM){
+         Get_OneSNP_StdGeno(i, temp);
+	 (geno.mtx_DiagStd_LOCO).col(k) = (geno.mtx_DiagStd_LOCO).col(k) + (*temp) % (*temp);
+	 geno.Msub_MAFge_minMAFtoConstructGRM_LOCO[k] = geno.Msub_MAFge_minMAFtoConstructGRM_LOCO[k] + 1;
+
+     }	    
+
+  }	  
+
+}	
+
+}
+
 
 // // [[Rcpp::export]] 
 //int getNumofMarkersforGRM(){
