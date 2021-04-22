@@ -2463,19 +2463,31 @@ groupTest = function(Gmat, obj.model, y, X, tauVec, traitType, cateVarRatioMinMA
                #    out1 = scoreTest_SAIGE_quantitativeTrait_sparseSigma(G0_single, obj.model$obj.noK, AC, AF, y = y, X=X,  mu = obj.model$mu, varRatio, tauVec = tauVec, sparseSigma=sparseSigma, IsOutputlogPforSingle)
 
                 #  }else if(traitType == "binary"){
+
+
+
                 if(traitType == "binary"){
 		    freqinCase = sum(G0_single[caseIndex])/(2*numofCase)
 		    freqinCtrl = sum(G0_single[ctrlIndex])/(2*numofCtrl)
                     #out1 = scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G0_single, AC, AF, MAF, IsSparse, obj.model$obj.noK, mu.a = obj.model$mu, mu2.a = obj.model$mu2, y, X, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, IsOutputlogPforSingle=IsOutputlogPforSingle)
 
-                }
-		if(flipInd[nc]){
-			freqinCase = 1- freqinCase
-			freqinCtrl = 1- freqinCtrl
-			outsingle = c(as.character((markerIDs)[nc]), as.numeric(2*n-MACvec[nc]), as.numeric((markerAFs)[nc]), as.numeric(N), -as.numeric(Beta_single[nc]), as.numeric(SE_single[nc]),-as.numeric(Score_single[nc]), as.numeric(Pval_single[nc]))
-		}else{
+			if(flipInd[nc]){
+				freqinCase = 1- freqinCase
+				freqinCtrl = 1- freqinCtrl
+				outsingle = c(as.character((markerIDs)[nc]), as.numeric(2*n-MACvec[nc]), as.numeric((markerAFs)[nc]), as.numeric(N), -as.numeric(Beta_single[nc]), as.numeric(SE_single[nc]),-as.numeric(Score_single[nc]), as.numeric(Pval_single[nc]))
+			}else{
+				outsingle = c(as.character((markerIDs)[nc]), as.numeric(MACvec[nc]), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(Beta_single[nc]), as.numeric(SE_single[nc]),as.numeric(Score_single[nc]), as.numeric(Pval_single[nc]))
 
-			outsingle = c(as.character((markerIDs)[nc]), as.numeric(MACvec[nc]), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(Beta_single[nc]), as.numeric(SE_single[nc]),as.numeric(Score_single[nc]), as.numeric(Pval_single[nc]))
+			}	
+		
+		}else{
+			if(flipInd[nc]){
+				outsingle = c(as.character((markerIDs)[nc]), as.numeric(2*n-MACvec[nc]), as.numeric((markerAFs)[nc]), as.numeric(N), -as.numeric(Beta_single[nc]), as.numeric(SE_single[nc]),-as.numeric(Score_single[nc]), as.numeric(Pval_single[nc]))		
+			}else{	
+				outsingle = c(as.character((markerIDs)[nc]), as.numeric(MACvec[nc]), as.numeric((markerAFs)[nc]), as.numeric(N), as.numeric(Beta_single[nc]), as.numeric(SE_single[nc]),as.numeric(Score_single[nc]), as.numeric(Pval_single[nc]))
+			}
+	
+	
 		}	
 
 
