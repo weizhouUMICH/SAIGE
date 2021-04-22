@@ -205,6 +205,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// parallelCrossProd_full
+arma::fvec parallelCrossProd_full(arma::fcolvec& bVec, int& markerNum);
+RcppExport SEXP _SAIGE_parallelCrossProd_full(SEXP bVecSEXP, SEXP markerNumSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::fcolvec& >::type bVec(bVecSEXP);
+    Rcpp::traits::input_parameter< int& >::type markerNum(markerNumSEXP);
+    rcpp_result_gen = Rcpp::wrap(parallelCrossProd_full(bVec, markerNum));
+    return rcpp_result_gen;
+END_RCPP
+}
 // parallelCrossProd_LOCO
 arma::fvec parallelCrossProd_LOCO(arma::fcolvec& bVec);
 RcppExport SEXP _SAIGE_parallelCrossProd_LOCO(SEXP bVecSEXP) {
@@ -528,13 +540,25 @@ BEGIN_RCPP
 END_RCPP
 }
 // setStartEndIndex
-void setStartEndIndex(int startIndex, int endIndex);
-RcppExport SEXP _SAIGE_setStartEndIndex(SEXP startIndexSEXP, SEXP endIndexSEXP) {
+void setStartEndIndex(int startIndex, int endIndex, int chromIndex);
+RcppExport SEXP _SAIGE_setStartEndIndex(SEXP startIndexSEXP, SEXP endIndexSEXP, SEXP chromIndexSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type startIndex(startIndexSEXP);
     Rcpp::traits::input_parameter< int >::type endIndex(endIndexSEXP);
-    setStartEndIndex(startIndex, endIndex);
+    Rcpp::traits::input_parameter< int >::type chromIndex(chromIndexSEXP);
+    setStartEndIndex(startIndex, endIndex, chromIndex);
+    return R_NilValue;
+END_RCPP
+}
+// setStartEndIndexVec
+void setStartEndIndexVec(arma::ivec& startIndex_vec, arma::ivec& endIndex_vec);
+RcppExport SEXP _SAIGE_setStartEndIndexVec(SEXP startIndex_vecSEXP, SEXP endIndex_vecSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::ivec& >::type startIndex_vec(startIndex_vecSEXP);
+    Rcpp::traits::input_parameter< arma::ivec& >::type endIndex_vec(endIndex_vecSEXP);
+    setStartEndIndexVec(startIndex_vec, endIndex_vec);
     return R_NilValue;
 END_RCPP
 }
@@ -1137,6 +1161,15 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// set_Diagof_StdGeno_LOCO
+void set_Diagof_StdGeno_LOCO();
+RcppExport SEXP _SAIGE_set_Diagof_StdGeno_LOCO() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    set_Diagof_StdGeno_LOCO();
+    return R_NilValue;
+END_RCPP
+}
 // setIsDropMissingDosages_bgen
 void setIsDropMissingDosages_bgen(bool isdropmissingdosages);
 RcppExport SEXP _SAIGE_setIsDropMissingDosages_bgen(SEXP isdropmissingdosagesSEXP) {
@@ -1488,6 +1521,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_Get_MultiMarkersBySample_StdGeno", (DL_FUNC) &_SAIGE_Get_MultiMarkersBySample_StdGeno, 2},
     {"_SAIGE_parallelCrossProd", (DL_FUNC) &_SAIGE_parallelCrossProd, 1},
     {"_SAIGE_innerProductFun", (DL_FUNC) &_SAIGE_innerProductFun, 2},
+    {"_SAIGE_parallelCrossProd_full", (DL_FUNC) &_SAIGE_parallelCrossProd_full, 2},
     {"_SAIGE_parallelCrossProd_LOCO", (DL_FUNC) &_SAIGE_parallelCrossProd_LOCO, 1},
     {"_SAIGE_setupSparseGRM", (DL_FUNC) &_SAIGE_setupSparseGRM, 3},
     {"_SAIGE_getCrossprodMatAndKin", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin, 1},
@@ -1516,7 +1550,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getPCG1ofSigmaAndVector_LOCO", (DL_FUNC) &_SAIGE_getPCG1ofSigmaAndVector_LOCO, 5},
     {"_SAIGE_set_seed", (DL_FUNC) &_SAIGE_set_seed, 1},
     {"_SAIGE_nb", (DL_FUNC) &_SAIGE_nb, 1},
-    {"_SAIGE_setStartEndIndex", (DL_FUNC) &_SAIGE_setStartEndIndex, 2},
+    {"_SAIGE_setStartEndIndex", (DL_FUNC) &_SAIGE_setStartEndIndex, 3},
+    {"_SAIGE_setStartEndIndexVec", (DL_FUNC) &_SAIGE_setStartEndIndexVec, 2},
     {"_SAIGE_calCV", (DL_FUNC) &_SAIGE_calCV, 1},
     {"_SAIGE_GetTrace", (DL_FUNC) &_SAIGE_GetTrace, 9},
     {"_SAIGE_getCoefficients", (DL_FUNC) &_SAIGE_getCoefficients, 6},
@@ -1561,6 +1596,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getCrossprodMatAndKin_mailman", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin_mailman, 1},
     {"_SAIGE_get_GRMdiagVec", (DL_FUNC) &_SAIGE_get_GRMdiagVec, 0},
     {"_SAIGE_setminMAFforGRM", (DL_FUNC) &_SAIGE_setminMAFforGRM, 1},
+    {"_SAIGE_set_Diagof_StdGeno_LOCO", (DL_FUNC) &_SAIGE_set_Diagof_StdGeno_LOCO, 0},
     {"_SAIGE_setIsDropMissingDosages_bgen", (DL_FUNC) &_SAIGE_setIsDropMissingDosages_bgen, 1},
     {"_SAIGE_setgenoTest_bgenDosage", (DL_FUNC) &_SAIGE_setgenoTest_bgenDosage, 6},
     {"_SAIGE_getDosage_inner_bgen_withquery", (DL_FUNC) &_SAIGE_getDosage_inner_bgen_withquery, 0},

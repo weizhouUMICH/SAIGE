@@ -8,9 +8,21 @@ Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG
   W = sqrtW^2
 
   for(i in 1:maxiter){
-    cat("iGet_Coef: ", i, "\n")
+#    cat("iGet_Coef: ", i, "\n")
+#  t_begin_getCoefficients = proc.time()
     re.coef = getCoefficients(Y, X, W, tau, maxiter=maxiterPCG, tol=tolPCG)
-    alpha = re.coef$alpha
+#  t_end_getCoefficients = proc.time()
+#  print("t_end_getCoefficients - t_begin_getCoefficients")
+#  print(t_end_getCoefficients - t_begin_getCoefficients)
+
+#   t_begin_getPCG1ofSigmaAndVector = proc.time()
+#Sigma_iY_temp = getPCG1ofSigmaAndVector(W, tau, Y, maxiterPCG, tolPCG)
+#  t_end_getPCG1ofSigmaAndVector = proc.time()
+#print("t_end_getPCG1ofSigmaAndVector - t_begin_getPCG1ofSigmaAndVector")
+#print(t_end_getPCG1ofSigmaAndVector - t_begin_getPCG1ofSigmaAndVector)
+
+
+  alpha = re.coef$alpha
     eta = re.coef$eta + offset
 
     if(verbose) {
@@ -49,8 +61,20 @@ Get_Coef_LOCO = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, t
   W = sqrtW^2
 
   for(i in 1:maxiter){
-    cat("iGet_Coef: ", i, "\n")
+#    cat("iGet_Coef: ", i, "\n")
+#  t_begin_getCoefficients_LOCO = proc.time()
     re.coef = getCoefficients_LOCO(Y, X, W, tau, maxiter=maxiterPCG, tol=tolPCG)
+#  t_end_getCoefficients_LOCO = proc.time()
+#  print("t_end_getCoefficients_LOCO - t_begin_getCoefficients_LOCO")
+#  print(t_end_getCoefficients_LOCO - t_begin_getCoefficients_LOCO)
+
+# t_begin_getPCG1ofSigmaAndVector_LOCO = proc.time()
+#Sigma_iY_temp = getPCG1ofSigmaAndVector_LOCO(W, tau, Y, maxiterPCG, tolPCG)
+#  t_end_getPCG1ofSigmaAndVector_LOCO = proc.time()
+#print("t_end_getPCG1ofSigmaAndVector_LOCO - t_begin_getPCG1ofSigmaAndVector_LOCO")
+#print(t_end_getPCG1ofSigmaAndVector_LOCO - t_begin_getPCG1ofSigmaAndVector_LOCO)
+
+
     alpha = re.coef$alpha
     eta = re.coef$eta + offset
 
@@ -112,6 +136,8 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   #Returns:
   #  model output for the null glmm
 
+ t_begin = proc.time()
+      print(t_begin)	
   subSampleInGeno = subPheno$IndexGeno
   if(verbose){
     print("Start reading genotype plink file here")
@@ -174,9 +200,16 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     tau0 = tau
     cat("tau0_v1: ", tau0, "\n")
     eta0 = eta
-    # use Get_Coef before getAIScore        
+    # use Get_Coef before getAIScore       
+    t_begin_Get_Coef = proc.time()
     re.coef = Get_Coef(y, X, tau, family, alpha0, eta0,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
+   t_end_Get_Coef =  proc.time()
+   cat("t_end_Get_Coef - t_begin_Get_Coef\n")
+   print(t_end_Get_Coef - t_begin_Get_Coef)
     fit = fitglmmaiRPCG(re.coef$Y, X, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov, nrun, maxiterPCG, tolPCG, tol = tol, traceCVcutoff = traceCVcutoff)
+  t_end_fitglmmaiRPCG= proc.time()
+  cat("t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG\n")
+  print(t_end_fitglmmaiRPCG - t_end_Get_Coef)
 
     tau = as.numeric(fit$tau)
     cov = re.coef$cov
@@ -231,7 +264,12 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   #LOCO: estimate fixed effect coefficients, random effects, and residuals for each chromoosme  
 
   glmmResult$LOCO = LOCO
+       t_end_null = proc.time()
+      #print(t_end_null)
+      cat("t_end_null - t_begin, fitting the NULL model without LOCO took\n")
+      print(t_end_null - t_begin)
   if(LOCO){
+    set_Diagof_StdGeno_LOCO()	  
     glmmResult$LOCOResult = list()
      
     for (j in 1:22){
@@ -239,8 +277,12 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
       endIndex = chromosomeEndIndexVec[j]
       if(!is.na(startIndex) && !is.na(endIndex)){
         cat("leave chromosome ", j, " out\n")
-        setStartEndIndex(startIndex, endIndex)
+        setStartEndIndex(startIndex, endIndex, j-1)
+	t_begin_Get_Coef_LOCO = proc.time()
         re.coef_LOCO = Get_Coef_LOCO(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
+        t_end_Get_Coef_LOCO = proc.time()
+      cat("t_end_Get_Coef_LOCO - t_begin_Get_Coef_LOCO\n")
+      print(t_end_Get_Coef_LOCO - t_begin_Get_Coef_LOCO)
         cov = re.coef_LOCO$cov
         alpha = re.coef_LOCO$alpha
         eta = re.coef_LOCO$eta
@@ -294,7 +336,8 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   #Returns:
   #  model output for the null lmm
 
-
+ t_begin = proc.time()
+      print(t_begin)
   subSampleInGeno = subPheno$IndexGeno
   if(verbose){
     print("Start reading genotype plink file here")
@@ -422,6 +465,13 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 
   if(verbose) cat("\nFinal " ,tau, ":\n")
 
+         t_end_null = proc.time()
+      #print(t_end_null)
+      cat("t_end_null - t_begin, fitting the NULL model without LOCO took\n")
+      print(t_end_null - t_begin)
+
+
+
   re.coef = Get_Coef(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
   cov = re.coef$cov
   alpha = re.coef$alpha
@@ -449,13 +499,13 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   lmmResult$LOCO = LOCO  
   if(LOCO){
     lmmResult$LOCOResult = list()
-
+     set_Diagof_StdGeno_LOCO()
     for (j in 1:22){
       cat("leave chromosome ", j, " out\n")
       startIndex = chromosomeStartIndexVec[j]
       endIndex = chromosomeEndIndexVec[j]
       if(!is.na(startIndex) && !is.na(endIndex)){
-        setStartEndIndex(startIndex, endIndex)
+        setStartEndIndex(startIndex, endIndex, j-1)
 	re.coef_LOCO = Get_Coef_LOCO(y, X, tau, family, alpha, eta,  offset,verbose=verbose, maxiterPCG=maxiterPCG, tolPCG = tolPCG, maxiter=maxiter)
 
         #re.coef_LOCO=fitglmmaiRPCG_q_LOCO(Y, X, W, tau, nrun, maxiterPCG, tolPCG, tol, traceCVcutoff)
@@ -768,6 +818,14 @@ fitNULLGLMM = function(plinkFile = "",
         cat("WARNING: The number of autosomal chromosomes is less than 2 and leave-one-chromosome-out can't be conducted! \n")
         LOCO=FALSE
       }
+      chromosomeStartIndexVec_forcpp = chromosomeStartIndexVec
+      chromosomeStartIndexVec_forcpp[is.na(chromosomeStartIndexVec_forcpp)] = -1
+
+      chromosomeEndIndexVec_forcpp = chromosomeEndIndexVec
+      chromosomeEndIndexVec_forcpp[is.na(chromosomeEndIndexVec_forcpp)] = -1
+      setStartEndIndexVec(chromosomeStartIndexVec_forcpp, chromosomeEndIndexVec_forcpp)
+      #set_Diagof_StdGeno_LOCO()
+
      # setChromosomeIndicesforLOCO(chromosomeStartIndexVec, chromosomeEndIndexVec, chromosomeVecVec) 
     }else{
       chromosomeStartIndexVec = rep(NA, 22)
@@ -1019,12 +1077,28 @@ fitNULLGLMM = function(plinkFile = "",
       load(modelOut)
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
+      if(LOCO){set_Diagof_StdGeno_LOCO()}
       tau = modglmm$theta
       varAll = tau[2] + (pi^2)/3
       tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
       wVec_ss = rep(1,length(modglmm$y))
       bVec_ss = rep(1,length(modglmm$y))
-      Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, bVec_ss, maxiterPCG, tolPCG)  	
+      t_getPCG1ofSigmaAndVector = proc.time()
+      Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, bVec_ss, maxiterPCG, tolPCG)  
+      #tempvec = getCrossprodMatAndKin(bVec_ss)
+      #t_getPCG1ofSigmaAndVector_2 = proc.time()
+      #print("t_getPCG1ofSigmaAndVector_2 - t_getPCG1ofSigmaAndVector")
+      #print(t_getPCG1ofSigmaAndVector_2 - t_getPCG1ofSigmaAndVector)
+      #startIndex = chromosomeStartIndexVec[1]
+      #endIndex = chromosomeEndIndexVec[1]
+      #setStartEndIndex(startIndex, endIndex, 0)
+      #t_getPCG1ofSigmaAndVector_3 = proc.time()
+      #tempvec = getCrossprodMatAndKin_LOCO(bVec_ss)
+      #Rinv_1_LOCO = getPCG1ofSigmaAndVector_LOCO(wVec_ss, tauVec_ss, bVec_ss, maxiterPCG, tolPCG)  	
+      #t_getPCG1ofSigmaAndVector_LOCO = proc.time()
+      #print("t_getPCG1ofSigmaAndVector_LOCO - t_getPCG1ofSigmaAndVector_3")
+      #print(t_getPCG1ofSigmaAndVector_LOCO - t_getPCG1ofSigmaAndVector_3)
+
       t1_Rinv_1 = sum(Rinv_1)
       cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
       Pn = sum(modglmm$y == 1)/(length(modglmm$y))
@@ -1109,6 +1183,7 @@ fitNULLGLMM = function(plinkFile = "",
       if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
       setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
       setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
+      if(LOCO){set_Diagof_StdGeno_LOCO()}
     }
 
     cat("Start estimating variance ratios\n")
@@ -1352,7 +1427,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 	  } 		  
 
 
-
+          #isLOCO=FALSE
           if(!isLOCO){
             G = G0  -  obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G0) # G1 is X adjusted
             g = G/sqrt(AC)
@@ -1375,9 +1450,13 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
              W = sqrtW^2
              startIndex = chromosomeStartIndexVec[CHR]
              endIndex = chromosomeEndIndexVec[CHR]
-             setStartEndIndex(startIndex, endIndex)
+             setStartEndIndex(startIndex, endIndex, CHR-1)
+	     #Sigma_iG_time0 = proc.time()
              Sigma_iG = getSigma_G_LOCO(W, tauVecNew, G, maxiterPCG, tolPCG)
              Sigma_iX = getSigma_X_LOCO(W, tauVecNew, X, maxiterPCG, tolPCG)
+	     #Sigma_iG_time1 = proc.time()
+	     #print("Sigma_iG_time1 - Sigma_iG_time0")
+	     #print(Sigma_iG_time1 - Sigma_iG_time0)
           }
 
           var1a = t(G)%*%Sigma_iG - t(G)%*%Sigma_iX%*%(solve(t(X)%*%Sigma_iX))%*%t(X)%*%Sigma_iG
@@ -1389,6 +1468,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
             t1 = proc.time()
             cat("t1\n")
              cat("t1again\n")
+	     print("pcginvSigma")
+	     #pcginvSigma = pcg(sparseSigma, g)
              pcginvSigma = solve(sparseSigma, g, sparse=T)
              t2 = proc.time()
              cat("t2-t1\n")
@@ -1682,7 +1763,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
              W = sqrtW^2
              startIndex = chromosomeStartIndexVec[CHR]
              endIndex = chromosomeEndIndexVec[CHR]
-             setStartEndIndex(startIndex, endIndex)
+             setStartEndIndex(startIndex, endIndex, CHR-1)
              Sigma_iG = getSigma_G_LOCO(W, tauVecNew, G, maxiterPCG, tolPCG)
              Sigma_iX = getSigma_X_LOCO(W, tauVecNew, X1, maxiterPCG, tolPCG)
           }
@@ -1920,8 +2001,8 @@ pcgSparse<-function (A, b, M=NULL, maxiter = 1e+05, tol = 1e-06){
     print(nrow(A))	
     print(ncol(A))	
 
-    Ap = sparse_row_idx_mult(psparse, A)
-    #Ap = psparse%*%A
+    #Ap = sparse_row_idx_mult(psparse, A)
+    Ap = psparse%*%A[1,]
     print("psparse1")
     a = as.numeric((t(r) %*% z)/(t(p) %*% Ap))
     x = x + a * p
@@ -2241,7 +2322,7 @@ getsubGRM = function(sparseGRMFile=NULL,
                 sparseGRMSampleIDFile="",
                 modelID=NULL){
 
-  cat("extract sparse GRM to speed up PCG\n")
+  cat("extract sparse GRM\n")
 #  sparseGRMFile = paste0(outputPrefix, ".sparseGRM.mtx")
   sparseGRMLarge = Matrix:::readMM(sparseGRMFile)
     #cat("sparseSigmaFile: ", sparseSigmaFile, "\n")

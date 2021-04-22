@@ -12,7 +12,7 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.44.2 (Updated on April 1, 2021, cleared print messages that slowed down the single-variant association tests).
+## Current version is 0.44.5 (Updated on April 21, 2021, re-write code for leave-one-chromosome-out in Step 1 to have more efficient parallel computation 
 ## Please re-install 0.44.2 if you installed this verion on March 31. 
 
 ## For BGEN input, 8 bits are required. 
@@ -171,6 +171,7 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.44.5 (April-21-2021). re-write code for leave-one-chromosome-out in Step 1 to have more efficient parallel computation
 
 * 0.44.2 (March-31-2021) 1.add an option useSparseGRMtoFitNULL to allow for fitting the null model using the sparse GRM and 2. add options to collapse the ultra-rare variants in the set-based tests. --method_to_CollapseUltraRare, --MACCutoff_to_CollapseUltraRare, --DosageCutoff_for_UltraRarePresence
 

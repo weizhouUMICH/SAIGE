@@ -77,6 +77,10 @@ innerProductFun <- function(x, y) {
     .Call('_SAIGE_innerProductFun', PACKAGE = 'SAIGE', x, y)
 }
 
+parallelCrossProd_full <- function(bVec, markerNum) {
+    .Call('_SAIGE_parallelCrossProd_full', PACKAGE = 'SAIGE', bVec, markerNum)
+}
+
 parallelCrossProd_LOCO <- function(bVec) {
     .Call('_SAIGE_parallelCrossProd_LOCO', PACKAGE = 'SAIGE', bVec)
 }
@@ -189,8 +193,12 @@ nb <- function(n) {
     .Call('_SAIGE_nb', PACKAGE = 'SAIGE', n)
 }
 
-setStartEndIndex <- function(startIndex, endIndex) {
-    invisible(.Call('_SAIGE_setStartEndIndex', PACKAGE = 'SAIGE', startIndex, endIndex))
+setStartEndIndex <- function(startIndex, endIndex, chromIndex) {
+    invisible(.Call('_SAIGE_setStartEndIndex', PACKAGE = 'SAIGE', startIndex, endIndex, chromIndex))
+}
+
+setStartEndIndexVec <- function(startIndex_vec, endIndex_vec) {
+    invisible(.Call('_SAIGE_setStartEndIndexVec', PACKAGE = 'SAIGE', startIndex_vec, endIndex_vec))
 }
 
 calCV <- function(xVec) {
@@ -367,6 +375,10 @@ get_GRMdiagVec <- function() {
 
 setminMAFforGRM <- function(minMAFforGRM) {
     invisible(.Call('_SAIGE_setminMAFforGRM', PACKAGE = 'SAIGE', minMAFforGRM))
+}
+
+set_Diagof_StdGeno_LOCO <- function() {
+    invisible(.Call('_SAIGE_set_Diagof_StdGeno_LOCO', PACKAGE = 'SAIGE'))
 }
 
 setIsDropMissingDosages_bgen <- function(isdropmissingdosages) {
