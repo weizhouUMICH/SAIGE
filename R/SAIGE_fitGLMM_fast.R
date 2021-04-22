@@ -1126,6 +1126,7 @@ fitNULLGLMM = function(plinkFile = "",
                                                     sparseGRMSampleIDFile = sparseGRMSampleIDFile,
                                                     numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
                                                     relatednessCutoff = relatednessCutoff,
+						    useSparseGRMtoFitNULL = useSparseGRMtoFitNULL,
                                                     nThreads = nThreads,
 							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
                 cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
@@ -1206,6 +1207,7 @@ fitNULLGLMM = function(plinkFile = "",
                 				    sparseGRMSampleIDFile = sparseGRMSampleIDFile,	
 						    numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
 						    relatednessCutoff = relatednessCutoff,
+						    useSparseGRMtoFitNULL = useSparseGRMtoFitNULL, 
 						    nThreads = nThreads,
 							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
                 cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
@@ -1237,6 +1239,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
                                                     sparseGRMSampleIDFile,
                                                     numRandomMarkerforSparseKin,
                                                     relatednessCutoff,
+						    useSparseGRMtoFitNULL,
                                                     nThreads,
 						    cateVarRatioMinMACVecExclude,
 						    cateVarRatioMaxMACVecInclude,
@@ -1276,7 +1279,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 
     #####sparse Kin
 
-  if(IsSparseKin){
+  if(IsSparseKin | useSparseGRMtoFitNULL){
     sparseSigma = getSparseSigma(plinkFile = plinkFile, 
 		outputPrefix=varRatioOutFile,
                 sparseGRMFile=sparseGRMFile,
@@ -1463,7 +1466,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
           var1 = var1a/AC
           m1 = innerProduct(mu,g)
 
-
+    if(useSparseGRMtoFitNULL){
+         var2 = innerProduct(mu*(1-mu), g*g)    
+    }else{
           if(IsSparseKin){
             t1 = proc.time()
             cat("t1\n")
@@ -1479,7 +1484,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
         }else{
           var2 = innerProduct(mu*(1-mu), g*g)
         }
-
+    }	
       var2q = innerProduct(mu*(1-mu), g*g)
       qtilde = (q-m1)/sqrt(var1) * sqrt(var2q) + m1
 
@@ -1587,6 +1592,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                                                     sparseGRMSampleIDFile,
 						    numRandomMarkerforSparseKin,
                                                     relatednessCutoff,
+						    useSparseGRMtoFitNULL,
 						    nThreads,
 							cateVarRatioMinMACVecExclude,
                                                         cateVarRatioMaxMACVecInclude,
@@ -1624,7 +1630,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 
     #####sparse Kin
 
-  if(IsSparseKin){
+  if(IsSparseKin | useSparseGRMtoFitNULL){
        sparseSigma = getSparseSigma(plinkFile = plinkFile,
                 outputPrefix=varRatioOutFile,
                 sparseGRMFile=sparseGRMFile,
@@ -1773,7 +1779,10 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
           m1 = innerProduct(mu,g)
 
 
-          if(IsSparseKin){
+	if(useSparseGRMtoFitNULL){
+		var2 = innerProduct(g, g)
+	}else{
+	  if(IsSparseKin){
 	    t1 = proc.time()
 	    cat("t1\n")
 	     pcginvSigma = solve(sparseSigma, g, sparse=T)
@@ -1785,6 +1794,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
           }else{
              var2 = innerProduct(g, g)
           }
+        }
 
         Tv1 = (q-m1)/tauVecNew[1]
         p.value = pchisq(Tv1^2/var1, lower.tail = FALSE, df=1)
