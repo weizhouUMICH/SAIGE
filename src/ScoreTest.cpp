@@ -73,8 +73,14 @@ void ScoreClass::scoreTest(arma::vec t_GVec,
     var2 = var2m(0,0);
     double var1 = var2 * m_varRatio;
     double stat = S*S/var1;
-    boost::math::chi_squared chisq_dist(1); 
-    double t_pval = boost::math::cdf(complement(chisq_dist, stat));
+    double t_pval;
+    //std::cout << "min double " <<  std::numeric_limits<double>::min() << std::endl;
+    if (var1 < std::numeric_limits<double>::min()){
+        t_pval = 1;
+    } else{
+      boost::math::chi_squared chisq_dist(1);
+      t_pval = boost::math::cdf(complement(chisq_dist, stat));
+    }
     char pValueBuf[100];
     if (t_pval != 0)	    
         sprintf(pValueBuf, "%.6E", t_pval);
@@ -141,8 +147,13 @@ void ScoreClass::scoreTestFast(arma::vec t_GVec,
     S = S1 + S2;
     S = S/m_tauvec[0];	    
     double stat = S*S/var1;
-    boost::math::chi_squared chisq_dist(1); 
-    double t_pval = boost::math::cdf(complement(chisq_dist, stat));
+    double t_pval;
+    if (var1 < std::numeric_limits<double>::min()){
+	t_pval = 1;
+    } else{
+      boost::math::chi_squared chisq_dist(1); 
+      t_pval = boost::math::cdf(complement(chisq_dist, stat));
+    }
     char pValueBuf[100];
     if (t_pval != 0)	    
         sprintf(pValueBuf, "%.6E", t_pval);
