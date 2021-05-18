@@ -1,0 +1,10 @@
+# General
+.dockerignore
+Dockerfile
+.git
+.github
+
+# Project specific
+archived
+build
+conda_env
