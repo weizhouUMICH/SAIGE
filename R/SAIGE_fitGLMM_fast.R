@@ -684,540 +684,546 @@ fitNULLGLMM = function(plinkFile = "",
 		FemaleOnly = FALSE,
 		MaleCode = 0,	
 		MaleOnly = FALSE,
-		noEstFixedEff = FALSE){
-
-  setminMAFforGRM(minMAFforGRM)
-  if(minMAFforGRM > 0){
-    cat("Markers in the Plink file with MAF >= ", minMAFforGRM, " will be used to construct GRM\n")
-  }else{
-    cat("Markers in the Plink file with MAF > ", minMAFforGRM, " will be used to construct GRM\n") 
-  }
-  if(useSparseGRMtoFitNULL){
-    cat("sparse GRM will be used to fit the NULL model\n")
-    if(!file.exists(sparseGRMFile)){
-      stop("sparseGRMFile ", sparseGRMFile, " does not exist!")
+		noEstFixedEff = FALSE,
+		skipVarianceRatioEstimation = FALSE){
+{
+    setminMAFforGRM(minMAFforGRM)
+    if (minMAFforGRM > 0) {
+        cat("Markers in the Plink file with MAF >= ", minMAFforGRM, 
+            " will be used to construct GRM\n")
     }
-
-    if(!file.exists(sparseGRMSampleIDFile)){
-      stop("sparseGRMSampleIDFile ", sparseGRMSampleIDFile, " does not exist!")
+    else {
+        cat("Markers in the Plink file with MAF > ", minMAFforGRM, 
+            " will be used to construct GRM\n")
     }
-    useSparseSigmaforInitTau = FALSE
+    if (useSparseGRMtoFitNULL) {
+        cat("sparse GRM will be used to fit the NULL model\n")
+        if (!file.exists(sparseGRMFile)) {
+            stop("sparseGRMFile ", sparseGRMFile, " does not exist!")
+        }
+        if (!file.exists(sparseGRMSampleIDFile)) {
+            stop("sparseGRMSampleIDFile ", sparseGRMSampleIDFile, 
+                " does not exist!")
+        }
+        useSparseSigmaforInitTau = FALSE
+        useSparseSigmaConditionerforPCG = FALSE
+        LOCO = FALSE
+        cat("Leave-one-chromosome-out is not applied\n")
+    }
     useSparseSigmaConditionerforPCG = FALSE
-    LOCO=FALSE
-    cat("Leave-one-chromosome-out is not applied\n")
-  }
-
-  useSparseSigmaConditionerforPCG = FALSE ######This feature is inactivated
-  if(useSparseSigmaConditionerforPCG){
-    cat("sparse sigma will be used as the conditioner for PCG\n")
-    if(!file.exists(sparseGRMFile)){
-      stop("sparseGRMFile ", sparseGRMFile, " does not exist!")
+    if (useSparseSigmaConditionerforPCG) {
+        cat("sparse sigma will be used as the conditioner for PCG\n")
+        if (!file.exists(sparseGRMFile)) {
+            stop("sparseGRMFile ", sparseGRMFile, " does not exist!")
+        }
+        if (!file.exists(sparseGRMSampleIDFile)) {
+            stop("sparseGRMSampleIDFile ", sparseGRMSampleIDFile, 
+                " does not exist!")
+        }
     }
-    if(!file.exists(sparseGRMSampleIDFile)){
-      stop("sparseGRMSampleIDFile ", sparseGRMSampleIDFile, " does not exist!")
+    if (useSparseSigmaforInitTau) {
+        cat("sparse sigma will be used to estimate the inital tau\n")
+        if (!file.exists(sparseGRMFile)) {
+            stop("sparseGRMFile ", sparseGRMFile, " does not exist!")
+        }
+        if (!file.exists(sparseGRMSampleIDFile)) {
+            stop("sparseGRMSampleIDFile ", sparseGRMSampleIDFile, 
+                " does not exist!")
+        }
     }
-  }
-
-
-
-  if(useSparseSigmaforInitTau){
-    cat("sparse sigma will be used to estimate the inital tau\n")
-    if(!file.exists(sparseGRMFile)){
-      stop("sparseGRMFile ", sparseGRMFile, " does not exist!")
+    if (useSparseSigmaConditionerforPCG | useSparseSigmaforInitTau | 
+        useSparseGRMtoFitNULL) {
+        IsSparseKin = TRUE
     }
-    if(!file.exists(sparseGRMSampleIDFile)){
-      stop("sparseGRMSampleIDFile ", sparseGRMSampleIDFile, " does not exist!")
+    if (nThreads > 1) {
+        RcppParallel:::setThreadOptions(numThreads = nThreads)
+        cat(nThreads, " threads are set to be used ", "\n")
     }
-  }
-
-   if(useSparseSigmaConditionerforPCG | useSparseSigmaforInitTau  | useSparseGRMtoFitNULL){
-    IsSparseKin = TRUE
-  }
-
-
-  if(nThreads > 1){
-    RcppParallel:::setThreadOptions(numThreads = nThreads)
-    cat(nThreads, " threads are set to be used ", "\n")
-  }
-
-
-  if(FemaleOnly & MaleOnly){
-    stop("Both FemaleOnly and MaleOnly are TRUE. Please specify only one of them as TRUE to run the sex-specific job\n")
-  }
-
-  if(FemaleOnly){
-    outputPrefix = paste0(outputPrefix, "_FemaleOnly")
-    cat("Female-specific model will be fitted. Samples coded as ", FemaleCode, " in the column ", sexCol, " in the phenotype file will be included\n")
-  }else if(MaleOnly){
-    outputPrefix = paste0(outputPrefix, "_MaleOnly")
-    cat("Male-specific model will be fitted. Samples coded as ", MaleCode, " in the column ", sexCol, " in the phenotype file will be included\n")
-  }
-
-  #check and read files
-  #output file
-  modelOut=paste0(outputPrefix, ".rda")
-  SPAGMMATOut=paste0(outputPrefix, "_", numMarkers,"markers.SAIGE.results.txt")
-
-  if (is.null(outputPrefix_varRatio)){
-    outputPrefix_varRatio = outputPrefix
-  }
-
-  varRatioFile=paste0(outputPrefix_varRatio,".varianceRatio.txt")
-
-  if(!file.exists(varRatioFile)){
-    file.create(varRatioFile, showWarnings = TRUE)
-  }else{
-    if(!IsOverwriteVarianceRatioFile){
-      stop("WARNING: The variance ratio file ", varRatioFile, " already exists. The new variance ratios will be output to ", varRatioFile,". In order to avoid overwriting the file, please remove the ", varRatioFile, " or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s). Otherwise, specify IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten with new variance ratio(s)\n")
-    }else{
-      cat("The variance ratio file ", varRatioFile, " already exists. IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten\n")
+    if (FemaleOnly & MaleOnly) {
+        stop("Both FemaleOnly and MaleOnly are TRUE. Please specify only one of them as TRUE to run the sex-specific job\n")
     }
-  }
-
-
-  if(!file.exists(modelOut)){
-    file.create(modelOut, showWarnings = TRUE)
-  }
-
-  if(!file.exists(paste0(plinkFile, ".bed"))){
-    stop("ERROR! ", plinkFile, ".bed does not exsit\n")
-  }
-
-  if(!file.exists(paste0(plinkFile, ".bim"))){
-    stop("ERROR! ", plinkFile, ".bim does not exsit\n")
-  }else{
-    chromosomeStartIndexVec = NULL
-    chromosomeEndIndexVec = NULL
-    ###if LOCO, record the indices of markers on each chromosome
-    if(LOCO){
-      cat("WARNING: leave-one-chromosome-out is activated! Note this option will only be applied to autosomal variants\n")
-      cat("WARNING: Genetic variants needs to be ordered by chromosome and position in the Plink file\n")
-   
-      bimData = data.table:::fread(paste0(plinkFile,".bim"),  header=F)
-      for(i in 1:22){
-	if(length(which(bimData[,1] == i)) > 0){
-          chromosomeStartIndexVec = c(chromosomeStartIndexVec, min(which(bimData[,1] == i))-1)
-	  chromosomeEndIndexVec = c(chromosomeEndIndexVec, max(which(bimData[,1] == i))-1)
-
-	  if(i > 1 ){
-	   if(!is.na(chromosomeStartIndexVec[i-1])){
-	    if(chromosomeStartIndexVec[i] <= chromosomeStartIndexVec[i-1] | chromosomeEndIndexVec[i] <= chromosomeEndIndexVec[i-1]){
-		stop(paste0("ERROR! chromosomes need to be ordered from 1 to 22 in ", plinkFile, ".bim\n"))
-	    }
-           }
-	  }
-	}else{
-	  chromosomeStartIndexVec = c(chromosomeStartIndexVec, NA)
-	  chromosomeEndIndexVec = c(chromosomeEndIndexVec, NA)
-        }   	
-      }
-
-      cat("chromosomeStartIndexVec: ", chromosomeStartIndexVec, "\n")
-      cat("chromosomeEndIndexVec: ", chromosomeEndIndexVec, "\n")
-      if(sum(!is.na(chromosomeStartIndexVec)) <= 1 | sum(!is.na(chromosomeEndIndexVec)) <= 1){
-        cat("WARNING: The number of autosomal chromosomes is less than 2 and leave-one-chromosome-out can't be conducted! \n")
-        LOCO=FALSE
-      }
-      chromosomeStartIndexVec_forcpp = chromosomeStartIndexVec
-      chromosomeStartIndexVec_forcpp[is.na(chromosomeStartIndexVec_forcpp)] = -1
-
-      chromosomeEndIndexVec_forcpp = chromosomeEndIndexVec
-      chromosomeEndIndexVec_forcpp[is.na(chromosomeEndIndexVec_forcpp)] = -1
-      setStartEndIndexVec(chromosomeStartIndexVec_forcpp, chromosomeEndIndexVec_forcpp)
-      #set_Diagof_StdGeno_LOCO()
-
-     # setChromosomeIndicesforLOCO(chromosomeStartIndexVec, chromosomeEndIndexVec, chromosomeVecVec) 
-    }else{
-      chromosomeStartIndexVec = rep(NA, 22)
-      chromosomeEndIndexVec = rep(NA, 22)
-    }	
-  }
-
-  if(!file.exists(paste0(plinkFile, ".fam"))){
-    stop("ERROR! ", plinkFile, ".fam does not exsit\n")
-  }else{
-    sampleListwithGenov0 = data.table:::fread(paste0(plinkFile,".fam"),  header=F, , colClasses=list(character=1:4))
-    sampleListwithGenov0 = data.frame(sampleListwithGenov0)
-    colnames(sampleListwithGenov0) = c("FIDgeno", "IIDgeno", "father", "mother", "sex", "phe")
-    sampleListwithGeno = NULL
-    sampleListwithGeno$IIDgeno = sampleListwithGenov0$IIDgeno
-    sampleListwithGeno = data.frame(sampleListwithGeno)
-    sampleListwithGeno$IndexGeno = seq(1,nrow(sampleListwithGeno), by=1)
-    cat(nrow(sampleListwithGeno), " samples have genotypes\n")
-  }
-
-
-  #phentoype file
-  if(!file.exists(phenoFile)){
-    stop("ERROR! phenoFile ", phenoFile, " does not exsit\n")
-  }else{
-    #ydat = data.table:::fread(phenoFile, header=T, stringsAsFactors=FALSE)
-    if( grepl(".gz$",phenoFile) | grepl(".bgz$",phenoFile) ) {
-      ydat = data.table:::fread(cmd=paste0("gunzip -c ", phenoFile), header=T, stringsAsFactors=FALSE, colClasses=list(character = sampleIDColinphenoFile))
-    } else {
-      ydat = data.table:::fread(phenoFile, header=T, stringsAsFactors=FALSE, colClasses=list(character = sampleIDColinphenoFile))
+    if (FemaleOnly) {
+        outputPrefix = paste0(outputPrefix, "_FemaleOnly")
+        cat("Female-specific model will be fitted. Samples coded as ", 
+            FemaleCode, " in the column ", sexCol, " in the phenotype file will be included\n")
     }
-
-    data = data.frame(ydat)
-
-    for(i in c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile)){
-      if(!(i %in% colnames(data))){
-        stop("ERROR! column for ", i, " does not exist in the phenoFile \n")
-      }
+    else if (MaleOnly) {
+        outputPrefix = paste0(outputPrefix, "_MaleOnly")
+        cat("Male-specific model will be fitted. Samples coded as ", 
+            MaleCode, " in the column ", sexCol, " in the phenotype file will be included\n")
     }
-
-    if(FemaleOnly | MaleOnly){
-      if(!sexCol %in% colnames(data)){	    
-        stop("ERROR! column for sex ", sexCol, " does not exist in the phenoFile \n")
-      }else{
-	if(FemaleOnly){      
-	  data = data[which(data[,which(colnames(data) == sexCol)] == FemaleCode), ]
-          if(nrow(data) == 0){stop("ERROR! no samples in the phenotype are coded as ", FemaleCode, " in the column ", sexCol, "\n")}
-        }else if (MaleOnly){
-	  data = data[which(data[,which(colnames(data) == sexCol)] == MaleCode), ] 
-          if(nrow(data) == 0){stop("ERROR! no samples in the phenotype are coded as ", MaleCode, " in the column ", sexCol, "\n")}
-	} 
-      }	      
+    modelOut = paste0(outputPrefix, ".rda")
+    SPAGMMATOut = paste0(outputPrefix, "_", numMarkers, "markers.SAIGE.results.txt")
+    if (is.null(outputPrefix_varRatio)) {
+        outputPrefix_varRatio = outputPrefix
     }
-
-    #update the categorical variables
-
-    if(length(covarColList) > 0){
-      #qCovarColUpdated = NULL
-      #for(i in qCovarCol){
-      #  j = paste0("factor(", i, ")")
-      #  qCovarColUpdated = c(qCovarColUpdated, j)
-      #}
-      formula = paste0(phenoCol,"~", paste0(covarColList,collapse="+"))
-      #formula = paste0(phenoCol,"~",paste0(c(covarColList,qCovarColUpdated),collapse="+"))
-      hasCovariate = TRUE
-    }else{
-      formula = paste0(phenoCol,"~ 1")
-      hasCovariate = FALSE
-    }    
-
-    cat("formula is ", formula,"\n")
-    formula.null = as.formula(formula)
-    mmat = model.frame(formula.null, data, na.action=NULL)
-    mmat$IID = data[,which(sampleIDColinphenoFile == colnames(data))]
-    mmat_nomissing = mmat[complete.cases(mmat),]
-    mmat_nomissing$IndexPheno = seq(1,nrow(mmat_nomissing), by=1)
-    cat(nrow(mmat_nomissing), " samples have non-missing phenotypes\n")
-
-    dataMerge = merge(mmat_nomissing, sampleListwithGeno, by.x = "IID", by.y = "IIDgeno")
-    dataMerge_sort = dataMerge[with(dataMerge, order(IndexGeno)), ]
-
-    if(nrow(dataMerge_sort) < nrow(sampleListwithGeno)){
-      cat(nrow(sampleListwithGeno) - nrow(dataMerge_sort), " samples in geno file do not have phenotypes\n")
+    varRatioFile = paste0(outputPrefix_varRatio, ".varianceRatio.txt")
+    if (!file.exists(varRatioFile)) {
+        file.create(varRatioFile, showWarnings = TRUE)
     }
-    cat(nrow(dataMerge_sort), " samples will be used for analysis\n")
-#    cat("dataMerge_sort$IID ", dataMerge_sort$IID, "\n")
-  }
-
-  if(traitType == "quantitative" & invNormalize){
-      cat("Perform the inverse nomalization for ", phenoCol, "\n")
-      invPheno = qnorm((rank(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)], na.last="keep")-0.5)/sum(!is.na(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)])))
-      dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = invPheno
-  }
-
-
-  #check for perfect separation
-  if(traitType == "binary" & (length(covarColList) > 0)){
-    out_checksep = checkPerfectSep(formula.null, data=dataMerge_sort, minCovariateCount)
-    covarColList <- covarColList[!(covarColList %in% out_checksep)]
-    formula = paste0(phenoCol,"~", paste0(covarColList,collapse="+"))
-    formula.null = as.formula(formula)
-    if(length(covarColList) == 1){
-      hasCovariate=FALSE 
-    }else{
-      hasCovariate=TRUE
-    }    
-    dataMerge_sort <- dataMerge_sort[, !(names(dataMerge_sort) %in% out_checksep)]
-  }
-
-
-  if(!hasCovariate){noEstFixedEff=FALSE}
-
-  if(noEstFixedEff){
-    #if(hasCovariate){
-      print("noEstFixedEff=TRUE, so fixed effects coefficnets won't be estimated.")	    
-      if(traitType == "binary"){ 
-        modwitcov = glm(formula.null, data=dataMerge_sort, family=binomial)
-        covoffset = modwitcov$linear.predictors
-	dataMerge_sort$covoffset = covoffset 
-      }else{
-        modwitcov = lm(formula.null, data=dataMerge_sort)
-        dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)] = modwitcov$residuals
-      } 
-	formula_nocov = paste0(phenoCol,"~ 1")
+    else {
+        if (!IsOverwriteVarianceRatioFile) {
+            stop("WARNING: The variance ratio file ", varRatioFile, 
+                " already exists. The new variance ratios will be output to ", 
+                varRatioFile, ". In order to avoid overwriting the file, please remove the ", 
+                varRatioFile, " or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s). Otherwise, specify IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten with new variance ratio(s)\n")
+        }
+        else {
+            cat("The variance ratio file ", varRatioFile, " already exists. IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten\n")
+        }
+    }
+    if (!file.exists(modelOut)) {
+        file.create(modelOut, showWarnings = TRUE)
+    }
+    if (skipVarianceRatioEstimation & useSparseGRMtoFitNULL) {
+        print("a sparse GRM will be used to fit the null model and the variance ratio estimation will be skipped, so plink files are not required")
+        sampleListwithGenov0 = data.table:::fread(sparseGRMSampleIDFile, 
+            header = F, , colClasses = c("character"), data.table = F)
+        colnames(sampleListwithGenov0) = c("IIDgeno")
+        sampleListwithGeno = NULL
+        sampleListwithGeno$IIDgeno = sampleListwithGenov0$IIDgeno
+        sampleListwithGeno = data.frame(sampleListwithGeno)
+        sampleListwithGeno$IndexGeno = seq(1, nrow(sampleListwithGeno), 
+            by = 1)
+        cat(nrow(sampleListwithGeno), " samples are in the sparse GRM\n")
+    }
+    else {
+        if (!file.exists(paste0(plinkFile, ".bed"))) {
+            stop("ERROR! ", plinkFile, ".bed does not exsit\n")
+        }
+        if (!file.exists(paste0(plinkFile, ".bim"))) {
+            stop("ERROR! ", plinkFile, ".bim does not exsit\n")
+        }
+        else {
+            chromosomeStartIndexVec = NULL
+            chromosomeEndIndexVec = NULL
+            if (LOCO) {
+                cat("WARNING: leave-one-chromosome-out is activated! Note this option will only be applied to autosomal variants\n")
+                cat("WARNING: Genetic variants needs to be ordered by chromosome and position in the Plink file\n")
+                bimData = data.table:::fread(paste0(plinkFile, 
+                  ".bim"), header = F)
+                for (i in 1:22) {
+                  if (length(which(bimData[, 1] == i)) > 0) {
+                    chromosomeStartIndexVec = c(chromosomeStartIndexVec, 
+                      min(which(bimData[, 1] == i)) - 1)
+                    chromosomeEndIndexVec = c(chromosomeEndIndexVec, 
+                      max(which(bimData[, 1] == i)) - 1)
+                    if (i > 1) {
+                      if (!is.na(chromosomeStartIndexVec[i - 
+                        1])) {
+                        if (chromosomeStartIndexVec[i] <= chromosomeStartIndexVec[i - 
+                          1] | chromosomeEndIndexVec[i] <= chromosomeEndIndexVec[i - 
+                          1]) {
+                          stop(paste0("ERROR! chromosomes need to be ordered from 1 to 22 in ", 
+                            plinkFile, ".bim\n"))
+                        }
+                      }
+                    }
+                  }
+                  else {
+                    chromosomeStartIndexVec = c(chromosomeStartIndexVec, 
+                      NA)
+                    chromosomeEndIndexVec = c(chromosomeEndIndexVec, 
+                      NA)
+                  }
+                }
+                cat("chromosomeStartIndexVec: ", chromosomeStartIndexVec, 
+                  "\n")
+                cat("chromosomeEndIndexVec: ", chromosomeEndIndexVec, 
+                  "\n")
+                if (sum(!is.na(chromosomeStartIndexVec)) <= 1 | 
+                  sum(!is.na(chromosomeEndIndexVec)) <= 1) {
+                  cat("WARNING: The number of autosomal chromosomes is less than 2 and leave-one-chromosome-out can't be conducted! \n")
+                  LOCO = FALSE
+                }
+                chromosomeStartIndexVec_forcpp = chromosomeStartIndexVec
+                chromosomeStartIndexVec_forcpp[is.na(chromosomeStartIndexVec_forcpp)] = -1
+                chromosomeEndIndexVec_forcpp = chromosomeEndIndexVec
+                chromosomeEndIndexVec_forcpp[is.na(chromosomeEndIndexVec_forcpp)] = -1
+                setStartEndIndexVec(chromosomeStartIndexVec_forcpp, 
+                  chromosomeEndIndexVec_forcpp)
+            }
+            else {
+                chromosomeStartIndexVec = rep(NA, 22)
+                chromosomeEndIndexVec = rep(NA, 22)
+            }
+        }
+        if (!file.exists(paste0(plinkFile, ".fam"))) {
+            stop("ERROR! ", plinkFile, ".fam does not exsit\n")
+        }
+        else {
+            sampleListwithGenov0 = data.table:::fread(paste0(plinkFile, 
+                ".fam"), header = F, , colClasses = list(character = 1:4))
+            sampleListwithGenov0 = data.frame(sampleListwithGenov0)
+            colnames(sampleListwithGenov0) = c("FIDgeno", "IIDgeno", 
+                "father", "mother", "sex", "phe")
+            sampleListwithGeno = NULL
+            sampleListwithGeno$IIDgeno = sampleListwithGenov0$IIDgeno
+            sampleListwithGeno = data.frame(sampleListwithGeno)
+            sampleListwithGeno$IndexGeno = seq(1, nrow(sampleListwithGeno), 
+                by = 1)
+            cat(nrow(sampleListwithGeno), " samples have genotypes\n")
+        }
+    }
+    if (!file.exists(phenoFile)) {
+        stop("ERROR! phenoFile ", phenoFile, " does not exsit\n")
+    }
+    else {
+        if (grepl(".gz$", phenoFile) | grepl(".bgz$", phenoFile)) {
+            ydat = data.table:::fread(cmd = paste0("gunzip -c ", 
+                phenoFile), header = T, stringsAsFactors = FALSE, 
+                colClasses = list(character = sampleIDColinphenoFile))
+        }
+        else {
+            ydat = data.table:::fread(phenoFile, header = T, 
+                stringsAsFactors = FALSE, colClasses = list(character = sampleIDColinphenoFile))
+        }
+        data = data.frame(ydat)
+        for (i in c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile)) {
+            if (!(i %in% colnames(data))) {
+                stop("ERROR! column for ", i, " does not exist in the phenoFile \n")
+            }
+        }
+        if (FemaleOnly | MaleOnly) {
+            if (!sexCol %in% colnames(data)) {
+                stop("ERROR! column for sex ", sexCol, " does not exist in the phenoFile \n")
+            }
+            else {
+                if (FemaleOnly) {
+                  data = data[which(data[, which(colnames(data) == 
+                    sexCol)] == FemaleCode), ]
+                  if (nrow(data) == 0) {
+                    stop("ERROR! no samples in the phenotype are coded as ", 
+                      FemaleCode, " in the column ", sexCol, 
+                      "\n")
+                  }
+                }
+                else if (MaleOnly) {
+                  data = data[which(data[, which(colnames(data) == 
+                    sexCol)] == MaleCode), ]
+                  if (nrow(data) == 0) {
+                    stop("ERROR! no samples in the phenotype are coded as ", 
+                      MaleCode, " in the column ", sexCol, "\n")
+                  }
+                }
+            }
+        }
+        if (length(covarColList) > 0) {
+            formula = paste0(phenoCol, "~", paste0(covarColList, 
+                collapse = "+"))
+            hasCovariate = TRUE
+        }
+        else {
+            formula = paste0(phenoCol, "~ 1")
+            hasCovariate = FALSE
+        }
+        cat("formula is ", formula, "\n")
+        formula.null = as.formula(formula)
+        mmat = model.frame(formula.null, data, na.action = NULL)
+        mmat$IID = data[, which(sampleIDColinphenoFile == colnames(data))]
+        mmat_nomissing = mmat[complete.cases(mmat), ]
+        mmat_nomissing$IndexPheno = seq(1, nrow(mmat_nomissing), 
+            by = 1)
+        cat(nrow(mmat_nomissing), " samples have non-missing phenotypes\n")
+        dataMerge = merge(mmat_nomissing, sampleListwithGeno, 
+            by.x = "IID", by.y = "IIDgeno")
+        dataMerge_sort = dataMerge[with(dataMerge, order(IndexGeno)), 
+            ]
+        if (nrow(dataMerge_sort) < nrow(sampleListwithGeno)) {
+            cat(nrow(sampleListwithGeno) - nrow(dataMerge_sort), 
+                " samples in geno file do not have phenotypes\n")
+        }
+        cat(nrow(dataMerge_sort), " samples will be used for analysis\n")
+    }
+    if (traitType == "quantitative" & invNormalize) {
+        cat("Perform the inverse nomalization for ", phenoCol, 
+            "\n")
+        invPheno = qnorm((rank(dataMerge_sort[, which(colnames(dataMerge_sort) == 
+            phenoCol)], na.last = "keep") - 0.5)/sum(!is.na(dataMerge_sort[, 
+            which(colnames(dataMerge_sort) == phenoCol)])))
+        dataMerge_sort[, which(colnames(dataMerge_sort) == phenoCol)] = invPheno
+    }
+    if (traitType == "binary" & (length(covarColList) > 0)) {
+        out_checksep = checkPerfectSep(formula.null, data = dataMerge_sort, 
+            minCovariateCount)
+        covarColList <- covarColList[!(covarColList %in% out_checksep)]
+        formula = paste0(phenoCol, "~", paste0(covarColList, 
+            collapse = "+"))
+        formula.null = as.formula(formula)
+        if (length(covarColList) == 1) {
+            hasCovariate = FALSE
+        }
+        else {
+            hasCovariate = TRUE
+        }
+        dataMerge_sort <- dataMerge_sort[, !(names(dataMerge_sort) %in% 
+            out_checksep)]
+    }
+    if (!hasCovariate) {
+        noEstFixedEff = FALSE
+    }
+    if (noEstFixedEff) {
+        print("noEstFixedEff=TRUE, so fixed effects coefficnets won't be estimated.")
+        if (traitType == "binary") {
+            modwitcov = glm(formula.null, data = dataMerge_sort, 
+                family = binomial)
+            covoffset = modwitcov$linear.predictors
+            dataMerge_sort$covoffset = covoffset
+        }
+        else {
+            modwitcov = lm(formula.null, data = dataMerge_sort)
+            dataMerge_sort[, which(colnames(dataMerge_sort) == 
+                phenoCol)] = modwitcov$residuals
+        }
+        formula_nocov = paste0(phenoCol, "~ 1")
         formula.null = as.formula(formula_nocov)
-        hasCovariate = FALSE	
-    #}
-  }
-
-  if(isCovariateTransform & hasCovariate){
-   	  
-    cat("qr transformation has been performed on covariates\n")
-    out.transform<-Covariate_Transform(formula.null, data=dataMerge_sort)
-    formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
-    if(length(out.transform$Param.transform$X_name) > 1){
-      for(i in c(2:length(out.transform$Param.transform$X_name))){
-        formulaNewList = c(formulaNewList, "+", out.transform$Param.transform$X_name[i])
-      }
+        hasCovariate = FALSE
     }
-
-    formulaNewList = paste0(formulaNewList, collapse="")
-    formulaNewList = paste0(formulaNewList, "-1")
-    formula.new = as.formula(paste0(formulaNewList, collapse=""))
-    data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
-    colnames(data.new) = c("Y",out.transform$Param.transform$X_name)
-    cat("colnames(data.new) is ", colnames(data.new), "\n")
-    cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), "\n")
-
-    
-  }else{ #if(isCovariateTransform) else
-    formula.new = formula.null
-    data.new = dataMerge_sort
-    out.transform = NULL
-  }
-
-  if(IsSparseKin){
-        #setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
-	sparseGRMtest = getsubGRM(sparseGRMFile, sparseGRMSampleIDFile, dataMerge_sort$IID)
+    if (isCovariateTransform & hasCovariate) {
+        cat("qr transformation has been performed on covariates\n")
+        out.transform <- Covariate_Transform(formula.null, data = dataMerge_sort)
+        formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
+        if (length(out.transform$Param.transform$X_name) > 1) {
+            for (i in c(2:length(out.transform$Param.transform$X_name))) {
+                formulaNewList = c(formulaNewList, "+", out.transform$Param.transform$X_name[i])
+            }
+        }
+        formulaNewList = paste0(formulaNewList, collapse = "")
+        formulaNewList = paste0(formulaNewList, "-1")
+        formula.new = as.formula(paste0(formulaNewList, collapse = ""))
+        data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
+        colnames(data.new) = c("Y", out.transform$Param.transform$X_name)
+        cat("colnames(data.new) is ", colnames(data.new), "\n")
+        cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), 
+            "\n")
+    }
+    else {
+        formula.new = formula.null
+        data.new = dataMerge_sort
+        out.transform = NULL
+    }
+    if (IsSparseKin) {
+        sparseGRMtest = getsubGRM(sparseGRMFile, sparseGRMSampleIDFile, 
+            relatednessCutoff, dataMerge_sort$IID)
         m4 = gen_sp_v2(sparseGRMtest)
         print("print m4")
         print(dim(m4))
         A = summary(m4)
-        locationMatinR = rbind(A$i-1, A$j-1)
+        locationMatinR = rbind(A$i - 1, A$j - 1)
         valueVecinR = A$x
         setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
- #       setisUsePrecondM(TRUE);
-	rm(sparseGRMtest)
+        rm(sparseGRMtest)
     }
-
-    #if(useSparseSigmaConditionerforPCG){
-    #  cat("sparse sigma will be used as the conditioner for PCG\n")
-    #  setisUsePrecondM(TRUE);
-    #}
-	
-
-  if(traitType == "binary"){
-    cat(phenoCol, " is a binary trait\n")
-    uniqPheno = sort(unique(dataMerge_sort[,which(colnames(dataMerge_sort) == phenoCol)]))
-  #  uniqPheno = sort(unique(out.transform$Y))
-    if (uniqPheno[1] != 0 | uniqPheno[2] != 1){
-      stop("ERROR! phenotype value needs to be 0 or 1 \n")
-    }
-    #noEstFixedEff & hasCovariate
-    if(!noEstFixedEff){
-      fit0 = glm(formula.new, data=data.new, family=binomial)
-    }else{
-      fit0 = glm(formula.new, data=data.new, offset=covoffset, family=binomial)
-    }	    
-    cat("glm:\n")
-    print(fit0)
-    
-    #obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.null, data = dataMerge_sort)
-    #obj.noK = SPAtest:::ScoreTest_wSaddleApprox_NULL_Model(formula.new, data = data.new)
-    obj.noK = NULL
-
-    if(!skipModelFitting){
-     #print("test memory 1")
-     #gc(verbose=T)	
-     if(useSparseSigmaforInitTau){
-     #print("test memory 2")
-     #gc(verbose=T)	
-       setisUseSparseSigmaforInitTau(TRUE)
-       modglmm0<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne)
-	#print("test memory 3")
-	#gc(verbose=T)
-	tauInit = modglmm0$theta		
-	cat("tauInit estimated using sparse Sigma is ", tauInit, "\n")	
-	rm(modglmm0)
-	closeGenoFile_plink()	
-      }
-      setisUseSparseSigmaforInitTau(FALSE)
-      setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
-
-
-      cat("Start fitting the NULL GLMM\n")
-      t_begin = proc.time()
-      print(t_begin)
-
-     #print("test memory 4")
-     #gc(verbose=T)
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Binary(plinkFile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK = obj.noK, out.transform = out.transform, tauInit=tauInit, memoryChunk=memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
-     #print("test memory 5")
-     #gc(verbose=T)
-      modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
-      for (x in names(modglmm$obj.glm.null)) {
-        attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
-      }
-
-      save(modglmm, file = modelOut)
-      tau = modglmm$theta
-      varAll = tau[2] + (pi^2)/3
-      tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
-      wVec_ss = rep(1,length(modglmm$y))
-      bVec_ss = rep(1,length(modglmm$y))
-      Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, bVec_ss, maxiterPCG, tolPCG)
-      t1_Rinv_1 = sum(Rinv_1)
-      cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
-      Pn = sum(modglmm$y == 1)/(length(modglmm$y))
-      Nglmm = 4*Pn*(1-Pn)*t1_Rinv_1
-      cat("Nglmm ", Nglmm, "\n")
-
-      t_end = proc.time()
-      print(t_end)
-      cat("t_end - t_begin, fitting the NULL model took\n")
-      print(t_end - t_begin)
-
-    }else{
-      cat("Skip fitting the NULL GLMM\n")
-      load(modelOut)
-      if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
-      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)	
-      if(LOCO){set_Diagof_StdGeno_LOCO()}
-      tau = modglmm$theta
-      varAll = tau[2] + (pi^2)/3
-      tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
-      wVec_ss = rep(1,length(modglmm$y))
-      bVec_ss = rep(1,length(modglmm$y))
-      t_getPCG1ofSigmaAndVector = proc.time()
-      Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, bVec_ss, maxiterPCG, tolPCG)  
-      #tempvec = getCrossprodMatAndKin(bVec_ss)
-      #t_getPCG1ofSigmaAndVector_2 = proc.time()
-      #print("t_getPCG1ofSigmaAndVector_2 - t_getPCG1ofSigmaAndVector")
-      #print(t_getPCG1ofSigmaAndVector_2 - t_getPCG1ofSigmaAndVector)
-      #startIndex = chromosomeStartIndexVec[1]
-      #endIndex = chromosomeEndIndexVec[1]
-      #setStartEndIndex(startIndex, endIndex, 0)
-      #t_getPCG1ofSigmaAndVector_3 = proc.time()
-      #tempvec = getCrossprodMatAndKin_LOCO(bVec_ss)
-      #Rinv_1_LOCO = getPCG1ofSigmaAndVector_LOCO(wVec_ss, tauVec_ss, bVec_ss, maxiterPCG, tolPCG)  	
-      #t_getPCG1ofSigmaAndVector_LOCO = proc.time()
-      #print("t_getPCG1ofSigmaAndVector_LOCO - t_getPCG1ofSigmaAndVector_3")
-      #print(t_getPCG1ofSigmaAndVector_LOCO - t_getPCG1ofSigmaAndVector_3)
-
-      t1_Rinv_1 = sum(Rinv_1)
-      cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
-      Pn = sum(modglmm$y == 1)/(length(modglmm$y))
-      Nglmm = 4*Pn*(1-Pn)*t1_Rinv_1
-      cat("Nglmm ", Nglmm, "\n")
-      setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
-    }
-    cat("Start estimating variance ratios\n")
-    scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm,
-                                                    obj.glm.null = fit0,
-                                                    Cutoff = SPAcutoff,
-                                                    maxiterPCG = maxiterPCG,
-                                                    tolPCG = tolPCG,
-                                                    numMarkers = numMarkers,
-                                                    varRatioOutFile = varRatioFile,
-						    ratioCVcutoff = ratioCVcutoff,
-                                                    testOut = SPAGMMATOut,
-						    plinkFile = plinkFile,
-						    chromosomeStartIndexVec = chromosomeStartIndexVec, 
-						    chromosomeEndIndexVec = chromosomeEndIndexVec,
-						    isCateVarianceRatio = isCateVarianceRatio,
-						    cateVarRatioIndexVec = cateVarRatioIndexVec,
-                                                    IsSparseKin = IsSparseKin,
-                                                    sparseGRMFile = sparseGRMFile,
-                                                    sparseGRMSampleIDFile = sparseGRMSampleIDFile,
-                                                    numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
-                                                    relatednessCutoff = relatednessCutoff,
-						    useSparseGRMtoFitNULL = useSparseGRMtoFitNULL,
-                                                    nThreads = nThreads,
-							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
-                cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
-		minMAFforGRM = minMAFforGRM,
-		isDiagofKinSetAsOne = isDiagofKinSetAsOne,
-		includeNonautoMarkersforVarRatio = includeNonautoMarkersforVarRatio)
-    closeGenoFile_plink()
-
-  }else if(traitType == "quantitative"){
-
-    cat(phenoCol, " is a quantitative trait\n")
- 
-    #obj.noK = ScoreTest_wSaddleApprox_NULL_Model_q(formula.new, data.new)
-    obj.noK = NULL
-    fit0 = glm(formula.new, data=data.new,family=gaussian(link = "identity"))
-    cat("glm:\n")
-    print(fit0)
-
-
-    if(!skipModelFitting){
-      if(useSparseSigmaforInitTau){
-       setisUseSparseSigmaforInitTau(TRUE)
-       modglmm0<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne) 
-       tauInit = modglmm0$theta
-       cat("tauInit estimated using sparse Sigma is ", tauInit, "\n")
-	 rm(modglmm0)
+    if (traitType == "binary") {
+        cat(phenoCol, " is a binary trait\n")
+        uniqPheno = sort(unique(dataMerge_sort[, which(colnames(dataMerge_sort) == 
+            phenoCol)]))
+        if (uniqPheno[1] != 0 | uniqPheno[2] != 1) {
+            stop("ERROR! phenotype value needs to be 0 or 1 \n")
+        }
+        if (!noEstFixedEff) {
+            fit0 = glm(formula.new, data = data.new, family = binomial)
+        }
+        else {
+            fit0 = glm(formula.new, data = data.new, offset = covoffset, 
+                family = binomial)
+        }
+        cat("glm:\n")
+        print(fit0)
+        obj.noK = NULL
+        if (!skipModelFitting) {
+            if (useSparseSigmaforInitTau) {
+                setisUseSparseSigmaforInitTau(TRUE)
+                modglmm0 <- glmmkin.ai_PCG_Rcpp_Binary(plinkFile, 
+                  fit0, tau = c(0, 0), fixtau = c(0, 0), maxiter = maxiter, 
+                  tol = tol, verbose = TRUE, nrun = 30, tolPCG = tolPCG, 
+                  maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, 
+                  obj.noK = obj.noK, out.transform = out.transform, 
+                  tauInit = tauInit, memoryChunk = memoryChunk, 
+                  LOCO = LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, 
+                  chromosomeEndIndexVec = chromosomeEndIndexVec, 
+                  traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, 
+                  isDiagofKinSetAsOne = isDiagofKinSetAsOne)
+                tauInit = modglmm0$theta
+                cat("tauInit estimated using sparse Sigma is ", 
+                  tauInit, "\n")
+                rm(modglmm0)
+                closeGenoFile_plink()
+            }
+            setisUseSparseSigmaforInitTau(FALSE)
+            setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
+            cat("Start fitting the NULL GLMM\n")
+            t_begin = proc.time()
+            print(t_begin)
+            system.time(modglmm <- glmmkin.ai_PCG_Rcpp_Binary(plinkFile, 
+                fit0, tau = c(0, 0), fixtau = c(0, 0), maxiter = maxiter, 
+                tol = tol, verbose = TRUE, nrun = 30, tolPCG = tolPCG, 
+                maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, 
+                obj.noK = obj.noK, out.transform = out.transform, 
+                tauInit = tauInit, memoryChunk = memoryChunk, 
+                LOCO = LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, 
+                chromosomeEndIndexVec = chromosomeEndIndexVec, 
+                traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, 
+                isDiagofKinSetAsOne = isDiagofKinSetAsOne))
+            modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
+            for (x in names(modglmm$obj.glm.null)) {
+                attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
+            }
+            save(modglmm, file = modelOut)
+            tau = modglmm$theta
+            varAll = tau[2] + (pi^2)/3
+            tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
+            wVec_ss = rep(1, length(modglmm$y))
+            bVec_ss = rep(1, length(modglmm$y))
+            Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, 
+                bVec_ss, maxiterPCG, tolPCG)
+            t1_Rinv_1 = sum(Rinv_1)
+            cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
+            Pn = sum(modglmm$y == 1)/(length(modglmm$y))
+            Nglmm = 4 * Pn * (1 - Pn) * t1_Rinv_1
+            cat("Nglmm ", Nglmm, "\n")
+            t_end = proc.time()
+            print(t_end)
+            cat("t_end - t_begin, fitting the NULL model took\n")
+            print(t_end - t_begin)
+        }
+        else {
+            cat("Skip fitting the NULL GLMM\n")
+            load(modelOut)
+            if (is.null(modglmm$LOCO)) {
+                modglmm$LOCO = FALSE
+            }
+            setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, 
+                isDiagofKinSetAsOne)
+            if (LOCO) {
+                set_Diagof_StdGeno_LOCO()
+            }
+            tau = modglmm$theta
+            varAll = tau[2] + (pi^2)/3
+            tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
+            wVec_ss = rep(1, length(modglmm$y))
+            bVec_ss = rep(1, length(modglmm$y))
+            t_getPCG1ofSigmaAndVector = proc.time()
+            Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, 
+                bVec_ss, maxiterPCG, tolPCG)
+            t1_Rinv_1 = sum(Rinv_1)
+            cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
+            Pn = sum(modglmm$y == 1)/(length(modglmm$y))
+            Nglmm = 4 * Pn * (1 - Pn) * t1_Rinv_1
+            cat("Nglmm ", Nglmm, "\n")
+            setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
+        }
+        if (!skipVarianceRatioEstimation) {
+            cat("Start estimating variance ratios\n")
+            scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm, 
+                obj.glm.null = fit0, Cutoff = SPAcutoff, maxiterPCG = maxiterPCG, 
+                tolPCG = tolPCG, numMarkers = numMarkers, varRatioOutFile = varRatioFile, 
+                ratioCVcutoff = ratioCVcutoff, testOut = SPAGMMATOut, 
+                plinkFile = plinkFile, chromosomeStartIndexVec = chromosomeStartIndexVec, 
+                chromosomeEndIndexVec = chromosomeEndIndexVec, 
+                isCateVarianceRatio = isCateVarianceRatio, cateVarRatioIndexVec = cateVarRatioIndexVec, 
+                IsSparseKin = IsSparseKin, sparseGRMFile = sparseGRMFile, 
+                sparseGRMSampleIDFile = sparseGRMSampleIDFile, 
+                numRandomMarkerforSparseKin = numRandomMarkerforSparseKin, 
+                relatednessCutoff = relatednessCutoff, useSparseGRMtoFitNULL = useSparseGRMtoFitNULL, 
+                nThreads = nThreads, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, 
+                cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, 
+                minMAFforGRM = minMAFforGRM, isDiagofKinSetAsOne = isDiagofKinSetAsOne, 
+                includeNonautoMarkersforVarRatio = includeNonautoMarkersforVarRatio)
+        }
+        else {
+            cat("Skip estimating variance ratios\n")
+        }
         closeGenoFile_plink()
-     }
-
-     setisUseSparseSigmaforInitTau(FALSE)
-
-      cat("Start fitting the NULL GLMM\n")
-      t_begin = proc.time()
-      print(t_begin)
-      setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
-      system.time(modglmm<-glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile,fit0, tau = c(0,0), fixtau = c(0,0), maxiter =maxiter, tol = tol, verbose = TRUE, nrun=30, tolPCG = tolPCG, maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, obj.noK=obj.noK, out.transform=out.transform, tauInit=tauInit, memoryChunk = memoryChunk, LOCO=LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec, traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, isDiagofKinSetAsOne = isDiagofKinSetAsOne))
-      
-      modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
-      for (x in names(modglmm$obj.glm.null)) {
-        attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
-      }
-
-      save(modglmm, file = modelOut)
-
-      t_end = proc.time()
-      print(t_end)
-      cat("t_end - t_begin, fitting the NULL model took\n")
-      print(t_end - t_begin)
-      print("step2")
-
-    }else{
-
-      cat("Skip fitting the NULL GLMM\n")
-      load(modelOut)
-      if(is.null(modglmm$LOCO)){modglmm$LOCO = FALSE}
-      setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, isDiagofKinSetAsOne)
-      setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
-      if(LOCO){set_Diagof_StdGeno_LOCO()}
     }
-
-    cat("Start estimating variance ratios\n")
-    scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait(obj.glmm.null = modglmm,
-                                                    obj.glm.null = fit0,
-                                                    Cutoff = SPAcutoff,
-                                                    maxiterPCG = maxiterPCG,
-                                                    tolPCG = tolPCG,
-                                                    numMarkers = numMarkers,
-                                                    varRatioOutFile = varRatioFile,
-						    ratioCVcutoff = ratioCVcutoff,
-                                                    testOut = SPAGMMATOut,
-						    plinkFile = plinkFile,
-                                                    chromosomeStartIndexVec = chromosomeStartIndexVec,
-                                                    chromosomeEndIndexVec = chromosomeEndIndexVec,
-						    isCateVarianceRatio = isCateVarianceRatio,
-						    cateVarRatioIndexVec = cateVarRatioIndexVec,
-						    IsSparseKin = IsSparseKin,
-						    sparseGRMFile = sparseGRMFile,
-                				    sparseGRMSampleIDFile = sparseGRMSampleIDFile,	
-						    numRandomMarkerforSparseKin = numRandomMarkerforSparseKin,
-						    relatednessCutoff = relatednessCutoff,
-						    useSparseGRMtoFitNULL = useSparseGRMtoFitNULL, 
-						    nThreads = nThreads,
-							cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
-                cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
-		minMAFforGRM = minMAFforGRM,
-		isDiagofKinSetAsOne = isDiagofKinSetAsOne,
-		includeNonautoMarkersforVarRatio = includeNonautoMarkersforVarRatio)
-    closeGenoFile_plink()
-  }
+    else if (traitType == "quantitative") {
+        cat(phenoCol, " is a quantitative trait\n")
+        obj.noK = NULL
+        fit0 = glm(formula.new, data = data.new, family = gaussian(link = "identity"))
+        cat("glm:\n")
+        print(fit0)
+        if (!skipModelFitting) {
+            if (useSparseSigmaforInitTau) {
+                setisUseSparseSigmaforInitTau(TRUE)
+                modglmm0 <- glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile, 
+                  fit0, tau = c(0, 0), fixtau = c(0, 0), maxiter = maxiter, 
+                  tol = tol, verbose = TRUE, nrun = 30, tolPCG = tolPCG, 
+                  maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, 
+                  obj.noK = obj.noK, out.transform = out.transform, 
+                  tauInit = tauInit, memoryChunk = memoryChunk, 
+                  LOCO = LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, 
+                  chromosomeEndIndexVec = chromosomeEndIndexVec, 
+                  traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, 
+                  isDiagofKinSetAsOne = isDiagofKinSetAsOne)
+                tauInit = modglmm0$theta
+                cat("tauInit estimated using sparse Sigma is ", 
+                  tauInit, "\n")
+                rm(modglmm0)
+                closeGenoFile_plink()
+            }
+            setisUseSparseSigmaforInitTau(FALSE)
+            cat("Start fitting the NULL GLMM\n")
+            t_begin = proc.time()
+            print(t_begin)
+            setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
+            system.time(modglmm <- glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile, 
+                fit0, tau = c(0, 0), fixtau = c(0, 0), maxiter = maxiter, 
+                tol = tol, verbose = TRUE, nrun = 30, tolPCG = tolPCG, 
+                maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, 
+                obj.noK = obj.noK, out.transform = out.transform, 
+                tauInit = tauInit, memoryChunk = memoryChunk, 
+                LOCO = LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, 
+                chromosomeEndIndexVec = chromosomeEndIndexVec, 
+                traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, 
+                isDiagofKinSetAsOne = isDiagofKinSetAsOne))
+            modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
+            for (x in names(modglmm$obj.glm.null)) {
+                attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
+            }
+            save(modglmm, file = modelOut)
+            t_end = proc.time()
+            print(t_end)
+            cat("t_end - t_begin, fitting the NULL model took\n")
+            print(t_end - t_begin)
+            print("step2")
+        }
+        else {
+            cat("Skip fitting the NULL GLMM\n")
+            load(modelOut)
+            if (is.null(modglmm$LOCO)) {
+                modglmm$LOCO = FALSE
+            }
+            setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, 
+                isDiagofKinSetAsOne)
+            setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
+            if (LOCO) {
+                set_Diagof_StdGeno_LOCO()
+            }
+        }
+        if (!skipVarianceRatioEstimation) {
+            cat("Start estimating variance ratios\n")
+            scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait(obj.glmm.null = modglmm, 
+                obj.glm.null = fit0, Cutoff = SPAcutoff, maxiterPCG = maxiterPCG, 
+                tolPCG = tolPCG, numMarkers = numMarkers, varRatioOutFile = varRatioFile, 
+                ratioCVcutoff = ratioCVcutoff, testOut = SPAGMMATOut, 
+                plinkFile = plinkFile, chromosomeStartIndexVec = chromosomeStartIndexVec, 
+                chromosomeEndIndexVec = chromosomeEndIndexVec, 
+                isCateVarianceRatio = isCateVarianceRatio, cateVarRatioIndexVec = cateVarRatioIndexVec, 
+                IsSparseKin = IsSparseKin, sparseGRMFile = sparseGRMFile, 
+                sparseGRMSampleIDFile = sparseGRMSampleIDFile, 
+                numRandomMarkerforSparseKin = numRandomMarkerforSparseKin, 
+                relatednessCutoff = relatednessCutoff, useSparseGRMtoFitNULL = useSparseGRMtoFitNULL, 
+                nThreads = nThreads, cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude, 
+                cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, 
+                minMAFforGRM = minMAFforGRM, isDiagofKinSetAsOne = isDiagofKinSetAsOne, 
+                includeNonautoMarkersforVarRatio = includeNonautoMarkersforVarRatio)
+        }
+        else {
+            cat("Skip estimating variance ratios\n")
+        }
+        closeGenoFile_plink()
+    }
 }
-
 
 
 scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
@@ -2328,46 +2334,57 @@ getSparseSigma = function(plinkFile = plinkFile,
   return(sparseSigma)
 }
 
-getsubGRM = function(sparseGRMFile=NULL,
-                sparseGRMSampleIDFile="",
-                modelID=NULL){
 
-  cat("extract sparse GRM\n")
-#  sparseGRMFile = paste0(outputPrefix, ".sparseGRM.mtx")
-  sparseGRMLarge = Matrix:::readMM(sparseGRMFile)
-    #cat("sparseSigmaFile: ", sparseSigmaFile, "\n")
- if(!file.exists(sparseGRMSampleIDFile)){
-        stop("ERROR! sparseSigmaSampleIDFile ", sparseGRMSampleIDFile, " does not exist\n")
- }else{
-        sparseGRMSampleID = data.frame(data.table:::fread(sparseGRMSampleIDFile, header=F, stringsAsFactors=FALSE, colClasses=c("character")))
+
+getsubGRM <-
+function (sparseGRMFile = NULL, sparseGRMSampleIDFile = "", relatednessCutoff,
+    modelID = NULL)
+{
+    cat("extract sparse GRM\n")
+    sparseGRMLarge = Matrix:::readMM(sparseGRMFile)
+    print(nnzero(sparseGRMLarge))
+    cat("set elements in the sparse GRN <= ", relatednessCutoff,
+        " to zero\n")
+    sparseGRMLarge = Matrix:::drop0(sparseGRMLarge, tol = relatednessCutoff)
+    print(nnzero(sparseGRMLarge))
+    if (!file.exists(sparseGRMSampleIDFile)) {
+        stop("ERROR! sparseSigmaSampleIDFile ", sparseGRMSampleIDFile,
+            " does not exist\n")
+    }
+    else {
+        sparseGRMSampleID = data.frame(data.table:::fread(sparseGRMSampleIDFile,
+            header = F, stringsAsFactors = FALSE, colClasses = c("character")))
         colnames(sparseGRMSampleID) = c("sampleID")
-        sparseGRMSampleID$IndexGRM = seq(1,nrow(sparseGRMSampleID), by=1)
-	if(nrow(sparseGRMSampleID) != dim(sparseGRMLarge)[1] | nrow(sparseGRMSampleID) != dim(sparseGRMLarge)[2]){
-		stop("ERROR! number of samples in the sparse GRM is not the same to the number of sample IDs in the specified sparseGRMSampleIDFile ", sparseGRMSampleIDFile, "\n")
-	}else{
-
-        sampleInModel = NULL
-        sampleInModel$IID = modelID
-        sampleInModel = data.frame(sampleInModel)
-        sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
-        cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
-        mergeID = merge(sampleInModel, sparseGRMSampleID, by.x="IID", by.y = "sampleID")
-        if(nrow(sampleInModel) > nrow(mergeID)){
-            stop("ERROR: ", nrow(sampleInModel) - nrow(mergeID), "samples used for model fitting are not in the specified GRM\n")
-
-
-        }else{
-
-        mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
-        indexIDofGRM=mergeID$IndexGRM
-        #cat("Subset sparse GRM to be ", indexIDofSigma," by ", indexIDofSigma, "\n")
-        sparseGRM = sparseGRMLarge[indexIDofGRM, indexIDofGRM]
-        rm(sparseGRMLarge)
-        return(sparseGRM)
+        sparseGRMSampleID$IndexGRM = seq(1, nrow(sparseGRMSampleID),
+            by = 1)
+        if (nrow(sparseGRMSampleID) != dim(sparseGRMLarge)[1] |
+            nrow(sparseGRMSampleID) != dim(sparseGRMLarge)[2]) {
+            stop("ERROR! number of samples in the sparse GRM is not the same to the number of sample IDs in the specified sparseGRMSampleIDFile ",
+                sparseGRMSampleIDFile, "\n")
+        }
+        else {
+            sampleInModel = NULL
+            sampleInModel$IID = modelID
+            sampleInModel = data.frame(sampleInModel)
+            sampleInModel$IndexInModel = seq(1, length(sampleInModel$IID),
+                by = 1)
+            cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
+            mergeID = merge(sampleInModel, sparseGRMSampleID,
+                by.x = "IID", by.y = "sampleID")
+            if (nrow(sampleInModel) > nrow(mergeID)) {
+                stop("ERROR: ", nrow(sampleInModel) - nrow(mergeID),
+                  "samples used for model fitting are not in the specified GRM\n")
+            }
+            else {
+                mergeID = mergeID[with(mergeID, order(IndexInModel)),
+                  ]
+                indexIDofGRM = mergeID$IndexGRM
+                sparseGRM = sparseGRMLarge[indexIDofGRM, indexIDofGRM]
+                rm(sparseGRMLarge)
+                return(sparseGRM)
+            }
         }
     }
-
-  }
 }
 
 

@@ -105,7 +105,7 @@ if(FALSE){
          if(length(flipindex_G2) > 0){
                 G2_cond[,flipindex_G2] = 2 - G2_cond[,flipindex_G2]
 		MACvec_cond[flipindex_G2] = 2*n - MACvec_cond[flipindex_G2]
-                cat("Note the ", flipindex, "th variants of conditioing variants were flipped to use dosages for the minor alleles in gene-based tests\n")
+                cat("Note the ", flipindex_G2, "th variants of conditioing variants were flipped to use dosages for the minor alleles in gene-based tests\n")
          }
          MAF_G2_cond = colMeans(G2_cond)/2
          MAF = c(MAF, MAF_G2_cond)
@@ -616,24 +616,24 @@ if(FALSE){
 }
 
 
-
-getGratioMatrix = function(MACvec_indVec, ratioVec){
-
-	numCate = length(ratioVec)
-        #cat("MACvec_indVec: ", MACvec_indVec, "\n")
-
+getGratioMatrix <-
+function (MACvec_indVec, ratioVec)
+{
+    numCate = length(ratioVec)
+    if (numCate > 1) {
         indMatrix = contr.sum(numCate, contrasts = FALSE)
-
         GindMatrix = NULL
-        for(i in MACvec_indVec){
-          GindMatrix = rbind(GindMatrix, indMatrix[i,])
+        for (i in MACvec_indVec) {
+            GindMatrix = rbind(GindMatrix, indMatrix[i, ])
         }
-
-        GratioVec = GindMatrix %*% matrix(ratioVec, ncol=1)
-        #mxm
+        GratioVec = GindMatrix %*% matrix(ratioVec, ncol = 1)
         GratioMatrix = sqrt(GratioVec) %*% t(sqrt(GratioVec))
-
-        return(GratioMatrix)
+    }
+    else {
+        GratioMatrix = matrix(ratioVec[1], nrow = length(MACvec_indVec),
+            ncol = length(MACvec_indVec))
+    }
+    return(GratioMatrix)
 }
 
 
@@ -696,64 +696,66 @@ getcovM = function(G1, G2, sparseSigma, mu2 = NULL){
 
 
 ###
-getVarRatio = function(G, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec){
-  if(length(ratioVec) == 1 & ncol(as.matrix(G)) == 1){
-    return(ratioVec[1])
-  }else{
+getVarRatio <-
+function (G, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude,
+    ratioVec)
+{
+    if (length(ratioVec) == 1) {
+        if (ncol(as.matrix(G)) == 1) {
+            return(ratioVec[1])
+        }
+        else {
+            GratioMat = matrix(ratioVec[1], nrow = ncol(G), ncol = ncol(G))
+            return(GratioMat)
+        }
+    }
+    else {
         G = as.matrix(G)
-        if(length(ratioVec) == 1){
-          ratioVec = c(ratioVec, rep(ratioVec[1], ncol(as.matrix(G))))
+        if (length(ratioVec) == 1) {
+            ratioVec = c(ratioVec, rep(ratioVec[1], ncol(as.matrix(G))))
         }
-        if(ncol(G) > 1){
-                MACvector = colSums(G)
-
-        }else{
-                MACvector = NULL
-                MACvector = c(MACvector, sum(as.vector(G[,1])) )
+        if (ncol(G) > 1) {
+            MACvector = colSums(G)
         }
-
-        MACvector[which(MACvector > nrow(G))] = 2*nrow(G) - MACvector[which(MACvector > nrow(G))]
-
-        #cat("MACvector: ", MACvector, "\n")
-        #print(length(MACvector))
+        else {
+            MACvector = NULL
+            MACvector = c(MACvector, sum(as.vector(G[, 1])))
+        }
+        MACvector[which(MACvector > nrow(G))] = 2 * nrow(G) -
+            MACvector[which(MACvector > nrow(G))]
         MACvec_indVec = rep(0, length(MACvector))
-        #cat("here1 MACvec_indVec: ", MACvec_indVec, "\n")
-        #cat("cateVarRatioMinMACVecExclude: ", cateVarRatioMinMACVecExclude, "\n")
-        #cat("cateVarRatioMaxMACVecInclude: ", cateVarRatioMaxMACVecInclude, "\n")
         numCate = length(cateVarRatioMinMACVecExclude)
-#       cat("numCate: ", numCate, "\n")
-#       cat("MACvector: ", MACvector, "\n")
-        for(i in 1:(numCate-1)){
-                if(i == 1){
-                        MACvecIndex = which(MACvector >= cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
-                }else{
-                        MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
-                }
-                if(length(MACvecIndex) > 0){
-                        MACvec_indVec[MACvecIndex] = i
-                }
-
+        for (i in 1:(numCate - 1)) {
+            if (i == 1) {
+                MACvecIndex = which(MACvector >= cateVarRatioMinMACVecExclude[i] &
+                  MACvector <= cateVarRatioMaxMACVecInclude[i])
+            }
+            else {
+                MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[i] &
+                  MACvector <= cateVarRatioMaxMACVecInclude[i])
+            }
+            if (length(MACvecIndex) > 0) {
+                MACvec_indVec[MACvecIndex] = i
+            }
         }
-#       cat("here2 MACvec_indVec: ", MACvec_indVec, "\n")
-#       cat("here2 length(cateVarRatioMaxMACVecInclude): ", length(cateVarRatioMaxMACVecInclude), "\n")
-
-        if(length(cateVarRatioMaxMACVecInclude) == (numCate-1)){
-                MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[numCate])
-        }else{
-                MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[numCate] & MACvector <= cateVarRatioMaxMACVecInclude[numCate])
+        if (length(cateVarRatioMaxMACVecInclude) == (numCate -
+            1)) {
+            MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[numCate])
         }
-
-        if(length(MACvecIndex) > 0){
-                MACvec_indVec[MACvecIndex] = numCate
+        else {
+            MACvecIndex = which(MACvector > cateVarRatioMinMACVecExclude[numCate] &
+                MACvector <= cateVarRatioMaxMACVecInclude[numCate])
         }
-#       cat("here3 MACvec_indVec: ", MACvec_indVec, "\n")
-
-
+        if (length(MACvecIndex) > 0) {
+            MACvec_indVec[MACvecIndex] = numCate
+        }
         GratioMat = getGratioMatrix(MACvec_indVec, ratioVec)
-        #return(MACvec_indVec)
         return(GratioMat)
-  }
+    }
 }
+
+
+
 
 getCateVarRatio_indVec = function(MACvector = NULL, G = NULL, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude){
 
