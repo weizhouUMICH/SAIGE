@@ -685,7 +685,7 @@ fitNULLGLMM = function(plinkFile = "",
 		MaleCode = 0,	
 		MaleOnly = FALSE,
 		noEstFixedEff = FALSE,
-		skipVarianceRatioEstimation = FALSE){
+		skipVarianceRatioEstimation = FALSE)
 {
     setminMAFforGRM(minMAFforGRM)
     if (minMAFforGRM > 0) {

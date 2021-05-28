@@ -131,8 +131,7 @@ SPAGMMATtest = function(bgenFile = "",
     if (groupFile == "") {
         isGroupTest = FALSE
         cat("single-variant association test will be performed\n")
-    }
-    else {
+    }else {
         cat("group-based test will be performed\n")
         IsOutputlogPforSingle = FALSE
         if (dosageZerodCutoff < 0) {
@@ -162,8 +161,7 @@ SPAGMMATtest = function(bgenFile = "",
     }
     if (!file.exists(GMMATmodelFile)) {
         stop("ERROR! GMMATmodelFile ", GMMATmodelFile, " does not exsit\n")
-    }
-    else {
+    }else {
         load(GMMATmodelFile)
         modglmm$Y = NULL
         modglmm$offset = modglmm$linear.predictors - modglmm$coefficients[1]
@@ -197,17 +195,14 @@ SPAGMMATtest = function(bgenFile = "",
                   gc()
                 }
             }
-        }
-        else {
+        }else {
             if (!obj.glmm.null$LOCO) {
                 stop("LOCO is TRUE but the null model file .rda does not contain LOCO results. In order to apply Leave-one-chromosome-out, please run Step 1 using LOCO. Otherwise, please set LOCO=FALSE in this step (Step 2).\n")
-            }
-            else {
+            }else {
                 if (isGroupTest) {
                   if (chrom == "") {
                     stop("chrom needs to be specified in order to apply Leave-one-chromosome-out on gene- or region-based tests")
-                  }
-                  else {
+                  }else {
                     chrom_v2 = as.character(chrom)
                     chrom_v2 = gsub("CHR", "", chrom_v2, ignore.case = T)
                     chrom_v3 = as.numeric(gsub("[^0-9.]", "", 
@@ -220,19 +215,16 @@ SPAGMMATtest = function(bgenFile = "",
                       cat("Leave chromosome ", chrom_v3, " out will be applied\n")
                     }
                   }
-                }
-                else {
+                }else {
                   if (chrom == "") {
                     if (condition != "") {
                       cat("Conditional test will be conducted and LOCO is TRUE\n")
                       stop("chromosome is needed by specifying chrom for LOCO in conditioning analysis. We assume conditioning markers and testing markers are on the same chromosome")
-                    }
-                    else {
+                    }else {
                       stop("chromosome is needed by specifying chrom for LOCO = TRUE.")
                       indChromCheck = TRUE
                     }
-                  }
-                  else {
+                  }else {
                     chrom_v2 = as.character(chrom)
                     chrom_v2 = gsub("CHR", "", chrom_v2, ignore.case = T)
                     chrom_v3 = as.numeric(gsub("[^0-9.]", "", 
@@ -240,8 +232,7 @@ SPAGMMATtest = function(bgenFile = "",
                     if (chrom_v3 > length(obj.glmm.null$LOCOResult) | 
                       chrom_v3 < 1) {
                       stop("chromosome ", chrom, " is out of the range of null model LOCO results\n")
-                    }
-                    else {
+                    }else {
                       cat("Leave chromosome ", chrom_v3, " out will be applied\n")
                       for (chr in 1:22) {
                         if (chr != chrom_v3) {
@@ -1173,8 +1164,7 @@ SPAGMMATtest = function(bgenFile = "",
                     " for any ultra rare variant has 1 in the genotype vector, having dosage >= ", 
                     (1 + DosageCutoff_for_UltraRarePresence), 
                     " for any ultra rare variant has 2 in the genotype vector, otherwise 0. \n")
-                }
-                else if (method_to_CollapseUltraRare == "sum_geno") {
+                }else if (method_to_CollapseUltraRare == "sum_geno") {
                   cat("Ultra rare variants with MAC <= ", MACCutoff_to_CollapseUltraRare, 
                     " will be collpased for set-based tests in the 'sum_geno' way. ", 
                     "The resulted collpased marker equals weighted sum of the genotypes of all ultra rare variantsi. NOTE: this option currently is not active\n")
