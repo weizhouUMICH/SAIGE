@@ -48,7 +48,7 @@ void ScoreClass::assignforScoreTest(bool t_LOCO, std::vector<bool> & t_LOCOVec, 
 }	
 
 
-void ScoreClass::scoreTest(arma::vec t_GVec,
+void ScoreClass::scoreTest(arma::vec & t_GVec,
                      double& t_Beta,
                      double& t_seBeta,
                      std::string& t_pval_str,
@@ -108,7 +108,7 @@ void ScoreClass::scoreTest(arma::vec t_GVec,
 }
 
 
-void ScoreClass::scoreTestFast(arma::vec t_GVec,
+void ScoreClass::scoreTestFast(arma::vec & t_GVec,
                      arma::uvec & t_indexForNonZero,
                      double& t_Beta,
                      double& t_seBeta,

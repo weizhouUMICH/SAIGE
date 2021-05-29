@@ -46,7 +46,7 @@ class ScoreClass {
 
       
       void assignforScoreTest(bool t_LOCO, std::vector<bool> & t_LOCOVec,  arma::mat & t_XVX, arma::mat & t_XXVX_inv,  arma::mat & t_XV, arma::mat & t_XVX_inv_XV, arma::mat & t_X, arma::vec & t_S_a,  arma::vec & t_res,  arma::vec & t_mu2, arma::vec & t_mu, double t_varRatio, arma::vec & t_tauvec, std::string t_traitType, bool t_isOutputAFinCaseCtrl, bool t_isOutputHetHomCountsinCaseCtrl, arma::vec & t_y);
-      void scoreTest(arma::vec t_GVec,
+      void scoreTest(arma::vec & t_GVec,
                      double& t_Beta, 
                      double& t_seBeta, 
                      std::string& t_pval_str, 
@@ -55,7 +55,7 @@ class ScoreClass {
 		     double &t_var1, 
 		     double &t_var2,
 		     arma::vec & t_gtilde);
-      void scoreTestFast(arma::vec t_GVec,
+      void scoreTestFast(arma::vec & t_GVec,
                      arma::uvec & t_indexForNonZero,
                      double& t_Beta,
                      double& t_seBeta,

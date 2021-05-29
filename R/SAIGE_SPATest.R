@@ -3206,7 +3206,57 @@ SPAGMMATtest_new = function(bgenFile = "",
                 #time1=system.time({a=getScoreTest_SPA(markerIndicesVec[mth], traitType)})
 		a = as.data.frame(getScoreTest_SPA_multi(mth, numLinesOutput0, traitType))
         }else{
-		a = as.data.frame(getScoreTest_SPA_multi(0, numLinesOutput0, traitType))
+		print(gc())
+		chromVec=rep("0",numLinesOutput0)
+posVec=rep(0,numLinesOutput0)
+rsIDVec=rep("0",numLinesOutput0)
+A1Vec=rep("0",numLinesOutput0)
+A2Vec=rep("0",numLinesOutput0)
+infoVec=rep(0,numLinesOutput0)
+ACVec=rep(0,numLinesOutput0)
+altFreqVec=rep(0,numLinesOutput0)
+BetaVec=rep(0,numLinesOutput0)
+seBetaVec=rep(0,numLinesOutput0)
+pvalVec=rep("0",numLinesOutput0)
+TstatVec=rep(0,numLinesOutput0)
+var1Vec=rep(0,numLinesOutput0)
+var2Vec=rep(0,numLinesOutput0)
+NVec=rep(0,numLinesOutput0)
+SPApvalVec=rep(0,numLinesOutput0)
+SPAConverge=rep(0,numLinesOutput0)
+AFinCaseVec=rep(0,numLinesOutput0)
+AFinCtrlVec=rep(0,numLinesOutput0)
+N_case_homVec=rep(0,numLinesOutput0)
+N_ctrl_hetVec=rep(0,numLinesOutput0)
+N_case_hetVec=rep(0,numLinesOutput0)
+N_ctrl_homVec=rep(0,numLinesOutput0)
+		#a0 = as.data.frame(getScoreTest_SPA_multi_new(0, numLinesOutput0, traitType, chromVec,
+		getScoreTest_SPA_multi_new(0, numLinesOutput0, traitType, chromVec,
+posVec,
+rsIDVec,
+A1Vec,
+A2Vec,
+infoVec,
+ACVec,
+altFreqVec,
+BetaVec,
+seBetaVec,
+pvalVec,
+TstatVec,
+var1Vec,
+var2Vec,
+NVec,
+SPApvalVec,
+SPAConverge,
+AFinCaseVec,
+AFinCtrlVec,
+N_case_homVec,
+N_ctrl_hetVec,
+N_case_hetVec,
+N_ctrl_homVec)
+
+a = data.frame(CHR=chromVec, POS=posVec)
+
                 #time1=system.time({a=getScoreTest_SPA(0, traitType)})
         }
 #	print(as.data.frame(a))

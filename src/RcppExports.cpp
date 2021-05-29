@@ -1348,6 +1348,41 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getScoreTest_SPA_multi_new
+void getScoreTest_SPA_multi_new(int mth_start, int m_to_test, std::string traitType, std::vector<std::string>& chromVec, std::vector<uint>& posVec, std::vector<std::string>& rsIDVec, std::vector<std::string>& A1Vec, std::vector<std::string>& A2Vec, std::vector<double>& infoVec, std::vector<double>& ACVec, std::vector<double>& altFreqVec, std::vector<double>& BetaVec, std::vector<double>& seBetaVec, std::vector<std::string>& pvalVec, std::vector<double>& TstatVec, std::vector<double>& var1Vec, std::vector<double>& var2Vec, std::vector<int>& NVec, std::vector<double>& SPApvalVec, std::vector<bool>& SPAConverge, std::vector<double>& AFinCaseVec, std::vector<double>& AFinCtrlVec, std::vector<double>& N_case_homVec, std::vector<double>& N_ctrl_hetVec, std::vector<double>& N_case_hetVec, std::vector<double>& N_ctrl_homVec);
+RcppExport SEXP _SAIGE_getScoreTest_SPA_multi_new(SEXP mth_startSEXP, SEXP m_to_testSEXP, SEXP traitTypeSEXP, SEXP chromVecSEXP, SEXP posVecSEXP, SEXP rsIDVecSEXP, SEXP A1VecSEXP, SEXP A2VecSEXP, SEXP infoVecSEXP, SEXP ACVecSEXP, SEXP altFreqVecSEXP, SEXP BetaVecSEXP, SEXP seBetaVecSEXP, SEXP pvalVecSEXP, SEXP TstatVecSEXP, SEXP var1VecSEXP, SEXP var2VecSEXP, SEXP NVecSEXP, SEXP SPApvalVecSEXP, SEXP SPAConvergeSEXP, SEXP AFinCaseVecSEXP, SEXP AFinCtrlVecSEXP, SEXP N_case_homVecSEXP, SEXP N_ctrl_hetVecSEXP, SEXP N_case_hetVecSEXP, SEXP N_ctrl_homVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type mth_start(mth_startSEXP);
+    Rcpp::traits::input_parameter< int >::type m_to_test(m_to_testSEXP);
+    Rcpp::traits::input_parameter< std::string >::type traitType(traitTypeSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type chromVec(chromVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<uint>& >::type posVec(posVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type rsIDVec(rsIDVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type A1Vec(A1VecSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type A2Vec(A2VecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type infoVec(infoVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type ACVec(ACVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type altFreqVec(altFreqVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type BetaVec(BetaVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type seBetaVec(seBetaVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type pvalVec(pvalVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type TstatVec(TstatVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type var1Vec(var1VecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type var2Vec(var2VecSEXP);
+    Rcpp::traits::input_parameter< std::vector<int>& >::type NVec(NVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type SPApvalVec(SPApvalVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<bool>& >::type SPAConverge(SPAConvergeSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type AFinCaseVec(AFinCaseVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type AFinCtrlVec(AFinCtrlVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type N_case_homVec(N_case_homVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type N_ctrl_hetVec(N_ctrl_hetVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type N_case_hetVec(N_case_hetVecSEXP);
+    Rcpp::traits::input_parameter< std::vector<double>& >::type N_ctrl_homVec(N_ctrl_homVecSEXP);
+    getScoreTest_SPA_multi_new(mth_start, m_to_test, traitType, chromVec, posVec, rsIDVec, A1Vec, A2Vec, infoVec, ACVec, altFreqVec, BetaVec, seBetaVec, pvalVec, TstatVec, var1Vec, var2Vec, NVec, SPApvalVec, SPAConverge, AFinCaseVec, AFinCtrlVec, N_case_homVec, N_ctrl_hetVec, N_case_hetVec, N_ctrl_homVec);
+    return R_NilValue;
+END_RCPP
+}
 // SetSampleIdx_vcfDosage
 void SetSampleIdx_vcfDosage(Rcpp::IntegerVector sample_idx, int Ntest);
 RcppExport SEXP _SAIGE_SetSampleIdx_vcfDosage(SEXP sample_idxSEXP, SEXP NtestSEXP) {
@@ -2129,6 +2164,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getScoreTest_SPA_old", (DL_FUNC) &_SAIGE_getScoreTest_SPA_old, 2},
     {"_SAIGE_getScoreTest_SPA", (DL_FUNC) &_SAIGE_getScoreTest_SPA, 25},
     {"_SAIGE_getScoreTest_SPA_multi", (DL_FUNC) &_SAIGE_getScoreTest_SPA_multi, 3},
+    {"_SAIGE_getScoreTest_SPA_multi_new", (DL_FUNC) &_SAIGE_getScoreTest_SPA_multi_new, 26},
     {"_SAIGE_SetSampleIdx_vcfDosage", (DL_FUNC) &_SAIGE_SetSampleIdx_vcfDosage, 2},
     {"_SAIGE_setTestField", (DL_FUNC) &_SAIGE_setTestField, 1},
     {"_SAIGE_setIsDropMissingDosages_vcf", (DL_FUNC) &_SAIGE_setIsDropMissingDosages_vcf, 1},

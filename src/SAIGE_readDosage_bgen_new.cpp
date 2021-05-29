@@ -949,6 +949,7 @@ wall4in = get_wall_time2();
     N_ctrl = dosage_ctrl.n_elem;
 
   }
+  dosages.clear();
   arma::uvec N_case_ctrl_het_hom0; 
   if(ScoreTestObj.m_isOutputHetHomCountsinCaseCtrl){
     N_case_ctrl_het_hom0 = arma::find(dosage_case <= 2 && dosage_case >=1.5);
@@ -962,7 +963,9 @@ wall4in = get_wall_time2();
     //N_case_ctrl_het_hom[2] = arma::find(dosage_ctrl <= 2 && dosage_ctrl >=1.5);
    N_case_ctrl_het_hom0 = arma::find(dosage_ctrl < 1.5 && dosage_ctrl > 0.5);
    t_N_ctrl_het= N_case_ctrl_het_hom0.n_elem;
-//   N_case_ctrl_het_hom[3] = arma::find(dosage_ctrl < 1.5 && dosage_ctrl > 0.5);	 
+//   N_case_ctrl_het_hom[3] = arma::find(dosage_ctrl < 1.5 && dosage_ctrl > 0.5);
+	dosage_case.clear();
+   dosage_ctrl.clear(); 
   }
 
   if(Glist["isFlip"]){
@@ -1002,9 +1005,9 @@ wall4in = get_wall_time2();
 	isTest = false;
    }	   
 
+
    return(isTest);
 }
-
 
 
 // [[Rcpp::export]]
@@ -1029,18 +1032,18 @@ Rcpp::DataFrame getScoreTest_SPA_multi(int mth_start, int m_to_test, std::string
 
   std::vector<int> NVec(m_to_test);           // p values
   //if(traitType == "binary"){
-    std::vector<double> SPApvalVec(m_to_test);
-    std::vector<bool> SPAConverge(m_to_test);
+  std::vector<double> SPApvalVec(m_to_test);
+  std::vector<bool> SPAConverge(m_to_test);
  //   if(ScoreTestObj.m_isOutputAFinCaseCtrl){ 
-      std::vector<double> AFinCaseVec(m_to_test);
-      std::vector<double> AFinCtrlVec(m_to_test);
+  std::vector<double> AFinCaseVec(m_to_test);
+  std::vector<double> AFinCtrlVec(m_to_test);
  //   }
 
  //   if(ScoreTestObj.m_isOutputHetHomCountsinCaseCtrl){
-      std::vector<double> N_case_homVec(m_to_test);
-      std::vector<double> N_ctrl_hetVec(m_to_test);
-      std::vector<double> N_case_hetVec(m_to_test);
-      std::vector<double> N_ctrl_homVec(m_to_test);
+  std::vector<double> N_case_homVec(m_to_test);
+  std::vector<double> N_ctrl_hetVec(m_to_test);
+  std::vector<double> N_case_hetVec(m_to_test);
+  std::vector<double> N_ctrl_homVec(m_to_test);
  //  }
   //}
 		std::string t_chromosome;
@@ -1158,7 +1161,144 @@ bool isTest;
 		OUT_DF["varT"] = var1Vec;
                 OUT_DF["varTstar"] = var2Vec;
 	
-	}	
+	}
+
+
+	chromVec.clear();
+posVec.clear();
+rsIDVec.clear();
+A1Vec.clear();
+A2Vec.clear();
+infoVec.clear();
+ACVec.clear();
+altFreqVec.clear();
+BetaVec.clear();
+seBetaVec.clear();
+pvalVec.clear();
+TstatVec.clear();
+var1Vec.clear();
+var2Vec.clear();
+NVec.clear();
+SPApvalVec.clear();
+SPAConverge.clear();
+AFinCaseVec.clear();
+AFinCtrlVec.clear();
+N_case_homVec.clear();
+N_ctrl_hetVec.clear();
+N_case_hetVec.clear();
+N_ctrl_homVec.clear();
+
   
 	return(OUT_DF);
-}	
+}
+
+
+
+
+// [[Rcpp::export]]
+void getScoreTest_SPA_multi_new(int mth_start, int m_to_test, std::string traitType,
+	       std::vector<std::string> & chromVec,
+std::vector<uint> & posVec,
+std::vector<std::string> & rsIDVec,
+std::vector<std::string> & A1Vec,
+std::vector<std::string> & A2Vec,
+std::vector<double> & infoVec,
+std::vector<double> & ACVec,
+std::vector<double> & altFreqVec,
+std::vector<double> & BetaVec,
+std::vector<double> & seBetaVec,
+std::vector<std::string> & pvalVec,
+std::vector<double> & TstatVec,
+std::vector<double> & var1Vec,
+std::vector<double> & var2Vec,
+std::vector<int> & NVec,
+std::vector<double> & SPApvalVec,
+std::vector<bool> & SPAConverge,
+std::vector<double> & AFinCaseVec,
+std::vector<double> & AFinCtrlVec,
+std::vector<double> & N_case_homVec,
+std::vector<double> & N_ctrl_hetVec,
+std::vector<double> & N_case_hetVec,
+std::vector<double> & N_ctrl_homVec	
+		) {
+
+    int markerIndex = 0;
+      // set up output
+               std::string t_chromosome;
+                uint  t_position;
+                std::string  t_rsid;
+                std::string  t_allele0;
+                std::string  t_allele1;
+                double  t_AF;
+                double  t_AC;
+                double  t_info;
+                int t_Ntest;
+                double  t_Beta;
+                double  t_se;
+                double  t_Tstat;
+                double  t_var1;
+                double t_var2;
+                std::string  t_noSPApval;
+                double t_SPApval;
+                bool t_isSPAConverge;
+                double t_AF_case;
+                double t_AF_ctrl;
+                int t_N_case_hom;
+                int t_N_case_het;
+                int t_N_ctrl_hom;
+                int t_N_ctrl_het;
+
+
+bool isTest;
+    for (int i = 0; i < m_to_test; i++) {
+      if(m_isQuery){
+              //std::cout << "mth_start " << mth_start << std::endl;
+              //std::cout << "i " << i << std::endl;
+              //std::cout << "mth_start+i " << mth_start+i << std::endl;
+        markerIndex = m_markerIndicesToInclude[mth_start+i];
+      }else{
+              //std::cout << "m_isQuery " << m_isQuery << std::endl;
+        markerIndex = 0;
+      }
+    isTest = getScoreTest_SPA(markerIndex, traitType, t_chromosome, t_position, t_rsid, t_allele0, t_allele1, t_AF, t_AC, t_info, t_Ntest, t_Beta, t_se, t_Tstat, t_var1, t_var2, t_noSPApval, t_SPApval, t_isSPAConverge, t_AF_case, t_AF_ctrl, t_N_case_hom, t_N_case_het, t_N_ctrl_hom, t_N_ctrl_het);
+    //std::cout << "isTest " << isTest << std::endl;
+
+
+    if(isTest){
+        chromVec.at(i) = t_chromosome;
+        posVec.at(i) = t_position;
+        rsIDVec.at(i) = t_rsid;
+        A1Vec.at(i) = t_allele0;
+        A2Vec.at(i) = t_allele1;
+        altFreqVec.at(i) = t_AF;
+        ACVec.at(i) = t_AC;
+        infoVec.at(i) = t_info;
+        NVec.at(i) = t_Ntest;
+        BetaVec.at(i) = t_Beta;
+        seBetaVec.at(i) = t_se;
+        TstatVec.at(i) = t_Tstat;
+        var1Vec.at(i) = t_var1;
+        var2Vec.at(i) = t_var2;
+        pvalVec.at(i) = t_noSPApval;
+        if(traitType == "binary"){
+                SPApvalVec.at(i) = t_SPApval;
+                SPAConverge.at(i) = t_isSPAConverge;
+                if(ScoreTestObj.m_isOutputAFinCaseCtrl){
+                        AFinCaseVec.at(i) = t_AF_case;
+                        AFinCtrlVec.at(i) = t_AF_ctrl;
+                }
+                if(ScoreTestObj.m_isOutputHetHomCountsinCaseCtrl){
+                        N_case_homVec.at(i) = t_N_case_hom;
+                        N_case_hetVec.at(i) = t_N_case_het;
+                        N_ctrl_homVec.at(i) = t_N_ctrl_hom;
+                        N_ctrl_hetVec.at(i) = t_N_ctrl_het;
+			                }
+        }
+
+      }else{
+        chromVec.at(i) = "-1";
+      }
+
+    }
+
+}

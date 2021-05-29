@@ -433,6 +433,10 @@ getScoreTest_SPA_multi <- function(mth_start, m_to_test, traitType) {
     .Call('_SAIGE_getScoreTest_SPA_multi', PACKAGE = 'SAIGE', mth_start, m_to_test, traitType)
 }
 
+getScoreTest_SPA_multi_new <- function(mth_start, m_to_test, traitType, chromVec, posVec, rsIDVec, A1Vec, A2Vec, infoVec, ACVec, altFreqVec, BetaVec, seBetaVec, pvalVec, TstatVec, var1Vec, var2Vec, NVec, SPApvalVec, SPAConverge, AFinCaseVec, AFinCtrlVec, N_case_homVec, N_ctrl_hetVec, N_case_hetVec, N_ctrl_homVec) {
+    invisible(.Call('_SAIGE_getScoreTest_SPA_multi_new', PACKAGE = 'SAIGE', mth_start, m_to_test, traitType, chromVec, posVec, rsIDVec, A1Vec, A2Vec, infoVec, ACVec, altFreqVec, BetaVec, seBetaVec, pvalVec, TstatVec, var1Vec, var2Vec, NVec, SPApvalVec, SPAConverge, AFinCaseVec, AFinCtrlVec, N_case_homVec, N_ctrl_hetVec, N_case_hetVec, N_ctrl_homVec))
+}
+
 SetSampleIdx_vcfDosage <- function(sample_idx, Ntest) {
     invisible(.Call('_SAIGE_SetSampleIdx_vcfDosage', PACKAGE = 'SAIGE', sample_idx, Ntest))
 }
