@@ -389,8 +389,12 @@ setgenoTest_bgenDosage <- function(t_bgenFileName, t_bgenFileIndex) {
     .Call('_SAIGE_setgenoTest_bgenDosage', PACKAGE = 'SAIGE', t_bgenFileName, t_bgenFileIndex)
 }
 
-getOneMarker <- function(t_fileStartPos) {
-    .Call('_SAIGE_getOneMarker', PACKAGE = 'SAIGE', t_fileStartPos)
+getOneMarker_old <- function(t_fileStartPos) {
+    .Call('_SAIGE_getOneMarker_old', PACKAGE = 'SAIGE', t_fileStartPos)
+}
+
+getOneMarker <- function(t_fileStartPos, SNPID, RSID, chromosome, first_allele, second_allele, position, dosages, AC, AF, info, indexforMissing, iIndex, isFlip, isBoolRead) {
+    invisible(.Call('_SAIGE_getOneMarker', PACKAGE = 'SAIGE', t_fileStartPos, SNPID, RSID, chromosome, first_allele, second_allele, position, dosages, AC, AF, info, indexforMissing, iIndex, isFlip, isBoolRead))
 }
 
 getQueryStatus <- function() {
@@ -417,16 +421,16 @@ getSampleSizeinBgen <- function() {
     .Call('_SAIGE_getSampleSizeinBgen', PACKAGE = 'SAIGE')
 }
 
-assignforScoreTest_R <- function(t_LOCO, t_LOCOVec, t_XVX, t_XXVX_inv, t_XV, t_XVX_inv_XV, t_X, t_S_a, t_res, t_mu2, t_mu, t_varRatio, t_tauvec, t_traitType, t_isOutputAFinCaseCtrl, t_isOutputHetHomCountsinCaseCtrl, t_y) {
-    invisible(.Call('_SAIGE_assignforScoreTest_R', PACKAGE = 'SAIGE', t_LOCO, t_LOCOVec, t_XVX, t_XXVX_inv, t_XV, t_XVX_inv_XV, t_X, t_S_a, t_res, t_mu2, t_mu, t_varRatio, t_tauvec, t_traitType, t_isOutputAFinCaseCtrl, t_isOutputHetHomCountsinCaseCtrl, t_y))
+assignforScoreTest_R <- function(t_LOCO, t_LOCOVec, t_XVX, t_XXVX_inv, t_XV, t_XVX_inv_XV, t_X, t_S_a, t_res, t_mu2, t_mu, t_varRatio, t_tauvec, t_traitType, t_isOutputAFinCaseCtrl, t_isOutputHetHomCountsinCaseCtrl, t_isOutputNinCaseCtrl, t_y) {
+    invisible(.Call('_SAIGE_assignforScoreTest_R', PACKAGE = 'SAIGE', t_LOCO, t_LOCOVec, t_XVX, t_XXVX_inv, t_XV, t_XVX_inv_XV, t_X, t_S_a, t_res, t_mu2, t_mu, t_varRatio, t_tauvec, t_traitType, t_isOutputAFinCaseCtrl, t_isOutputHetHomCountsinCaseCtrl, t_isOutputNinCaseCtrl, t_y))
 }
 
 getScoreTest_SPA_old <- function(t_fileStartPos, traitType) {
     .Call('_SAIGE_getScoreTest_SPA_old', PACKAGE = 'SAIGE', t_fileStartPos, traitType)
 }
 
-getScoreTest_SPA <- function(t_fileStartPos, traitType, t_chromosome, t_position, t_rsid, t_allele0, t_allele1, t_AF, t_AC, t_info, t_Ntest, t_Beta, t_se, t_Tstat, t_var1, t_var2, t_noSPApval, t_SPApval, t_isSPAConverge, t_AF_case, t_AF_ctrl, t_N_case_hom, t_N_case_het, t_N_ctrl_hom, t_N_ctrl_het) {
-    .Call('_SAIGE_getScoreTest_SPA', PACKAGE = 'SAIGE', t_fileStartPos, traitType, t_chromosome, t_position, t_rsid, t_allele0, t_allele1, t_AF, t_AC, t_info, t_Ntest, t_Beta, t_se, t_Tstat, t_var1, t_var2, t_noSPApval, t_SPApval, t_isSPAConverge, t_AF_case, t_AF_ctrl, t_N_case_hom, t_N_case_het, t_N_ctrl_hom, t_N_ctrl_het)
+getScoreTest_SPA <- function(t_fileStartPos, traitType, t_chromosome, t_position, t_rsid, t_allele0, t_allele1, t_AF, t_AC, t_info, t_Ntest, t_Beta, t_se, t_Tstat, t_var1, t_var2, t_noSPApval, t_SPApval, t_isSPAConverge, t_AF_case, t_AF_ctrl, t_N_case_hom, t_N_case_het, t_N_ctrl_hom, t_N_ctrl_het, t_N_case, t_N_ctrl) {
+    .Call('_SAIGE_getScoreTest_SPA', PACKAGE = 'SAIGE', t_fileStartPos, traitType, t_chromosome, t_position, t_rsid, t_allele0, t_allele1, t_AF, t_AC, t_info, t_Ntest, t_Beta, t_se, t_Tstat, t_var1, t_var2, t_noSPApval, t_SPApval, t_isSPAConverge, t_AF_case, t_AF_ctrl, t_N_case_hom, t_N_case_het, t_N_ctrl_hom, t_N_ctrl_het, t_N_case, t_N_ctrl)
 }
 
 getScoreTest_SPA_multi <- function(mth_start, m_to_test, traitType) {

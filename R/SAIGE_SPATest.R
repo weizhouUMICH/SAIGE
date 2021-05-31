@@ -1078,7 +1078,7 @@ SPAGMMATtest = function(bgenFile = "",
         obj.model$residuals = y - obj.model$mu
         print("OK_test1")
         print(names(obj.model$obj.noK))
-        assignforScoreTest_R(LOCO, LOCOVec, t_XVX=obj.model$obj.noK$XVX, t_XXVX_inv=obj.model$obj.noK$XXVX_inv, t_XV=obj.model$obj.noK$XV, t_XVX_inv_XV=obj.model$obj.noK$XVX_inv_XV, t_X=X, t_S_a=obj.model$obj.noK$S_a, t_res=obj.model$residuals, t_mu2=obj.model$mu2, t_mu=obj.model$mu,varRatio, tauVec, traitType, IsOutputAFinCaseCtrl, IsOutputHetHomCountsinCaseCtrl, y)
+        assignforScoreTest_R(LOCO, LOCOVec, t_XVX=obj.model$obj.noK$XVX, t_XXVX_inv=obj.model$obj.noK$XXVX_inv, t_XV=obj.model$obj.noK$XV, t_XVX_inv_XV=obj.model$obj.noK$XVX_inv_XV, t_X=X, t_S_a=obj.model$obj.noK$S_a, t_res=obj.model$residuals, t_mu2=obj.model$mu2, t_mu=obj.model$mu,varRatio, tauVec, traitType, IsOutputAFinCaseCtrl, IsOutputHetHomCountsinCaseCtrl,IsOutputNinCaseCtrl ,y)
         print("OK_test")
 	if(isQuery){
         #time1=system.time({a=getScoreTest(markerIndicesVec[mth])})
@@ -1135,7 +1135,7 @@ if(is_scoreTestRcpp){
         print(names(obj.model$obj.noK))
 	IsOutputAFinCaseCtrl = FALSE
 	IsOutputHetHomCountsinCaseCtrl = FALSE
-        assignforScoreTest_R(LOCO, LOCOVec, t_XVX=obj.model$obj.noK$XVX, t_XXVX_inv=obj.model$obj.noK$XXVX_inv, t_XV=obj.model$obj.noK$XV, t_XVX_inv_XV=obj.model$obj.noK$XVX_inv_XV, t_X=X, t_S_a=obj.model$obj.noK$S_a, t_res=obj.model$residuals, t_mu2=obj.model$mu2, t_mu=obj.model$mu, varRatio, tauVec, traitType, IsOutputAFinCaseCtrl, IsOutputHetHomCountsinCaseCtrl, y)
+        assignforScoreTest_R(LOCO, LOCOVec, t_XVX=obj.model$obj.noK$XVX, t_XXVX_inv=obj.model$obj.noK$XXVX_inv, t_XV=obj.model$obj.noK$XV, t_XVX_inv_XV=obj.model$obj.noK$XVX_inv_XV, t_X=X, t_S_a=obj.model$obj.noK$S_a, t_res=obj.model$residuals, t_mu2=obj.model$mu2, t_mu=obj.model$mu, varRatio, tauVec, traitType, IsOutputAFinCaseCtrl, IsOutputHetHomCountsinCaseCtrl, IsOutputNinCaseCtrl, y)
         print("OK_test")
         time1=system.time({a=getScoreTest_SPA(markerIndicesVec[mth], traitType)})
         #time1=system.time({a=getScoreTest(markerIndicesVec[mth])})
@@ -2974,7 +2974,7 @@ SPAGMMATtest_new = function(bgenFile = "",
         print("OK_test1")
         print(names(obj.model$obj.noK))
 	LOCOVec = rep(1,22)  ##will update here
-        assignforScoreTest_R(LOCO, LOCOVec, t_XVX=obj.model$obj.noK$XVX, t_XXVX_inv=obj.model$obj.noK$XXVX_inv, t_XV=obj.model$obj.noK$XV, t_XVX_inv_XV=obj.model$obj.noK$XVX_inv_XV, t_X=X, t_S_a=obj.model$obj.noK$S_a, t_res=obj.model$residuals, t_mu2=obj.model$mu2, t_mu=obj.model$mu,varRatio, tauVec, traitType, IsOutputAFinCaseCtrl, IsOutputHetHomCountsinCaseCtrl, y)
+        assignforScoreTest_R(LOCO, LOCOVec, t_XVX=obj.model$obj.noK$XVX, t_XXVX_inv=obj.model$obj.noK$XXVX_inv, t_XV=obj.model$obj.noK$XV, t_XVX_inv_XV=obj.model$obj.noK$XVX_inv_XV, t_X=X, t_S_a=obj.model$obj.noK$S_a, t_res=obj.model$residuals, t_mu2=obj.model$mu2, t_mu=obj.model$mu,varRatio, tauVec, traitType, IsOutputAFinCaseCtrl, IsOutputHetHomCountsinCaseCtrl, IsOutputNinCaseCtrl, y)
         print("OK_test")
 
   dataMerge = merge(sampleInModel, sampleListinDosage, by.x="IID", by.y = "IIDDose")
@@ -3192,9 +3192,9 @@ SPAGMMATtest_new = function(bgenFile = "",
        numLinesOutput0 = numLinesOutput
      } 		     
       #if (dosageFileType == "bgen"){
-        cat("Mtest ", Mtest, "\n")
+        #cat("Mtest ", Mtest, "\n")
         cat("mth ", mth, "\n")
-        cat("numLinesOutput0 ", numLinesOutput0, "\n")
+        #cat("numLinesOutput0 ", numLinesOutput0, "\n")
         if(Mtest == (mth + numLinesOutput0)){isVariant = FALSE}
       #}
 
@@ -3202,99 +3202,29 @@ SPAGMMATtest_new = function(bgenFile = "",
 #     print("3")
  #    print(ptm)
 #     print(numLinesOutput0)
+
+
         if(isQuery){
+		gc()
                 #time1=system.time({a=getScoreTest_SPA(markerIndicesVec[mth], traitType)})
 		a = as.data.frame(getScoreTest_SPA_multi(mth, numLinesOutput0, traitType))
-        }else{
-		print(gc())
-		chromVec=rep("0",numLinesOutput0)
-posVec=rep(0,numLinesOutput0)
-rsIDVec=rep("0",numLinesOutput0)
-A1Vec=rep("0",numLinesOutput0)
-A2Vec=rep("0",numLinesOutput0)
-infoVec=rep(0,numLinesOutput0)
-ACVec=rep(0,numLinesOutput0)
-altFreqVec=rep(0,numLinesOutput0)
-BetaVec=rep(0,numLinesOutput0)
-seBetaVec=rep(0,numLinesOutput0)
-pvalVec=rep("0",numLinesOutput0)
-TstatVec=rep(0,numLinesOutput0)
-var1Vec=rep(0,numLinesOutput0)
-var2Vec=rep(0,numLinesOutput0)
-NVec=rep(0,numLinesOutput0)
-SPApvalVec=rep(0,numLinesOutput0)
-SPAConverge=rep(0,numLinesOutput0)
-AFinCaseVec=rep(0,numLinesOutput0)
-AFinCtrlVec=rep(0,numLinesOutput0)
-N_case_homVec=rep(0,numLinesOutput0)
-N_ctrl_hetVec=rep(0,numLinesOutput0)
-N_case_hetVec=rep(0,numLinesOutput0)
-N_ctrl_homVec=rep(0,numLinesOutput0)
-		#a0 = as.data.frame(getScoreTest_SPA_multi_new(0, numLinesOutput0, traitType, chromVec,
-		getScoreTest_SPA_multi_new(0, numLinesOutput0, traitType, chromVec,
-posVec,
-rsIDVec,
-A1Vec,
-A2Vec,
-infoVec,
-ACVec,
-altFreqVec,
-BetaVec,
-seBetaVec,
-pvalVec,
-TstatVec,
-var1Vec,
-var2Vec,
-NVec,
-SPApvalVec,
-SPAConverge,
-AFinCaseVec,
-AFinCtrlVec,
-N_case_homVec,
-N_ctrl_hetVec,
-N_case_hetVec,
-N_ctrl_homVec)
-
-a = data.frame(CHR=chromVec, POS=posVec)
-
+		#gc()
+	}else{
+		gc()
+		a = as.data.frame(getScoreTest_SPA_multi(0, numLinesOutput0, traitType))
+		#print(gc(v=T))
                 #time1=system.time({a=getScoreTest_SPA(0, traitType)})
         }
 #	print(as.data.frame(a))
 	a = a[which(a$CHR != "-1"), ]
 	if(nrow(a) > 0){
-	#if(a$isTest){
-	#print("time1")
-	#print(time1)
-	#time2=system.time({rowHeader = c(unlist(a$variants), a$info)})
-	#print("time2")
-	#print(time2)
-
-      #if(traitType == "binary"){
-
-        #print(a)
-        #print("time1")
-        #print(time1)
-    # ptm <- proc.time()
-    # print("1")
-     #print(ptm)
-
-#	if(is.null(a$isSPAConverge)){a$pval_SPA = a$pval}
- #       OUTvec=c(rowHeader, N,c(a$Beta, a$se, a$Tstat, a$pval_SPA, a$pval, a$isSPAConverge, a$var1, a$var2))
-
-  #  	   if(IsOutputAFinCaseCtrl){
-#		OUTvec=c(OUTvec, unlist(a$AF_case_ctrl))
- #          }
-
-#	   if(IsOutputHetHomCountsinCaseCtrl){
-#		OUTvec = c(OUTvec, unlist(a$N_case_ctrl_het_hom))
- #         }
-
-	   OUT = rbind(OUT, a)
+	 OUT = rbind(OUT, a)
          numPassMarker = numPassMarker + nrow(a)
          ptm <- proc.time()
          print(ptm)
          cat("numPassMarker: ", numPassMarker, "\n")
          OUT = as.data.frame(OUT)
+	 #print(dim(a))
          write.table(OUT, SAIGEOutputFile, quote=FALSE, row.names=FALSE, col.names=FALSE, append = TRUE)
          OUT = NULL
 	}

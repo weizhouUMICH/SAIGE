@@ -21,6 +21,7 @@
 #include <boost/math/distributions/normal.hpp>
 #include "ScoreTest.hpp"
 #include "SPA.hpp"
+#include "getMem.hpp"
 
 #include <Rcpp.h>
 
@@ -279,7 +280,7 @@ void Parse2(unsigned char *buf, uint bufLen, const unsigned char *zBuf, uint zBu
     isFlip = false;
     if(AF > 0.5){
       isFlip = true;
-      iIndex.clear();
+      //iIndex.clear();
       AF = 1 - AF;
       uint dosagesSize = dosages.size();
       for (uint i = 0; i < dosagesSize; i++) {
@@ -329,7 +330,7 @@ void Parse2(unsigned char *buf, uint bufLen, const unsigned char *zBuf, uint zBu
 
 
 // [[Rcpp::export]]
-Rcpp::List getOneMarker(int t_fileStartPos)
+Rcpp::List getOneMarker_old(int t_fileStartPos)
   {
     using namespace Rcpp; 
     //if(t_fileStartPos > 0){
@@ -461,9 +462,102 @@ Rcpp::List getOneMarker(int t_fileStartPos)
       result["info"] = 1;
     }
 
-    dosages.clear();
-    indexforMissing.clear();
     return(result);
+  }
+
+
+// [[Rcpp::export]]
+void getOneMarker(int t_fileStartPos,
+		     std::string & SNPID,
+		     std::string & RSID, 
+		     std::string & chromosome, 
+		     std::string & first_allele,
+		     std::string & second_allele,
+     			uint & position,
+     		    std::vector< double > & dosages,
+     			double & AC,
+		       	double & AF, 
+			double & info,
+     		std::vector< int > & indexforMissing,
+  		std::vector< uint > & iIndex,
+		bool & isFlip,
+		bool & isBoolRead)
+  {
+    using namespace Rcpp;
+    //if(t_fileStartPos > 0){
+   //       m_isQuery = true;
+    //}else{
+//          m_isQuery = false;
+  //  }
+    //std::cout << "m_isQuery: " << m_isQuery << std::endl;
+    if(t_fileStartPos > 0){fseek(m_fin, t_fileStartPos, SEEK_SET);}
+
+    char snpID[65536], rsID[65536], chrStr[65536];
+       uint maxLA = 65536, maxLB = 65536;
+    char *allele1, *allele0;
+   allele1 = (char *) malloc(maxLA+1);
+    allele0 = (char *) malloc(maxLB+1);
+    ushort LS; size_t numBoolRead = fread(&LS, 2, 1, m_fin); // cout << "LS: " << LS << " " << std::flush;
+    if ( numBoolRead > 0 ) {
+      isBoolRead = true;
+      fread(snpID, 1, LS, m_fin); snpID[LS] = '\0'; // cout << "snpID: " << string(snpID) << " " << std::flush;
+      ushort LR; fread(&LR, 2, 1, m_fin); // cout << "LR: " << LR << " " << std::flush;
+      fread(rsID, 1, LR, m_fin); rsID[LR] = '\0'; // cout << "rsID: " << string(rsID) << " " << std::flush;
+      RSID = std::string(rsID)=="." ? snpID : rsID;
+      //std::string SNPID = string(snpID);
+
+      ushort LC; fread(&LC, 2, 1, m_fin); // cout << "LC: " << LC << " " << std::flush;
+      fread(chrStr, 1, LC, m_fin); chrStr[LC] = '\0';
+      chromosome  = std::string(chrStr);
+
+      uint physpos; fread(&physpos, 4, 1, m_fin); // cout << "physpos: " << physpos << " " << std::flush;
+      position = physpos;
+      ushort K; fread(&K, 2, 1, m_fin); //cout << "K: " << K << endl;
+      if (K != 2) {
+        std::cerr << "ERROR: Non-bi-allelic variant found: " << K << " alleles" << std::endl;
+        exit(1);
+      }
+
+      uint LA; fread(&LA, 4, 1, m_fin); // cout << "LA: " << LA << " " << std::flush;
+      if (LA > maxLA) {
+        maxLA = 2*LA;
+        free(allele1);
+        allele1 = (char *) malloc(maxLA+1);
+      }
+      fread(allele1, 1, LA, m_fin); allele1[LA] = '\0';
+      first_allele = std::string(allele1);
+      free(allele1);	
+      uint LB; fread(&LB, 4, 1, m_fin); // cout << "LB: " << LB << " " << std::flush;
+      if (LB > maxLB) {
+        maxLB = 2*LB;
+        free(allele0);
+        allele0 = (char *) malloc(maxLB+1);
+      }
+      fread(allele0, 1, LB, m_fin); allele0[LB] = '\0';
+      second_allele = std::string(allele0);
+      free(allele0);
+      uint C; fread(&C, 4, 1, m_fin); //cout << "C: " << C << endl;
+      if (C > m_zBuf.size()) m_zBuf.resize(C-4);
+      //std::cout << "m_zBuf.size() " << m_zBuf.size() << std::endl;
+      uint D; fread(&D, 4, 1, m_fin); //cout << "D: " << D << endl;
+      m_zBufLens = C-4; m_bufLens = D;
+      fread(&m_zBuf[0], 1, C-4, m_fin);
+      AC = 0;
+      AF = 0;
+      info = 0;
+      //std::cout << RSID << " RSID" << std::endl;
+      if (m_bufLens > m_buf.size()) m_buf.resize(m_bufLens); //fix the length
+         // double wall0in = get_wall_time2();
+// double cpu0in  = get_cpu_time2();
+      bool isFlip = false;
+      Parse2(&m_buf[0], m_bufLens, &m_zBuf[0], m_zBufLens, RSID, Nbgen, dosages, AC, AF, indexforMissing, info, iIndex, isFlip);
+
+
+    }else{
+      isBoolRead = false;
+      info = 1;
+    }
+
   }
 
 
@@ -527,9 +621,9 @@ int getSampleSizeinBgen(){
 
 
 // [[Rcpp::export]]
-void assignforScoreTest_R(bool t_LOCO, std::vector<bool> & t_LOCOVec,  arma::mat & t_XVX, arma::mat & t_XXVX_inv,  arma::mat & t_XV, arma::mat & t_XVX_inv_XV, arma::mat & t_X, arma::vec & t_S_a,  arma::vec & t_res,  arma::vec & t_mu2, arma::vec & t_mu, double t_varRatio, arma::vec & t_tauvec, std::string t_traitType, bool t_isOutputAFinCaseCtrl, bool t_isOutputHetHomCountsinCaseCtrl, arma::vec & t_y){
+void assignforScoreTest_R(bool t_LOCO, std::vector<bool> & t_LOCOVec,  arma::mat & t_XVX, arma::mat & t_XXVX_inv,  arma::mat & t_XV, arma::mat & t_XVX_inv_XV, arma::mat & t_X, arma::vec & t_S_a,  arma::vec & t_res,  arma::vec & t_mu2, arma::vec & t_mu, double t_varRatio, arma::vec & t_tauvec, std::string t_traitType, bool t_isOutputAFinCaseCtrl, bool t_isOutputHetHomCountsinCaseCtrl, bool t_isOutputNinCaseCtrl, arma::vec & t_y){
 	std::cout << "inside" << std::endl;
-        ScoreTestObj.assignforScoreTest(t_LOCO, t_LOCOVec, t_XVX, t_XXVX_inv, t_XV, t_XVX_inv_XV, t_X, t_S_a, t_res, t_mu2, t_mu, t_varRatio, t_tauvec, t_traitType, t_isOutputAFinCaseCtrl, t_isOutputHetHomCountsinCaseCtrl, t_y); 
+        ScoreTestObj.assignforScoreTest(t_LOCO, t_LOCOVec, t_XVX, t_XXVX_inv, t_XV, t_XVX_inv_XV, t_X, t_S_a, t_res, t_mu2, t_mu, t_varRatio, t_tauvec, t_traitType, t_isOutputAFinCaseCtrl, t_isOutputHetHomCountsinCaseCtrl, t_isOutputNinCaseCtrl, t_y); 
 }
 
 /*
@@ -571,7 +665,7 @@ Rcpp::List getScoreTest(int t_fileStartPos) {
 // [[Rcpp::export]]
 Rcpp::List getScoreTest_SPA_old(int t_fileStartPos, std::string traitType) {
    Rcpp::List Glist;
-   Glist = getOneMarker(t_fileStartPos);
+   Glist = getOneMarker_old(t_fileStartPos);
 
    if(Glist["isBoolRead"]){
 
@@ -625,7 +719,7 @@ wall4in = get_wall_time2();
    arma::vec t_mu; 
    ScoreTestObj.get_mu(t_mu); 
    if(isScoreFast){
-     t_gtilde = ScoreTestObj.getadjG(dosages);
+     ScoreTestObj.getadjG(dosages, t_gtilde);
    }
    if(t_altFreq > 0.05){
 	   iIndexvec = Rcpp::as<arma::uvec>(Glist["iIndex"]);
@@ -770,10 +864,6 @@ wall4in = get_wall_time2();
 
 
 
-
-
-
-
 // [[Rcpp::export]]
 bool getScoreTest_SPA(int t_fileStartPos, std::string traitType,
 		std::string & t_chromosome,
@@ -798,109 +888,79 @@ bool getScoreTest_SPA(int t_fileStartPos, std::string traitType,
 		int & t_N_case_hom,
 		int & t_N_case_het,
 		int & t_N_ctrl_hom,
-		int & t_N_ctrl_het){
-   Rcpp::List Glist;
-   Glist = getOneMarker(t_fileStartPos);
-   bool isTest = false;
+		int & t_N_ctrl_het,
+		int & t_N_case, 
+		int & t_N_ctrl){
+          double vm2, rss2;
+  
+   std::string SNPID;
+   std::vector< double > dosages;
+   std::vector< int > indexforMissing;
+   std::vector< uint > iIndex, iIndexComp;
+   bool isFlip, isBoolRead;
+   getOneMarker(t_fileStartPos, 
+		SNPID,
+	        t_rsid,
+	        t_chromosome,
+		t_allele0,
+		t_allele1,
+		t_position,
+		dosages,
+		t_AC,
+		t_AF,
+		t_info,
+		indexforMissing,
+		iIndex,
+		isFlip, 
+		isBoolRead);
 
-   if(Glist["isBoolRead"]){
-   bool isFlip = Glist["isFlip"];
-//  std::cout << "isFlip " << isFlip << std::endl;
-
-
-//	  std::cout << "here0a" << std::endl; 
-   //double t_Beta, t_seBeta, t_altFreq, t_Tstat, t_var1, t_var2;
+//	  std::vector< uint > iIndex;
+//	  std::vector< double > dosages;
+  bool isTest = false;
+//isBoolRead=false;
+   if(isBoolRead){
    std::string t_pval_str;
-   //std::cout << iIndexvec.n_elem << std::endl;
-//Rcpp::DataFrame variantsDF;
-//   variantsDF = Glist["variants"];
-t_chromosome = Rcpp::as<std::string>(Glist["chromosome"]);
-t_position = Glist["position"];
-t_rsid = Rcpp::as<std::string>(Glist["rsid"]);
-t_allele0 = Rcpp::as<std::string>(Glist["allele0"]);
-t_allele1 = Rcpp::as<std::string>(Glist["allele1"]);
-t_AC = Glist["AC"];
-   t_AF = Glist["AF"];
-   t_info = Glist["info"];
-//	  std::cout << "here0b" << std::endl; 
-
    if(t_info >= m_minInfo && t_AF >= m_minMAF && t_AF <= 1-m_minMAF){
 
-
    bool isScoreFast;
-/*
-   double wall2in = get_wall_time2();
-double cpu2in  = get_cpu_time2();
-*/
-arma::vec dosages = Glist["dosages"];
+   arma::vec dosagesVec(dosages);
    arma::vec t_gtilde;
    arma::uvec iIndexvec;
-//	  std::cout << "here0c" << std::endl; 
-/*
-   double wall3in,cpu3in, wall4in, cpu4in, wall5in, cpu5in, wall6in, cpu6in, wall7in, cpu7in, wall5inb, cpu5inb, wall5inc, cpu5inc;
-wall3in = get_wall_time2();
-cpu3in  = get_cpu_time2();
-std::cout << "Wall Time in ScoreTestObj.scoreTest = 3-2 " << wall3in - wall2in << std::endl;
-std::cout << "CPU Time  in ScoreTestObj.scoreTest= " << cpu3in - cpu2in  << std::endl;
-*/
+   iIndexvec = arma::conv_to<arma::uvec>::from(iIndex);
+  
    t_Ntest = m_N; 
    if(t_AF > 0.05){
-     isScoreFast = false;	   
-//	  std::cout << "here0c1" << std::endl; 
-     ScoreTestObj.scoreTest(dosages, t_Beta, t_se, t_pval_str, t_AF, t_Tstat, t_var1, t_var2, t_gtilde);
+     	isScoreFast = false;	   
+	//std::cout << "here0c1" << std::endl; 
+     	ScoreTestObj.scoreTest(dosagesVec, t_Beta, t_se, t_pval_str, t_AF, t_Tstat, t_var1, t_var2, t_gtilde);
     }else{
-      isScoreFast = true;
-//	  std::cout << "here0c2" << std::endl; 
-      iIndexvec = Rcpp::as<arma::uvec>(Glist["iIndex"]);
-//	  std::cout << "here0c3" << std::endl;
-//	   iIndexvec.print();
-      ScoreTestObj.scoreTestFast(dosages, iIndexvec, t_Beta, t_se, t_pval_str, t_AF, t_Tstat, t_var1, t_var2);
-//	  std::cout << "here0c4" << std::endl; 
+      	isScoreFast = true;
+	//std::cout << "here0c2" << std::endl; 
+        ScoreTestObj.scoreTestFast(dosagesVec, iIndexvec, t_Beta, t_se, t_pval_str, t_AF, t_Tstat, t_var1, t_var2);
     }
-//	  std::cout << "here0d" << std::endl; 
-/*
-wall4in = get_wall_time2();
- cpu4in  = get_cpu_time2();
- std::cout << "Wall Time in ScoreTestObj.scoreTestFast = 4-3 " << wall4in - wall3in << std::endl;
- std::cout << "CPU Time  in ScoreTestObj.scoreTestFast= " << cpu4in - cpu3in  << std::endl;
-*/
-// double pval;
+
   t_isSPAConverge = false;
   double pval_noadj=std::stod(t_pval_str);
   t_noSPApval = t_pval_str;
-
-
-
+  
  if(pval_noadj < 0.05 && traitType != "quantitative"){
- //  SPA_binary_fast(m_mu)
-  // std::cout << "HERE SPA" << std::endl;
    arma::vec t_mu; 
    ScoreTestObj.get_mu(t_mu); 
    if(isScoreFast){
-     t_gtilde = ScoreTestObj.getadjG(dosages);
-   }
-   if(t_AF > 0.05){
-   iIndexvec = Rcpp::as<arma::uvec>(Glist["iIndex"]);
+     ScoreTestObj.getadjG(dosagesVec, t_gtilde);
+     //std::cout << "isScoreFast" << std::endl;
    }
    double q, qinv, m1;
-/*
-   wall5in = get_wall_time2();
- cpu5in  = get_cpu_time2();
- std::cout << "Wall Time in ScoreTestObj.scoreTestFast = 5-4 " << wall5in - wall4in << std::endl;
- std::cout << "CPU Time  in ScoreTestObj.scoreTestFast= " << cpu5in - cpu4in  << std::endl;
-*/
- m1 = dot(t_mu, t_gtilde);
+   arma::uvec iIndexComVec = arma::find(dosagesVec == 0);
+   m1 = dot(t_mu, t_gtilde);
    arma::vec gNB = t_gtilde.elem(iIndexvec);
-   arma::vec gNA = t_gtilde;
-   gNA.shed_rows(iIndexvec);
+   arma::vec gNA = t_gtilde.elem(iIndexComVec);
    arma::vec muNB = t_mu.elem(iIndexvec);
-   arma::vec muNA = t_mu;
-   muNA.shed_rows(iIndexvec);
+   arma::vec muNA = t_mu.elem(iIndexComVec);
+   //iIndexComVec.clear();
    double NAmu= m1-dot(gNB,muNB);
    double NAsigma;
-   
    if(traitType == "binary"){
-//	   std::cout << "OKKKKKKK SPA" << std::endl;
 		q = t_Tstat/sqrt(t_var1/t_var2) + m1;
 			
 		if((q-m1) > 0){
@@ -917,68 +977,50 @@ wall4in = get_wall_time2();
            NAsigma = t_var2- arma::sum(muNB % arma::pow(gNB,2)); 
 	}	
 
-   //SPA(t_mu, t_gtilde, q, qinv, pval_noadj, 1e-5, false, traitType, pval, isSPAConverge);
     bool logp=false;
     SPA_fast(t_mu, t_gtilde, q, qinv, pval_noadj, false, gNA, gNB, muNA, muNB, NAmu, NAsigma, 1e-5, traitType, t_SPApval, t_isSPAConverge);
     boost::math::normal ns;
     double t_qval;
-    //if(!logp){
       t_qval = fabs(boost::math::quantile(ns, t_SPApval/2));
       t_se = t_Beta/t_qval;
-    //}else{
-    //  t_qval = boost::math::quantile(ns, )
-    //}	    
-/*
-    wall6in = get_wall_time2();
- cpu6in  = get_cpu_time2();
- std::cout << "Wall Time in ScoreTestObj.scoreTestFast = 6-5  " << wall6in - wall5in << std::endl;
- std::cout << "CPU Time  in ScoreTestObj.scoreTestFast= " << cpu6in - cpu5in  << std::endl;
-*/
-      //	  Rcpp::List SPA_binary_fast(arma::vec & mu, arma::vec & g, double q, double qinv, double pval_noadj, bool logp, arma::vec & gNA, arma::vec & gNB, arma::vec & muNA, arma::vec & muNB,  double NAmu, double NAsigma, double tol){
+
  }
- uint dosageSize=dosages.n_elem;
+ uint dosageSize=dosagesVec.n_elem;
   int N_case, N_ctrl;   
   arma::vec dosage_case;
   arma::vec dosage_ctrl;
   if(ScoreTestObj.m_isOutputAFinCaseCtrl || ScoreTestObj.m_isOutputHetHomCountsinCaseCtrl){
-    dosage_case = dosages.elem(ScoreTestObj.m_case_indices);
-    dosage_ctrl = dosages.elem(ScoreTestObj.m_ctrl_indices);
+    dosage_case = dosagesVec.elem(ScoreTestObj.m_case_indices);
+    dosage_ctrl = dosagesVec.elem(ScoreTestObj.m_ctrl_indices);
     t_AF_case = arma::mean(dosage_case) /2 ;
     t_AF_ctrl = arma::mean(dosage_ctrl) /2 ;
-    N_case = dosage_case.n_elem;
-    N_ctrl = dosage_ctrl.n_elem;
+    t_N_case = dosage_case.n_elem;
+    t_N_ctrl = dosage_ctrl.n_elem;
 
   }
-  dosages.clear();
+
   arma::uvec N_case_ctrl_het_hom0; 
   if(ScoreTestObj.m_isOutputHetHomCountsinCaseCtrl){
     N_case_ctrl_het_hom0 = arma::find(dosage_case <= 2 && dosage_case >=1.5);
     t_N_case_hom  = N_case_ctrl_het_hom0.n_elem;
-//N_case_ctrl_het_hom[0] = (arma::find(dosage_case <= 2 && dosage_case >=1.5)).n_elem;
     N_case_ctrl_het_hom0 = arma::find(dosage_case < 1.5 && dosage_case > 0.5);
     t_N_case_het = N_case_ctrl_het_hom0.n_elem;
-//    N_case_ctrl_het_hom[1] = arma::find(dosage_case < 1.5 && dosage_case > 0.5);
     N_case_ctrl_het_hom0 = arma::find(dosage_ctrl <= 2 && dosage_ctrl >=1.5);
-  t_N_ctrl_hom = N_case_ctrl_het_hom0.n_elem; 
-    //N_case_ctrl_het_hom[2] = arma::find(dosage_ctrl <= 2 && dosage_ctrl >=1.5);
-   N_case_ctrl_het_hom0 = arma::find(dosage_ctrl < 1.5 && dosage_ctrl > 0.5);
-   t_N_ctrl_het= N_case_ctrl_het_hom0.n_elem;
-//   N_case_ctrl_het_hom[3] = arma::find(dosage_ctrl < 1.5 && dosage_ctrl > 0.5);
-	dosage_case.clear();
-   dosage_ctrl.clear(); 
+    t_N_ctrl_hom = N_case_ctrl_het_hom0.n_elem; 
+    N_case_ctrl_het_hom0 = arma::find(dosage_ctrl < 1.5 && dosage_ctrl > 0.5);
+    t_N_ctrl_het= N_case_ctrl_het_hom0.n_elem;
+    //N_case_ctrl_het_hom0.clear();
   }
 
-  if(Glist["isFlip"]){
-//	  std::cout << "here1" << std::endl; 
+  //if(ScoreTestObj.m_isOutputAFinCaseCtrl || ScoreTestObj.m_isOutputHetHomCountsinCaseCtrl){
+  // dosage_case.clear();
+  // dosage_ctrl.clear(); 
+  //}	  
+  if(isFlip){
    t_Beta = -t_Beta;
    t_Tstat = -t_Tstat;
-//	  std::cout << "here2" << std::endl; 
-   //double AC;
-   //AC = Glist["AC"];
    t_AF = 1-t_AF;
    t_AC = 2*dosageSize - t_AC;
-//	  std::cout << "here3" << std::endl; 
-   //Glist["variants"] = variantsDF;
    if(ScoreTestObj.m_isOutputAFinCaseCtrl || ScoreTestObj.m_isOutputHetHomCountsinCaseCtrl){
      t_AF_case = 1-t_AF_case;
      t_AF_ctrl = 1-t_AF_ctrl;
@@ -987,7 +1029,6 @@ wall4in = get_wall_time2();
      t_N_case_hom = N_case - t_N_case_het - t_N_case_hom;
      t_N_ctrl_hom = N_ctrl - t_N_ctrl_het - t_N_ctrl_hom;
    }	   
-//	  std::cout << "here4" << std::endl; 
 
  }	 
    if(traitType!="quantitative"){
@@ -1001,9 +1042,9 @@ wall4in = get_wall_time2();
   }else{
     isTest = false;
   }
-   }else{
-	isTest = false;
-   }	   
+}else{
+  isTest = false;
+}
 
 
    return(isTest);
@@ -1014,7 +1055,7 @@ wall4in = get_wall_time2();
 Rcpp::DataFrame getScoreTest_SPA_multi(int mth_start, int m_to_test, std::string traitType) {
 
     int markerIndex = 0;
-      // set up output
+  // set up output
   std::vector<std::string> chromVec(m_to_test);    // chromosome
   std::vector<uint> posVec(m_to_test);    // chromosome
   std::vector<std::string> rsIDVec(m_to_test);    // marker IDs
@@ -1031,6 +1072,10 @@ Rcpp::DataFrame getScoreTest_SPA_multi(int mth_start, int m_to_test, std::string
   std::vector<double> var2Vec(m_to_test);           // p values
 
   std::vector<int> NVec(m_to_test);           // p values
+  std::vector<int> N_case_Vec(m_to_test);
+  std::vector<int> N_ctrl_Vec(m_to_test);
+
+  // p values
   //if(traitType == "binary"){
   std::vector<double> SPApvalVec(m_to_test);
   std::vector<bool> SPAConverge(m_to_test);
@@ -1040,10 +1085,10 @@ Rcpp::DataFrame getScoreTest_SPA_multi(int mth_start, int m_to_test, std::string
  //   }
 
  //   if(ScoreTestObj.m_isOutputHetHomCountsinCaseCtrl){
-  std::vector<double> N_case_homVec(m_to_test);
-  std::vector<double> N_ctrl_hetVec(m_to_test);
-  std::vector<double> N_case_hetVec(m_to_test);
-  std::vector<double> N_ctrl_homVec(m_to_test);
+  std::vector<int> N_case_homVec(m_to_test);
+  std::vector<int> N_ctrl_hetVec(m_to_test);
+  std::vector<int> N_case_hetVec(m_to_test);
+  std::vector<int> N_ctrl_homVec(m_to_test);
  //  }
   //}
 		std::string t_chromosome;
@@ -1069,6 +1114,8 @@ Rcpp::DataFrame getScoreTest_SPA_multi(int mth_start, int m_to_test, std::string
                 int t_N_case_het;
                 int t_N_ctrl_hom;
                 int t_N_ctrl_het;
+                int t_N_case;
+                int t_N_ctrl;
 
   
 bool isTest;
@@ -1082,7 +1129,7 @@ bool isTest;
 	      //std::cout << "m_isQuery " << m_isQuery << std::endl;
 	markerIndex = 0;
       }	      
-    isTest = getScoreTest_SPA(markerIndex, traitType, t_chromosome, t_position, t_rsid, t_allele0, t_allele1, t_AF, t_AC, t_info, t_Ntest, t_Beta, t_se, t_Tstat, t_var1, t_var2, t_noSPApval, t_SPApval, t_isSPAConverge, t_AF_case, t_AF_ctrl, t_N_case_hom, t_N_case_het, t_N_ctrl_hom, t_N_ctrl_het);
+    isTest = getScoreTest_SPA(markerIndex, traitType, t_chromosome, t_position, t_rsid, t_allele0, t_allele1, t_AF, t_AC, t_info, t_Ntest, t_Beta, t_se, t_Tstat, t_var1, t_var2, t_noSPApval, t_SPApval, t_isSPAConverge, t_AF_case, t_AF_ctrl, t_N_case_hom, t_N_case_het, t_N_ctrl_hom, t_N_ctrl_het, t_N_case, t_N_ctrl);
     //std::cout << "isTest " << isTest << std::endl;
 
 
@@ -1114,7 +1161,11 @@ bool isTest;
 			N_case_hetVec.at(i) = t_N_case_het;
 			N_ctrl_homVec.at(i) = t_N_ctrl_hom;
 			N_ctrl_hetVec.at(i) = t_N_ctrl_het;
-   		}	
+   		}
+		if(ScoreTestObj.m_isOutputNinCaseCtrl){
+			N_case_Vec.at(i) = t_N_case;
+			N_ctrl_Vec.at(i) = t_N_ctrl;	
+		}	
 	}	
 
       }else{
@@ -1145,10 +1196,17 @@ bool isTest;
 		OUT_DF["Is.SPA.converge"] = SPAConverge;
 		OUT_DF["varT"] = var1Vec;
 		OUT_DF["varTstar"] = var2Vec;
-		if(ScoreTestObj.m_isOutputAFinCaseCtrl){
-			OUT_DF["AF.Cases"] = AFinCaseVec;
-			OUT_DF["AF.Controls"] = AFinCtrlVec;
+		if(ScoreTestObj.m_isOutputNinCaseCtrl){
+                        OUT_DF["N.Cases"] = AFinCaseVec;
+                        OUT_DF["N.Controls"] = AFinCtrlVec;
                 }
+		if(ScoreTestObj.m_isOutputAFinCaseCtrl){
+			OUT_DF["AF.Cases"] = N_case_Vec;
+			OUT_DF["AF.Controls"] = N_ctrl_Vec;
+                }
+
+
+
                 if(ScoreTestObj.m_isOutputHetHomCountsinCaseCtrl){
 			OUT_DF["homN_Allele2_cases"] = N_case_homVec;
 			OUT_DF["hetN_Allele2_cases"] = N_case_hetVec;
@@ -1163,32 +1221,6 @@ bool isTest;
 	
 	}
 
-
-	chromVec.clear();
-posVec.clear();
-rsIDVec.clear();
-A1Vec.clear();
-A2Vec.clear();
-infoVec.clear();
-ACVec.clear();
-altFreqVec.clear();
-BetaVec.clear();
-seBetaVec.clear();
-pvalVec.clear();
-TstatVec.clear();
-var1Vec.clear();
-var2Vec.clear();
-NVec.clear();
-SPApvalVec.clear();
-SPAConverge.clear();
-AFinCaseVec.clear();
-AFinCtrlVec.clear();
-N_case_homVec.clear();
-N_ctrl_hetVec.clear();
-N_case_hetVec.clear();
-N_ctrl_homVec.clear();
-
-  
 	return(OUT_DF);
 }
 
@@ -1247,9 +1279,14 @@ std::vector<double> & N_ctrl_homVec
                 int t_N_case_het;
                 int t_N_ctrl_hom;
                 int t_N_ctrl_het;
+                int t_N_case;
+                int t_N_ctrl;
 
 
 bool isTest;
+      double vm, rss;
+   //process_mem_usage(vm, rss);
+   //std::cout << "VM: " << vm << "; RSS: " << rss << std::endl;
     for (int i = 0; i < m_to_test; i++) {
       if(m_isQuery){
               //std::cout << "mth_start " << mth_start << std::endl;
@@ -1260,12 +1297,23 @@ bool isTest;
               //std::cout << "m_isQuery " << m_isQuery << std::endl;
         markerIndex = 0;
       }
-    isTest = getScoreTest_SPA(markerIndex, traitType, t_chromosome, t_position, t_rsid, t_allele0, t_allele1, t_AF, t_AC, t_info, t_Ntest, t_Beta, t_se, t_Tstat, t_var1, t_var2, t_noSPApval, t_SPApval, t_isSPAConverge, t_AF_case, t_AF_ctrl, t_N_case_hom, t_N_case_het, t_N_ctrl_hom, t_N_ctrl_het);
+         //process_mem_usage(vm, rss);
+	 //std::cout << "i " << i << std::endl; 
+  // std::cout << "VM0: " << vm << "; RSS0: " << rss << std::endl;
+    isTest = getScoreTest_SPA(markerIndex, traitType, t_chromosome, t_position, t_rsid, t_allele0, t_allele1, t_AF, t_AC, t_info, t_Ntest, t_Beta, t_se, t_Tstat, t_var1, t_var2, t_noSPApval, t_SPApval, t_isSPAConverge, t_AF_case, t_AF_ctrl, t_N_case_hom, t_N_case_het, t_N_ctrl_hom, t_N_ctrl_het, t_N_case, t_N_ctrl);
     //std::cout << "isTest " << isTest << std::endl;
-
+   // std::cout << "t_noSPApval " << t_noSPApval << std::endl;
+   //process_mem_usage(vm, rss);
+   //std::cout << "VM1: " << vm << "; RSS1: " << rss << std::endl;
 
     if(isTest){
+	    std::cout << "t_chromosome: " << t_chromosome << std::endl; 
+
+	std::cout << "i " << i << std::endl;
+
+
         chromVec.at(i) = t_chromosome;
+	std::cout << "chromVec.at(i) " << chromVec.at(i) << std::endl;
         posVec.at(i) = t_position;
         rsIDVec.at(i) = t_rsid;
         A1Vec.at(i) = t_allele0;

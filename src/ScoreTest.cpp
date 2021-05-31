@@ -14,10 +14,10 @@
 #include <boost/math/distributions/chi_squared.hpp>
 
 #include "ScoreTest.hpp"
-
+#include "getMem.hpp"
 //namespace SCORE {
 
-void ScoreClass::assignforScoreTest(bool t_LOCO, std::vector<bool> & t_LOCOVec, arma::mat & t_XVX, arma::mat & t_XXVX_inv,  arma::mat & t_XV, arma::mat & t_XVX_inv_XV, arma::mat & t_X, arma::vec &  t_S_a,  arma::vec & t_res,  arma::vec & t_mu2, arma::vec & t_mu, double t_varRatio, arma::vec & t_tauvec, std::string t_traitType, bool t_isOutputAFinCaseCtrl, bool t_isOutputHetHomCountsinCaseCtrl, arma::vec & t_y){
+void ScoreClass::assignforScoreTest(bool t_LOCO, std::vector<bool> & t_LOCOVec, arma::mat & t_XVX, arma::mat & t_XXVX_inv,  arma::mat & t_XV, arma::mat & t_XVX_inv_XV, arma::mat & t_X, arma::vec &  t_S_a,  arma::vec & t_res,  arma::vec & t_mu2, arma::vec & t_mu, double t_varRatio, arma::vec & t_tauvec, std::string t_traitType, bool t_isOutputAFinCaseCtrl, bool t_isOutputHetHomCountsinCaseCtrl, bool t_isOutputNinCaseCtrl, arma::vec & t_y){
     m_LOCO = t_LOCO;
     m_LOCOvec = t_LOCOVec;
     m_XVX = t_XVX;
@@ -34,6 +34,7 @@ void ScoreClass::assignforScoreTest(bool t_LOCO, std::vector<bool> & t_LOCOVec, 
     m_traitType = t_traitType;
     m_isOutputAFinCaseCtrl = t_isOutputAFinCaseCtrl;
     m_isOutputHetHomCountsinCaseCtrl = t_isOutputHetHomCountsinCaseCtrl;
+    m_isOutputNinCaseCtrl = t_isOutputNinCaseCtrl;
     m_y = t_y;
 
     //arma::uvec m_case_indices;
@@ -116,7 +117,7 @@ void ScoreClass::scoreTestFast(arma::vec & t_GVec,
                      double t_altFreq,
                      double &t_Tstat,
                      double &t_var1,
-                     double &t_var2){
+                     double &t_var2){ 
     arma::vec g1 = t_GVec.elem(t_indexForNonZero);
     arma::mat X1 = m_X.rows(t_indexForNonZero);
     arma::mat A1 = m_XVX_inv_XV.rows(t_indexForNonZero);
@@ -167,6 +168,9 @@ void ScoreClass::scoreTestFast(arma::vec & t_GVec,
          }
         sprintf(pValueBuf, "%.1fE%d", fraction, exponent);
     }
+
+
+
     std::string buffAsStdStr = pValueBuf;
     t_pval_str = buffAsStdStr; 
     t_Beta = S/var1;
@@ -174,21 +178,16 @@ void ScoreClass::scoreTestFast(arma::vec & t_GVec,
     t_Tstat = S;
     t_var1 = var1;
     t_var2 = var2;
-    //std::cout << "S: " << S << std::endl;
-    //std::cout << "var1: " << var1 << std::endl;
-    //std::cout << "var2: " << var2 << std::endl;
-    //std::cout << "t_Tstat: " << t_Tstat << std::endl;
+
 }
 
 void ScoreClass::get_mu(arma::vec & t_mu){
     t_mu = m_mu;
 }
 
-arma::vec ScoreClass::getadjG(arma::vec t_GVec){
-    arma::vec g;
+void ScoreClass::getadjG(arma::vec & t_GVec, arma::vec & g){
     g = m_XV * t_GVec;
     g = t_GVec - m_XXVX_inv * g;
-    return g;
 }
 //}
 

@@ -36,6 +36,7 @@ class ScoreClass {
     public:
       arma::vec m_y;
       bool m_isOutputAFinCaseCtrl;
+      bool m_isOutputNinCaseCtrl;
       bool m_isOutputHetHomCountsinCaseCtrl;
       arma::uvec m_case_indices;
       arma::uvec m_ctrl_indices;
@@ -45,7 +46,7 @@ class ScoreClass {
       arma::uvec m_ctrl_het_indices;
 
       
-      void assignforScoreTest(bool t_LOCO, std::vector<bool> & t_LOCOVec,  arma::mat & t_XVX, arma::mat & t_XXVX_inv,  arma::mat & t_XV, arma::mat & t_XVX_inv_XV, arma::mat & t_X, arma::vec & t_S_a,  arma::vec & t_res,  arma::vec & t_mu2, arma::vec & t_mu, double t_varRatio, arma::vec & t_tauvec, std::string t_traitType, bool t_isOutputAFinCaseCtrl, bool t_isOutputHetHomCountsinCaseCtrl, arma::vec & t_y);
+      void assignforScoreTest(bool t_LOCO, std::vector<bool> & t_LOCOVec,  arma::mat & t_XVX, arma::mat & t_XXVX_inv,  arma::mat & t_XV, arma::mat & t_XVX_inv_XV, arma::mat & t_X, arma::vec & t_S_a,  arma::vec & t_res,  arma::vec & t_mu2, arma::vec & t_mu, double t_varRatio, arma::vec & t_tauvec, std::string t_traitType, bool t_isOutputAFinCaseCtrl, bool t_isOutputHetHomCountsinCaseCtrl, bool t_isOutputNinCaseCtrl, arma::vec & t_y);
       void scoreTest(arma::vec & t_GVec,
                      double& t_Beta, 
                      double& t_seBeta, 
@@ -66,8 +67,7 @@ class ScoreClass {
                      double &t_var2);
 
       void get_mu(arma::vec & t_mu);
-      arma::vec getadjG(arma::vec t_GVec);
-
+      void getadjG(arma::vec & t_GVec, arma::vec & g);
 };
 
 //}
