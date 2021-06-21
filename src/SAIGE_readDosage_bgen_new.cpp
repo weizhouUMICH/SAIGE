@@ -940,6 +940,7 @@ bool getScoreTest_SPA(int t_fileStartPos, std::string traitType,
     }
 
   t_isSPAConverge = false;
+  std::cout << "t_pval_str: " << t_pval_str << std::endl;
   double pval_noadj=std::stod(t_pval_str);
   t_noSPApval = t_pval_str;
   
