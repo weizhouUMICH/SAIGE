@@ -940,8 +940,23 @@ bool getScoreTest_SPA(int t_fileStartPos, std::string traitType,
     }
 
   t_isSPAConverge = false;
-  std::cout << "t_pval_str: " << t_pval_str << std::endl;
-  double pval_noadj=std::stod(t_pval_str);
+  //std::cout << "t_pval_str: " << t_pval_str << std::endl;
+
+    double pval_noadj;
+    try {
+        pval_noadj = std::stod(t_pval_str);
+    } catch (const std::invalid_argument&) {
+	pval_noadj = 0;
+        std::cerr << "Argument is invalid\n";
+        //throw;
+    } catch (const std::out_of_range&) {
+        std::cerr << "Argument is out of range for a double\n";
+        //throw;
+	pval_noadj = 0;
+    }
+
+
+  //double pval_noadj=std::stod(t_pval_str);
   t_noSPApval = t_pval_str;
   
  if(pval_noadj < 0.05 && traitType != "quantitative"){
