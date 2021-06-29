@@ -997,8 +997,16 @@ bool getScoreTest_SPA(int t_fileStartPos, std::string traitType,
     SPA_fast(t_mu, t_gtilde, q, qinv, pval_noadj, false, gNA, gNB, muNA, muNB, NAmu, NAsigma, 1e-5, traitType, t_SPApval, t_isSPAConverge);
     boost::math::normal ns;
     double t_qval;
-      t_qval = fabs(boost::math::quantile(ns, t_SPApval/2));
-      t_se = t_Beta/t_qval;
+    //t_qval = fabs(boost::math::quantile(ns, t_SPApval/2));
+
+        try { 
+           t_qval = boost::math::quantile(ns, pval_noadj/2);
+	   t_qval = fabs(t_qval);
+	   t_se = t_Beta/t_qval;
+        }catch (const std::overflow_error&) {
+          t_qval = std::numeric_limits<double>::infinity();
+	  t_se = 0;
+        }
 
  }
  uint dosageSize=dosagesVec.n_elem;
