@@ -12,7 +12,8 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.44.5 (Updated on April 21, 2021, re-write code for leave-one-chromosome-out in Step 1 to have more efficient parallel computation 
+## Current version is 0.44.6 (Updated on July 13, 2021) - SAIGE-GENE+: for group tests, collpasing ultra-rare variants with MAC <= 10. Set --method_to_CollapseUltraRare="absence_or_presence" as default to collpase ultra-rare varaints with MAC <= 10. SAIGE-GENE+ has well controlled type I error rates when the maximum MAF cutoff (maxMAFforGroupTest) is lower than 1%, e.g. 0.01% or 0.1%.
+
 ## Please re-install 0.44.2 if you installed this verion on March 31. 
 
 ## For BGEN input, 8 bits are required. 
@@ -26,7 +27,6 @@ SAIGE performs single-variant association tests for binary traits and quantitati
 
 SAIGE-GENE (implemented in the SAIGE R package) performs gene- or region-based association tests (Burde, SKAT, SKAT-O) for binary traits and quantitative traits. Note: SAIGE-GENE accounts for case-control imbalance in gene-based tests (>= 0.35.8.5)
 
-*This R package is still under development
 
 # Citation
 The SAIGE manuscript:
