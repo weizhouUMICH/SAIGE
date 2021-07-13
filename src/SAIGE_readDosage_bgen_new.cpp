@@ -280,7 +280,7 @@ void Parse2(unsigned char *buf, uint bufLen, const unsigned char *zBuf, uint zBu
     isFlip = false;
     if(AF > 0.5){
       isFlip = true;
-      //iIndex.clear();
+      iIndex.clear();
       AF = 1 - AF;
       uint dosagesSize = dosages.size();
       for (uint i = 0; i < dosagesSize; i++) {
