@@ -171,6 +171,8 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.44.6 (July-13-2021). Set --method_to_CollapseUltraRare="absence_or_presence" as default to collpase ultra-rare varaints with MAC <= 10. We call this version SAIGE-GENE+. SAIGE-GENE+ has well controlled type I error rates when the maximum MAF cutoff (maxMAFforGroupTest) is lower than 1%, e.g. 0.01% or 0.1%.  
+
 * 0.44.5 (April-21-2021). 1. re-write code for leave-one-chromosome-out in Step 1 to have more efficient parallel computation in Step 1. 2. Speed up the single-variant association tests when running gene-based tests
 
 * 0.44.2 (March-31-2021) 1.add an option useSparseGRMtoFitNULL to allow for fitting the null model using the sparse GRM and 2. add options to collapse the ultra-rare variants in the set-based tests. --method_to_CollapseUltraRare, --MACCutoff_to_CollapseUltraRare, --DosageCutoff_for_UltraRarePresence

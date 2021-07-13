@@ -3,6 +3,7 @@
 #options(stringsAsFactors=F, scipen = 999)
 options(stringsAsFactors=F)
 library(SAIGE)
+#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.44.6_final")
 #library(SAIGE, lib.loc="../../install_dir/0.43.1")
 #library(SAIGE, lib.loc="../../install_dir/0.36.3.3")
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.44.2.b")
@@ -122,7 +123,7 @@ mean, p-value based on traditional score test is returned. Default value is 2.")
   make_option("--is_rewrite_XnonPAR_forMales", type="logical",default=FALSE,
     help="Whether to rewrite gentoypes or dosages of variants in the NON-PAR regions on chromosome X for males (multiply by 2). By default, FALSE. Note, only use is_rewrite_XnonPAR_forMales=TRUE when the specified VCF or Bgen file only has variants on chromosome X. When is_rewrite_XnonPAR_forMales=TRUE, the program does not check the chromosome value by assuming all variants are on chromosome X"),
   make_option("--method_to_CollapseUltraRare", type="character",default="",
-    help="Method to collpase the ultra rare variants in the set-based association tests for BINARY traits only. This argument can be 'absence_or_presence', 'sum_geno', or ''. absence_or_presence:  For the resulted collpased marker, any individual having DosageCutoff_for_UltraRarePresence <= dosage < 1+DosageCutoff_for_UltraRarePresence for any ultra rare variant has 1 in the genotype vector, having dosage >= 1+DosageCutoff_for_UltraRarePresence for any ultra rare variant has 2 in the genotype vector, otherwise 0. sum_geno: Ultra rare variants with MAC <=  MACCutoff_to_CollapseUltraRare will be collpased for set-based tests in the 'sum_geno' way and the resulted collpased marker's genotype equals weighted sum of the genotypes of all ultra rare variants. NOTE: this option sum_geno currently is NOT active. By default, '' "),
+    help="Method to collpase the ultra rare variants in the set-based association tests. This argument can be 'absence_or_presence', 'sum_geno', or ''. absence_or_presence:  For the resulted collpased marker, any individual having DosageCutoff_for_UltraRarePresence <= dosage < 1+DosageCutoff_for_UltraRarePresence for any ultra rare variant has 1 in the genotype vector, having dosage >= 1+DosageCutoff_for_UltraRarePresence for any ultra rare variant has 2 in the genotype vector, otherwise 0. sum_geno: Ultra rare variants with MAC <=  MACCutoff_to_CollapseUltraRare will be collpased for set-based tests in the 'sum_geno' way and the resulted collpased marker's genotype equals weighted sum of the genotypes of all ultra rare variants. NOTE: this option sum_geno currently is NOT active. By default, 'absence_or_presence' "),
   make_option("--MACCutoff_to_CollapseUltraRare", type="numeric", default=10,
     help="MAC cutoff to collpase the ultra rare variants (<= MACCutoff_to_CollapseUltraRare) in the set-based association tests. By default, 10."),
   make_option("--DosageCutoff_for_UltraRarePresence", type="numeric", default=0.5,

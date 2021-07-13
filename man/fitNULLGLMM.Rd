@@ -51,7 +51,8 @@ fitNULLGLMM(
   FemaleOnly = FALSE,
   MaleCode = 0,
   MaleOnly = FALSE,
-  noEstFixedEff = FALSE
+  noEstFixedEff = FALSE,
+  skipVarianceRatioEstimation = FALSE
 )
 }
 \arguments{
