@@ -549,7 +549,7 @@ void getOneMarker(int t_fileStartPos,
       if (m_bufLens > m_buf.size()) m_buf.resize(m_bufLens); //fix the length
          // double wall0in = get_wall_time2();
 // double cpu0in  = get_cpu_time2();
-      bool isFlip = false;
+      isFlip = false;
       Parse2(&m_buf[0], m_bufLens, &m_zBuf[0], m_zBufLens, RSID, Nbgen, dosages, AC, AF, indexforMissing, info, iIndex, isFlip);
 
 
@@ -914,6 +914,7 @@ bool getScoreTest_SPA(int t_fileStartPos, std::string traitType,
 		isFlip, 
 		isBoolRead);
 
+  //std::cout << "isFlip " << isFlip << std::endl; 
 //	  std::vector< uint > iIndex;
 //	  std::vector< double > dosages;
   bool isTest = false;
@@ -1002,7 +1003,7 @@ bool getScoreTest_SPA(int t_fileStartPos, std::string traitType,
         try { 
            t_qval = boost::math::quantile(ns, pval_noadj/2);
 	   t_qval = fabs(t_qval);
-	   t_se = t_Beta/t_qval;
+	   t_se = fabs(t_Beta)/t_qval;
         }catch (const std::overflow_error&) {
           t_qval = std::numeric_limits<double>::infinity();
 	  t_se = 0;
@@ -1039,7 +1040,7 @@ bool getScoreTest_SPA(int t_fileStartPos, std::string traitType,
   //if(ScoreTestObj.m_isOutputAFinCaseCtrl || ScoreTestObj.m_isOutputHetHomCountsinCaseCtrl){
   // dosage_case.clear();
   // dosage_ctrl.clear(); 
-  //}	  
+  //}	 
   if(isFlip){
    t_Beta = -t_Beta;
    t_Tstat = -t_Tstat;
@@ -1054,7 +1055,7 @@ bool getScoreTest_SPA(int t_fileStartPos, std::string traitType,
      t_N_ctrl_hom = N_ctrl - t_N_ctrl_het - t_N_ctrl_hom;
    }	   
 
- }	 
+  }	 
    if(traitType!="quantitative"){
    	if(pval_noadj < 0.05){
      		t_SPApval = t_SPApval;
