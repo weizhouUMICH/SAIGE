@@ -52,6 +52,18 @@ https://www.biorxiv.org/content/10.1101/583278v2
    devtools::install_github("leeshawn/MetaSKAT") 
   ```
 
+###  Install SAIGE from conda
+
+![r-saige](https://anaconda.org/bioconda/r-saige/badges/version.svg)
+![latest_update](https://anaconda.org/bioconda/r-saige/badges/latest_release_date.svg)
+
+To install saige from conda simply create environment with latest version of R and saige:
+```
+conda create -n saige -c conda-forge -c bioconda "r-base>=4.0" r-saige
+conda activate saige
+```
+
+More info on [r-saige conda package](https://anaconda.org/bioconda/r-saige) and available versions can be found in the [issue #272](https://github.com/weizhouUMICH/SAIGE/issues/272).
 
 ###  Install SAIGE using the conda environment
 
