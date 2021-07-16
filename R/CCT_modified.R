@@ -30,9 +30,9 @@ CCT <- function(pvals, weights=NULL){
   #### check if there are p-values that are either exactly 0 or 1.
   is.zero <- (sum(pvals==0)>=1)
   is.one <- (sum(pvals==1)>=1)
-  if(is.zero && is.one){
-    stop("Cannot have both 0 and 1 p-values!")
-  }
+  #if(is.zero && is.one){
+  #  stop("Cannot have both 0 and 1 p-values!")
+  #}
   if(is.zero){
     return(0)
   }
