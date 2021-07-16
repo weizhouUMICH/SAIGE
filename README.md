@@ -12,7 +12,7 @@ Table of Contents
 
 # Introduction
 
-## Current version is 0.44.6 (Updated on July 13, 2021) - SAIGE-GENE+: for group tests, collpasing ultra-rare variants with MAC <= 10. Set --method_to_CollapseUltraRare="absence_or_presence" as default to collpase ultra-rare varaints with MAC <= 10. SAIGE-GENE+ has well controlled type I error rates when the maximum MAF cutoff (maxMAFforGroupTest) is lower than 1%, e.g. 0.01% or 0.1%.
+## Current version is 0.44.6.1 (Updated on July 16, 2021) - SAIGE-GENE+: for group tests, collpasing ultra-rare variants with MAC <= 10. Set --method_to_CollapseUltraRare="absence_or_presence" as default to collpase ultra-rare varaints with MAC <= 10. SAIGE-GENE+ has well controlled type I error rates when the maximum MAF cutoff (maxMAFforGroupTest) is lower than 1%, e.g. 0.01% or 0.1%. Tests with multiple MAF cutoffs and variant annotations can be combined using the Cauchy combination (function CCT)
 
 ## Please re-install 0.44.2 if you installed this verion on March 31. 
 
@@ -183,6 +183,8 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+* 0.44.6.1 (July-16-2021). add the function CCT to perform Cauchy combination to combine multipel tests
+
 * 0.44.6 (July-13-2021). Set --method_to_CollapseUltraRare="absence_or_presence" as default to collpase ultra-rare varaints with MAC <= 10. We call this version SAIGE-GENE+. SAIGE-GENE+ has well controlled type I error rates when the maximum MAF cutoff (maxMAFforGroupTest) is lower than 1%, e.g. 0.01% or 0.1%.  
 
 * 0.44.5 (April-21-2021). 1. re-write code for leave-one-chromosome-out in Step 1 to have more efficient parallel computation in Step 1. 2. Speed up the single-variant association tests when running gene-based tests
