@@ -1072,8 +1072,9 @@ fitNULLGLMM = function(plinkFile = "",
             save(modglmm, file = modelOut)
             tau = modglmm$theta
             varAll = tau[2] + (pi^2)/3
-            tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
-            wVec_ss = rep(1, length(modglmm$y))
+            #tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
+	    tauVec_ss = c(0,1)
+	    wVec_ss = rep(1, length(modglmm$y))
             bVec_ss = rep(1, length(modglmm$y))
             Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, 
                 bVec_ss, maxiterPCG, tolPCG)
@@ -1100,7 +1101,8 @@ fitNULLGLMM = function(plinkFile = "",
             }
             tau = modglmm$theta
             varAll = tau[2] + (pi^2)/3
-            tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
+            #tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
+	    tauVec_ss = c(0, 1)
             wVec_ss = rep(1, length(modglmm$y))
             bVec_ss = rep(1, length(modglmm$y))
             t_getPCG1ofSigmaAndVector = proc.time()
@@ -1943,6 +1945,8 @@ pcg<-function (A, b, M=NULL, maxiter = 1e+05, tol = 1e-06){
     #print(dA)
     Minv = 1/dA
   } else Minv = solve(M)
+  print("R")
+  print(Minv)
   x = rep(0, length(b))
   r = b 
   if(is.null(M)){

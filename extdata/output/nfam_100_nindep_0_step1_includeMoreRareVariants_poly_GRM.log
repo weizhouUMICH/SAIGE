@@ -1,0 +1,41 @@
+*******************************************************************
+* Genome-wide Complex Trait Analysis (GCTA)
+* version 1.93.1f beta Linux
+* (C) 2010-present, The University of Queensland
+* Please report bugs to Jian Yang <jian.yang@uq.edu.au>
+*******************************************************************
+Analysis started at 15:23:04 EDT on Mon Aug 02 2021.
+Hostname: mendel
+
+Options: 
+ 
+--bfile ./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly 
+--out ./output/nfam_100_nindep_0_step1_includeMoreRareVariants_poly_GRM 
+--maf 0.01 
+--make-grm 
+--thread-num 4 
+--autosome 
+
+The program will be running on up to 4 threads.
+Note: GRM is computed using the SNPs on the autosome.
+Reading PLINK FAM file from [./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly.fam]...
+1000 individuals to be included from FAM file.
+1000 individuals to be included. 0 males, 0 females, 1000 unknown.
+Reading PLINK BIM file from [./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly.bim]...
+128868 SNPs to be included from BIM file(s).
+Threshold to filter variants: MAF > 0.010000.
+Computing the genetic relationship matrix (GRM) v2 ...
+Subset 1/1, no. subject 1-1000
+  1000 samples, 128868 markers, 500500 GRM elements
+IDs for the GRM file has been saved in the file [./output/nfam_100_nindep_0_step1_includeMoreRareVariants_poly_GRM.grm.id]
+Computing GRM...
+  100% finished in 0.7 sec
+128868 SNPs have been processed.
+  Used 111305 valid SNPs.
+The GRM computation is completed.
+Saving GRM...
+GRM has been saved in the file [./output/nfam_100_nindep_0_step1_includeMoreRareVariants_poly_GRM.grm.bin]
+Number of SNPs in each pair of individuals has been saved in the file [./output/nfam_100_nindep_0_step1_includeMoreRareVariants_poly_GRM.grm.N.bin]
+
+Analysis finished at 15:23:05 EDT on Mon Aug 02 2021
+Overall computational time: 0.89 sec.

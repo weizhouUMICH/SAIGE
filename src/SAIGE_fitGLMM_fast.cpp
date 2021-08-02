@@ -1705,7 +1705,6 @@ arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
 	  //diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno()) /M + tauVec(0)/wVec;
 	  diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno()) /MminMAF + tauVec(0)/wVec;
 
-
 	}else{
 	  diagVec = tauVec(1) + tauVec(0)/wVec;
 	}
@@ -1713,8 +1712,8 @@ arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
 	//std::cout << "M " << M << std::endl;
 	//std::cout << "tauVec(0) " << tauVec(0) << std::endl;
 	//std::cout << "tauVec(1) " << tauVec(1) << std::endl;
-       // for(unsigned int i=0; i< Nnomissing; i++){
-	//	std::cout << "(*geno.Get_Diagof_StdGeno()) /M: " << (*geno.Get_Diagof_StdGeno()) /M << std::endl;
+        //for(unsigned int i=0; i< 10; i++){
+	//	 std::cout << "diagVec(i) " << diagVec(i) << std::endl;
 	//}
 
 	//make diag of kin to be 1 to compare results of emmax and gmmat
@@ -1774,7 +1773,7 @@ arma::fcolvec getCrossprod(arma::fcolvec& bVec, arma::fvec& wVec, arma::fvec& ta
         //
         arma::fvec crossProd1  = getCrossprodMatAndKin(bVec);
 	
-	//for(int j = 0; j < 10; j++){
+	//for(int j = 0; j < 100; j++){
         //        std::cout << "bVec(j): " << bVec(j) << std::endl;
         //        std::cout << "crossProd1(j): " << crossProd1(j) << std::endl;
 
@@ -1983,7 +1982,7 @@ if(isUseSparseSigmaforInitTau){
         //cout << "HELL1: "  << endl;
 
         arma::fvec crossProdVec(Nnomissing);
-        //cout << "HELL2: "  << endl;
+//        cout << "HELL2: "  << endl;
 
         //arma::SpMat<float> precondM = sparseGRMinC;
         arma::fvec zVec(Nnomissing);
@@ -1997,12 +1996,20 @@ if(isUseSparseSigmaforInitTau){
         if (!isUsePrecondM){
 		double wall1_gDiag = get_wall_time();
 		double cpu1_gDiag  = get_cpu_time();
+//		for(int i = 0; i < 10; i++){
+//                	cout << "wVec[i]: " << i << " " << wVec[i] << endl;
+//                	cout << "bVec[i]: " << i << " " << bVec[i] << endl;
+//        	}
                 minvVec = 1/getDiagOfSigma(wVec, tauVec);
+		//for(int i = 0; i < 10; i++){
+                //	cout << "minvVec[i]: " << i << " " << minvVec[i] << endl;
+        	//}
 		double wall1_gDiag_2 = get_wall_time();
 		double cpu1_gDiag_2  = get_cpu_time();
 //		 cout << "Wall Time getDiagOfSigma = " << wall1_gDiag_2 - wall1_gDiag << endl;
 // cout << "CPU Time getDiagOfSigma = " << cpu1_gDiag_2 - cpu1_gDiag  << endl;
                 zVec = minvVec % rVec;
+
         }else{
 
 
@@ -2025,9 +2032,9 @@ if(isUseSparseSigmaforInitTau){
 
 
 //      cout << "HELL3: "  << endl;
-//      for(int i = 0; i < 10; i++){
-//                cout << "full set minvVec[i]: " << minvVec[i] << endl;
-//        }
+      //for(int i = 0; i < 10; i++){
+       //         cout << "zVec[i]: " << zVec[i] << endl;
+        //}
         float sumr2 = sum(rVec % rVec);
 
 /*
@@ -2063,6 +2070,9 @@ if(isUseSparseSigmaforInitTau){
 
                 iter = iter + 1;
                 arma::fcolvec ApVec = getCrossprod(pVec, wVec, tauVec);
+//		for(int i = 0; i < 10; i++){
+//                	cout << "ApVec[i]: " << i << " " << ApVec[i] << endl;
+//        	}
                 arma::fvec preA = (rVec.t() * zVec)/(pVec.t() * ApVec);
 
 // double wall3 = get_wall_time();
