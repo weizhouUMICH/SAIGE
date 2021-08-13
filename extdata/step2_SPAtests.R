@@ -115,14 +115,15 @@ mean, p-value based on traditional score test is returned. Default value is 2.")
     help="vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. e.g. '1,2,3"),
   make_option("--IsOutputBETASEinBurdenTest", type="logical",default=FALSE,
     help="Whether to output effect sizes for burden tests. [default=FALSE]"),
+  make_option("--IsOutputlogPforSingle", type="logical",default=FALSE,
+    help=" Whether to output log(Pvalue) for single-variant assoc tests. By default, FALSE"),	      
   make_option("--sampleFile_male", type="character",default="",
-    help="Path to the file containing one column for IDs of MALE samples in the bgen or vcf file with NO header.
-          Order does not matter"),
+    help="Path to the file containing one column for IDs of MALE samples in the bgen or vcf file with NO header.Order does not matter"),
   make_option("--X_PARregion", type="character",default="",
     help="ranges of (pseudoautosomal) PAR region on chromosome X, which are seperated by comma and in the format start:end. By default: '60001-2699520,154931044-155260560' in the UCSC build hg19. For males, there are two X alleles in the PAR region, so PAR regions are treated the same as autosomes. In the NON-PAR regions (outside the specified PAR regions on chromosome X), for males, there is only one X allele. If is_rewrite_XnonPAR_forMales=TRUE, genotypes/dosages of all variants in the NON-PAR regions on chromosome X will be mutliplied by 2."),
   make_option("--is_rewrite_XnonPAR_forMales", type="logical",default=FALSE,
     help="Whether to rewrite gentoypes or dosages of variants in the NON-PAR regions on chromosome X for males (multiply by 2). By default, FALSE. Note, only use is_rewrite_XnonPAR_forMales=TRUE when the specified VCF or Bgen file only has variants on chromosome X. When is_rewrite_XnonPAR_forMales=TRUE, the program does not check the chromosome value by assuming all variants are on chromosome X"),
-  make_option("--method_to_CollapseUltraRare", type="character",default="",
+  make_option("--method_to_CollapseUltraRare", type="character",default="absence_or_presence",
     help="Method to collpase the ultra rare variants in the set-based association tests. This argument can be 'absence_or_presence', 'sum_geno', or ''. absence_or_presence:  For the resulted collpased marker, any individual having DosageCutoff_for_UltraRarePresence <= dosage < 1+DosageCutoff_for_UltraRarePresence for any ultra rare variant has 1 in the genotype vector, having dosage >= 1+DosageCutoff_for_UltraRarePresence for any ultra rare variant has 2 in the genotype vector, otherwise 0. sum_geno: Ultra rare variants with MAC <=  MACCutoff_to_CollapseUltraRare will be collpased for set-based tests in the 'sum_geno' way and the resulted collpased marker's genotype equals weighted sum of the genotypes of all ultra rare variants. NOTE: this option sum_geno currently is NOT active. By default, 'absence_or_presence' "),
   make_option("--MACCutoff_to_CollapseUltraRare", type="numeric", default=10,
     help="MAC cutoff to collpase the ultra rare variants (<= MACCutoff_to_CollapseUltraRare) in the set-based association tests. By default, 10."),
@@ -218,5 +219,6 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 		 method_to_CollapseUltraRare=opt$method_to_CollapseUltraRare,
                  MACCutoff_to_CollapseUltraRare = opt$MACCutoff_to_CollapseUltraRare,
                  DosageCutoff_for_UltraRarePresence = opt$DosageCutoff_for_UltraRarePresence,
-		 IsOutputMAFinCaseCtrlinGroupTest = opt$IsOutputMAFinCaseCtrlinGroupTest
+		 IsOutputMAFinCaseCtrlinGroupTest = opt$IsOutputMAFinCaseCtrlinGroupTest,
+		 IsOutputlogPforSingle = opt$IsOutputlogPforSingle
 )
