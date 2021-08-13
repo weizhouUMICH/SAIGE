@@ -11,16 +11,17 @@ Table of Contents
    
 
 # Introduction
+## Manuscript for SAIGE-GENE+: https://www.medrxiv.org/content/10.1101/2021.07.12.21260400v1
 
-##Current version is 0.44.6.2 (Updated on August 2, 2021) - 0.44.6.2 add extdata/extractNglmm.R to extract the effective sample size without running Step 1. extdata/cmd_extractNeff.sh has the pipeline. The effective sample size (Nglmm) is differently calculated than the previous versions.
+## Current version is 0.44.6.2 (Updated on August 2, 2021) - 0.44.6.2 add extdata/extractNglmm.R to extract the effective sample size without running Step 1. extdata/cmd_extractNeff.sh has the pipeline. The effective sample size (Nglmm) is differently calculated than the previous versions.
 
 ## Previous version is 0.44.6.1 (Updated on July 16, 2021) - SAIGE-GENE+: for group tests, collpasing ultra-rare variants with MAC <= 10. Set --method_to_CollapseUltraRare="absence_or_presence" as default to collpase ultra-rare varaints with MAC <= 10. SAIGE-GENE+ has well controlled type I error rates when the maximum MAF cutoff (maxMAFforGroupTest) is lower than 1%, e.g. 0.01% or 0.1%. Tests with multiple MAF cutoffs and variant annotations can be combined using the Cauchy combination (function CCT)
 
-## Please re-install 0.44.2 if you installed this verion on March 31. 
+##Please re-install 0.44.2 if you installed this verion on March 31. 
 
-## For BGEN input, 8 bits are required. 
+##For BGEN input, 8 bits are required. 
 
-## For BGEN input in step 2 with missing dosages, Please use version 0.38 or later.
+##For BGEN input in step 2 with missing dosages, Please use version 0.38 or later.
 
 
 SAIGE is an R package with Scalable and Accurate Implementation of Generalized mixed model (Chen, H. et al. 2016). It accounts for sample relatedness and is feasible for genetic association tests in large cohorts and biobanks (N > 400,000).
