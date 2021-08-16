@@ -997,7 +997,8 @@ SPAGMMATtest = function(bgenFile = "",
                       varRatio, tauVec, sparseSigma = sparseSigma.sub, 
                       isCondition = isCondition, OUT_cond = OUT_cond.sub, 
                       G1tilde_P_G2tilde = G1tilde_P_G2tilde.sub, 
-                      G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub)
+                      G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv.sub,
+		      IsOutputlogPforSingle = IsOutputlogPforSingle)
                     if (!isCondition) {
                       OUT = rbind(OUT, c(rowHeader, N.sub, out1$BETA, 
                         out1$SE, out1$Tstat, out1$p.value, out1$var1, 
@@ -1078,7 +1079,8 @@ SPAGMMATtest = function(bgenFile = "",
                       varRatio, tauVec, sparseSigma = sparseSigma, 
                       isCondition = isCondition, OUT_cond = OUT_cond, 
                       G1tilde_P_G2tilde = G1tilde_P_G2tilde, 
-                      G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+                      G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv,
+		      IsOutputlogPforSingle = IsOutputlogPforSingle)
                     if (!isCondition) {
                       OUT = rbind(OUT, c(rowHeader, N, out1$BETA, 
                         out1$SE, out1$Tstat, out1$p.value, out1$var1, 
