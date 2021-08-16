@@ -786,7 +786,7 @@ SPAGMMATtest = function(bgenFile = "",
                 AC = Gx$variants$AC
                 AF = Gx$variants$AF
                 Gx$variants$markerInfo = markerInfo
-                rowHeader = as.vector(unlist(Gx$variants))
+                rowHeader = as.vector(unlist(Gx$variants))[-3]
                 if (indChromCheck) {
                   CHR = Gx$variants$chromosome
                   cat("CHR ", CHR, "\n")
@@ -882,14 +882,14 @@ SPAGMMATtest = function(bgenFile = "",
                   AC_Allele2.sub = sum(G0)
                   AF_Allele2.sub = AC_Allele2.sub/(2 * N.sub)
                   MAF.sub = min(AF_Allele2.sub, 1 - AF_Allele2.sub)
-                  if (dosageFileType == "bgen") {
-                    rowHeader[7] = AC_Allele2.sub
-                    rowHeader[8] = AF_Allele2.sub
-                  }
-                  else if (dosageFileType == "vcf") {
+                  #if (dosageFileType == "bgen") {
+                  #  rowHeader[7] = AC_Allele2.sub
+                  #  rowHeader[8] = AF_Allele2.sub
+                  #}
+                  #else if (dosageFileType == "vcf") {
                     rowHeader[6] = AC_Allele2.sub
                     rowHeader[7] = AF_Allele2.sub
-                  }
+                  #}
                   if (traitType == "binary") {
                     y1Index.sub = which(y.sub == 1)
                     NCase.sub = length(y1Index.sub)
@@ -1017,14 +1017,14 @@ SPAGMMATtest = function(bgenFile = "",
                     AC = sum(G0)
                     AF = sum(G0)/(2 * length(G0))
                     MAF = min(AF, 1 - AF)
-                    if (dosageFileType == "bgen") {
-                      rowHeader[7] = AC
-                      rowHeader[8] = AF
-                    }
-                    else if (dosageFileType == "vcf") {
+                    #if (dosageFileType == "bgen") {
+                    #  rowHeader[7] = AC
+                    #  rowHeader[8] = AF
+                    #}
+                    #else if (dosageFileType == "vcf") {
                       rowHeader[6] = AC
                       rowHeader[7] = AF
-                    }
+                    #}
                   }
                   if (isCondition) {
                     condpre2 = getCovMandOUT_cond(G0 = G0, dosage_cond = dosage_cond, 
