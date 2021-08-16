@@ -13,7 +13,7 @@ Table of Contents
 # Introduction
 ## Manuscript for SAIGE-GENE+: https://www.medrxiv.org/content/10.1101/2021.07.12.21260400v1
 
-## Current version is 0.44.6.2 (Updated on August 2, 2021) - 0.44.6.2 add extdata/extractNglmm.R to extract the effective sample size without running Step 1. extdata/cmd_extractNeff.sh has the pipeline. The effective sample size (Nglmm) is differently calculated than the previous versions.
+## Current version is 0.44.6.4 (Updated on August 16, 2021) - 0.44.6.2 add extdata/extractNglmm.R to extract the effective sample size without running Step 1. extdata/cmd_extractNeff.sh has the pipeline. The effective sample size (Nglmm) is differently calculated than the previous versions.
 
 ## Previous version is 0.44.6.1 (Updated on July 16, 2021) - SAIGE-GENE+: for group tests, collpasing ultra-rare variants with MAC <= 10. Set --method_to_CollapseUltraRare="absence_or_presence" as default to collpase ultra-rare varaints with MAC <= 10. SAIGE-GENE+ has well controlled type I error rates when the maximum MAF cutoff (maxMAFforGroupTest) is lower than 1%, e.g. 0.01% or 0.1%. Tests with multiple MAF cutoffs and variant annotations can be combined using the Cauchy combination (function CCT)
 
@@ -127,7 +127,7 @@ Thanks to Juha Karjalainen for sharing the Dockerfile.
 The docker image can be pulled
 
 ```
-docker pull wzhou88/saige:0.44.6.2
+docker pull wzhou88/saige:0.44.6.4
 ```
 
 Functions can be called
@@ -193,6 +193,9 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+
+* 0.44.6.4 (August-16-2021). make IsOutputlogPforSingle work for quantitative traits. remove the rsid in the output when the input is bgen
+
 * 0.44.6.2 (August-2-2021). add extdata/extractNglmm.R to extract the effective sample size without running Step 1. extdata/cmd_extractNeff.sh has the pipeline. The effective sample size (Nglmm) is differently calculated than the previous versions. 
 
 * 0.44.6.1 (July-16-2021). add the function CCT to perform Cauchy combination to combine multipel tests

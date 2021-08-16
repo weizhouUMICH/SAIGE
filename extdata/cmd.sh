@@ -31,7 +31,7 @@ Rscript step2_SPAtests.R	\
         --chrom=1 \
         --minMAF=0.0001 \
         --minMAC=1 \
-        --GMMATmodelFile=./output/example_binary.rda \
+        --GMMATmodelFile=./output/example_binary_includenonAutoforvarRatio.rda \
         --varianceRatioFile=./output/example_binary.varianceRatio.txt \
         --SAIGEOutputFile=./output/example_binary.SAIGE.vcf.genotype.txt_new \
         --numLinesOutput=2 \
@@ -66,8 +66,8 @@ Rscript step2_SPAtests.R        \
         --minMAF=0.0001 \
         --minMAC=1 \
         --sampleFile=./input/samplefileforbgen_1000samples.txt \
-        --GMMATmodelFile=./output/example_binary.rda \
-        --varianceRatioFile=./output/example_binary.varianceRatio.txt \
+        --GMMATmodelFile=./output/example_binary_includenonAutoforvarRatio.rda \
+        --varianceRatioFile=./output/example_binary_includenonAutoforvarRatio.varianceRatio.txt \
         --numLinesOutput=2 \
         --IsOutputAFinCaseCtrl=TRUE     \
         --IsDropMissingDosages=TRUE     \
