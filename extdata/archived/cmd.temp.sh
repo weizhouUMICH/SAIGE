@@ -1,0 +1,17 @@
+Rscript step2_SPAtests.R \
+        --vcfFile=./input/seedNumLow_126001_seedNumHigh_127000_nfam_1000_nindep_0.sav \
+        --vcfFileIndex=./input/seedNumLow_126001_seedNumHigh_127000_nfam_1000_nindep_0.sav.s1r \
+        --vcfField=DS \
+        --chrom=chr1 \
+        --minMAF=0 \
+        --minMAC=0.5 \
+        --maxMAFforGroupTest=0.01       \
+        --sampleFile=./input/samplelist.txt \
+        --GMMATmodelFile=./output/example_binary.rda \
+        --varianceRatioFile=./output/example_binary_cate.varianceRatio.txt \
+        --SAIGEOutputFile=./output/example_binary_cate.SAIGE.gene.missingness.txt2 \
+        --numLinesOutput=1 \
+        --groupFile=./input/groupFile_temp.txt \
+        --sparseSigmaFile=./output/example_binary_cate.varianceRatio.txt.sparseSigma.mtx        \
+        --IsOutputAFinCaseCtrl=TRUE     \
+        --IsSingleVarinGroupTest=TRUE

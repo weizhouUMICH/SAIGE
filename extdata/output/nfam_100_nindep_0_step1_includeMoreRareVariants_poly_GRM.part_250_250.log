@@ -1,0 +1,28 @@
+*******************************************************************
+* Genome-wide Complex Trait Analysis (GCTA)
+* version 1.93.1f beta Linux
+* (C) 2010-present, The University of Queensland
+* Please report bugs to Jian Yang <jian.yang@uq.edu.au>
+*******************************************************************
+Analysis started at 15:22:40 EDT on Mon Aug 02 2021.
+Hostname: mendel
+
+Options: 
+ 
+--bfile ./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly 
+--out ./output/nfam_100_nindep_0_step1_includeMoreRareVariants_poly_GRM 
+--maf 0.01 
+--make-grm-part 250 250 
+--thread-num 4 
+--autosome 
+
+The program will be running on up to 4 threads.
+Note: GRM is computed using the SNPs on the autosome.
+Reading PLINK FAM file from [./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly.fam]...
+1000 individuals to be included from FAM file.
+1000 individuals to be included. 0 males, 0 females, 1000 unknown.
+Reading PLINK BIM file from [./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly.bim]...
+128868 SNPs to be included from BIM file(s).
+Threshold to filter variants: MAF > 0.010000.
+Error: can't allocate enough memory to (parted) GRM: 31999.998942GB
+An error occurs, please check the options or data

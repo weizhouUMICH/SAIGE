@@ -1,0 +1,11 @@
+bgzip -c genotype_10markers.missingness.vcf > genotype_10markers.missingness.vcf.gz
+tabix -p vcf genotype_10markers.missingness.vcf.gz
+
+
+/net/dumbo/home/zhowei/tools/qctool/build/release/qctool_v2.0.1 -g genotype_10markers.missingness.vcf -bgen-bits 8 -og genotype_10markers.missingness.bgen
+
+cat genotype_10markers_triallelic.missing.vcf <(head -n 8 genotype_10markers_triallelic.missing.vcf | tail -n +8 | awk '{l="chr1\t25\trs25\tA\tC\t.\t.\tPR\tGT"; for(i=1;i++<1001;) l=l"\t./."} END{print l}') > genotype_10markers_triallelic.missing.withVarianceallMissing.vcf 
+infile=genotype_10markers_triallelic.missing.withVarianceallMissing.vcf
+bgzip -c $infile > ${infile}.gz
+tabix -p vcf ${infile}.gz
+

@@ -1,0 +1,8 @@
+conda create -n RSAIGE r-essentials r-base=3.6.1 python=2.7
+conda activate RSAIGE
+conda install -c anaconda cmake
+conda install -c conda-forge gettext lapack r-matrix
+conda install -c r r-rcpp  r-rcpparmadillo r-data.table r-bh
+conda install -c conda-forge r-spatest r-rcppeigen r-devtools  r-skat r-rcppparallel r-optparse boost openblas
+pip3 install cget click
+conda env export > environment-RSAIGE.yml

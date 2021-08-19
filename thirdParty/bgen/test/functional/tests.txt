@@ -1,0 +1,67 @@
+*** Variables ***
+${BASEDIR}	${CURDIR}/../..
+${HOME}	%{HOME}
+${BUILDDIR}	${BASEDIR}/build
+${TMPDIR}	${BUILDDIR}/test/functional/tmp
+${BGENIX}	${BUILDDIR}/apps/bgenix
+${RBGEN}	${BUILDDIR}/R/rbgen
+${QCTOOL}	qctool
+${UNITTEST}	${BUILDDIR}/test/unit/test_bgen
+
+*** Settings ***
+Library	OperatingSystem
+Library	String
+Library	Process
+Library	Collections
+Test Setup	Create Empty Temp Directory
+Test Teardown	Run Process	rm	-f	${TMPDIR}/*
+
+*** Test cases ***
+
+Bgen unit tests
+	${result}=	Run process	${UNITTEST}
+	Should be equal as integers	${result.rc}	0
+
+Computes bgenix index
+	Run process	${BGENIX}	-g	${TMPDIR}/example.16bits.bgen	-index
+	File should exist	${TMPDIR}/example.16bits.bgen.bgi
+
+Bgenix converts to vcf
+	Bgenix converts to vcf with bits	1
+	Bgenix converts to vcf with bits	8
+	Bgenix converts to vcf with bits	16
+
+Bgenix lists variants
+	Run process	${BGENIX}	-g	${TMPDIR}/example.16bits.bgen	-list	stdout=${TMPDIR}/example.16bits.list
+	File should exist	${TMPDIR}/example.16bits.list
+	File should not be empty	${TMPDIR}/example.16bits.list
+	${contents}=	Get File	${TMPDIR}/example.16bits.list
+	@{lines}=	Split to lines	${contents}
+	${length}=	Get length	${lines}
+	Should be equal as integers	${length}	202
+
+Rbgen loads data
+	Run process	./test_rbgen.sh	R	${RBGEN}
+
+*** Keywords ***
+
+Create empty temp directory
+	#Run Process	rm  -rf  ${TMPDIR}
+	Create Directory    ${TMPDIR}
+	Copy file	${BASEDIR}/example/example.1bits.bgen	${TMPDIR}/example.1bits.bgen
+	Run process	${BGENIX}	-g	${TMPDIR}/example.1bits.bgen	-index
+	Copy file	${BASEDIR}/example/example.8bits.bgen	${TMPDIR}/example.8bits.bgen
+	Run process	${BGENIX}	-g	${TMPDIR}/example.8bits.bgen	-index
+	Copy file	${BASEDIR}/example/example.16bits.bgen	${TMPDIR}/example.16bits.bgen
+	Run process	${BGENIX}	-g	${TMPDIR}/example.16bits.bgen	-index
+	Copy file	${BASEDIR}/example/example.sample	${TMPDIR}/example.16bits.sample
+
+Bgenix converts to vcf with bits
+	[Arguments]	${bits}
+	Run process	${BGENIX}	-g	${TMPDIR}/example.${bits}bits.bgen	-vcf	stdout=${TMPDIR}/example.${bits}bits.vcf
+	Run process	${BGENIX}	-g	${TMPDIR}/example.${bits}bits.bgen	-incl-range	01:0-	stdout=${TMPDIR}/example.${bits}bits.sorted.bgen
+	Run process	${QCTOOL}	-g	${TMPDIR}/example.${bits}bits.sorted.bgen	-og	${TMPDIR}/example.${bits}bits.recomputed1.bgen	-bgen-bits	${bits}
+	Run process	${QCTOOL}	-g	${TMPDIR}/example.${bits}bits.vcf	-vcf-genotype-field	GP	-og	${TMPDIR}/example.${bits}bits.recomputed2.bgen	-bgen-bits	${bits}
+	${comparison}=	Run process	diff	${TMPDIR}/example.${bits}bits.recomputed1.bgen	${TMPDIR}/example.${bits}bits.recomputed2.bgen
+	Should be equal as integers	${comparison.rc}	0
+

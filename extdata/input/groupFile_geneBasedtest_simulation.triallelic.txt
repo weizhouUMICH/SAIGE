@@ -1,0 +1,2 @@
+GENE1	chr1:4_A/C	chr1:4_A/T	chr1:9_A/T	chr1:23_A/C
+GENE2	chr1:4_A/T	chr1:4_A/C	chr1:9_A/T

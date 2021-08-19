@@ -1,0 +1,25 @@
+import os.path
+from waflib.extras import buildcopy
+
+def configure( conf ):
+	pass
+
+def build( bld ):
+	sources = (
+		bld.path.ant_glob( 'libs/system/src/*.cpp' ) +
+		bld.path.ant_glob( 'libs/thread/src/*.cpp' ) +
+		bld.path.ant_glob( 'libs/thread/src/pthread/once_atomic.cpp' ) +
+		bld.path.ant_glob( 'libs/thread/src/pthread/thread.cpp' ) +
+		bld.path.ant_glob( 'libs/filesystem/src/*.cpp' ) +
+		bld.path.ant_glob( 'libs/date_time/src/posix_time/*.cpp' ) +
+		bld.path.ant_glob( 'libs/timer/src/*.cpp' ) +
+		bld.path.ant_glob( 'libs/chrono/src/*.cpp' )
+	)
+	bld.stlib(
+		target = 'boost',
+		source = sources,
+		includes = './',
+		export_includes = './', 
+		uselib = 'ZLIB BZIP2 RT',
+		cxxflags = [ '-std=c++11', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-keyword-macro', '-Wno-unused-const-variable' ]
+	)

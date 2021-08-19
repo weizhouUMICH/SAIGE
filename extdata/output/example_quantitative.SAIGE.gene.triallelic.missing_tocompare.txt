@@ -1,0 +1,3 @@
+Gene Pvalue Pvalue_cond Nmarker_MACCate_1 Nmarker_MACCate_2 Nmarker_MACCate_3 Nmarker_MACCate_4 Nmarker_MACCate_5 Nmarker_MACCate_6 Nmarker_MACCate_7 Nmarker_MACCate_8 markerIDs markerAFs Pvalue_Burden Pvalue_Burden_cond Pvalue_SKAT Pvalue_SKAT_cond
+GENE1 1 1 0 0 1 1 0 0 1 0 chr1:4_A/C;chr1:4_A/T;chr1:23_A/C 0.0100200399756432;0.00200400804169476;0.00150000001303852 1 1 0.926868349955821 1
+GENE2 1 1 0 0 1 1 0 0 1 0 chr1:4_A/C;chr1:4_A/T;chr1:23_A/C 0.0100200399756432;0.00200400804169476;0.00150000001303852 1 1 0.926868349955821 1

@@ -1,0 +1,2 @@
+GENE1	chrX:4_A/C	chrX:9_A/C	chrX:10_A/C	chrX:11_A/C
+GENE2	chrX:12_A/C	chrX:14_A/C	chrX:15_A/C	chrX:17_A/C

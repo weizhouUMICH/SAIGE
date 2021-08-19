@@ -1,0 +1,244 @@
+R version 4.1.1 (2021-08-10)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] SAIGE_0.44.6.1
+
+loaded via a namespace (and not attached):
+[1] compiler_4.1.1     Matrix_1.3-2       Rcpp_1.0.6         grid_4.1.1        
+[5] RcppParallel_5.0.2 lattice_0.20-44   
+$vcfFile
+[1] "./input/genotype_10markers.vcf.gz"
+
+$vcfFileIndex
+[1] "./input/genotype_10markers.vcf.gz.tbi"
+
+$vcfField
+[1] "GT"
+
+$bgenFile
+[1] ""
+
+$bgenFileIndex
+[1] ""
+
+$savFile
+[1] ""
+
+$savFileIndex
+[1] ""
+
+$idstoExcludeFile
+[1] ""
+
+$idstoIncludeFile
+[1] ""
+
+$rangestoExcludeFile
+[1] ""
+
+$rangestoIncludeFile
+[1] ""
+
+$chrom
+[1] "1"
+
+$start
+[1] 1
+
+$end
+[1] 2.5e+08
+
+$IsDropMissingDosages
+[1] FALSE
+
+$minMAF
+[1] 1e-04
+
+$minMAC
+[1] 4
+
+$maxMAFforGroupTest
+[1] 0.5
+
+$minInfo
+[1] 0
+
+$sampleFile
+[1] "./input/sampleIDindosage.txt"
+
+$GMMATmodelFile
+[1] "./output/example_quantitative.rda"
+
+$varianceRatioFile
+[1] "./output/example_quantitative.varianceRatio.txt"
+
+$SAIGEOutputFile
+[1] "./output/example_quantitative.SAIGE.vcf.genotype.txt"
+
+$numLinesOutput
+[1] 2
+
+$IsSparse
+[1] TRUE
+
+$SPAcutoff
+[1] 2
+
+$IsOutputAFinCaseCtrl
+[1] TRUE
+
+$IsOutputNinCaseCtrl
+[1] FALSE
+
+$IsOutputHetHomCountsinCaseCtrl
+[1] FALSE
+
+$LOCO
+[1] FALSE
+
+$condition
+[1] ""
+
+$sparseSigmaFile
+[1] ""
+
+$groupFile
+[1] ""
+
+$kernel
+[1] "linear.weighted"
+
+$method
+[1] "optimal.adj"
+
+$weights.beta.rare
+[1] "1,25"
+
+$weights.beta.common
+[1] "1,25"
+
+$weightMAFcutoff
+[1] 0.01
+
+$r.corr
+[1] "0"
+
+$IsSingleVarinGroupTest
+[1] FALSE
+
+$IsOutputMAFinCaseCtrlinGroupTest
+[1] FALSE
+
+$cateVarRatioMinMACVecExclude
+[1] "0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$cateVarRatioMaxMACVecInclude
+[1] "1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$dosageZerodCutoff
+[1] 0.2
+
+$IsOutputPvalueNAinGroupTestforBinary
+[1] FALSE
+
+$IsAccountforCasecontrolImbalanceinGroupTest
+[1] TRUE
+
+$weightsIncludeinGroupFile
+[1] FALSE
+
+$IsOutputBETASEinBurdenTest
+[1] FALSE
+
+$IsOutputlogPforSingle
+[1] FALSE
+
+$sampleFile_male
+[1] ""
+
+$X_PARregion
+[1] ""
+
+$is_rewrite_XnonPAR_forMales
+[1] FALSE
+
+$method_to_CollapseUltraRare
+[1] "absence_or_presence"
+
+$MACCutoff_to_CollapseUltraRare
+[1] 10
+
+$DosageCutoff_for_UltraRarePresence
+[1] 0.5
+
+$help
+[1] FALSE
+
+weights.beta.rare  is  1 25 
+weights.beta.common  is  1 25 
+cateVarRatioMinMACVecExclude  is  0.5 1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+cateVarRatioMaxMACVecInclude  is  1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+single-variant association test will be performed
+1000  samples have been used to fit the glmm null model
+[1] "Leave-one-chromosome-out is not applied"
+Single variance ratio is provided, so categorical variance ratio won't be used!
+variance Ratio is  1.212604 
+1000  sample IDs are found in sample file
+isCondition is  FALSE 
+Setting genomic region 1:1:250000000
+Open VCF done
+To read the field GT
+Number of meta lines in the vcf file (lines starting with ##): 6
+Number of samples in in the vcf file: 1000
+[1] 1000    4
+[1] "IID"          "IndexInModel" "IndexDose.x"  "IndexDose.y" 
+1000  samples were used in fitting the NULL glmm model and are found in sample file
+sparse kinship matrix is not used
+Missing dosages will be mean imputed for the analysis
+Analysis started at  1629147577 Seconds
+minMAC:  4 
+minMAF:  1e-04 
+Minimum MAF of markers to be tested is  0.002 
+It is a quantitative trait
+isCondition is  FALSE 
+Analysis started at  1629147577 Seconds
+   user  system elapsed 
+  1.194   0.125   1.306 
+[1] 2
+numPassMarker:  2 
+   user  system elapsed 
+  1.198   0.125   1.312 
+[1] 4
+numPassMarker:  3 
+   user  system elapsed 
+  1.200   0.125   1.315 
+[1] 6
+numPassMarker:  5 
+   user  system elapsed 
+  1.203   0.125   1.318 
+[1] 8
+numPassMarker:  7 
+   user  system elapsed 
+  1.205   0.125   1.322 
+[1] 10
+numPassMarker:  9 
+closed the genofile!
+Analysis ended at  1629147577 Seconds
+Analysis took  0.02407289 Seconds
