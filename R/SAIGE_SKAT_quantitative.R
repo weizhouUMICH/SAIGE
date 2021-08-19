@@ -372,8 +372,10 @@ if(FALSE){
 					re$Score_single=Score/(weights[1:m])
 					re$Beta_single=re$Score_single/(re$Phi_single)
 					re$Pval_single= pchisq((re$Score_single)^2/(re$Phi_single), lower.tail = FALSE, df=1, log.p=IsOutputlogPforSingle)
-					if(IsOutputlogPforSingle){	
-						re$SE_single = abs((re$Beta_single)/qnorm(exp(re$Pval_single)/2))
+					if(IsOutputlogPforSingle){
+						re$SE_single = abs((re$Beta_single)/(qnorm(re$Pval_single - log(2), log.p=T, lower.tail = F)))
+						#SE_c = abs(logOR_c/(qnorm(out1_c$p.value - log(2), log.p=T, lower.tail = F)))	
+						#re$SE_single = abs((re$Beta_single)/qnorm(exp(re$Pval_single)/2))
 					}else{
 						re$SE_single = abs((re$Beta_single)/qnorm(re$Pval_single/2))	
 					}	
@@ -455,8 +457,9 @@ if(FALSE){
                                         re$Score_single=Score/weights[1:m]
 					re$Beta_single=(re$Score_single)/(re$Phi_single)
 					re$Pval_single = Phi_ccadj$p.new 
-					if(IsOutputlogPforSingle){	
-						re$SE_single = abs((re$Beta_single)/qnorm(exp(re$Pval_single)/2))
+					if(IsOutputlogPforSingle){
+						re$SE_single = abs((re$Beta_single)/(qnorm(re$Pval_single - log(2), log.p=T, lower.tail = F)))	
+						#re$SE_single = abs((re$Beta_single)/qnorm(exp(re$Pval_single)/2))
 					}else{
 						re$SE_single = abs((re$Beta_single)/qnorm(re$Pval_single/2))
 					}		

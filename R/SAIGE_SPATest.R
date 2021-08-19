@@ -1741,7 +1741,7 @@ Score_Test_Sparse<-function(obj.null, y, X1, G, mu, mu2, varRatio, IsOutputlogPf
   if(!IsOutputlogPforSingle){
     SE = abs(BETA/qnorm(pval.noadj/2))
   }else{
-    SE = abs(BETA/qnorm(exp(pval.noadj)/2))
+    SE = abs(BETA/(qnorm(pval.noadj - log(2), log.p=T, lower.tail = F)))	  
   }
   Tstat = S
   #return(c(BETA, SE, Tstat, pval.noadj, pval.noadj, 1, var1, var2))
@@ -1767,7 +1767,8 @@ Score_Test<-function(obj.null, G, y, mu, mu2, varRatio, IsOutputlogPforSingle){
   if(!IsOutputlogPforSingle){
     SE = abs(BETA/qnorm(pval.noadj/2))
   }else{
-    SE = abs(BETA/qnorm(exp(pval.noadj)/2))
+    #SE = abs(BETA/qnorm(exp(pval.noadj)/2))
+    SE = abs(BETA/(qnorm(pval.noadj - log(2), log.p=T, lower.tail = F)))	  
   }
   #Tstat = S^2
   Tstat = S
@@ -2083,7 +2084,8 @@ if(var1 < (.Machine$double.xmin)){
   }else{
     p.value = pchisq(Tstat^2/var1, lower.tail = FALSE, df=1, log.p=IsOutputlogPforSingle)
     BETA = (Tstat/var1)
-    SE = abs(BETA/qnorm(exp(p.value)/2))
+    SE = abs(BETA/(qnorm(p.value - log(2), log.p=T, lower.tail = F)))
+    #SE = abs(BETA/qnorm(exp(p.value)/2))
   }
 }
 
@@ -2105,7 +2107,8 @@ if(var1 < (.Machine$double.xmin)){
       }else{
         p.value.c = pchisq(Tstat_c^2/var1_c, lower.tail = FALSE, df=1, log.p=IsOutputlogPforSingle)
         BETA_c = (Tstat_c/var1_c)
-        SE_c = abs(BETA_c/qnorm(exp(p.value.c)/2))
+	SE_c = abs(BETA_c/(qnorm(p.value.c - log(2), log.p=T, lower.tail = F)))
+        #SE_c = abs(BETA_c/qnorm(exp(p.value.c)/2))
       }
     }
   }
@@ -2290,7 +2293,8 @@ scoreTest_SPAGMMAT_binaryTrait_cond_sparseSigma=function(g, AC, AC_true, NAset, 
     if(!IsOutputlogPforSingle){
       SE_c = abs(logOR_c/qnorm(out1_c$p.value/2))
     }else{
-      SE_c = abs(logOR_c/qnorm(exp(out1_c$p.value)/2))
+      SE_c = abs(logOR_c/(qnorm(out1_c$p.value - log(2), log.p=T, lower.tail = F))) 	    
+      #SE_c = abs(logOR_c/qnorm(exp(out1_c$p.value)/2))
     }
 
     out1 = c(out1, var1_c = var1_c,BETA_c = logOR_c, SE_c = SE_c, Tstat_c = Tstat_c, p.value.c = out1_c$p.value, p.value.NA.c = out1_c$p.value.NA)
