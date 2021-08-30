@@ -158,8 +158,10 @@ SPAGMMATtest = function(bgenFile = "",
     ytemp=modglmm$obj.glm.null$y
     modglmm$obj.glm.null = NULL
     modglmm$obj.glm.null = list(y=ytemp)
+    modglmm$b = modglmm$linear.predictors - (modglmm$obj.noK$X1 %*% modglmm$coefficients)  #for firth poisson	
     modglmm$linear.predictors = NULL
     modglmm$coefficients = NULL
+
     modglmm$cov = NULL
     gc()
     obj.glmm.null = modglmm
@@ -336,6 +338,8 @@ SPAGMMATtest = function(bgenFile = "",
     }else if(dosageFileType == "vcf"){
       dosageFilecolnamesSkip = c("CHR","POS","SNPID","Allele1","Allele2", "AC_Allele2", "AF_Allele2", "imputationInfo")
     }
+
+    dosageFilecolnamesSkip = c(dosageFilecolnamesSkip, "beta_Firth") #from Firth test
   }
 
   if(condition != ""){
@@ -1008,10 +1012,20 @@ cat("It is a survival trait\n")
            		out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 		}else{
 		#cat("IsSPAfast2: ", IsSPAfast, "\n")
-			out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
+		xnew = cbind(obj.glmm.null$obj.noK$X1, G0)
+		newbeta = fast.poisf.fit(x=xnew, y = y, Lambda = obj.glmm.null$Lambda0, offset=obj.glmm.null$b)
+		print("newbeta")
+		print(newbeta$beta)
+
+#fast.poisf.fit <- function (x, y, weight = NULL, Lambda = NULL, offset = NULL, firth = TRUE, col.fit = NULL,
+#    init = NULL, control) {
+
+
+		out1 = scoreTest_SAIGE_survivalTrait_cond_sparseSigma_fast(G0, AC, AF, MAF, IsSparse, obj.glmm.null$obj.noK, mu.a, mu2.a, y, varRatio, Cutoff, rowHeader, sparseSigma=sparseSigma, isCondition=isCondition, OUT_cond=OUT_cond, G1tilde_P_G2tilde = G1tilde_P_G2tilde, G2tilde_P_G2tilde_inv = G2tilde_P_G2tilde_inv)
 		}
 
-           OUTvec=c(rowHeader, N,unlist(out1))
+           #OUTvec=c(rowHeader, N,unlist(out1))
+           OUTvec=c(rowHeader, newbeta$beta[length(newbeta$beta)], N,unlist(out1))
 
            if(IsOutputAFinCaseCtrl){
              AFCase = sum(G0[y1Index])/(2*NCase)
