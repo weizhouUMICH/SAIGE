@@ -1,3 +1,20 @@
+##################
+# For install
+install.packages("devtools")
+library(devtools)
+
+#install MetaSKAT
+devtools::install_github("leeshawn/MetaSKAT") 
+
+
+install.packages("RcppArmadillo")
+install.packages("RcppEigen")
+install.packages("BH")
+
+conda install -c anaconda cmake
+
+####################
+#
 bgenFile = "";
 bgenFileIndex = "";
 vcfFile = "./input/genotype_10markers.vcf.gz";

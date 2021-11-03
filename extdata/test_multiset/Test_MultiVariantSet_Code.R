@@ -286,6 +286,7 @@ for(i in 1:ngroup){
   
   markerIDs = sort(group_info_list[[i]][["all"]]$markerID)
   markerIDs = group_info_list[[i]][["all"]]$markerID   
+  markerIDs = sort(markerIDs)
   marker_group_line<-paste(c(geneID, markerIDs), collapse = "\t")
   if (dosageFileType == "vcf") {
     Gx = getGenoOfGene_vcf(marker_group_line, minInfo)

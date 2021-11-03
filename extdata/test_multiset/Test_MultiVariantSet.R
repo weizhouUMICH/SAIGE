@@ -7,8 +7,8 @@ source("~/Github/SAIGE/R/SAIGE_GENE_MultiVariantSet_Test.R")
 #source("/Users/lee7801/Dropbox/R_Packages/SAIGE/R/SAIGE_GENE_MultiVariantSet.R")
 
 
-source("~/Github/SAIGE/extdata/test_multiset/Test_MultiVariantSet_Code.R")
-re_out
+#source("~/Github/SAIGE/extdata/test_multiset/Test_MultiVariantSet_Code.R")
+#re_out
 
 
 setwd("~/Github/SAIGE/extdata")
@@ -26,7 +26,8 @@ out = SAIGE_GENE_MultiVariantSets(vcfFile = "./input/genotype_10markers.vcf.gz",
                             start = 1,
                             end = 250000000,
                             function_group_test =c("lof", "missense"),
-                            MAF_cutoff=c(0.001,0.01)
+                            MAF_cutoff=c(0.001,0.01),
+                            vcfField = "GT"
                             )
 out
 

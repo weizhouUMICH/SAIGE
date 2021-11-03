@@ -88,6 +88,7 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
 		 kernel="linear.weighted",
 		 method="optimal.adj",
 		 weights.beta.rare = c(1,25),
+		 weights.beta.common=c(1,25),
 		 weightMAFcutoff = 0.01,
 		 weightsIncludeinGroupFile=FALSE,
 		 r.corr=0,
@@ -336,8 +337,8 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
     single_test_df_A<-NULL
     ngroup<-length(group_info_list)
     for(i in 1:ngroup){
-      geneID = group_info_list[[i]][["all"]]$gene
-      markerIDs = group_info_list[[i]][["all"]]$markerID
+      geneID = group_info_list[[i]]$geneID
+      markerIDs = group_info_list[[i]]$var
       marker_group_line<-paste(c(geneID, markerIDs), collapse = "\t")
       if (dosageFileType == "vcf") {
           Gx = getGenoOfGene_vcf(marker_group_line, minInfo)

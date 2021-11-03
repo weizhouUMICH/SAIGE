@@ -180,7 +180,6 @@ Get_MultiSet_Id<-function(markerIDs, function_group_marker_list, MACvec, MAF,
   #function_group_marker_list = group_info_list[[1]]; markerIDs = Gx$markerIDs; MAF_cutoff=c(0.001, 0.01); MACCutoff_to_CollapseUltraRare = 10;function_group_test=c("lof", "missense")
   
 	n_cutoff<-length(MAF_cutoff)
-	n_group<-length(function_group_marker_list)
 		
 	marker_collapse_all<-markerIDs[MACvec <= MACCutoff_to_CollapseUltraRare]
 	FuncMAF_list<-list()
@@ -372,8 +371,8 @@ Run_Genebase_Test<-function(Score, Phi, index_test, method, r.corr, IsOutputBETA
 	}
 
 
-  Phi = Phi[index_test, index_test]
-  Score = Score[index_test]
+  	Phi = Phi[index_test, index_test]
+  	Score = Score[index_test]
 	
 	re = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL))
 	if(class(re) == "try-error"){
@@ -407,18 +406,22 @@ Run_Genebase_Test<-function(Score, Phi, index_test, method, r.corr, IsOutputBETA
 	   # re$SE_Burden = abs(re$BETA_Burden/qnorm(re$pval_Burden/2))
 	  }  
 	} 
+	
+	if(m_test==1 && is.na(re$pval_Burden)){
+		re$pval_Burden = re$p.value
+	}
 
 	return(re)	
 	
 }
 
-Run_Single_Test<-function(Score, Phi, weights, pval=NULL){
+Run_Single_Test<-function(Score, Phi, weights, pval=NULL, IsOutputlogPforSingle=FALSE){
 
 	#Score =re_phi_score$Score; Phi=re_phi_score$Phi; weights; pval=NULL
-  re<-list()
-  m<-length(Score)
+	re<-list()
+	m<-length(Score)
 	re$Phi_single=diag(Phi)/(weights[1:m]^2)
-  re$Score_single=Score/weights[1:m]
+	re$Score_single=Score/weights[1:m]
 	re$Beta_single=(re$Score_single)/(re$Phi_single)
 	
 	if(is.null(pval)){
