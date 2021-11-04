@@ -157,6 +157,8 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
  	  vcfFile = obj_geno_sample$vcfFile
  	  sampleIndex = obj_geno_sample$sampleIndex
  	
+
+
  	
   	# get variance ratio 
    	ratioVec = Get_Variance_Ratio(varianceRatioFile, sparseSigmaFile, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude)
