@@ -30,7 +30,7 @@ def configure( cfg ):
 		cfg.check_cxx( lib='dl', uselib_store='dl', msg = 'dl' )
 
 def build( bld ):
-	print "Creating %s build..." % bld.options.mode
+	print("Creating %s build..." % bld.options.mode)
 	bld(
 		rule = """printf '#ifndef BGEN_REVISION_HPP\n#define BGEN_REVISION_HPP\nnamespace globals {\n\tchar const* bgen_version = \"%%s\" ;\n\tchar const* const bgen_revision = \"%%s\" ;\n}\n#endif\n' `echo """ + VERSION + "` `hg parents --template={node}` > ${TGT}""",
 		always = True,

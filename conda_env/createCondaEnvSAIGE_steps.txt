@@ -1,4 +1,4 @@
-conda create -n RSAIGE r-essentials r-base=3.6.1 python=2.7
+conda create -n RSAIGE r-essentials r-base=3.6.1 python=3.8
 conda activate RSAIGE
 conda install -c anaconda cmake
 conda install -c conda-forge gettext lapack r-matrix
