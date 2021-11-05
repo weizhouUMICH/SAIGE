@@ -6,7 +6,7 @@
 #	type: weight - weight for each variant, weight does not need to be in the file
 ReadGroupFile<-function(groupFile){
   
-  #groupFile = "./test_multiset/group_multiSets.txt";
+  #groupFile = "./SAIGE_GENE_Test/group_multiSets_2.txt"
   group_info_list<-list()
   line=0
   gf = file(groupFile, "r")

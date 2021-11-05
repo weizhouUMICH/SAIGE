@@ -15,6 +15,7 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
 {
   # function_group_marker_list = group_info_list[[1]]; markerIDs = Gx$markerIDs; MAF_cutoff=c(0.001, 0.01); MACCutoff_to_CollapseUltraRare = 10;function_group_test=c("lof", "missense")
   
+  
   obj.model$theta = tauVec
   obj.model$residuals = as.vector(y - obj.model$mu)
   adjustCCratioinGroupTest=FALSE
@@ -22,21 +23,43 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
     adjustCCratioinGroupTest=TRUE
   }
   
-  ##########################
-  # 	Process G, flipping 
+  Gmat1<<-Gmat
+  
+  ###########################
+  # 	Process G, remove any variants outside of the analysis. 
+  MaxMAF_Cutoff = max(MAF_cutoff)
   MACvec = Matrix::colSums(Gmat)
   m = ncol(Gmat)
   n = nrow(Gmat)
-  AF = MACvec/(2 * n)
-  flipindex = which(AF > 0.5)
+  
+  MAF = MACvec/(2 * n)
+  flipindex = which(MAF > 0.5)
+  if (length(flipindex) > 0) {
+  	MAF[flipindex] = 1-MAF[flipindex]
+  }	
+  
+  idx_MAC0 = union(which(MACvec==0), which(MACvec==2*n))
+  idx_OutRange = which(MAF > MaxMAF_Cutoff)
+  idx_exclude_marker = union(idx_MAC0, idx_OutRange)
+  
+  if(length(idx_exclude_marker) > 0){
+  	Gmat = Gmat[,-idx_exclude_marker, drop = F]
+  	markerIDs=markerIDs[-idx_exclude_marker]
+  	MACvec= MACvec[-idx_exclude_marker]
+  	MAF = MAF[-idx_exclude_marker]
+  }
+
+  ##########################
+  # 	Process G, flipping 
+
+  flipindex = which(MACvec > n)
   if (length(flipindex) > 0) {
     Gmat[, flipindex] = 2 - Gmat[, flipindex]
     MACvec[flipindex] = 2 * n - MACvec[flipindex]
     cat("Note the ", flipindex, "th variants were flipped to use dosages for the minor alleles in gene-based tests\n")
   }
-  MAF = Matrix::colMeans(Gmat)/2
-  flipInd = (AF > 0.5)
-  
+
+      
   if(traitType=="binary"){
     caseIndex = which(y==1)
     ctrlIndex = which(y==0)
@@ -49,17 +72,20 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
   method = out.method$method
   r.corr = out.method$r.corr
   
-  
   ###########################
   # Collapsing, collapsing by group
   re_group_id = Get_MultiSet_Id(markerIDs, function_group_marker_list, MACvec, MAF, 
                                 function_group_test= function_group_test, MAF_cutoff=MAF_cutoff, 
                                 MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare)
   
+  re_group_id1<<-re_group_id 
+  markerIDs1<<-markerIDs
+  function_group_marker_list1<<-function_group_marker_list; MACvec1<-MACvec; MAF1<<-MAF
   
   re_collapsed = Get_Collapsed_Genotype(Gmat=Gmat, markerIDs=markerIDs, m=m, re_group_id=re_group_id, 
                                         function_group_test=function_group_test, DosageCutoff_for_UltraRarePresence=DosageCutoff_for_UltraRarePresence)
   
+  re_collapsed1<<-re_collapsed
   ##############################
   #
   G1 = re_collapsed$Gmat
@@ -196,7 +222,7 @@ Get_MultiSet_Id<-function(markerIDs, function_group_marker_list, MACvec, MAF,
 	marker_collapse_prev_group<-NULL
 	for(i in 1:length(function_group_test)){
 	  
-	  function_group<-function_group_test[[i]]
+		function_group<-function_group_test[[i]]
 		info<-function_group_marker_list[[function_group]]
 		marker<-intersect(info$markerID, markerIDs)
 		marker_collapse_list[[i]]<-union(marker_collapse_prev_group, intersect(marker, marker_collapse_all))
@@ -253,7 +279,7 @@ Get_Collapsed_Genotype<-function(Gmat, markerIDs, m, re_group_id, function_group
       Gnew[intersect(ID1, ID2)] = 1
       Gnew[ID3] = 2
       Gnew = as(Gnew, "sparseMatrix")
-      GCollapsing<-cbind(Gnew, GCollapsing)
+      GCollapsing<-cbind(GCollapsing, Gnew)
         	
       Collapsing_ID = c(Collapsing_ID, sprintf("C_%s", function_group_test[i] ))
       ncollapse = ncollapse+1
@@ -316,15 +342,15 @@ Get_Phi_Score  = function(G1, obj, obj_cc, y, X,
 	sparseSigma = NULL,  weights_specified = NULL, adjustCCratioinGroupTest=TRUE){
 
   #obj=obj.model; weights_specified=NULL;kernel= "linear.weighted"; weights.beta.rare=c(1,25); weights.beta.common=c(0.5,0.5); weightMAFcutoff = 0.01;
-  obj.noK = obj$obj.noK
+  	obj.noK = obj$obj.noK
 	obj.noK$y = y
-  m = ncol(G1)
-  n = nrow(G1)
+  	m = ncol(G1)
+  	n = nrow(G1)
 	MACvec = Matrix::colSums(G1)
 	MAF = MACvec/(2*n)
-  AF = MAF
-  mu=obj$mu
-  mu2=obj$mu2
+  	AF = MAF
+  	mu=obj$mu
+  	mu2=obj$mu2
 	
 
 	weights = Get_Weight(MAF, weightMAFcutoff, weights.beta.rare, weights.beta.common, weights_specified)
@@ -333,7 +359,8 @@ Get_Phi_Score  = function(G1, obj, obj_cc, y, X,
 	indexNeg = NULL
 	MACvec_indVec_Zall = getCateVarRatio_indVec(MACvector=MACvec, cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude)
 	GratioMatrixall = getGratioMatrix(MACvec_indVec_Zall, ratioVec)
-
+	
+	GratioMatrixall1<<-GratioMatrixall; m1<<-m; MACvec_indVec_Zall1<<-MACvec_indVec_Zall; ratioVec1<<-ratioVec
     if (kernel == "linear.weighted") {
     	G1 = t(t(G1) * (weights[1:m]))
 	}
@@ -362,6 +389,7 @@ Get_Phi_Score  = function(G1, obj, obj_cc, y, X,
 Run_Genebase_Test<-function(Score, Phi, index_test, method, r.corr, IsOutputBETASEinBurdenTest){
 
 	#Score=re_phi_score$Score; Phi=re_phi_score$Phi; index_test=index_test
+	
 	m_test = length(index_test)
 	if(m_test ==0){
 		re = list(p.value = 1, param=NA, p.value.resampling=NA, pval.zero.msg=NA, Q=NA, m_test=0)

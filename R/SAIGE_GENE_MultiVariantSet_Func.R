@@ -141,6 +141,10 @@ Get_Variance_Ratio<-function(varianceRatioFile, sparseSigmaFile, cateVarRatioMin
 
 Get_Results_DF<-function(groupTestResult, geneID){
   
+  if(is.null(groupTestResult)){
+  	return(list(gene_base_test_df=NULL, single_test_df=NULL))
+  }
+  
   re_test_gene_base = groupTestResult$re_test_gene_base
   re_test_single = groupTestResult$re_test_single
   
