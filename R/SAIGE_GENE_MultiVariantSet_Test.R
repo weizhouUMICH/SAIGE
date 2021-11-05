@@ -346,7 +346,7 @@ Get_Phi_Score  = function(G1, obj, obj_cc, y, X,
 		Phi = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m])
 		
 		if(adjustCCratioinGroupTest){
-			Phi_ccadj = SPA_ER_kernel_related_Phiadj(G1_org, obj_cc, obj.noK, Cutoff=2, Phi, weights[1:m], VarRatio_Vec = as.vector(GratioMatrixall[1:m,1]), mu, sparseSigma)
+			Phi_ccadj = SPA_ER_kernel_related_Phiadj(G1, obj_cc, obj.noK, Cutoff=2, Phi, weights[1:m], VarRatio_Vec = as.vector(GratioMatrixall[1:m,1]), mu, sparseSigma)
 		}
 	}
 	

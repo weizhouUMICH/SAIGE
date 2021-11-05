@@ -337,6 +337,7 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
     # Main Test
     gene_base_test_df_A<-NULL
     single_test_df_A<-NULL
+    Append1=FALSE
     ngroup<-length(group_info_list)
     for(i in 1:ngroup){
       geneID = group_info_list[[i]]$geneID
@@ -382,8 +383,8 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
       }
   
         
-    # Note: we don't remove marker here...
-    groupTestResult = MultiSets_GroupTest(Gmat=Gmat, obj.model=obj.model, obj_cc=obj_cc, 
+    	# Note: we don't remove marker here...
+    	groupTestResult = MultiSets_GroupTest(Gmat=Gmat, obj.model=obj.model, obj_cc=obj_cc, 
                                                 y=y, X=X, tauVec=tauVec, traitType=traitType, 
                                                 function_group_marker_list=group_info_list[[i]], MAF_cutoff=MAF_cutoff, 
                                                 function_group_test=function_group_test,
@@ -399,15 +400,26 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
                                         DosageCutoff_for_UltraRarePresence = DosageCutoff_for_UltraRarePresence)
           
     
-    out_df=Get_Results_DF(groupTestResult, geneID)
-    gene_base_test_df=out_df$gene_base_test_df
-    single_test_df = out_df$single_test_df
+    	out_df=Get_Results_DF(groupTestResult, geneID)
+    	gene_base_test_df=out_df$gene_base_test_df
+    	single_test_df = out_df$single_test_df
     
-    gene_base_test_df_A= rbind(gene_base_test_df_A, gene_base_test_df)
-    single_test_df_A= rbind(single_test_df_A, single_test_df)    
-      
-    }
-    if (dosageFileType == "bgen") {
+    	gene_base_test_df_A= rbind(gene_base_test_df_A, gene_base_test_df)
+    	single_test_df_A= rbind(single_test_df_A, single_test_df)    
+      	
+      	OUT_Filename<-SAIGEOutputFile
+      	OUT_Filename_Single<-sprintf("%s.single",SAIGEOutputFile )
+      	write.table(gene_base_test_df, file = OUT_Filename, col.names=!Append1, 
+      		row.names=FALSE, quote=FALSE, append=Append1)
+      	
+      	if(!is.null(single_test_df_A)){
+       		write.table(single_test_df, file = OUT_Filename_Single, col.names=!Append1, row.names=FALSE, quote=FALSE, append=Append1)
+     	
+      	}
+      	
+      	Append1=TRUE
+	}
+	if (dosageFileType == "bgen") {
         closetestGenoFile_bgenDosage()
     }
     else if (dosageFileType == "vcf") {
