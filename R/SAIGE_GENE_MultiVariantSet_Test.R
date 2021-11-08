@@ -386,7 +386,24 @@ Get_Phi_Score  = function(G1, obj, obj_cc, y, X,
 
 }
 
-Run_Genebase_Test<-function(Score, Phi, index_test, method, r.corr, IsOutputBETASEinBurdenTest){
+Run_SKAT_Burden_Only<-function(Score, Phi, method, IsFastApprox=TRUE){
+	
+	re = list(p.value = NA)
+	re_btemp = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=1, method=method, Score.Resampling=NULL, IsFast=IsFastApprox))
+	re_stemp = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=0, method=method, Score.Resampling=NULL, IsFast=IsFastApprox))
+		
+	if(class(re_btemp) == "try-error" | class(re_stemp) == "try-error"){	
+		re = list(p.value = NA)
+	}else{
+		re = list(p.value = 2*min(re_btemp$p.value, re_stemp$p.value, 0.5), param = list())
+		re$param = list(p.val.each = c(re_btemp$p.value, re_stemp$p.value), rho=c(1,0))
+	}
+
+	return(re)
+
+}
+
+Run_Genebase_Test<-function(Score, Phi, index_test, method, r.corr, IsOutputBETASEinBurdenTest, IsFastApprox=TRUE){
 
 	#Score=re_phi_score$Score; Phi=re_phi_score$Phi; index_test=index_test
 	
@@ -402,21 +419,18 @@ Run_Genebase_Test<-function(Score, Phi, index_test, method, r.corr, IsOutputBETA
   	Phi = Phi[index_test, index_test]
   	Score = Score[index_test]
 	
-	re = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL))
-	if(class(re) == "try-error"){
-		re_btemp = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=1, method=method, Score.Resampling=NULL))
-		re_stemp = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=0, method=method, Score.Resampling=NULL))
-		
-		if(class(re_btemp) == "try-error" | class(re_stemp) == "try-error"){	
-			re = list(p.value = NA)
-		}else{
-			re = list(p.value = 2*min(re_btemp$p.value, re_stemp$p.value, 0.5), param = list())
-			re$param = list(p.val.each = c(re_btemp$p.value, re_stemp$p.value), rho=c(1,0))
-
+	p1 = length(Score)
+	
+	# When p1 > 1000, only run Burden and SKAT
+	if(IsFastApprox && p1 > 1000){
+		re = Run_SKAT_Burden_Only(Score=Score, Phi=Phi, method=method, IsFastApprox=IsFastApprox)
+	} else {
+		re = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL))
+		if(class(re) == "try-error"){
+			re = Run_SKAT_Burden_Only(Score=Score, Phi=Phi, method=method, IsFastApprox=IsFastApprox)
 		}
 	}
 	
-
 	#re$Phi_sum = sum(Phi)
 	#re$Score_sum = sum(Score)
 	#re$BETA_Burden  = re$Score_sum/re$Phi_sum

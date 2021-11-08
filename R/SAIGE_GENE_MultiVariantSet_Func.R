@@ -141,6 +141,7 @@ Get_Variance_Ratio<-function(varianceRatioFile, sparseSigmaFile, cateVarRatioMin
 
 Get_Results_DF<-function(groupTestResult, geneID){
   
+  groupTestResult1<<-groupTestResult
   if(is.null(groupTestResult)){
   	return(list(gene_base_test_df=NULL, single_test_df=NULL))
   }
@@ -153,12 +154,18 @@ Get_Results_DF<-function(groupTestResult, geneID){
   cutoff.a<-rep("", nSets)
   outvecs<-NULL
   for(i in 1:nSets){
+  	outvec = re_test_gene_base[[i]]$outvec
     group.a[i]<-re_test_gene_base[[i]]$group
     cutoff.a[i]<-re_test_gene_base[[i]]$cutoff
-    outvecs = rbind(outvecs, re_test_gene_base[[i]]$outvec)
+    outvecs = rbind(outvecs, outvec)
   }
-  gene_base_test_df = data.frame(GeneID = geneID, group=group.a, cutoff=cutoff.a, outvecs=outvecs )
+  cc_vec = c(SAIGE:::CCT(outvecs[,1]), NA, SAIGE:::CCT(outvecs[,3]), NA, NA, NA)
+  outvecs = rbind(outvecs, cc_vec)
+  gene_base_test_df = data.frame(GeneID = geneID, group=c(group.a, "CC-all"), cutoff=c(cutoff.a, "CC-all"), outvecs=outvecs )
   
+  ## Add CC results
+  
+    
   #re$p.value,  re$m, re$BETA_Burden, re$SE_Burden, re$pval_Burden,  MACg, MAC_caseg, MAC_ctrlg)
   colnames(gene_base_test_df)<-c("GeneID", "FuncGroup", "Cutoff", "pval", "m",
                                  "pval_Burden", "MAC", "MAC_case", "MAC_ctrl")

@@ -99,8 +99,8 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
 		 method_to_CollapseUltraRare="absence_or_presence",
 		 MACCutoff_to_CollapseUltraRare = 10,
 		 DosageCutoff_for_UltraRarePresence = 0.5,
-		 function_group_test =c("lof", "missense"),
-		 MAF_cutoff=c(0.001,0.01)){
+		 function_group_test =c("lof", "missense", "synonymous"),
+		 MAF_cutoff=c(0.0001,0.001,0.01)){
 
 		
 		# weights_specified is currently not used 
@@ -399,22 +399,22 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
                                         MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare, 
                                         DosageCutoff_for_UltraRarePresence = DosageCutoff_for_UltraRarePresence)
           
-    
+    	
     	out_df=Get_Results_DF(groupTestResult, geneID)
     	gene_base_test_df=out_df$gene_base_test_df
-    	single_test_df = out_df$single_test_df
-    
     	gene_base_test_df_A= rbind(gene_base_test_df_A, gene_base_test_df)
-    	single_test_df_A= rbind(single_test_df_A, single_test_df)    
-      	
+    	 
       	OUT_Filename<-SAIGEOutputFile
-      	OUT_Filename_Single<-sprintf("%s.single",SAIGEOutputFile )
-      	write.table(gene_base_test_df, file = OUT_Filename, col.names=!Append1, 
-      		row.names=FALSE, quote=FALSE, append=Append1)
+      	write.table(gene_base_test_df, file = OUT_Filename, col.names=!Append1, row.names=FALSE, quote=FALSE, append=Append1)
       	
-      	if(!is.null(single_test_df_A)){
-       		write.table(single_test_df, file = OUT_Filename_Single, col.names=!Append1, row.names=FALSE, quote=FALSE, append=Append1)
-     	
+      	if(IsSingleVarinGroupTest){
+      	
+      		single_test_df=out_df$single_test_df
+      		single_test_df_A= rbind(single_test_df_A, single_test_df)   
+      		OUT_Filename_Single<-sprintf("%s.single",SAIGEOutputFile )
+      		if(!is.null(single_test_df_A)){
+       			write.table(single_test_df, file = OUT_Filename_Single, col.names=!Append1, row.names=FALSE, quote=FALSE, append=Append1)
+      		}
       	}
       	
       	Append1=TRUE
