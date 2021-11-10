@@ -1,0 +1,30 @@
+# Install packages in CONDA
+conda create -n saige -c conda-forge -c bioconda "r-base>=4.0" r-saige
+conda activate saige
+conda install -c conda-forge -c bioconda savvy
+conda install -c conda-forge bgen
+conda install -c conda-forge superlu 
+conda install -c compbiocore cget
+
+
+# install packages
+# run within R
+req_packages <- c("Rcpp", "RcppParallel", "RcppArmadillo", "data.table", "RcppEigen", "Matrix", "methods", "BH", "optparse", "SPAtest", "qlcMatrix", "RSpectra", "SKAT")
+for (pack in req_packages) {
+    if(!require(pack, character.only = TRUE)) {
+        install.packages(pack, repos = "https://cloud.r-project.org")
+    }
+}
+
+
+#remove configure
+# Assume that ~/Github/SAIGE has SAIGE package (downloaded from github)
+cd ~/Github/SAIGE 
+
+# Remove MetaSKAT in DESCRIPTION and remove configure 
+# rm configure  
+# I already done these
+
+cd ~/Github
+R CMD INSTALL ./SAIGE
+

@@ -23,7 +23,6 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
     adjustCCratioinGroupTest=TRUE
   }
   
-  Gmat1<<-Gmat
   
   ###########################
   # 	Process G, remove any variants outside of the analysis. 
@@ -98,6 +97,7 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
                                sparseSigma = sparseSigma, weights_specified = weights_specified, adjustCCratioinGroupTest=adjustCCratioinGroupTest)
   
   
+  re_phi_score1<<-re_phi_score 
   Phi=NULL
   p.new=NULL
   if(adjustCCratioinGroupTest){
@@ -171,8 +171,8 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
       MAC_cases = Matrix::colSums(G1[caseIndex, ])
       MAC_ctrls = Matrix::colSums(G1[ctrlIndex, ])
 
-      MAF_cases = MAC_case/nCase/2
-      MAF_ctrls = MAC_ctrl/nCtrl/2
+      MAF_cases = MAC_cases/nCase/2
+      MAF_ctrls = MAC_ctrls/nCtrl/2
       
     } 
     re_test_single$out_vecs_df = data.frame(MarkerIDs=re_collapsed$markerIDs_new, Beta=re_test_single$Beta_single,
@@ -185,64 +185,6 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
   
 }
 
-
-# Function return list of markers to collapse and not to collapse
-# input 
-#   markerIDs: IDs of all markers in Gmat
-#   function_group_marker_list: marker IDs in each functional group. Markers here should not be in markerIDs
-#   MACvec: MAC vector
-#   MAF: MAF vector
-#   function_group_test: function gruops to test. Should be ordered by functional importance
-#   MAF_cutoff: MAF cutoff
-#   MACCutoff_to_CollapseUltraRare: MACCutoff for collapsing
-#
-# output
-#   FuncMAF_list: IDs of non-collapsed markers, by func group and MAF cutoff
-#   marker_collapse_list: makers collapsed for each group. high priority group variants will be included in low priority groups
-Get_MultiSet_Id<-function(markerIDs, function_group_marker_list, MACvec, MAF, 
-                           function_group_test=c("lof", "missense"), MAF_cutoff=c(0.0001, 0.001, 0.01), MACCutoff_to_CollapseUltraRare = 10){
-	
-
-  #function_group_marker_list = group_info_list[[1]]; markerIDs = Gx$markerIDs; MAF_cutoff=c(0.001, 0.01); MACCutoff_to_CollapseUltraRare = 10;function_group_test=c("lof", "missense")
-  
-	n_cutoff<-length(MAF_cutoff)
-		
-	marker_collapse_all<-markerIDs[MACvec <= MACCutoff_to_CollapseUltraRare]
-	FuncMAF_list<-list()
-	MAF_group_list<-list()
-	for(i in 1:n_cutoff){
-		MAF_group_list[[i]]<-markerIDs[MAF <=MAF_cutoff[[i]]]
-	}
-	
-
-	marker_collapse_list<-list()
-	idx_all<-NULL
-	group_without_collapse<-list()
-	
-	marker_collapse_prev_group<-NULL
-	for(i in 1:length(function_group_test)){
-	  
-		function_group<-function_group_test[[i]]
-		info<-function_group_marker_list[[function_group]]
-		marker<-intersect(info$markerID, markerIDs)
-		marker_collapse_list[[i]]<-union(marker_collapse_prev_group, intersect(marker, marker_collapse_all))
-		group_without_collapse[[i]]<-setdiff(marker, marker_collapse_list[[i]])
-		marker_collapse_prev_group<-marker_collapse_list[[i]]
-	}
-	
-	# Make union without collapsing
-	group<-NULL
-	for(i in 1:length(function_group_test)){
-		group<-c(group, group_without_collapse[[i]])
-		FuncMAF_list[[i]]<-list()
-		for(j in 1:n_cutoff){
-			FuncMAF_list[[i]][[j]]<-intersect(group, MAF_group_list[[j]])
-		}
-	}
-
-	re_group_id<-list(FuncMAF_list=FuncMAF_list, marker_collapse_list=marker_collapse_list)
-	return(re_group_id)
-}
 
 #	input
 #		m: number of markers
@@ -373,7 +315,7 @@ Get_Phi_Score  = function(G1, obj, obj_cc, y, X,
 		Phi = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m])
 		
 		if(adjustCCratioinGroupTest){
-			Phi_ccadj = SPA_ER_kernel_related_Phiadj(G1, obj_cc, obj.noK, Cutoff=2, Phi, weights[1:m], VarRatio_Vec = as.vector(GratioMatrixall[1:m,1]), mu, sparseSigma)
+			Phi_ccadj = SPA_ER_kernel_related_Phiadj(G1, obj_cc, obj.noK, Cutoff=2, Phi, rep(1,m), VarRatio_Vec = as.vector(GratioMatrixall[1:m,1]), mu, sparseSigma)
 		}
 	}
 	
