@@ -60,7 +60,7 @@
 SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
 		 bgenFileIndex = "",
 		 vcfFile = "",
-     vcfFileIndex = "",
+     	 vcfFileIndex = "",
 		 vcfField = "DS",
 		 savFile = "",
 		 savFileIndex = "",
@@ -73,13 +73,13 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
 		 start = 1,
 		 end = 250000000,
 		 minMAC = 0.5,
-     minMAF = 0,
+     	 minMAF = 0,
 		 maxMAFforGroupTest = 0.5,
-     minInfo = 0,
-     GMMATmodelFile = "",
-     varianceRatioFile = "",
-     SPAcutoff=2,
-     SAIGEOutputFile = "",
+     	 minInfo = 0,
+         GMMATmodelFile = "",
+         varianceRatioFile = "",
+         SPAcutoff=2,
+         SAIGEOutputFile = "",
 		 IsSparse=TRUE,
 		 LOCO=TRUE,
 		 sparseSigmaFile="",
@@ -98,7 +98,8 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
 		 MACCutoff_to_CollapseUltraRare = 10,
 		 DosageCutoff_for_UltraRarePresence = 0.5,
 		 function_group_test =c("lof", "missense", "synonymous"),
-		 MAF_cutoff=c(0.0001,0.001,0.01)){
+		 MAF_cutoff=c(0.0001,0.001,0.01),
+		 IsFastApprox = TRUE){
 
 		
 		# weights_specified is currently not used 
@@ -349,7 +350,7 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
       
       cntMarker = Gx$cnt
       cat("cntMarker: ", cntMarker, "\n")
-      cat("marker_group_line", marker_group_line, "\n")
+      #cat("marker_group_line", marker_group_line, "\n")
       cat("dosageFileType", dosageFileType, "\n")
       if (cntMarker == 0){
         next
@@ -395,7 +396,8 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
                                         markerIDs=markerIDs, IsSparse=IsSparse, weights_specified=weights_specified,
                                         method_to_CollapseUltraRare = method_to_CollapseUltraRare,
                                         MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare, 
-                                        DosageCutoff_for_UltraRarePresence = DosageCutoff_for_UltraRarePresence)
+                                        DosageCutoff_for_UltraRarePresence = DosageCutoff_for_UltraRarePresence,
+                                        IsFastApprox=IsFastApprox)
           
     	
     	out_df=Get_Results_DF(groupTestResult, geneID)

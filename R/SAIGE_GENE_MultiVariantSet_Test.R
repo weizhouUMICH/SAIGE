@@ -11,11 +11,12 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
                                 kernel, method, weights.beta.rare,  weightMAFcutoff, weights.beta.common, 
                                 r.corr, sparseSigma, IsSingleVarinGroupTest, markerIDs, IsSparse, weights_specified,
                                 method_to_CollapseUltraRare = "absence_or_presence",
-                                MACCutoff_to_CollapseUltraRare = 10, DosageCutoff_for_UltraRarePresence = 0.5)
+                                MACCutoff_to_CollapseUltraRare = 10, DosageCutoff_for_UltraRarePresence = 0.5,
+                                IsFastApprox=TRUE)
 {
   # function_group_marker_list = group_info_list[[1]]; markerIDs = Gx$markerIDs; MAF_cutoff=c(0.001, 0.01); MACCutoff_to_CollapseUltraRare = 10;function_group_test=c("lof", "missense")
   
-  
+
   obj.model$theta = tauVec
   obj.model$residuals = as.vector(y - obj.model$mu)
   adjustCCratioinGroupTest=FALSE
@@ -77,27 +78,32 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
                                 function_group_test= function_group_test, MAF_cutoff=MAF_cutoff, 
                                 MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare)
   
-  re_group_id1<<-re_group_id 
-  markerIDs1<<-markerIDs
-  function_group_marker_list1<<-function_group_marker_list; MACvec1<-MACvec; MAF1<<-MAF
+  #re_group_id1<<-re_group_id; markerIDs1<<-markerIDs; function_group_marker_list1<<-function_group_marker_list; MACvec1<-MACvec; MAF1<<-MAF
   
   re_collapsed = Get_Collapsed_Genotype(Gmat=Gmat, markerIDs=markerIDs, m=m, re_group_id=re_group_id, 
                                         function_group_test=function_group_test, DosageCutoff_for_UltraRarePresence=DosageCutoff_for_UltraRarePresence)
   
-  re_collapsed1<<-re_collapsed
+  #re_collapsed1<<-re_collapsed
   ##############################
   #
   G1 = re_collapsed$Gmat
   
   #obj_cc = NULL;weights_specified=NULL;adjustCCratioinGroupTest=FALSE;mu=NULL;mu2=NULL;weightMAFcutoff=0.5
   
+  #re_phi_score = Get_Phi_Score(G1=G1, obj=obj.model, obj_cc=obj_cc, y = y, X = X, 
+  #                             cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude, ratioVec=ratioVec,  
+  #                             kernel= kernel, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,
+  #                             sparseSigma = sparseSigma, weights_specified = weights_specified, adjustCCratioinGroupTest=adjustCCratioinGroupTest)
+  
   re_phi_score = Get_Phi_Score(G1=G1, obj=obj.model, obj_cc=obj_cc, y = y, X = X, 
-                               cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude, ratioVec=ratioVec,  
-                               kernel= kernel, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weightMAFcutoff = weightMAFcutoff,
-                               sparseSigma = sparseSigma, weights_specified = weights_specified, adjustCCratioinGroupTest=adjustCCratioinGroupTest)
+			cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude, ratioVec=ratioVec,    
+			sparseSigma = sparseSigma, adjustCCratioinGroupTest=adjustCCratioinGroupTest, IsFastApprox=IsFastApprox)
+
+  # beta weight 
+  weights = Get_Weight(MAF=MAF, weightMAFcutoff=weightMAFcutoff, weights.beta.rare=weights.beta.rare, weights.beta.common=weights.beta.common, weights_specified=NULL)
+ 
   
-  
-  re_phi_score1<<-re_phi_score 
+  #re_phi_score1<<-re_phi_score 
   Phi=NULL
   p.new=NULL
   if(adjustCCratioinGroupTest){
@@ -134,7 +140,8 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
       
       # Run the test
       re = Run_Genebase_Test(re_phi_score$Score, Phi, 
-                                                 index_test=index_test, method=method, r.corr=r.corr, IsOutputBETASEinBurdenTest=IsOutputBETASEinBurdenTest)
+                            index_test=index_test, method=method, r.corr=r.corr, IsOutputBETASEinBurdenTest=IsOutputBETASEinBurdenTest, weights=weights,
+                            IsFastApprox=IsFastApprox)
       re_test_gene_base[[k]]<-list()
       re_test_gene_base[[k]]$re=re
       re_test_gene_base[[k]]$group = function_group_test[i]
@@ -159,7 +166,7 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
   }
   if (IsSingleVarinGroupTest) {
     
-    re_test_single = Run_Single_Test(re_phi_score$Score, Phi, re_phi_score$weights, pval=p.new)
+    re_test_single = Run_Single_Test(re_phi_score$Score, Phi, pval=p.new)
     MACs =  Matrix::colSums(G1)
     MAFs = MACs/n/2
     MAC_cases=NA
@@ -278,10 +285,10 @@ Get_Weight<-function(MAF, weightMAFcutoff, weights.beta.rare, weights.beta.commo
 
 #obj is the rda. file output from SAIGE step 1
 #G1 is genotypes for testing gene, which contains m markers
+# Weight is not applied to....
 Get_Phi_Score  = function(G1, obj, obj_cc, y, X, 
 	cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec,  
-	kernel= "linear.weighted", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,
-	sparseSigma = NULL,  weights_specified = NULL, adjustCCratioinGroupTest=TRUE){
+	sparseSigma = NULL,  adjustCCratioinGroupTest=TRUE, IsFastApprox=FALSE){
 
   #obj=obj.model; weights_specified=NULL;kernel= "linear.weighted"; weights.beta.rare=c(1,25); weights.beta.common=c(0.5,0.5); weightMAFcutoff = 0.01;
   	obj.noK = obj$obj.noK
@@ -295,35 +302,36 @@ Get_Phi_Score  = function(G1, obj, obj_cc, y, X,
   	mu2=obj$mu2
 	
 
-	weights = Get_Weight(MAF, weightMAFcutoff, weights.beta.rare, weights.beta.common, weights_specified)
-
-
 	indexNeg = NULL
 	MACvec_indVec_Zall = getCateVarRatio_indVec(MACvector=MACvec, cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude)
-	GratioMatrixall = getGratioMatrix(MACvec_indVec_Zall, ratioVec)
+	GratioVecall = getGratioVector(MACvec_indVec_Zall, ratioVec)
 	
-	GratioMatrixall1<<-GratioMatrixall; m1<<-m; MACvec_indVec_Zall1<<-MACvec_indVec_Zall; ratioVec1<<-ratioVec
-    if (kernel == "linear.weighted") {
-    	G1 = t(t(G1) * (weights[1:m]))
-	}
-
 	Score = as.vector(t(G1) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
 
 	Phi_ccadj=NULL
 	if(is.null(obj$P)){
-		G1_tilde_Ps_G1_tilde = getCovM_nopcg(G1=G1, G2=G1, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
-		Phi = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m])
+		G1_tilde_Ps_G1_tilde = getCovM_nopcg_fast(G1=G1, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2, IsFastApprox=IsFastApprox)
+		GratioVecall_sqrt = sqrt(GratioVecall)
+		#G1_tilde_Ps_G1_tilde1<<-G1_tilde_Ps_G1_tilde; GratioVecall_sqrt1<<-GratioVecall_sqrt
+		Phi = t(t(G1_tilde_Ps_G1_tilde * GratioVecall_sqrt) * GratioVecall_sqrt)
 		
 		if(adjustCCratioinGroupTest){
-			Phi_ccadj = SPA_ER_kernel_related_Phiadj(G1, obj_cc, obj.noK, Cutoff=2, Phi, rep(1,m), VarRatio_Vec = as.vector(GratioMatrixall[1:m,1]), mu, sparseSigma)
+			#G2<<-G1; obj_cc<<-obj_cc; obj.noK<<-obj.noK; Phi11<<-Phi; VarRatio_Vec<<-GratioVecall; mu<<-mu; sparseSigma<<-sparseSigma
+			
+			Phi_ccadj= SPA_ER_kernel_related_Phiadj_fast(G1, obj_cc, obj.noK, Cutoff=2, Phi, Score, VarRatio_Vec= GratioVecall, mu, sparseSigma)
+			
+			#Phi_ccadj = SPA_ER_kernel_related_Phiadj_fast(G1, obj_cc, obj.noK, Cutoff=2, Phi, rep(1,m), VarRatio_Vec = as.vector(GratioMatrixall[1:m,1]), mu, sparseSigma)
+			#Phi_ccadj = SPA_ER_kernel_related_Phiadj(G1, obj_cc, obj.noK, Cutoff=2, Phi, rep(1,m), VarRatio_Vec = as.vector(GratioMatrixall[1:m,1]), mu, sparseSigma)
 		}
 	}
+	
+	
 	
 	# Calculate indexNeg which identify Phi with very small Phi
 	indexNeg = which(diag(as.matrix(Phi)) <= (.Machine$double.xmin)^(1/4)) 
 	
 	re = list(Score=Score, Phi=Phi, Phi_ccadj=Phi_ccadj, indexNeg=indexNeg, 
-	MACvec_indVec_Zall=MACvec_indVec_Zall, GratioMatrixall=GratioMatrixall, MAF=MAF, weights=weights)
+	MACvec_indVec_Zall=MACvec_indVec_Zall, GratioVecall=GratioVecall, MAF=MAF)
 	return(re)
 
 }
@@ -345,7 +353,7 @@ Run_SKAT_Burden_Only<-function(Score, Phi, method, IsFastApprox=TRUE){
 
 }
 
-Run_Genebase_Test<-function(Score, Phi, index_test, method, r.corr, IsOutputBETASEinBurdenTest, IsFastApprox=TRUE){
+Run_Genebase_Test<-function(Score, Phi, index_test, method, r.corr, IsOutputBETASEinBurdenTest, weights=NULL, IsFastApprox=TRUE){
 
 	#Score=re_phi_score$Score; Phi=re_phi_score$Phi; index_test=index_test
 	
@@ -358,18 +366,24 @@ Run_Genebase_Test<-function(Score, Phi, index_test, method, r.corr, IsOutputBETA
 	}
 
 
-  	Phi = Phi[index_test, index_test]
-  	Score = Score[index_test]
+  	Phi_test = Phi[index_test, index_test]
+  	Score_test = Score[index_test]
 	
-	p1 = length(Score)
+	if(!is.null(weights)){
+		weights1 = weights[index_test]
+		Phi_test = t(t(Phi_test * weights1)*weights1)
+		Score_test = Score_test * weights1
+	}
+	
+	p1 = length(Score_test)
 	
 	# When p1 > 1000, only run Burden and SKAT
 	if(IsFastApprox && p1 > 1000){
-		re = Run_SKAT_Burden_Only(Score=Score, Phi=Phi, method=method, IsFastApprox=IsFastApprox)
+		re = Run_SKAT_Burden_Only(Score=Score_test, Phi=Phi_test, method=method, IsFastApprox=IsFastApprox)
 	} else {
-		re = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score, Phi=Phi, r.corr=r.corr, method=method, Score.Resampling=NULL))
+		re = try(SKAT:::Met_SKAT_Get_Pvalue(Score=Score_test, Phi=Phi_test, r.corr=r.corr, method=method, Score.Resampling=NULL))
 		if(class(re) == "try-error"){
-			re = Run_SKAT_Burden_Only(Score=Score, Phi=Phi, method=method, IsFastApprox=IsFastApprox)
+			re = Run_SKAT_Burden_Only(Score=Score_test, Phi=Phi_test, method=method, IsFastApprox=IsFastApprox)
 		}
 	}
 	
@@ -399,13 +413,13 @@ Run_Genebase_Test<-function(Score, Phi, index_test, method, r.corr, IsOutputBETA
 	
 }
 
-Run_Single_Test<-function(Score, Phi, weights, pval=NULL, IsOutputlogPforSingle=FALSE){
+Run_Single_Test<-function(Score, Phi, pval=NULL, IsOutputlogPforSingle=FALSE){
 
 	#Score =re_phi_score$Score; Phi=re_phi_score$Phi; weights; pval=NULL
 	re<-list()
 	m<-length(Score)
-	re$Phi_single=diag(Phi)/(weights[1:m]^2)
-	re$Score_single=Score/weights[1:m]
+	re$Phi_single=diag(Phi)
+	re$Score_single=Score
 	re$Beta_single=(re$Score_single)/(re$Phi_single)
 	
 	if(is.null(pval)){
@@ -419,6 +433,59 @@ Run_Single_Test<-function(Score, Phi, weights, pval=NULL, IsOutputlogPforSingle=
 		re$SE_single = abs((re$Beta_single)/qnorm(re$Pval_single/2))
 	}		
 	
+	return(re)
+
+}
+
+
+#obj is the rda. file output from SAIGE step 1
+#G1 is genotypes for testing gene, which contains m markers
+Get_Phi_Score_OLD  = function(G1, obj, obj_cc, y, X, 
+	cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, ratioVec,  
+	kernel= "linear.weighted", weights.beta.rare=c(1,25), weights.beta.common=c(0.5,0.5), weightMAFcutoff = 0.01,
+	sparseSigma = NULL,  weights_specified = NULL, adjustCCratioinGroupTest=TRUE){
+
+  #obj=obj.model; weights_specified=NULL;kernel= "linear.weighted"; weights.beta.rare=c(1,25); weights.beta.common=c(0.5,0.5); weightMAFcutoff = 0.01;
+  	obj.noK = obj$obj.noK
+	obj.noK$y = y
+  	m = ncol(G1)
+  	n = nrow(G1)
+	MACvec = Matrix::colSums(G1)
+	MAF = MACvec/(2*n)
+  	AF = MAF
+  	mu=obj$mu
+  	mu2=obj$mu2
+	
+
+	weights = Get_Weight(MAF, weightMAFcutoff, weights.beta.rare, weights.beta.common, weights_specified)
+
+
+	indexNeg = NULL
+	MACvec_indVec_Zall = getCateVarRatio_indVec(MACvector=MACvec, cateVarRatioMinMACVecExclude=cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude=cateVarRatioMaxMACVecInclude)
+	GratioMatrixall = getGratioMatrix(MACvec_indVec_Zall, ratioVec)
+	
+	#GratioMatrixall1<<-GratioMatrixall; m1<<-m; MACvec_indVec_Zall1<<-MACvec_indVec_Zall; ratioVec1<<-ratioVec
+    if (kernel == "linear.weighted") {
+    	G1 = t(t(G1) * (weights[1:m]))
+	}
+
+	Score = as.vector(t(G1) %*% matrix(obj$residuals, ncol=1))/as.numeric(obj$theta[1])
+
+	Phi_ccadj=NULL
+	if(is.null(obj$P)){
+		G1_tilde_Ps_G1_tilde = getCovM_nopcg(G1=G1, G2=G1, XV=obj.noK$XV, XXVX_inv=obj.noK$XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
+		Phi = G1_tilde_Ps_G1_tilde*(GratioMatrixall[1:m,1:m])
+		
+		if(adjustCCratioinGroupTest){
+			Phi_ccadj = SPA_ER_kernel_related_Phiadj(G1, obj_cc, obj.noK, Cutoff=2, Phi, rep(1,m), VarRatio_Vec = as.vector(GratioMatrixall[1:m,1]), mu, sparseSigma)
+		}
+	}
+	
+	# Calculate indexNeg which identify Phi with very small Phi
+	indexNeg = which(diag(as.matrix(Phi)) <= (.Machine$double.xmin)^(1/4)) 
+	
+	re = list(Score=Score, Phi=Phi, Phi_ccadj=Phi_ccadj, indexNeg=indexNeg, 
+	MACvec_indVec_Zall=MACvec_indVec_Zall, GratioMatrixall=GratioMatrixall, MAF=MAF, weights=weights)
 	return(re)
 
 }

@@ -139,6 +139,200 @@ Get_Variance_Ratio<-function(varianceRatioFile, sparseSigmaFile, cateVarRatioMin
 }
 
 
+getGratioVector<-function(MACvec_indVec, ratioVec) {
+
+    numCate = length(ratioVec)
+    if (numCate > 1) {
+        indMatrix = contr.sum(numCate, contrasts = FALSE)
+        GindMatrix = NULL
+        for (i in MACvec_indVec) {
+            GindMatrix = rbind(GindMatrix, indMatrix[i, ])
+        }
+        GratioVec = GindMatrix %*% matrix(ratioVec, ncol = 1)
+      
+    }
+    else {
+        GratioVec = rep(ratioVec[1], length(MACvec_indVec))
+    }
+    
+    GratioVec = as.vector(  GratioVec )
+    return(GratioVec)
+}
+
+
+getCovM_nopcg_fast<-function(G1, XV, XXVX_inv, sparseSigma=NULL, mu2, IsFastApprox=TRUE){
+
+	#G21=G2
+	#G1=G2; XV=obj.noK$XV; XXVX_inv=obj.noK$XXVX_inv; mu2 = mu21
+	# XV<-obj.noK$XV; XXVX_inv<-obj.noK$XXVX_inv
+ 	if(!IsFastApprox){
+ 		re = SAIGE:::getCovM_nopcg(G1=G1, G2=G1, XV=XV, XXVX_inv=XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
+ 		return(re)
+ 	}
+    nSNP1<-ncol(G1)
+	n<-nrow(G1)
+	
+	XV_G1 = XV %*% G1
+	A_G1<-XXVX_inv %*% XV_G1
+	
+    if(!is.null(sparseSigma)){ 
+    	SI_XXVX_inv = solve(sparseSigma, XXVX_inv ,sparse=TRUE)
+    	SI_G1<-solve(sparseSigma, G1, sparse = TRUE)
+    	SI_A_G1<-SI_XXVX_inv %*% XV_G1
+
+		var1<-colSums(G1 * SI_G1) - colSums(G1 *SI_A_G1 ) *2 + colSums(A_G1 *SI_A_G1)
+		G1_sum  = colSums(G1)
+    	G1_cov<-crossprod(G1, G1) -  G1_sum%*% t(G1_sum)/n
+    	
+    	diag_cov<-diag(G1_cov)
+    	G1_cor<-t(t(G1_cov/sqrt(diag_cov))/sqrt(diag_cov))
+    	Mat<- t(t(G1_cor * sqrt(var1))* sqrt(var1))
+
+    } else {
+    	G2=G1
+    	G2 = G2 * mu2
+        XV_G2 = XV %*% G2
+        SI_A_G2<-XXVX_inv %*% XV_G2
+        A1<- t(G1) %*% (G2 - SI_A_G2)
+        A2<- t(XXVX_inv) %*% (G2 - SI_A_G2)
+        Mat<-(A1 - t(XV_G1) %*% A2)
+        Mat<-as.matrix(Mat)
+    	                 
+    }
+    
+    return(Mat)
+	
+
+}
+
+
+
+
+#
+#	Some changes in the function
+#		Use Score instead of calculating q and mu1
+#
+#	
+SPA_ER_kernel_related_Phiadj_fast<-function(G, obj, obj.noK, Cutoff=2, Phi, Score, VarRatio_Vec, mu.a, sparseSigma){
+	
+	#G<-G2; obj<-obj_cc; obj.noK<-obj.noK; Phi<-Phi1; weight<-rep(1,ncol(G2)); mu.a<-mu; Cutoff=2
+
+	p.m<-ncol(G)
+	n<-nrow(G)
+	zscore.all_0<-rep(0, p.m)
+	zscore.all_1<-rep(0, p.m)
+
+	MAFsum=Matrix::colSums(G)
+	mu2.a = mu.a *(1-mu.a)
+	
+	VarS_org=diag(Phi)	
+	stat.qtemp =Score^2/VarS_org
+	p.new = pchisq(stat.qtemp, lower.tail = FALSE, df = 1)  
+	zscore.all_0 = Score
+		
+	#XXVX_XV_G = obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G)
+	#q<-colSums(G *obj.noK$y) - colSums(XXVX_XV_G *obj.noK$y )
+	#mu.qtemp=mu.a;    
+	#mu1 <- colSums(mu.qtemp * G) - colSums(mu.qtemp * XXVX_XV_G)
+
+ 	#stat.qtemp<-(q - mu1)^2/VarS_org
+    #p.new<-pchisq(stat.qtemp, lower.tail = FALSE, df = 1)  
+	#zscore.all_0=(q-mu1)  ##sum(G[,jj]*(obj.noK$y-mu.a))  		
+	id1<-which(stat.qtemp > Cutoff^2)
+	if(length(id1)> 0){
+	
+		for(jj in id1){
+			if (MAFsum[jj]<=10){
+				p_temp1=SKAT::SKATBinary((G[,jj,drop=F]),obj, method.bin="Hybrid")$p.value
+			} else {
+			
+				n.g<-MAFsum[jj]
+				NAset<-which(G[,jj]==0)
+				
+				AC = MAFsum[jj]
+				AF = AC/n
+				MAF = AF
+		
+				p_temp1=scoreTest_SAIGE_binaryTrait_cond_sparseSigma(G[,jj], AC, AF, MAF, IsSparse=TRUE, 
+					obj.noK, mu.a = mu.a, mu2.a = mu2.a, obj.noK$y, varRatio=VarRatio_Vec[jj], Cutoff = Cutoff, 
+					rowHeader=NULL, sparseSigma=sparseSigma)$p.value
+				p_temp1 = unlist(p_temp1)[1]
+			
+			}
+			p.new[jj]=p_temp1
+		}
+	}
+	
+	
+	idx_0<-which(VarS_org >0)
+	idx_p0<-which(p.new >0)
+	idx_p1<-which(p.new <0)
+	
+	if(length(idx_0) > 0){
+		zscore.all_1[idx_0]= qnorm(p.new[idx_0]/2, mean = 0, sd =sqrt( VarS_org[idx_0]),lower.tail = FALSE, log.p = FALSE)*sign(Score)
+	}
+	VarS = zscore.all_0^2/500
+	if(length(idx_p0) > 0){
+		VarS[idx_p0]= zscore.all_0[idx_p0]^2/qchisq(p.new[idx_p0], 1, ncp = 0, lower.tail = FALSE, log.p = FALSE)
+	}	 
+	
+
+	###################################
+	# Two different types of burden comparison
+		
+	
+	vars_inf=which(VarS==Inf)
+	if (length(vars_inf)>0){
+		VarS[vars_inf] = 0
+		zscore.all_1[vars_inf]=0
+		Phi[vars_inf,]=0
+		Phi[,vars_inf]=0
+	}
+	
+	scaleFactor = sqrt(VarS/VarS_org)	
+
+	###################################
+	# Burden test
+		
+	G_Burden = rowSums(G)
+	g.sum<-G_Burden  - obj.noK$XXVX_inv %*%  (obj.noK$XV %*% G_Burden)
+	q.sum<-sum(Score)
+	
+	p.value_burden<-SPAtest:::Saddle_Prob(q.sum , mu=mu.a, g=g.sum, Cutoff=2,alpha=2.5*10^-6)$p.value
+
+	
+	###################################
+	# Compare two burden test approach and calculate adjust ratio r
+	
+	G2_adj_n=t(t(Phi * sqrt(VarS/VarS_org)) * sqrt(VarS/VarS_org))
+	v1=rep(1,nrow(G2_adj_n))
+	VarQ = sum(G2_adj_n)
+	Q_b=sum(zscore.all_1)^2
+	
+	VarQ_2=Q_b/qchisq(p.value_burden, df=1, ncp = 0, lower.tail = FALSE, log.p = FALSE)
+	if (VarQ_2== 0) {
+		r=1
+	} else {
+		r=VarQ/VarQ_2
+	}
+	r=min(r,1)
+	
+	Phi_ccadj=as.matrix(G2_adj_n * 1/r)
+
+
+	outlist=list();
+	outlist$val = Phi_ccadj
+	scaleFactor = scaleFactor /sqrt(r)
+
+	outlist$scaleFactor = scaleFactor
+	outlist$p.new = p.new
+
+	return(outlist)
+
+}
+
+
+
 Get_Results_DF<-function(groupTestResult, geneID){
   
   groupTestResult1<<-groupTestResult
