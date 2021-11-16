@@ -193,68 +193,6 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
 }
 
 
-#	input
-#		m: number of markers
-# 		re_group_idx: output from Get_MultiSet_Idx
-# 		fun_group_name: function group name
-# 	output
-#		Gmat: new genotype matrix with collapsed variants
-#		markerIDs_new: new marker ID
-#		ncollapse: number of collapsed variants
-#		collapse_indicator: list of indicators for each functional groups
-Get_Collapsed_Genotype<-function(Gmat, markerIDs, m, re_group_id, function_group_test, DosageCutoff_for_UltraRarePresence){
-
-	#Gmat<-Gmat1; markerIDs<-markerIDs1; re_group_id<-re_group_id1; function_group_test=c("lof", "missense", "synonymous");DosageCutoff_for_UltraRarePresence=0.5
-	marker_collapse_list = re_group_id$marker_collapse_list
-	marker_collapse_all_idx = NULL
-	GCollapsing = NULL
-	Collapsing_ID = NULL
-	ncollapse=0
-	collapse_indicator=list()
-	
-	collapse_indicator = rep(-1,length(marker_collapse_list))
-
-  for(i in 1:length(marker_collapse_list)){
-	
-		macle10Index = match(marker_collapse_list[[i]], markerIDs)
-		
-		if(length(macle10Index) > 0){
-			G1rare = Gmat[, macle10Index, drop = F]
-			Gnew = qlcMatrix::rowMax(G1rare)
-			ID1<-which(as.vector(Gnew < (1 + DosageCutoff_for_UltraRarePresence)))
-			ID2<-which(as.vector(Gnew > DosageCutoff_for_UltraRarePresence))
-      ID3<-which(as.vector(Gnew >= (1 + DosageCutoff_for_UltraRarePresence)))
-      
-      Gnew[intersect(ID1, ID2)] = 1
-      Gnew[ID3] = 2
-      Gnew = as(Gnew, "sparseMatrix")
-      GCollapsing<-cbind(GCollapsing, Gnew)
-        	
-      Collapsing_ID = c(Collapsing_ID, sprintf("C_%s", function_group_test[i] ))
-      ncollapse = ncollapse+1
-      collapse_indicator[i] = ncollapse
-    }
-		marker_collapse_all_idx = union(marker_collapse_all_idx, macle10Index )
-	}
-
-	if(length(marker_collapse_all_idx)==0){
-	  Gmat=Gmat
-	  markerIDs_new=markerIDs
-	} else if (length(marker_collapse_all_idx) < m) {
-	  Gmat = cbind(GCollapsing, Gmat[, -marker_collapse_all_idx, drop = F])
-	  markerIDs_nocol = markerIDs[-marker_collapse_all_idx]
-	  markerIDs_new = c(Collapsing_ID, markerIDs[-marker_collapse_all_idx])
-  } else {
-    Gmat = cbind(GCollapsing)
-    markerIDs_new = Collapsing_ID
-  }
-	
-	return(list(Gmat=Gmat, markerIDs_new=markerIDs_new, ncollapse= ncollapse, collapse_indicator=collapse_indicator))
-
-}
-
-    
-
 Get_Weight<-function(MAF, weightMAFcutoff, weights.beta.rare, weights.beta.common, weights_specified=NULL){
   
   #print(MAF)

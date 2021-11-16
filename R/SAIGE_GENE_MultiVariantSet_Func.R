@@ -353,7 +353,25 @@ Get_Results_DF<-function(groupTestResult, geneID){
     cutoff.a[i]<-re_test_gene_base[[i]]$cutoff
     outvecs = rbind(outvecs, outvec)
   }
-  cc_vec = c(SAIGE:::CCT(outvecs[,1]), NA, SAIGE:::CCT(outvecs[,3]), NA, NA, NA)
+  
+  pval = outvecs[,1]
+  pval_burden = outvecs[,3]
+  idx1<-which(!is.na(pval))
+  idx2<-which(!is.na(pval_burden))  
+  
+  
+  cc_pval=NA
+  if(length(idx1)> 0){
+  	cc_pval = SAIGE:::CCT(pval[idx1])
+  }
+  
+  cc_pval_burden=NA
+  if(length(idx2)> 0){
+  	cc_pval_burden = SAIGE:::CCT(pval_burden[idx2])
+  }
+  
+    
+  cc_vec = c(cc_pval, NA, cc_pval_burden, NA, NA, NA)
   outvecs = rbind(outvecs, cc_vec)
   gene_base_test_df = data.frame(GeneID = geneID, group=c(group.a, "CC-all"), cutoff=c(cutoff.a, "CC-all"), outvecs=outvecs )
   
