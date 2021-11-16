@@ -318,7 +318,7 @@ Get_Collapsed_Genotype_New<-function(Gmat, markerIDs, m, function_group_marker_l
 #		markerIDs_new: new marker ID
 #		ncollapse: number of collapsed variants
 #		collapse_indicator: list of indicators for each functional groups
-Get_Collapsed_Genotype<-function(Gmat, markerIDs, m, re_group_id, function_group_test, DosageCutoff_for_UltraRarePresence){
+Get_Collapsed_Genotype<-function(Gmat, markerIDs, m, re_group_id, function_group_test, DosageCutoff_for_UltraRarePresence, MACCutoff_to_CollapseUltraRare = 10){
 
 	
 	marker_collapse_list = re_group_id$marker_collapse_list
@@ -352,20 +352,26 @@ Get_Collapsed_Genotype<-function(Gmat, markerIDs, m, re_group_id, function_group
     }
 		marker_collapse_all_idx = union(marker_collapse_all_idx, macle10Index )
 	}
-
+	
+	# For collapsed variants, use MACCutoff_to_CollapseUltraRare as MAC for weight
+	MAC_forWeight = Matrix::colSums(Gmat)
+	
 	if(length(marker_collapse_all_idx)==0){
-	  Gmat=Gmat
-	  markerIDs_new=markerIDs
+	  	Gmat=Gmat
+	  	markerIDs_new=markerIDs
 	} else if (length(marker_collapse_all_idx) < m) {
-	  Gmat = cbind(GCollapsing, Gmat[, -marker_collapse_all_idx, drop = F])
-	  markerIDs_nocol = markerIDs[-marker_collapse_all_idx]
-	  markerIDs_new = c(Collapsing_ID, markerIDs[-marker_collapse_all_idx])
+	  	Gmat = cbind(GCollapsing, Gmat[, -marker_collapse_all_idx, drop = F])
+	  	markerIDs_nocol = markerIDs[-marker_collapse_all_idx]
+	  	markerIDs_new = c(Collapsing_ID, markerIDs[-marker_collapse_all_idx])
+	  	
+	  	MAC_forWeight = c(rep(MACCutoff_to_CollapseUltraRare,ncollapse ), MAC_forWeight[-marker_collapse_all_idx] )
   } else {
-    Gmat = cbind(GCollapsing)
-    markerIDs_new = Collapsing_ID
+    	Gmat = cbind(GCollapsing)
+    	markerIDs_new = Collapsing_ID
+    	MAC_forWeight = rep(MACCutoff_to_CollapseUltraRare,ncollapse)
   }
 	
-	return(list(Gmat=Gmat, markerIDs_new=markerIDs_new, ncollapse= ncollapse, collapse_indicator=collapse_indicator))
+	return(list(Gmat=Gmat, markerIDs_new=markerIDs_new, ncollapse= ncollapse, collapse_indicator=collapse_indicator, MAC_forWeight=MAC_forWeight))
 
 }
 
