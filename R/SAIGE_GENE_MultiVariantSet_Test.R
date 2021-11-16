@@ -78,14 +78,14 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
                                 function_group_test= function_group_test, MAF_cutoff=MAF_cutoff, 
                                 MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare)
   
-  re_group_id1<<-re_group_id; markerIDs1<<-markerIDs; function_group_marker_list1<<-function_group_marker_list; MACvec1<-MACvec; MAF1<<-MAF
+  #re_group_id1<<-re_group_id; markerIDs1<<-markerIDs; function_group_marker_list1<<-function_group_marker_list; MACvec1<-MACvec; MAF1<<-MAF
   
   re_collapsed = Get_Collapsed_Genotype(Gmat=Gmat, markerIDs=markerIDs, m=m, re_group_id=re_group_id, 
                                         function_group_test=function_group_test, 
                                         DosageCutoff_for_UltraRarePresence=DosageCutoff_for_UltraRarePresence, 
                                         MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare)
   
-  re_collapsed1<<-re_collapsed
+  #re_collapsed1<<-re_collapsed
   ##############################
   #
   G1 = re_collapsed$Gmat
