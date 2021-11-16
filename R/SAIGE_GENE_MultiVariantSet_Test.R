@@ -204,7 +204,7 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
 #		collapse_indicator: list of indicators for each functional groups
 Get_Collapsed_Genotype<-function(Gmat, markerIDs, m, re_group_id, function_group_test, DosageCutoff_for_UltraRarePresence){
 
-	
+	#Gmat<-Gmat1; markerIDs<-markerIDs1; re_group_id<-re_group_id1; function_group_test=c("lof", "missense", "synonymous");DosageCutoff_for_UltraRarePresence=0.5
 	marker_collapse_list = re_group_id$marker_collapse_list
 	marker_collapse_all_idx = NULL
 	GCollapsing = NULL
@@ -245,7 +245,7 @@ Get_Collapsed_Genotype<-function(Gmat, markerIDs, m, re_group_id, function_group
 	  markerIDs_nocol = markerIDs[-marker_collapse_all_idx]
 	  markerIDs_new = c(Collapsing_ID, markerIDs[-marker_collapse_all_idx])
   } else {
-    Gmat = cbind(Gnew)
+    Gmat = cbind(GCollapsing)
     markerIDs_new = Collapsing_ID
   }
 	
