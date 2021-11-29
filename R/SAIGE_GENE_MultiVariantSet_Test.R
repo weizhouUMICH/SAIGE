@@ -42,6 +42,7 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
   idx_OutRange = which(MAF > MaxMAF_Cutoff)
   idx_exclude_marker = union(idx_MAC0, idx_OutRange)
   
+  
   if(length(idx_exclude_marker) > 0){
   	Gmat = Gmat[,-idx_exclude_marker, drop = F]
   	markerIDs=markerIDs[-idx_exclude_marker]
@@ -89,6 +90,11 @@ MultiSets_GroupTest = function (Gmat, obj.model, obj_cc, y, X, tauVec, traitType
   ##############################
   #
   G1 = re_collapsed$Gmat
+  
+  #Check whether there is no SNPs
+  if(sum(G1)==0){
+  	return(NULL)
+  }
   
   #obj_cc = NULL;weights_specified=NULL;adjustCCratioinGroupTest=FALSE;mu=NULL;mu2=NULL;weightMAFcutoff=0.5
   

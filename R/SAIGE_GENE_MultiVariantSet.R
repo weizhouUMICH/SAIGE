@@ -383,7 +383,7 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
   
         
     	# Note: we don't remove marker here...
-    	groupTestResult = MultiSets_GroupTest(Gmat=Gmat, obj.model=obj.model, obj_cc=obj_cc, 
+    	groupTestResult = try(MultiSets_GroupTest(Gmat=Gmat, obj.model=obj.model, obj_cc=obj_cc, 
                                                 y=y, X=X, tauVec=tauVec, traitType=traitType, 
                                                 function_group_marker_list=group_info_list[[i]], MAF_cutoff=MAF_cutoff, 
                                                 function_group_test=function_group_test,
@@ -397,7 +397,12 @@ SAIGE_GENE_MultiVariantSets = function(bgenFile = "",
                                         method_to_CollapseUltraRare = method_to_CollapseUltraRare,
                                         MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare, 
                                         DosageCutoff_for_UltraRarePresence = DosageCutoff_for_UltraRarePresence,
-                                        IsFastApprox=IsFastApprox)
+                                        IsFastApprox=IsFastApprox),  silent = T)
+        
+        if(class(groupTestResult)=="try-error"){
+        	warnings(paste("Error in testing gene ", geneID))
+        	groupTestResult=NULL
+        }
           
     	
     	out_df=Get_Results_DF(groupTestResult, geneID)

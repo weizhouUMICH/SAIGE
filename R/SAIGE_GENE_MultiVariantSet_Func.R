@@ -335,7 +335,7 @@ SPA_ER_kernel_related_Phiadj_fast<-function(G, obj, obj.noK, Cutoff=2, Phi, Scor
 
 Get_Results_DF<-function(groupTestResult, geneID){
   
-  groupTestResult1<<-groupTestResult
+  #groupTestResult1<<-groupTestResult
   if(is.null(groupTestResult)){
   	return(list(gene_base_test_df=NULL, single_test_df=NULL))
   }
