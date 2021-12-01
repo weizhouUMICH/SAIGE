@@ -1,0 +1,4 @@
+#to get the savvy library instead of the symlinks
+
+export CFLAGS="-fPIC"; export CXXFLAGS="-fPIC"; cget install -f requirements.txt
+ 

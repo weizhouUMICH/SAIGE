@@ -1,0 +1,15 @@
+import os.path
+
+def build( bld ):
+	sources = [ 'sqlite3/sqlite3.c' ]
+	headers = bld.path.ant_glob( 'sqlite3/*.h' )
+	bld.stlib(
+		target = 'sqlite3',
+		source = sources,
+		features = [ 'c' ],
+		includes = './',
+		cflags = '-fPIC',
+		defines = 'SQLITE_ENABLE_COLUMN_METADATA SQLITE_ENABLE_STAT4 SQLITE_MAX_EXPR_DEPTH=10000 SQLITE_USE_URI=1',
+		#uselib = 'DL',
+		export_includes = './'
+	)
