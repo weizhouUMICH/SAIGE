@@ -1,0 +1,4 @@
+GENE1 var 1:4_1/2 1:9_1/2 1:10_1/2  1:11_1/2 1:12_1/2  1:14_1/2  1:15_1/2  1:17_1/2
+GENE1 anno lof lof lof lof missense missense missense missense   
+GENE2 var 1:4_1/2 1:9_1/2 1:10_1/2  1:11_1/2 1:12_1/2  1:14_1/2  1:15_1/2  1:17_1/2
+GENE2 anno missense missense missense missense lof lof lof lof

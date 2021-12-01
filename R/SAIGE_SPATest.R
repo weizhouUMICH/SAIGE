@@ -58,7 +58,7 @@
 #' @param DosageCutoff_for_UltraRarePresence numeric. Dosage cutoff to determine whether the ultra rare variants are absent or present in the samples. Dosage >= DosageCutoff_for_UltraRarePresence indicates the varaint in present in the sample. 0< DosageCutoff_for_UltraRarePresence <= 2. By default, 0.5.  
 #' @return SAIGEOutputFile
 #' @export
-SPAGMMATtest = function(bgenFile = "",
+SPAGMMATtest_1 = function(bgenFile = "",
 		 bgenFileIndex = "",
 		 vcfFile = "",
                  vcfFileIndex = "",
@@ -1341,6 +1341,10 @@ SPAGMMATtest = function(bgenFile = "",
                 }
                 cntMarker = Gx$cnt
                 cat("cntMarker: ", cntMarker, "\n")
+                
+                #
+                #
+                Gx1<<-Gx
                 if (cntMarker > 0) {
                   if (dosageFileType == "vcf") {
                     Gmat = Matrix:::sparseMatrix(i = as.vector(Gx$iIndex), 
