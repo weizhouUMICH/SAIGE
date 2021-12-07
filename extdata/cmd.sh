@@ -221,8 +221,8 @@ Rscript step1_fitNULLGLMM.R     \
         --LOCO=FALSE    \
         --skipModelFitting=FALSE \
         --IsSparseKin=TRUE      \
-	--sparseGRMFile=./output/example_binary_cate.varianceRatio.txt.sparseGRM.mtx	\
-	--sparseGRMSampleIDFile=./output/example_binary.varianceRatio.txt.sparseGRM.mtx.sample	\
+	--sparseGRMFile=./output/sparseGRM_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseGRM.mtx	\
+	--sparseGRMSampleIDFile=./output/sparseGRM_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt	\
         --isCateVarianceRatio=TRUE
 
 

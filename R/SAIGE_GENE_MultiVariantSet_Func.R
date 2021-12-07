@@ -169,7 +169,7 @@ getCovM_nopcg_fast<-function(G1, XV, XXVX_inv, sparseSigma=NULL, mu2, IsFastAppr
  		re = SAIGE:::getCovM_nopcg(G1=G1, G2=G1, XV=XV, XXVX_inv=XXVX_inv, sparseSigma = sparseSigma, mu2 = mu2)
  		return(re)
  	}
-    nSNP1<-ncol(G1)
+        nSNP1<-ncol(G1)
 	n<-nrow(G1)
 	
 	XV_G1 = XV %*% G1
