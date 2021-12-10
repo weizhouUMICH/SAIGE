@@ -1,0 +1,11 @@
+start = start,
+                     end = end,
+                     maxMissingRate = maxMissingRate,
+                     minMAC = minMAC,
+                     minMAF = minMAF,
+                     maxMAFforGroupTest = maxMAFforGroupTest,
+                     minInfo = minInfo,
+                     SPAcutoff = SPAcutoff,
+                     numLinesOutput = numLinesOutput,
+                     MACCutoff_to_CollapseUltraRare = MACCutoff_to_CollapseUltraRare,
+                     DosageCutoff_for_UltraRarePresence = DosageCutoff_for_UltraRarePresence
