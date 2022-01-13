@@ -1,0 +1,7 @@
+Gene Pvalue Nmarker_MACCate_1 Nmarker_MACCate_2 Nmarker_MACCate_3 Nmarker_MACCate_4 Nmarker_MACCate_5 Nmarker_MACCate_6 Nmarker_MACCate_7 Nmarker_MACCate_8 markerIDs markerAFs Pvalue_Burden Pvalue_SKAT
+GENE1_lof 0.375332644456074 0 0 0 0 0 0 2 1 ultra_rare_collpase_rs3_rs8_rs9_rs10_rs32_rs34_rs35_rs42_rs44_rs45_rs46_rs49;rs31;rs33 0.0225;0.008;0.0085 0.254277218498566 0.697232176862207
+GENE1_missense 1 0 0 0 0 0 0 2 0 ultra_rare_collpase_rs11_rs13_rs16_rs18_rs28;rs17 0.0055;0.006 0.814871628768955 0.933788671988289
+GENE1_lof;missense 0.495496967117967 0 0 0 0 0 0 3 1 ultra_rare_collpase_rs3_rs8_rs9_rs10_rs11_rs13_rs16_rs18_rs28_rs32_rs34_rs35_rs42_rs44_rs45_rs46_rs49;rs17;rs31;rs33 0.027;0.006;0.008;0.0085 0.339083401838693 0.867148979737604
+GENE2_lof 0.639014275670351 0 0 0 0 0 1 1 0 ultra_rare_collpase_rs84_rs85_rs89_rs98;rs91 0.0045;0.0065 0.950073465930832 0.503665366149946
+GENE2_missense 0.605515729558576 0 0 0 0 0 0 2 1 ultra_rare_collpase_rs55_rs56_rs58_rs61_rs62_rs65_rs72_rs74_rs76_rs77_rs78;rs60;rs70 0.0165;0.0055;0.006 0.451822695374942 0.665812599259845
+GENE2_lof;missense 0.612792469957508 0 0 0 0 0 0 3 1 ultra_rare_collpase_rs55_rs56_rs58_rs61_rs62_rs65_rs72_rs74_rs76_rs77_rs78_rs84_rs85_rs89_rs98;rs60;rs70;rs91 0.0205;0.0055;0.006;0.0065 0.439014451086025 0.722829962670443

@@ -1,0 +1,402 @@
+R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+loaded via a namespace (and not attached):
+[1] compiler_4.1.2
+Any dosages <=  0.2  for genetic variants with MAC <=  10  are set to be 0 in group tests
+single-variant association test will be performed
+variance Ratio is  1 
+Garbage collection 13 = 7+2+4 (level 2) ... 
+78.2 Mbytes of cons cells used (56%)
+19.0 Mbytes of vectors used (30%)
+[1] "Leave-one-chromosome-out is not applied"
+dosageFile type is  bgen 
+[1] "checkIfSampleIDsExist"
+[1] "Sample IDs were not found in the bgen file."
+[1] "checkIfSampleIDsExist 3"
+snpBlocks (Mbgen): 100
+samples (Nbgen): 10000
+CompressedSNPBlocks: 1
+Layout: 2
+Setting position of samples in Bgen files....
+isSparseGRM  FALSE 
+isCondition  FALSE 
+Number of all markers to test:	 100 
+Number of markers in each chunk:	 100 
+Number of chunks for all markers:	 1 
+   user  system elapsed 
+  1.577   0.158   1.892 
+[1] "gc()"
+          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1879975 100.5    3624634 193.6  2624970 140.2
+Vcells 3236982  24.7    8388608  64.0  4818973  36.8
+(2022-01-13 00:53:37) ---- Analyzing Chunk 1/1: chrom InitialChunk ---- 
+gIndex first 24
+gIndex first 2 24
+gIndex first 324
+gIndex first 158
+gIndex first 2 158
+gIndex first 3158
+gIndex first 282
+gIndex first 2 282
+gIndex first 3282
+gIndex first 414
+gIndex first 2 414
+gIndex first 3414
+gIndex first 3414
+gIndex first 900
+gIndex first 2 900
+gIndex first 3900
+gIndex first 1032
+gIndex first 2 1032
+gIndex first 31032
+gIndex first 1143
+gIndex first 2 1143
+gIndex first 31143
+gIndex first 1263
+gIndex first 2 1263
+gIndex first 31263
+gIndex first 1408
+gIndex first 2 1408
+gIndex first 31408
+gIndex first 1614
+gIndex first 2 1614
+gIndex first 31614
+gIndex first 1789
+gIndex first 2 1789
+gIndex first 31789
+gIndex first 1940
+gIndex first 2 1940
+gIndex first 31940
+gIndex first 31940
+gIndex first 2590
+gIndex first 2 2590
+gIndex first 32590
+gIndex first 2723
+gIndex first 2 2723
+gIndex first 32723
+gIndex first 32723
+gIndex first 3689
+gIndex first 2 3689
+gIndex first 33689
+gIndex first 33689
+gIndex first 5285
+gIndex first 2 5285
+gIndex first 35285
+gIndex first 5423
+gIndex first 2 5423
+gIndex first 35423
+gIndex first 35423
+gIndex first 5632
+gIndex first 2 5632
+gIndex first 35632
+gIndex first 35632
+gIndex first 5766
+gIndex first 2 5766
+gIndex first 35766
+gIndex first 5905
+gIndex first 2 5905
+gIndex first 35905
+gIndex first 35905
+gIndex first 8548
+gIndex first 2 8548
+gIndex first 38548
+gIndex first 8686
+gIndex first 2 8686
+gIndex first 38686
+gIndex first 38686
+gIndex first 10934
+gIndex first 2 10934
+gIndex first 310934
+gIndex first 310934
+gIndex first 13429
+gIndex first 2 13429
+gIndex first 313429
+gIndex first 13565
+gIndex first 2 13565
+gIndex first 313565
+gIndex first 13687
+gIndex first 2 13687
+gIndex first 313687
+gIndex first 313687
+gIndex first 16428
+gIndex first 2 16428
+gIndex first 316428
+gIndex first 316428
+gIndex first 18005
+gIndex first 2 18005
+gIndex first 318005
+gIndex first 18129
+gIndex first 2 18129
+gIndex first 318129
+gIndex first 318129
+gIndex first 20459
+gIndex first 2 20459
+gIndex first 320459
+gIndex first 320459
+gIndex first 22443
+gIndex first 2 22443
+gIndex first 322443
+gIndex first 322443
+gIndex first 22728
+gIndex first 2 22728
+gIndex first 322728
+gIndex first 22895
+gIndex first 2 22895
+gIndex first 322895
+gIndex first 322895
+gIndex first 23399
+gIndex first 2 23399
+gIndex first 323399
+gIndex first 23708
+gIndex first 2 23708
+gIndex first 323708
+gIndex first 23830
+gIndex first 2 23830
+gIndex first 323830
+gIndex first 23968
+gIndex first 2 23968
+gIndex first 323968
+gIndex first 323968
+gIndex first 24452
+gIndex first 2 24452
+gIndex first 324452
+gIndex first 324452
+gIndex first 25527
+gIndex first 2 25527
+gIndex first 325527
+gIndex first 25685
+gIndex first 2 25685
+gIndex first 325685
+gIndex first 25812
+gIndex first 2 25812
+gIndex first 325812
+gIndex first 25971
+gIndex first 2 25971
+gIndex first 325971
+gIndex first 26095
+gIndex first 2 26095
+gIndex first 326095
+gIndex first 26227
+gIndex first 2 26227
+gIndex first 326227
+gIndex first 26380
+gIndex first 2 26380
+gIndex first 326380
+gIndex first 26546
+gIndex first 2 26546
+gIndex first 326546
+gIndex first 326546
+gIndex first 26801
+gIndex first 2 26801
+gIndex first 326801
+gIndex first 26961
+gIndex first 2 26961
+gIndex first 326961
+gIndex first 326961
+gIndex first 29384
+gIndex first 2 29384
+gIndex first 329384
+gIndex first 329384
+gIndex first 29565
+gIndex first 2 29565
+gIndex first 329565
+gIndex first 329565
+gIndex first 30832
+gIndex first 2 30832
+gIndex first 330832
+gIndex first 30950
+gIndex first 2 30950
+gIndex first 330950
+gIndex first 31053
+gIndex first 2 31053
+gIndex first 331053
+gIndex first 31156
+gIndex first 2 31156
+gIndex first 331156
+gIndex first 331156
+gIndex first 32862
+gIndex first 2 32862
+gIndex first 332862
+gIndex first 33012
+gIndex first 2 33012
+gIndex first 333012
+gIndex first 333012
+gIndex first 33201
+gIndex first 2 33201
+gIndex first 333201
+gIndex first 333201
+gIndex first 35205
+gIndex first 2 35205
+gIndex first 335205
+gIndex first 335205
+gIndex first 35452
+gIndex first 2 35452
+gIndex first 335452
+gIndex first 35582
+gIndex first 2 35582
+gIndex first 335582
+gIndex first 335582
+gIndex first 35838
+gIndex first 2 35838
+gIndex first 335838
+gIndex first 335838
+gIndex first 35974
+gIndex first 2 35974
+gIndex first 335974
+gIndex first 335974
+gIndex first 36103
+gIndex first 2 36103
+gIndex first 336103
+gIndex first 36267
+gIndex first 2 36267
+gIndex first 336267
+gIndex first 336267
+gIndex first 38969
+gIndex first 2 38969
+gIndex first 338969
+gIndex first 338969
+gIndex first 39169
+gIndex first 2 39169
+gIndex first 339169
+gIndex first 339169
+gIndex first 41628
+gIndex first 2 41628
+gIndex first 341628
+gIndex first 41752
+gIndex first 2 41752
+gIndex first 341752
+gIndex first 341752
+gIndex first 44116
+gIndex first 2 44116
+gIndex first 344116
+gIndex first 44232
+gIndex first 2 44232
+gIndex first 344232
+gIndex first 44474
+gIndex first 2 44474
+gIndex first 344474
+gIndex first 344474
+gIndex first 45175
+gIndex first 2 45175
+gIndex first 345175
+gIndex first 45336
+gIndex first 2 45336
+gIndex first 345336
+gIndex first 45466
+gIndex first 2 45466
+gIndex first 345466
+gIndex first 345466
+gIndex first 45677
+gIndex first 2 45677
+gIndex first 345677
+gIndex first 345677
+gIndex first 46547
+gIndex first 2 46547
+gIndex first 346547
+gIndex first 46665
+gIndex first 2 46665
+gIndex first 346665
+gIndex first 46816
+gIndex first 2 46816
+gIndex first 346816
+gIndex first 46957
+gIndex first 2 46957
+gIndex first 346957
+gIndex first 346957
+gIndex first 47531
+gIndex first 2 47531
+gIndex first 347531
+gIndex first 47664
+gIndex first 2 47664
+gIndex first 347664
+gIndex first 347664
+gIndex first 49535
+gIndex first 2 49535
+gIndex first 349535
+gIndex first 49638
+gIndex first 2 49638
+gIndex first 349638
+gIndex first 349638
+gIndex first 50141
+gIndex first 2 50141
+gIndex first 350141
+gIndex first 50280
+gIndex first 2 50280
+gIndex first 350280
+gIndex first 50443
+gIndex first 2 50443
+gIndex first 350443
+gIndex first 350443
+gIndex first 52329
+gIndex first 2 52329
+gIndex first 352329
+gIndex first 52432
+gIndex first 2 52432
+gIndex first 352432
+gIndex first 52554
+gIndex first 2 52554
+gIndex first 352554
+gIndex first 52757
+gIndex first 2 52757
+gIndex first 352757
+gIndex first 352757
+gIndex first 54008
+gIndex first 2 54008
+gIndex first 354008
+gIndex first 354008
+gIndex first 54354
+gIndex first 2 54354
+gIndex first 354354
+gIndex first 354354
+gIndex first 56032
+gIndex first 2 56032
+gIndex first 356032
+gIndex first 56216
+gIndex first 2 56216
+gIndex first 356216
+gIndex first 356216
+gIndex first 58816
+gIndex first 2 58816
+gIndex first 358816
+gIndex first 58936
+gIndex first 2 58936
+gIndex first 358936
+gIndex first 358936
+gIndex first 60531
+gIndex first 2 60531
+gIndex first 360531
+gIndex first 360531
+gIndex first 63197
+gIndex first 2 63197
+gIndex first 363197
+gIndex first 363197
+gIndex first 63327
+gIndex first 2 63327
+gIndex first 363327
+gIndex first 363327
+Completed 100/100 markers in the chunk.
+gIndex first 65067
+gIndex first 2 65067
+gIndex first 365067
+[1] "write Output 1"
+[1] "write Output 2"
+   user  system elapsed 
+  1.758   0.158   2.075 
+[1] "Analysis done! The results have been saved to './new_single_bgen.txt'."

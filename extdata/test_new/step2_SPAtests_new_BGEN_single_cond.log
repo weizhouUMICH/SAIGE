@@ -1,0 +1,85 @@
+R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+loaded via a namespace (and not attached):
+[1] compiler_4.1.2
+Any dosages <=  0.2  for genetic variants with MAC <= 10 are set to be 0 in group tests
+single-variant association test will be performed
+variance Ratio is  0.2 
+Garbage collection 13 = 7+2+4 (level 2) ... 
+78.2 Mbytes of cons cells used (56%)
+19.1 Mbytes of vectors used (30%)
+[1] "Leave-one-chromosome-out is not applied"
+[1] "XV"         "XVX"        "XXVX_inv"   "XVX_inv"    "S_a"       
+[6] "XVX_inv_XV" "V"         
+dosageFile type is  bgen 
+[1] "Sample IDs were not found in the bgen file."
+snpBlocks (Mbgen): 100
+samples (Nbgen): 10000
+CompressedSNPBlocks: 1
+Layout: 2
+Setting position of samples in Bgen files....
+isSparseGRM  FALSE 
+isCondition  TRUE 
+[1] "OK1"
+[1] "OK2"
+Number of all markers to test:	 100 
+Number of markers in each chunk:	 10 
+Number of chunks for all markers:	 10 
+(2022-01-10 13:11:35) ---- Analyzing Chunk 1/10: chrom InitialChunk ---- 
+Completed 10/10 markers in the chunk.
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-10 13:11:35) ---- Analyzing Chunk 2/10: chrom InitialChunk ---- 
+Completed 10/10 markers in the chunk.
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-10 13:11:35) ---- Analyzing Chunk 3/10: chrom InitialChunk ---- 
+Completed 10/10 markers in the chunk.
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-10 13:11:35) ---- Analyzing Chunk 4/10: chrom InitialChunk ---- 
+Completed 10/10 markers in the chunk.
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-10 13:11:35) ---- Analyzing Chunk 5/10: chrom InitialChunk ---- 
+Completed 10/10 markers in the chunk.
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-10 13:11:35) ---- Analyzing Chunk 6/10: chrom InitialChunk ---- 
+Completed 10/10 markers in the chunk.
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-10 13:11:35) ---- Analyzing Chunk 7/10: chrom InitialChunk ---- 
+Completed 10/10 markers in the chunk.
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-10 13:11:35) ---- Analyzing Chunk 8/10: chrom InitialChunk ---- 
+Completed 10/10 markers in the chunk.
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-10 13:11:35) ---- Analyzing Chunk 9/10: chrom InitialChunk ---- 
+Completed 10/10 markers in the chunk.
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-10 13:11:35) ---- Analyzing Chunk 10/10: chrom InitialChunk ---- 
+Completed 10/10 markers in the chunk.
+[1] "write Output 1"
+[1] "write Output 2"
+[1] "Analysis done! The results have been saved to './new_single_bgen_cond.txt'."

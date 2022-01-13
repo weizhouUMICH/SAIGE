@@ -340,7 +340,6 @@ Rscript step2_SPAtests.R        \
 	--bgenFile=./input/genotype_100markers.bgen	\
 	--bgenFileIndex=./input/genotype_100markers.bgen.bgi	\
         --SAIGEOutputFile=./output/example_binary.SAIGE.bgen.genotype.dropmissing.txt \
-        --SAIGEOutputFile=./output/example_binary.SAIGE.bgen.genotype.dropmissing.txt \
         --chrom=1 \
         --minMAF=0.0001 \
         --minMAC=1 \

@@ -1,0 +1,408 @@
+R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] SAIGE_0.44.6.4
+
+loaded via a namespace (and not attached):
+[1] compiler_4.1.2     Matrix_1.3-2       Rcpp_1.0.6         grid_4.1.2        
+[5] RcppParallel_5.0.2 lattice_0.20-45   
+$vcfFile
+[1] ""
+
+$vcfFileIndex
+[1] ""
+
+$vcfField
+[1] "DS"
+
+$bgenFile
+[1] "../input/genotype_100markers.bgen"
+
+$bgenFileIndex
+[1] "../input/genotype_100markers.bgen.bgi"
+
+$savFile
+[1] ""
+
+$savFileIndex
+[1] ""
+
+$idstoExcludeFile
+[1] ""
+
+$idstoIncludeFile
+[1] ""
+
+$rangestoExcludeFile
+[1] ""
+
+$rangestoIncludeFile
+[1] ""
+
+$chrom
+[1] "1"
+
+$start
+[1] 1
+
+$end
+[1] 2.5e+08
+
+$IsDropMissingDosages
+[1] TRUE
+
+$minMAF
+[1] 0
+
+$minMAC
+[1] 0.5
+
+$maxMAFforGroupTest
+[1] 0.01
+
+$minInfo
+[1] 0
+
+$sampleFile
+[1] "../input/samplelist.txt"
+
+$GMMATmodelFile
+[1] "../output/example_binary.rda"
+
+$varianceRatioFile
+[1] "../output/example_binary_cate_v2.varianceRatio.txt"
+
+$SAIGEOutputFile
+[1] "./old_group_bgen_0.01_GENE1_lof.txt"
+
+$numLinesOutput
+[1] 2
+
+$IsSparse
+[1] TRUE
+
+$SPAcutoff
+[1] 2
+
+$IsOutputAFinCaseCtrl
+[1] TRUE
+
+$IsOutputNinCaseCtrl
+[1] FALSE
+
+$IsOutputHetHomCountsinCaseCtrl
+[1] TRUE
+
+$LOCO
+[1] FALSE
+
+$condition
+[1] ""
+
+$sparseSigmaFile
+[1] "../output/example_binary_cate_v2.varianceRatio.txt_relatednessCutoff_0.125_2000_randomMarkersUsed.sparseSigma.mtx"
+
+$groupFile
+[1] "./group_old_GENE1_lof.txt"
+
+$kernel
+[1] "linear.weighted"
+
+$method
+[1] "optimal.adj"
+
+$weights.beta.rare
+[1] "1,25"
+
+$weights.beta.common
+[1] "1,25"
+
+$weightMAFcutoff
+[1] 0.01
+
+$r.corr
+[1] "0"
+
+$IsSingleVarinGroupTest
+[1] TRUE
+
+$IsOutputMAFinCaseCtrlinGroupTest
+[1] FALSE
+
+$cateVarRatioMinMACVecExclude
+[1] "0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$cateVarRatioMaxMACVecInclude
+[1] "1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$dosageZerodCutoff
+[1] 0.2
+
+$IsOutputPvalueNAinGroupTestforBinary
+[1] FALSE
+
+$IsAccountforCasecontrolImbalanceinGroupTest
+[1] TRUE
+
+$weightsIncludeinGroupFile
+[1] FALSE
+
+$IsOutputBETASEinBurdenTest
+[1] FALSE
+
+$IsOutputlogPforSingle
+[1] FALSE
+
+$sampleFile_male
+[1] ""
+
+$X_PARregion
+[1] ""
+
+$is_rewrite_XnonPAR_forMales
+[1] FALSE
+
+$method_to_CollapseUltraRare
+[1] "absence_or_presence"
+
+$MACCutoff_to_CollapseUltraRare
+[1] 10
+
+$DosageCutoff_for_UltraRarePresence
+[1] 0.5
+
+$help
+[1] FALSE
+
+weights.beta.rare  is  1 25 
+weights.beta.common  is  1 25 
+cateVarRatioMinMACVecExclude  is  0.5 1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+cateVarRatioMaxMACVecInclude  is  1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+group-based test will be performed
+Any dosages <=  0.2  for genetic variants with MAC <= 10 are set to be 0 in group tests
+Garbage collection 13 = 7+2+4 (level 2) ... 
+81.9 Mbytes of cons cells used (59%)
+20.3 Mbytes of vectors used (32%)
+1000  samples have been used to fit the glmm null model
+[1] "Leave-one-chromosome-out is not applied"
+variance Ratio is  0.9999654 0.9999022 0.9998742 0.999806 0.9997225 0.9997364 0.9995841 0.9992256 
+10000  sample IDs are found in sample file
+isCondition is  FALSE 
+[1] 10000     4
+[1] "IID"          "IndexInModel" "IndexDose.x"  "IndexDose.y" 
+1000  samples were used in fitting the NULL glmm model and are found in sample file
+sparse kinship matrix is going to be used
+sparseSigmaFile:  ../output/example_binary_cate_v2.varianceRatio.txt_relatednessCutoff_0.125_2000_randomMarkersUsed.sparseSigma.mtx 
+Samples with missing dosages will be dropped from the analysis
+Analysis started at  1641788978 Seconds
+minMAC:  0.5 
+minMAF:  0 
+Minimum MAF of markers to be tested is  0.00025 
+It is a binary trait
+Analyzing  98  cases and  902  controls 
+isCondition is  FALSE 
+Analysis started at  1641788978 Seconds
+It is a binary trait
+Case-control imbalance is adjusted for binary traits.
+Ultra rare variants with MAC <=  10  will be collpased for set-based tests in the 'absence or presence' way.  For the resulted collpased marker, any individual having  0.5 <= dosage <  1.5  for any ultra rare variant has 1 in the genotype vector, having dosage >=  1.5  for any ultra rare variant has 2 in the genotype vector, otherwise 0. 
+isCondition is  FALSE 
+geneID:  GENE1_lof;missense 
+[1] "GENE1_lof;missense\trs1\trs2\trs3\trs4\trs5\trs6\trs7\trs8\trs9\trs10\trs11\trs12\trs13\trs14\trs15\trs16\trs17\trs18\trs19\trs20\trs21\trs22\trs23\trs24\trs25\trs26\trs27\trs28\trs29\trs30\trs31\trs32\trs33\trs34\trs35\trs36\trs37\trs38\trs39\trs40\trs41\trs42\trs43\trs44\trs45\trs46\trs47\trs48\trs49\trs50"
+genetic variants with  0.00025 <= MAF <=  0.01 are included for gene-based tests
+[1] "ids_to_include"
+ [1] "rs1"  "rs2"  "rs3"  "rs4"  "rs5"  "rs6"  "rs7"  "rs8"  "rs9"  "rs10"
+[11] "rs11" "rs12" "rs13" "rs14" "rs15" "rs16" "rs17" "rs18" "rs19" "rs20"
+[21] "rs21" "rs22" "rs23" "rs24" "rs25" "rs26" "rs27" "rs28" "rs29" "rs30"
+[31] "rs31" "rs32" "rs33" "rs34" "rs35" "rs36" "rs37" "rs38" "rs39" "rs40"
+[41] "rs41" "rs42" "rs43" "rs44" "rs45" "rs46" "rs47" "rs48" "rs49" "rs50"
+TEST 50
+TEST 1 OK
+TEST2 50
+ranges_to_include.nrow() 0
+ranges_to_exclude.nrow() 0
+ids_to_include.size() 50
+ids_to_exclude.size() 0
+50 markers will be analyzed 
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1563464 83.5    2611008 139.5  2611008 139.5
+Vcells 2764481 21.1    8388608  64.0  4488128  34.3
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1563452 83.5    2611008 139.5  2611008 139.5
+Vcells 2756058 21.1    8388608  64.0  4488128  34.3
+Mtest:  50 
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1563463 83.5    2611008 139.5  2611008 139.5
+Vcells 2756059 21.1    8388608  64.0  4488128  34.3
+closed the genofile!
+cntMarker:  21 
+isCondition is  FALSE 
+weights:  12.96129 19.64195 21.63781 20.61675 20.36879 
+[1] "DEBUG1"
+[1] "DEBUG2"
+[1] "Score"
+[1] -14.176448  -2.081785  -1.671465 -20.962461  -9.896673
+[1] "DEBUG3"
+[1] "DEBUG4"
+[1] "length(id1)"
+[1] 0
+[1] "zscore.all_1"
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    0    0    0    0    0
+[1] "zscore.all_0"
+         [,1] [,2] [,3] [,4] [,5]
+[1,] -1.09371    0    0    0    0
+[1] "q * weight[jj]"
+          [,1]
+[1,] -13.64534
+[1] "length(id1)"
+[1] 0
+[1] "zscore.all_1"
+         [,1] [,2] [,3] [,4] [,5]
+[1,] -14.1759    0    0    0    0
+[1] "zscore.all_0"
+         [,1]       [,2] [,3] [,4] [,5]
+[1,] -1.09371 -0.1059753    0    0    0
+[1] "q * weight[jj]"
+          [,1]
+[1,] -2.219507
+[1] "length(id1)"
+[1] 0
+[1] "zscore.all_1"
+         [,1]      [,2] [,3] [,4] [,5]
+[1,] -14.1759 -2.081562    0    0    0
+[1] "zscore.all_0"
+         [,1]       [,2]        [,3] [,4] [,5]
+[1,] -1.09371 -0.1059753 -0.07722332    0    0
+[1] "q * weight[jj]"
+          [,1]
+[1,] -1.114438
+[1] "length(id1)"
+[1] 0
+[1] "zscore.all_1"
+         [,1]      [,2]      [,3] [,4] [,5]
+[1,] -14.1759 -2.081562 -1.670943    0    0
+[1] "zscore.all_0"
+         [,1]       [,2]        [,3]      [,4] [,5]
+[1,] -1.09371 -0.1059753 -0.07722332 -1.016775    0
+[1] "q * weight[jj]"
+         [,1]
+[1,] -21.2215
+[1] "length(id1)"
+[1] 0
+[1] "zscore.all_1"
+         [,1]      [,2]      [,3]      [,4] [,5]
+[1,] -14.1759 -2.081562 -1.670943 -20.96259    0
+[1] "zscore.all_0"
+         [,1]       [,2]        [,3]      [,4]       [,5]
+[1,] -1.09371 -0.1059753 -0.07722332 -1.016775 -0.4858728
+[1] "q * weight[jj]"
+          [,1]
+[1,] -10.46788
+[1] "p.new"
+[1] 0.5971780 0.9328729 0.9476326 0.2773637 0.6579016
+[1] "p.old"
+[1] 0.5971780 0.9328729 0.9476326 0.2773637 0.6579016
+[1] "VarS"
+[1] 719.5681 610.7127 647.2289 372.4105 499.5011
+[1] "VarS_org"
+[1] 719.5681 610.7127 647.2289 372.4105 499.5011
+[1] "q.sum"
+          [,1]
+[1,] -48.66866
+[1] "p.value_burden"
+          [,1]
+[1,] 0.3740188
+r is  0.9371872 
+[1] "p.new"
+[1] 0.5971780 0.9328729 0.9476326 0.2773637 0.6579016
+[1] "Phi"
+          [,1]       [,2]       [,3]       [,4]       [,5]
+[1,] 719.56810 -11.159629  18.740535  10.783103 -17.391712
+[2,] -11.15963 610.712739 -13.417509  -6.913927  26.502840
+[3,]  18.74053 -13.417509 647.228917  -4.487853  -9.166658
+[4,]  10.78310  -6.913927  -4.487853 372.410510  -6.829711
+[5,] -17.39171  26.502840  -9.166658  -6.829711 499.501115
+[1] "Phi_ccadj"
+$val
+          [,1]       [,2]       [,3]       [,4]       [,5]
+[1,] 767.79552 -11.907577  19.996577  11.505816 -18.557352
+[2,] -11.90758 651.644374 -14.316787  -7.377317  28.279133
+[3,]  19.99658 -14.316787 690.607966  -4.788641  -9.781032
+[4,]  11.50582  -7.377317  -4.788641 397.370480  -7.287457
+[5,] -18.55735  28.279133  -9.781032  -7.287457 532.979043
+
+$scaleFactor
+         [,1]     [,2]     [,3]     [,4]     [,5]
+[1,] 1.032968 0.000000 0.000000 0.000000 0.000000
+[2,] 0.000000 1.032968 0.000000 0.000000 0.000000
+[3,] 0.000000 0.000000 1.032968 0.000000 0.000000
+[4,] 0.000000 0.000000 0.000000 1.032968 0.000000
+[5,] 0.000000 0.000000 0.000000 0.000000 1.032968
+
+$p.new
+[1] 0.5971780 0.9328729 0.9476326 0.2773637 0.6579016
+
+[1] "Phi"
+          [,1]       [,2]       [,3]       [,4]       [,5]
+[1,] 719.56810 -11.159629  18.740535  10.783103 -17.391712
+[2,] -11.15963 610.712739 -13.417509  -6.913927  26.502840
+[3,]  18.74053 -13.417509 647.228917  -4.487853  -9.166658
+[4,]  10.78310  -6.913927  -4.487853 372.410510  -6.829711
+[5,] -17.39171  26.502840  -9.166658  -6.829711 499.501115
+[1] "Phi"
+          [,1]       [,2]       [,3]       [,4]       [,5]
+[1,] 719.56810 -11.159629  18.740535  10.783103 -17.391712
+[2,] -11.15963 610.712739 -13.417509  -6.913927  26.502840
+[3,]  18.74053 -13.417509 647.228917  -4.487853  -9.166658
+[4,]  10.78310  -6.913927  -4.487853 372.410510  -6.829711
+[5,] -17.39171  26.502840  -9.166658  -6.829711 499.501115
+[1] "Phi_ccadj"
+$val
+          [,1]       [,2]       [,3]       [,4]       [,5]
+[1,] 767.79552 -11.907577  19.996577  11.505816 -18.557352
+[2,] -11.90758 651.644374 -14.316787  -7.377317  28.279133
+[3,]  19.99658 -14.316787 690.607966  -4.788641  -9.781032
+[4,]  11.50582  -7.377317  -4.788641 397.370480  -7.287457
+[5,] -18.55735  28.279133  -9.781032  -7.287457 532.979043
+
+$scaleFactor
+         [,1]     [,2]     [,3]     [,4]     [,5]
+[1,] 1.032968 0.000000 0.000000 0.000000 0.000000
+[2,] 0.000000 1.032968 0.000000 0.000000 0.000000
+[3,] 0.000000 0.000000 1.032968 0.000000 0.000000
+[4,] 0.000000 0.000000 0.000000 1.032968 0.000000
+[5,] 0.000000 0.000000 0.000000 0.000000 1.032968
+
+$p.new
+[1] 0.5971780 0.9328729 0.9476326 0.2773637 0.6579016
+
+[1] "Score"
+[1] -14.176448  -2.081785  -1.671465 -20.962461  -9.896673
+[1] "re$Phi_single"
+[1] 4.5703475 1.6890453 1.4750445 0.9348788 1.2846346
+[1] "re$Score_single"
+[1] -1.09375299 -0.10598668 -0.07724745 -1.01676862 -0.48587433
+time for SAIGE_SKAT_withRatioVec
+   user  system elapsed 
+  0.346   0.000   0.357 
+[1] "OK1"
+closed the genofile!
+Analysis ended at  1641788978 Seconds
+Analysis took  0.8751023 Seconds

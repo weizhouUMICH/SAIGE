@@ -1,0 +1,2 @@
+GENE1 var rs1 rs2 rs3 rs4 rs5 rs6 rs7 rs8 rs9 rs10 rs11 rs12 rs13 rs14 rs15 rs16 rs17 rs18 rs19 rs20 rs21 rs22 rs23 rs24 rs25 rs26 rs27 rs28 rs29 rs30 rs31 rs32 rs33 rs34 rs35 rs36 rs37 rs38 rs39 rs40 rs41 rs42 rs43 rs44 rs45 rs46 rs47 rs48 rs49 rs50
+GENE1 anno lof lof lof lof lof lof lof lof lof lof missense missense missense missense missense missense missense missense missense missense missense missense missense missense missense missense missense missense missense missense lof lof lof lof lof lof lof lof lof lof lof lof lof lof lof lof lof lof lof lof

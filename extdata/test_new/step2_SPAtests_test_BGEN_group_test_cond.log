@@ -1,0 +1,392 @@
+R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+loaded via a namespace (and not attached):
+[1] compiler_4.1.2
+Any dosages <=  0.2  for genetic variants with MAC <= 10 are set to be 0 in group tests
+group-based test will be performed
+Ultra rare variants with MAC <=  10  will be collpased for set-based tests in the 'absence or presence' way.  For the resulted collpased marker, any individual having  0.5 <= dosage <  1.5  for any ultra rare variant has 1 in the genotype vector, having dosage >=  1.5  for any ultra rare variant has 2 in the genotype vector, otherwise 0. 
+variance Ratio is  0.9999654 0.9999022 0.9998742 0.999806 0.9997225 0.9997364 0.9995841 0.9992256 
+Garbage collection 13 = 7+2+4 (level 2) ... 
+78.5 Mbytes of cons cells used (56%)
+19.3 Mbytes of vectors used (30%)
+[1] "Leave-one-chromosome-out is not applied"
+[1] "XV"         "XVX"        "XXVX_inv"   "XVX_inv"    "S_a"       
+[6] "XVX_inv_XV" "V"         
+dosageFile type is  bgen 
+[1] "Sample IDs were not found in the bgen file."
+snpBlocks (Mbgen): 100
+samples (Nbgen): 10000
+CompressedSNPBlocks: 1
+Layout: 2
+Setting position of samples in Bgen files....
+isSparseGRM  TRUE 
+isCondition  TRUE 
+[1] "OK1"
+[1] "OK2"
+[1] "OK3"
+[1] "here0"
+[1] "here1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 0"
+p.value_burden  0.4139419 
+Score  -0.07722332 -1.016775 -0.4858728 
+p.m  3 
+[1] "zscore.all_1"
+[1] 0 0 0
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 2"
+[1] "VarS"
+          [,1]
+[1,] 1.4136280
+[2,] 0.8847855
+[3,] 1.2106856
+[1] "VarS_org"
+[1] 661.8528 376.0783 502.2985
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 3"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 4"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 5"
+[1] "zscore.all_1"
+[1]  -1.670943 -20.962591  -9.896641
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 6"
+p.value_burden  0.4139419 
+Q_b  1058.212 
+[1] "here2"
+assign_conditionMarkers_factors_binary_region
+assign_conditionMarkers_factors_binary_region 2
+assign_conditionMarkers_factors_binary_region 3
+assign_conditionMarkers_factors_binary_region 4
+[1] "OK5"
+Start extracting marker-level information from 'groupFile' of ./group_plink_GENE1.txt ....
+[1] "Analyzing Region of GENE1 (1/1)."
+[1] "rs1, rs2, rs3, rs4, rs5, rs6, rs7, rs8, rs9, rs10, rs11, rs12, rs13, rs14, rs15, rs16, rs17, rs18, rs19, rs20, rs21, rs22, rs23, rs24, rs25, rs26, rs27, rs28, rs29, rs30, rs31, rs32, rs33, rs34, rs35, rs36, rs37, rs38, rs39, rs40, rs41, rs42, rs43, rs44, rs45, rs46, rs47, rs48, rs49, rs50"
+okk1
+okk2
+okk3
+Start analyzing chunk 0.....
+okk3b
+okk3c
+okk3d
+okk3e
+okk3b
+okk3c
+okk3d
+okk3e
+okk3b
+okk3c
+okk3d
+okk3e
+okk3b
+okk3c
+okk3d
+okk3e
+okk3b
+okk3c
+okk3d
+okk3e
+okk3b
+okk3c
+okk3d
+okk3e
+okk3b
+okk3c
+okk3d
+okk3e
+okk3b
+okk3c
+okk3d
+okk3e
+okk3b
+okk3c
+okk3d
+okk3e
+In chunks 0-0, 17 markers are ultra-rare and 9 markers are not ultra-rare.
+Analyzing chunks (0/1, 0/1)........
+Analyzing chunks (1/1, 0/1)........
+Analyzing chunks (1/1, 1/1)........
+okk5
+[1] "here0"
+[1] "here1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 0"
+p.value_burden  0.313084 
+Score  -2.081562 -20.96259 -9.896641 -16.22266 
+p.m  4 
+[1] "zscore.all_1"
+[1] 0 0 0 0
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 2"
+[1] "VarS"
+[1] 617.5314 376.0783 502.2985 765.4446
+[1] "VarS_org"
+[1] 617.5312 376.0783 502.2985 765.4447
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 3"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 4"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 5"
+[1] "zscore.all_1"
+[1]  -2.081562 -20.962591  -9.896641 -16.222659
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 6"
+p.value_burden  0.313084 
+Q_b  2417.045 
+[1] "here2"
+[1] "dim(G1tilde_P_G2tilde_Mat_scaled)"
+[1] 4 3
+[1] "dim(outList$VarInvMat_G2_cond_scaled)"
+[1] 3 3
+[1] "dim(adjCondTemp)"
+[1] 4 3
+[1] "here0"
+[1] "here1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 0"
+p.value_burden  0.02854303 
+Score  32.70968 
+p.m  1 
+[1] "zscore.all_1"
+[1] 0
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 2"
+[1] "VarS"
+[1] 253.2113
+[1] "VarS_org"
+[1] 216.9819
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 3"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 4"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 5"
+[1] "zscore.all_1"
+[1] 30.27934
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 6"
+p.value_burden  0.02854303 
+Q_b  916.8386 
+[1] "here2"
+[1] "dim(G1tilde_P_G2tilde_Mat_scaled)"
+[1] 1 3
+[1] "dim(outList$VarInvMat_G2_cond_scaled)"
+[1] 3 3
+[1] "dim(adjCondTemp)"
+[1] 1 3
+[1] "here0"
+[1] "here1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 0"
+p.value_burden  0.7162178 
+Score  -2.081562 -20.96259 -9.896641 -15.72217 48.62454 -5.679669 -16.22266 
+p.m  7 
+[1] "zscore.all_1"
+[1] 0 0 0 0 0 0 0
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 2"
+[1] "VarS"
+[1] 617.5314 376.0783 502.2985 630.5228 353.5672 178.9283 765.4446
+[1] "VarS_org"
+[1] 617.5312 376.0783 502.2985 630.5228 351.7593 178.9283 765.4447
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 3"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 4"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 5"
+[1] "zscore.all_1"
+[1]  -2.081562 -20.962591  -9.896641 -15.722172  48.500065  -5.679668 -16.222659
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 6"
+p.value_burden  0.7162178 
+Q_b  486.8743 
+[1] "here2"
+[1] "dim(G1tilde_P_G2tilde_Mat_scaled)"
+[1] 7 3
+[1] "dim(outList$VarInvMat_G2_cond_scaled)"
+[1] 3 3
+[1] "dim(adjCondTemp)"
+[1] 7 3
+[1] "here0"
+[1] "here1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 0"
+p.value_burden  0.3740188 
+Score  -2.081562 -1.670943 -20.96259 -9.896641 -14.1759 
+p.m  5 
+[1] "zscore.all_1"
+[1] 0 0 0 0 0
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 2"
+[1] "VarS"
+[1] 617.5314 661.8531 376.0783 502.2985 726.8177
+[1] "VarS_org"
+[1] 617.5312 661.8528 376.0783 502.2985 726.8177
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 3"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 4"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 5"
+[1] "zscore.all_1"
+[1]  -2.081562  -1.670943 -20.962591  -9.896641 -14.175896
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 6"
+p.value_burden  0.3740188 
+Q_b  2380.233 
+[1] "here2"
+[1] "dim(G1tilde_P_G2tilde_Mat_scaled)"
+[1] 5 3
+[1] "dim(outList$VarInvMat_G2_cond_scaled)"
+[1] 3 3
+[1] "dim(adjCondTemp)"
+[1] 5 3
+[1] "here0"
+[1] "here1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 0"
+p.value_burden  0.06387182 
+Score  38.37401 
+p.m  1 
+[1] "zscore.all_1"
+[1] 0
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 2"
+[1] "VarS"
+[1] 403.6165
+[1] "VarS_org"
+[1] 403.6165
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 3"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 4"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 5"
+[1] "zscore.all_1"
+[1] 38.37401
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 6"
+p.value_burden  0.06387182 
+Q_b  1472.565 
+[1] "here2"
+[1] "dim(G1tilde_P_G2tilde_Mat_scaled)"
+[1] 1 3
+[1] "dim(outList$VarInvMat_G2_cond_scaled)"
+[1] 3 3
+[1] "dim(adjCondTemp)"
+[1] 1 3
+[1] "here0"
+[1] "here1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 0"
+p.value_burden  0.6971639 
+Score  -2.081562 -3.458797 -3.531768 -1.670943 -20.96259 -9.896641 -15.72217 48.62454 -5.679669 -14.1759 
+p.m  10 
+[1] "zscore.all_1"
+ [1] 0 0 0 0 0 0 0 0 0 0
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 2"
+[1] "VarS"
+ [1] 617.5314 701.7642 535.9899 661.8531 376.0783 502.2985 630.5228 353.5672
+ [9] 178.9283 726.8177
+[1] "VarS_org"
+ [1] 617.5312 701.7635 535.9896 661.8528 376.0783 502.2985 630.5228 351.7593
+ [9] 178.9283 726.8177
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 3"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 4"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 5"
+[1] "zscore.all_1"
+ [1]  -2.081562  -3.458795  -3.531767  -1.670943 -20.962591  -9.896641
+ [7] -15.722172  48.500065  -5.679668 -14.175896
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 6"
+p.value_burden  0.6971639 
+Q_b  822.5407 
+[1] "here2"
+[1] "dim(G1tilde_P_G2tilde_Mat_scaled)"
+[1] 10  3
+[1] "dim(outList$VarInvMat_G2_cond_scaled)"
+[1] 3 3
+[1] "dim(adjCondTemp)"
+[1] 10  3
+[1] "here0"
+[1] "here1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 0"
+p.value_burden  0.813154 
+Score  -1.670943 10.53175 
+p.m  2 
+[1] "zscore.all_1"
+[1] 0 0
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 2"
+[1] "VarS"
+[1] 661.8531 515.5779
+[1] "VarS_org"
+[1] 661.8528 515.5779
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 3"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 4"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 5"
+[1] "zscore.all_1"
+[1] -1.670943 10.531750
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 6"
+p.value_burden  0.813154 
+Q_b  78.5139 
+[1] "here2"
+[1] "dim(G1tilde_P_G2tilde_Mat_scaled)"
+[1] 2 3
+[1] "dim(outList$VarInvMat_G2_cond_scaled)"
+[1] 3 3
+[1] "dim(adjCondTemp)"
+[1] 2 3
+[1] "here0"
+[1] "here1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 0"
+p.value_burden  0.6160694 
+Score  8.046459 
+p.m  1 
+[1] "zscore.all_1"
+[1] 0
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 2"
+[1] "VarS"
+[1] 241.037
+[1] "VarS_org"
+[1] 241.037
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 3"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 4"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 5"
+[1] "zscore.all_1"
+[1] 8.046459
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 6"
+p.value_burden  0.6160694 
+Q_b  64.74551 
+[1] "here2"
+[1] "dim(G1tilde_P_G2tilde_Mat_scaled)"
+[1] 1 3
+[1] "dim(outList$VarInvMat_G2_cond_scaled)"
+[1] 3 3
+[1] "dim(adjCondTemp)"
+[1] 1 3
+[1] "here0"
+[1] "here1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 0"
+p.value_burden  0.9705985 
+Score  -3.458797 -3.531768 -1.670943 10.53175 
+p.m  4 
+[1] "zscore.all_1"
+[1] 0 0 0 0
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 1"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 2"
+[1] "VarS"
+[1] 701.7642 535.9899 661.8531 515.5779
+[1] "VarS_org"
+[1] 701.7635 535.9896 661.8528 515.5779
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 3"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 4"
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 5"
+[1] "zscore.all_1"
+[1] -3.458795 -3.531767 -1.670943 10.531750
+[1] "SPA_ER_kernel_related_Phiadj_fast_new 6"
+p.value_burden  0.9705985 
+Q_b  3.497816 
+[1] "here2"
+[1] "dim(G1tilde_P_G2tilde_Mat_scaled)"
+[1] 4 3
+[1] "dim(outList$VarInvMat_G2_cond_scaled)"
+[1] 3 3
+[1] "dim(adjCondTemp)"
+[1] 4 3
+[1] "write Output 1"
+[1] "write Output 2"
+[1] "Analysis done! The results have been saved to './new_group_bgen_GENE1_cond.txt' and './new_group_bgen_GENE1_cond.txt.markerInfo'."
+Warning messages:
+1: In CCT(pvals) : There are p-values that are exactly 1!
+2: In CCT(pvals) : There are p-values that are exactly 1!

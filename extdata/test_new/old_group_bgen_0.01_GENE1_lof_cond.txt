@@ -1,0 +1,2 @@
+Gene Pvalue Pvalue_cond Nmarker_MACCate_1 Nmarker_MACCate_2 Nmarker_MACCate_3 Nmarker_MACCate_4 Nmarker_MACCate_5 Nmarker_MACCate_6 Nmarker_MACCate_7 Nmarker_MACCate_8 markerIDs markerAFs Pvalue_Burden Pvalue_Burden_cond Pvalue_SKAT Pvalue_SKAT_cond
+GENE1_lof;missense 0.547559988689412 0.7260629593785 0 0 0 0 0 0 4 1 ultra_rare_collpase_rs3_rs8_rs9_rs10_rs11_rs13_rs16_rs18_rs28_rs32_rs34_rs35_rs42_rs44_rs45_rs46_rs49;rs4;rs17;rs31;rs33 0.027;0.01;0.006;0.008;0.0085 0.374224389896061 0.939746188792847 0.542894855652659 0.926589135444721
