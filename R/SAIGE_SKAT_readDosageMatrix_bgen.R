@@ -101,7 +101,7 @@ getGenoOfGene_bgen_Sparse = function(bgenFile,bgenFileIndex,marker_group_line, m
         MAF = AF
         MAC = AC
       }
-    if(MAF >= minMAF & MAF < maxMAF & markerInfo >= minInfo){
+    if(MAF >= minMAF & MAF <= maxMAF & markerInfo >= minInfo){
         Gvec = c(Gvec, Gx$dosages)
 	iIndex = c(iIndex, Gx$iIndexforMarker)
 	jIndex = c(jIndex, rep((cnt+1), length(Gx$dosages)))
