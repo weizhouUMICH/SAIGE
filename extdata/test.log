@@ -1,4 +1,4 @@
-R version 4.1.1 (2021-08-10)
+R version 4.1.2 (2021-11-01)
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: Ubuntu 18.04.5 LTS
 
@@ -17,228 +17,2481 @@ locale:
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
-other attached packages:
-[1] SAIGE_0.44.6.1
-
 loaded via a namespace (and not attached):
-[1] compiler_4.1.1     Matrix_1.3-2       Rcpp_1.0.6         grid_4.1.1        
-[5] RcppParallel_5.0.2 lattice_0.20-44   
-$vcfFile
-[1] "./input/genotype_10markers.vcf.gz"
-
-$vcfFileIndex
-[1] "./input/genotype_10markers.vcf.gz.tbi"
-
-$vcfField
-[1] "GT"
-
-$bgenFile
-[1] ""
-
-$bgenFileIndex
-[1] ""
-
-$savFile
-[1] ""
-
-$savFileIndex
-[1] ""
-
-$idstoExcludeFile
-[1] ""
-
-$idstoIncludeFile
-[1] ""
-
-$rangestoExcludeFile
-[1] ""
-
-$rangestoIncludeFile
-[1] ""
-
-$chrom
-[1] "1"
-
-$start
-[1] 1
-
-$end
-[1] 2.5e+08
-
-$IsDropMissingDosages
+[1] compiler_4.1.2
+[1] "is_imputed_data"
+[1] "PKKKKKKKKKK"
 [1] FALSE
-
-$minMAF
-[1] 1e-04
-
-$minMAC
-[1] 4
-
-$maxMAFforGroupTest
-[1] 0.5
-
-$minInfo
-[1] 0
-
-$sampleFile
-[1] "./input/sampleIDindosage.txt"
-
-$GMMATmodelFile
-[1] "./output/example_quantitative.rda"
-
-$varianceRatioFile
-[1] "./output/example_quantitative.varianceRatio.txt"
-
-$SAIGEOutputFile
-[1] "./output/example_quantitative.SAIGE.vcf.genotype.txt"
-
-$numLinesOutput
-[1] 2
-
-$IsSparse
-[1] TRUE
-
-$SPAcutoff
-[1] 2
-
-$IsOutputAFinCaseCtrl
-[1] TRUE
-
-$IsOutputNinCaseCtrl
-[1] FALSE
-
-$IsOutputHetHomCountsinCaseCtrl
-[1] FALSE
-
-$LOCO
-[1] FALSE
-
-$condition
-[1] ""
-
-$sparseSigmaFile
-[1] ""
-
-$groupFile
-[1] ""
-
-$kernel
-[1] "linear.weighted"
-
-$method
-[1] "optimal.adj"
-
-$weights.beta.rare
-[1] "1,25"
-
-$weights.beta.common
-[1] "1,25"
-
-$weightMAFcutoff
-[1] 0.01
-
-$r.corr
-[1] "0"
-
-$IsSingleVarinGroupTest
-[1] FALSE
-
-$IsOutputMAFinCaseCtrlinGroupTest
-[1] FALSE
-
-$cateVarRatioMinMACVecExclude
-[1] "0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5"
-
-$cateVarRatioMaxMACVecInclude
-[1] "1.5,2.5,3.5,4.5,5.5,10.5,20.5"
-
-$dosageZerodCutoff
-[1] 0.2
-
-$IsOutputPvalueNAinGroupTestforBinary
-[1] FALSE
-
-$IsAccountforCasecontrolImbalanceinGroupTest
-[1] TRUE
-
-$weightsIncludeinGroupFile
-[1] FALSE
-
-$IsOutputBETASEinBurdenTest
-[1] FALSE
-
-$IsOutputlogPforSingle
-[1] FALSE
-
-$sampleFile_male
-[1] ""
-
-$X_PARregion
-[1] ""
-
-$is_rewrite_XnonPAR_forMales
-[1] FALSE
-
-$method_to_CollapseUltraRare
-[1] "absence_or_presence"
-
-$MACCutoff_to_CollapseUltraRare
-[1] 10
-
-$DosageCutoff_for_UltraRarePresence
-[1] 0.5
-
-$help
-[1] FALSE
-
-weights.beta.rare  is  1 25 
-weights.beta.common  is  1 25 
-cateVarRatioMinMACVecExclude  is  0.5 1.5 2.5 3.5 4.5 5.5 10.5 20.5 
-cateVarRatioMaxMACVecInclude  is  1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+Any dosages <=  0.2  for genetic variants with MAC <= 10 are set to be 0 in group tests
 single-variant association test will be performed
-1000  samples have been used to fit the glmm null model
+variance Ratio is  0.9406643 
+Garbage collection 13 = 7+2+4 (level 2) ... 
+78.2 Mbytes of cons cells used (56%)
+19.1 Mbytes of vectors used (30%)
 [1] "Leave-one-chromosome-out is not applied"
-Single variance ratio is provided, so categorical variance ratio won't be used!
-variance Ratio is  1.212604 
-1000  sample IDs are found in sample file
-isCondition is  FALSE 
-Setting genomic region 1:1:250000000
-Open VCF done
-To read the field GT
-Number of meta lines in the vcf file (lines starting with ##): 6
-Number of samples in in the vcf file: 1000
-[1] 1000    4
-[1] "IID"          "IndexInModel" "IndexDose.x"  "IndexDose.y" 
-1000  samples were used in fitting the NULL glmm model and are found in sample file
-sparse kinship matrix is not used
-Missing dosages will be mean imputed for the analysis
-Analysis started at  1629147577 Seconds
-minMAC:  4 
-minMAF:  1e-04 
-Minimum MAF of markers to be tested is  0.002 
-It is a quantitative trait
-isCondition is  FALSE 
-Analysis started at  1629147577 Seconds
-   user  system elapsed 
-  1.194   0.125   1.306 
-[1] 2
-numPassMarker:  2 
-   user  system elapsed 
-  1.198   0.125   1.312 
-[1] 4
-numPassMarker:  3 
-   user  system elapsed 
-  1.200   0.125   1.315 
-[1] 6
-numPassMarker:  5 
-   user  system elapsed 
-  1.203   0.125   1.318 
-[1] 8
-numPassMarker:  7 
-   user  system elapsed 
-  1.205   0.125   1.322 
+[1] "XV"         "XVX"        "XXVX_inv"   "XVX_inv"    "S_a"       
+[6] "XVX_inv_XV" "V"         
+dosageFile type is  bgen 
+[1] "Sample IDs were not found in the bgen file."
+snpBlocks (Mbgen): 100
+samples (Nbgen): 10000
+CompressedSNPBlocks: 1
+Layout: 2
+Setting position of samples in Bgen files....
+[1] "outIndex"
+[1] 1
+Number of all markers to test:	 100 
+Number of markers in each chunk:	 10 
+Number of chunks for all markers:	 10 
+[1] 1
 [1] 10
-numPassMarker:  9 
-closed the genofile!
-Analysis ended at  1629147577 Seconds
-Analysis took  0.02407289 Seconds
+(2021-12-16 21:45:51) ---- Analyzing Chunk 1/10: chrom InitialChunk ---- 
+[1] "bgen"
+ [1]   24  158  282  414  900 1032 1143 1263 1408 1614
+[1] "binary"
+[1] TRUE
+i is 0
+Completed 0/10 markers in the chunk.
+gIndex 24
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 1
+gIndex 158
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 2
+gIndex 282
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 2
+t_indexForNonZero.size() 2
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 2
+Bmu2 7.78788e-07
+m_varRatio 0.940664
+var1 0.0563107
+var2 0.0598627
+scoreTest 2
+OK2 
+i is HEREHERE 2
+i is 3
+gIndex 414
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 20
+t_indexForNonZero.size() 20
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 20
+Bmu2 0.000835294
+m_varRatio 0.940664
+var1 1.59165
+var2 1.69205
+scoreTest 2
+OK2 
+i is HEREHERE 3
+i is 4
+gIndex 900
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 5
+gIndex 1032
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 6
+gIndex 1143
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 7
+gIndex 1263
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 3
+t_indexForNonZero.size() 3
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 3
+Bmu2 1.83085e-05
+m_varRatio 0.940664
+var1 0.209748
+var2 0.222979
+scoreTest 2
+OK2 
+i is HEREHERE 7
+i is 8
+gIndex 1408
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 4
+t_indexForNonZero.size() 4
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 4
+Bmu2 3.24951e-05
+m_varRatio 0.940664
+var1 0.415004
+var2 0.441181
+scoreTest 2
+OK2 
+i is HEREHERE 8
+i is 9
+gIndex 1614
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 4
+t_indexForNonZero.size() 4
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 4
+Bmu2 7.38794e-05
+m_varRatio 0.940664
+var1 0.460767
+var2 0.489832
+scoreTest 2
+OK2 
+i is HEREHERE 9
+[1] "OutList"
+$markerVec
+ [1] "rs1"  "rs2"  "rs3"  "rs4"  "rs5"  "rs6"  "rs7"  "rs8"  "rs9"  "rs10"
+
+$infoVec
+ [1] "1:1:A:C"  "1:2:A:C"  "1:3:A:C"  "1:4:A:C"  "1:5:A:C"  "1:6:A:C" 
+ [7] "1:7:A:C"  "1:8:A:C"  "1:9:A:C"  "1:10:A:C"
+
+$altFreqVec
+ [1] 0.0000 0.0000 0.0010 0.0100 0.0000 0.0000 0.0000 0.0015 0.0020 0.0020
+
+$altCountsVec
+ [1]  0  0  2 20  0  0  0  3  4  4
+
+$missingRateVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$pvalVec
+ [1]       NaN       NaN 0.7936306 0.9330562       NaN       NaN       NaN
+ [8] 0.5899464 0.3740388 0.6547867
+
+$BetaVec
+ [1]         NaN         NaN -1.10240343 -0.06658205         NaN         NaN
+ [7]         NaN -1.17671146 -1.37988660  0.65869685
+
+$seBetaVec
+ [1]       NaN       NaN 4.2140970 0.7926405       NaN       NaN       NaN
+ [8] 2.1834879 1.5522945 1.4731914
+
+$TstatVec
+ [1]         NaN         NaN -0.06207711 -0.10597531         NaN         NaN
+ [7]         NaN -0.24681322 -0.57265777  0.30350598
+
+$varTVec
+ [1]       NaN       NaN 0.0563107 1.5916497       NaN       NaN       NaN
+ [8] 0.2097483 0.4150035 0.4607673
+
+$AF_caseVec
+ [1] 0.000000000 0.000000000 0.000000000 0.010204082 0.000000000 0.000000000
+ [7] 0.000000000 0.000000000 0.000000000 0.005102041
+
+$AF_ctrlVec
+ [1] 0.000000000 0.000000000 0.001108647 0.009977827 0.000000000 0.000000000
+ [7] 0.000000000 0.001662971 0.002217295 0.001662971
+
+$N_caseVec
+ [1]  0  0 98 98  0  0  0 98 98 98
+
+$N_ctrlVec
+ [1]   0   0 902 902   0   0   0 902 902 902
+
+$N_case_homVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$N_case_hetVec
+ [1] 0 0 0 2 0 0 0 0 0 1
+
+$N_ctrl_homVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$N_ctrl_hetVec
+ [1] 0 0 0 2 0 0 0 0 0 1
+
+$pvalNAVec
+ [1]       NaN       NaN 0.7936306 0.9330562       NaN       NaN       NaN
+ [8] 0.5899464 0.3740388 0.6547867
+
+(2021-12-16 21:45:51) ---- Analyzing Chunk 2/10: chrom InitialChunk ---- 
+[1] "bgen"
+ [1] 1789 1940 2590 2723 3689 5285 5423 5632 5766 5905
+[1] "binary"
+[1] TRUE
+i is 0
+Completed 0/10 markers in the chunk.
+gIndex 1789
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 2
+t_indexForNonZero.size() 2
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 2
+Bmu2 6.90917e-07
+m_varRatio 0.940664
+var1 0.0821971
+var2 0.087382
+scoreTest 2
+OK2 
+i is HEREHERE 0
+i is 1
+gIndex 1940
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 30
+t_indexForNonZero.size() 30
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 30
+Bmu2 0.00281261
+m_varRatio 0.940664
+var1 2.30683
+var2 2.45234
+scoreTest 2
+OK2 
+i is HEREHERE 1
+i is 2
+gIndex 2590
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 2
+t_indexForNonZero.size() 2
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 2
+Bmu2 5.90047e-05
+m_varRatio 0.940664
+var1 0.335434
+var2 0.356593
+scoreTest 2
+OK2 
+i is HEREHERE 2
+i is 3
+gIndex 2723
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 72
+t_indexForNonZero.size() 72
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 72
+Bmu2 0.0299685
+m_varRatio 0.940664
+var1 5.28048
+var2 5.61357
+scoreTest 2
+OK2 
+i is HEREHERE 3
+i is 4
+gIndex 3689
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 230
+t_indexForNonZero.size() 230
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 4
+i is 5
+gIndex 5285
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 3
+t_indexForNonZero.size() 3
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 3
+Bmu2 1.55637e-05
+m_varRatio 0.940664
+var1 0.270572
+var2 0.28764
+scoreTest 2
+OK2 
+i is HEREHERE 5
+i is 6
+gIndex 5423
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 12
+t_indexForNonZero.size() 12
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 12
+Bmu2 0.00135637
+m_varRatio 0.940664
+var1 1.44
+var2 1.53084
+scoreTest 2
+OK2 
+i is HEREHERE 6
+i is 7
+gIndex 5632
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 3
+t_indexForNonZero.size() 3
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 3
+Bmu2 6.43626e-05
+m_varRatio 0.940664
+var1 0.382012
+var2 0.406108
+scoreTest 2
+OK2 
+i is HEREHERE 7
+i is 8
+gIndex 5766
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 9
+gIndex 5905
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 620
+t_indexForNonZero.size() 620
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 9
+[1] "OutList"
+$markerVec
+ [1] "rs11" "rs12" "rs13" "rs14" "rs15" "rs16" "rs17" "rs18" "rs19" "rs20"
+
+$infoVec
+ [1] "1:11:A:C" "1:12:A:C" "1:13:A:C" "1:14:A:C" "1:15:A:C" "1:16:A:C"
+ [7] "1:17:A:C" "1:18:A:C" "1:19:A:C" "1:20:A:C"
+
+$altFreqVec
+ [1] 0.0010 0.0150 0.0010 0.0375 0.1220 0.0015 0.0060 0.0015 0.0000 0.3810
+
+$altCountsVec
+ [1]   2  30   2  75 244   3  12   3   0 762
+
+$missingRateVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$pvalVec
+ [1] 0.7487013 0.8958381 0.4329220 0.8777279 0.2539515 0.1953897 0.9486894
+ [8] 0.3872384       NaN 0.9860748
+
+$BetaVec
+ [1] -1.117376453 -0.086198680  1.354015632 -0.066951605 -0.282032210
+ [6]  2.489203883 -0.053627151 -1.398927405          NaN -0.002887508
+
+$seBetaVec
+ [1] 3.4879624 0.6584042 1.7266175 0.4351743 0.2472223 1.9224642 0.8333321
+ [8] 1.6179373       NaN 0.1654395
+
+$TstatVec
+ [1] -0.09184509 -0.19884537  0.45418355 -0.35353664 -4.61448654  0.67350985
+ [7] -0.07722332 -0.53440660         NaN -0.10549808
+
+$varTVec
+ [1]  0.08219709  2.30682612  0.33543450  5.28048046 16.36155864  0.27057239
+ [7]  1.44000421  0.38201168         NaN 36.53603193
+
+$AF_caseVec
+ [1] 0.000000000 0.015306122 0.005102041 0.030612245 0.096938776 0.005102041
+ [7] 0.010204082 0.000000000 0.000000000 0.367346939
+
+$AF_ctrlVec
+ [1] 0.0011086475 0.0149667406 0.0005543237 0.0382483370 0.1247228381
+ [6] 0.0011086475 0.0055432373 0.0016629712 0.0000000000 0.3824833703
+
+$N_caseVec
+ [1] 98 98 98 98 98 98 98 98  0 98
+
+$N_ctrlVec
+ [1] 902 902 902 902 902 902 902 902   0 902
+
+$N_case_homVec
+ [1]  0  0  0  1  2  0  0  0  0 14
+
+$N_case_hetVec
+ [1]  0  3  1  4 15  1  2  0  0 44
+
+$N_ctrl_homVec
+ [1]  0  0  0  1  2  0  0  0  0 14
+
+$N_ctrl_hetVec
+ [1]  0  3  1  4 15  1  2  0  0 44
+
+$pvalNAVec
+ [1] 0.7487013 0.8958381 0.4329220 0.8777279 0.2539515 0.1953897 0.9486894
+ [8] 0.3872384       NaN 0.9860748
+
+(2021-12-16 21:45:51) ---- Analyzing Chunk 3/10: chrom InitialChunk ---- 
+[1] "bgen"
+ [1]  8548  8686 10934 13429 13565 13687 16428 18005 18129 20459
+[1] "binary"
+[1] TRUE
+i is 0
+Completed 0/10 markers in the chunk.
+gIndex 8548
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 1
+gIndex 8686
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 409
+t_indexForNonZero.size() 409
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 1
+i is 2
+gIndex 10934
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 509
+t_indexForNonZero.size() 509
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 1b
+scoreTest 1b21000
+scoreTest 1b3509
+scoreTest 1b4491
+scoreTest 1c
+scoreTest 2
+OK2 
+i is HEREHERE 2
+i is 3
+gIndex 13429
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 4
+gIndex 13565
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 5
+gIndex 13687
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 754
+t_indexForNonZero.size() 754
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 5
+i is 6
+gIndex 16428
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 224
+t_indexForNonZero.size() 224
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 6
+i is 7
+gIndex 18005
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 1
+t_indexForNonZero.size() 1
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 1
+Bmu2 1.22809e-07
+m_varRatio 0.940664
+var1 0.0188876
+var2 0.020079
+scoreTest 2
+OK2 
+i is HEREHERE 7
+i is 8
+gIndex 18129
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 462
+t_indexForNonZero.size() 462
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 8
+i is 9
+gIndex 20459
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 312
+t_indexForNonZero.size() 312
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 9
+[1] "OutList"
+$markerVec
+ [1] "rs21" "rs22" "rs23" "rs24" "rs25" "rs26" "rs27" "rs28" "rs29" "rs30"
+
+$infoVec
+ [1] "1:21:A:C" "1:22:A:C" "1:23:A:C" "1:24:A:C" "1:25:A:C" "1:26:A:C"
+ [7] "1:27:A:C" "1:28:A:C" "1:29:A:C" "1:30:A:C"
+
+$altFreqVec
+ [1] 0.0000 0.2295 0.3035 0.0000 0.0000 0.4980 0.1170 0.0005 0.2655 0.1755
+
+$altCountsVec
+ [1]   0 459 607   0   0 996 234   1 531 351
+
+$missingRateVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$pvalVec
+ [1]        NaN 0.45732990 0.01081435        NaN        NaN 0.07079351
+ [7] 0.38608290 0.88112620 0.34124160 0.52011300
+
+$BetaVec
+ [1]        NaN  0.1443671 -0.4451363        NaN        NaN  0.2952886
+ [7] -0.2237038 -1.0881139 -0.1782307 -0.1355376
+
+$seBetaVec
+ [1]       NaN 0.1942374 0.1745762       NaN       NaN 0.1634318 0.2580970
+ [8] 7.2763231 0.1872733 0.2107333
+
+$TstatVec
+ [1]          NaN   3.82650678 -14.60572018          NaN          NaN
+ [6]  11.05537338  -3.35820561  -0.02055183  -5.08195827  -3.05206307
+
+$varTVec
+ [1]         NaN 26.50539137 32.81179243         NaN         NaN 37.43921924
+ [7] 15.01184108  0.01888757 28.51336549 22.51820449
+
+$AF_caseVec
+ [1] 0.0000000 0.2551020 0.2295918 0.0000000 0.0000000 0.5612245 0.1020408
+ [8] 0.0000000 0.2193878 0.1479592
+
+$AF_ctrlVec
+ [1] 0.0000000000 0.2267184035 0.3115299335 0.0000000000 0.0000000000
+ [6] 0.4911308204 0.1186252772 0.0005543237 0.2705099778 0.1784922395
+
+$N_caseVec
+ [1]  0 98 98  0  0 98 98 98 98 98
+
+$N_ctrlVec
+ [1]   0 902 902   0   0 902 902 902 902 902
+
+$N_case_homVec
+ [1]  0  7  5  0  0 30  0  0  5  5
+
+$N_case_hetVec
+ [1]  0 36 35  0  0 50 20  0 33 19
+
+$N_ctrl_homVec
+ [1]  0  7  5  0  0 30  0  0  5  5
+
+$N_ctrl_hetVec
+ [1]  0 36 35  0  0 50 20  0 33 19
+
+$pvalNAVec
+ [1]        NaN 0.45732990 0.01077813        NaN        NaN 0.07079351
+ [7] 0.38608290 0.88112620 0.34124160 0.52011300
+
+(2021-12-16 21:45:51) ---- Analyzing Chunk 4/10: chrom InitialChunk ---- 
+[1] "bgen"
+ [1] 22443 22728 22895 23399 23708 23830 23968 24452 25527 25685
+[1] "binary"
+[1] TRUE
+i is 0
+Completed 0/10 markers in the chunk.
+gIndex 22443
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 16
+t_indexForNonZero.size() 16
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 16
+Bmu2 0.000289036
+m_varRatio 0.940664
+var1 0.863184
+var2 0.917632
+scoreTest 2
+OK2 
+i is HEREHERE 0
+i is 1
+gIndex 22728
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 1
+t_indexForNonZero.size() 1
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 1
+Bmu2 3.09562e-05
+m_varRatio 0.940664
+var1 0.227963
+var2 0.242343
+scoreTest 2
+OK2 
+i is HEREHERE 1
+i is 2
+gIndex 22895
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 17
+t_indexForNonZero.size() 17
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 17
+Bmu2 0.000429866
+m_varRatio 0.940664
+var1 1.18873
+var2 1.26371
+scoreTest 2
+OK2 
+i is HEREHERE 2
+i is 3
+gIndex 23399
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 4
+t_indexForNonZero.size() 4
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 4
+Bmu2 8.22493e-06
+m_varRatio 0.940664
+var1 0.323078
+var2 0.343457
+scoreTest 2
+OK2 
+i is HEREHERE 3
+i is 4
+gIndex 23708
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 5
+t_indexForNonZero.size() 5
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 5
+Bmu2 2.69838e-05
+m_varRatio 0.940664
+var1 0.246825
+var2 0.262395
+scoreTest 2
+OK2 
+i is HEREHERE 4
+i is 5
+gIndex 23830
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 6
+gIndex 23968
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 34
+t_indexForNonZero.size() 34
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 34
+Bmu2 0.00292983
+m_varRatio 0.940664
+var1 2.26577
+var2 2.40869
+scoreTest 2
+OK2 
+i is HEREHERE 6
+i is 7
+gIndex 24452
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 100
+t_indexForNonZero.size() 100
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 1b
+scoreTest 1b21000
+scoreTest 1b3100
+scoreTest 1b4900
+scoreTest 1c
+scoreTest 2
+OK2 
+i is HEREHERE 7
+i is 8
+gIndex 25527
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 9
+gIndex 25685
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+[1] "OutList"
+$markerVec
+ [1] "rs31" "rs32" "rs33" "rs34" "rs35" "rs36" "rs37" "rs38" "rs39" "rs40"
+
+$infoVec
+ [1] "1:31:A:C" "1:32:A:C" "1:33:A:C" "1:34:A:C" "1:35:A:C" "1:36:A:C"
+ [7] "1:37:A:C" "1:38:A:C" "1:39:A:C" "1:40:A:C"
+
+$altFreqVec
+ [1] 0.0080 0.0005 0.0085 0.0020 0.0025 0.0000 0.0170 0.0510 0.0000 0.0000
+
+$altCountsVec
+ [1]  16   1  17   4   5   0  34 102   0   0
+
+$missingRateVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$pvalVec
+ [1] 0.273782800 0.232520900 0.655859200 0.293218400 0.562018900         NaN
+ [7] 0.528371800 0.009314658         NaN         NaN
+
+$BetaVec
+ [1] -1.1779353  2.5005307 -0.4087338  1.8492069 -1.1671250        NaN
+ [7] -0.4188640  0.9955565        NaN        NaN
+
+$seBetaVec
+ [1] 1.0763371 2.0944392 0.9171893 1.7593271 2.0128210       NaN 0.6643431
+ [8] 0.3817418       NaN       NaN
+
+$TstatVec
+ [1] -1.0167750  0.5700286 -0.4858728  0.5974373 -0.2880760        NaN
+ [7] -0.9490479  6.8316630        NaN        NaN
+
+$varTVec
+ [1] 0.8631840 0.2279631 1.1887267 0.3230776 0.2468253       NaN 2.2657663
+ [8] 6.8621551       NaN       NaN
+
+$AF_caseVec
+ [1] 0.000000000 0.005102041 0.005102041 0.005102041 0.000000000 0.000000000
+ [7] 0.010204082 0.081632653 0.000000000 0.000000000
+
+$AF_ctrlVec
+ [1] 0.008869180 0.000000000 0.008869180 0.001662971 0.002771619 0.000000000
+ [7] 0.017738359 0.047671840 0.000000000 0.000000000
+
+$N_caseVec
+ [1] 98 98 98 98 98  0 98 98  0  0
+
+$N_ctrlVec
+ [1] 902 902 902 902 902   0 902 902   0   0
+
+$N_case_homVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$N_case_hetVec
+ [1]  0  1  1  1  0  0  2 16  0  0
+
+$N_ctrl_homVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$N_ctrl_hetVec
+ [1]  0  1  1  1  0  0  2 16  0  0
+
+$pvalNAVec
+ [1] 0.273782800 0.232520900 0.655859200 0.293218400 0.562018900         NaN
+ [7] 0.528371800 0.009109119         NaN         NaN
+
+(2021-12-16 21:45:51) ---- Analyzing Chunk 5/10: chrom InitialChunk ---- 
+[1] "bgen"
+ [1] 25812 25971 26095 26227 26380 26546 26801 26961 29384 29565
+[1] "binary"
+[1] TRUE
+i is 0
+Completed 0/10 markers in the chunk.
+gIndex 25812
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 1
+gIndex 25971
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 1
+t_indexForNonZero.size() 1
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 1
+Bmu2 2.18184e-07
+m_varRatio 0.940664
+var1 0.0461931
+var2 0.0491069
+scoreTest 2
+OK2 
+i is HEREHERE 1
+i is 2
+gIndex 26095
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 3
+gIndex 26227
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 1
+t_indexForNonZero.size() 1
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 1
+Bmu2 4.10084e-07
+m_varRatio 0.940664
+var1 0.0583647
+var2 0.0620463
+scoreTest 1b
+scoreTest 1b21000
+scoreTest 1b31
+scoreTest 1b4999
+scoreTest 1c
+scoreTest 2
+OK2 
+i is HEREHERE 3
+i is 4
+gIndex 26380
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 5
+t_indexForNonZero.size() 5
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 5
+Bmu2 6.71722e-05
+m_varRatio 0.940664
+var1 0.555549
+var2 0.590592
+scoreTest 2
+OK2 
+i is HEREHERE 4
+i is 5
+gIndex 26546
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 8
+t_indexForNonZero.size() 8
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 8
+Bmu2 0.000184263
+m_varRatio 0.940664
+var1 0.772332
+var2 0.821049
+scoreTest 2
+OK2 
+i is HEREHERE 5
+i is 6
+gIndex 26801
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 7
+gIndex 26961
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 492
+t_indexForNonZero.size() 492
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 7
+i is 8
+gIndex 29384
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 7
+t_indexForNonZero.size() 7
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 7
+Bmu2 4.18302e-05
+m_varRatio 0.940664
+var1 0.429095
+var2 0.456161
+scoreTest 2
+OK2 
+i is HEREHERE 8
+i is 9
+gIndex 29565
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 136
+t_indexForNonZero.size() 136
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 9
+[1] "OutList"
+$markerVec
+ [1] "rs41" "rs42" "rs43" "rs44" "rs45" "rs46" "rs47" "rs48" "rs49" "rs50"
+
+$infoVec
+ [1] "1:41:A:C" "1:42:A:C" "1:43:A:C" "1:44:A:C" "1:45:A:C" "1:46:A:C"
+ [7] "1:47:A:C" "1:48:A:C" "1:49:A:C" "1:50:A:C"
+
+$altFreqVec
+ [1] 0.0000 0.0005 0.0000 0.0005 0.0025 0.0040 0.0000 0.2900 0.0035 0.0725
+
+$altCountsVec
+ [1]   0   1   0   1   5   8   0 580   7 145
+
+$missingRateVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$pvalVec
+ [1]          NaN 0.8091651000          NaN 0.0004609479 0.3041829000
+ [6] 0.2391306000          NaN 0.1424149000 0.4427057000 0.6699920000
+
+$BetaVec
+ [1]        NaN -1.1236587        NaN 15.9917074 -1.3785509 -1.3394748
+ [7]        NaN -0.2620526 -1.1718625 -0.1313090
+
+$seBetaVec
+ [1]      NaN 4.652769      NaN 4.139280 1.341649 1.137884      NaN 0.178649
+ [9] 1.526594 0.308122
+
+$TstatVec
+ [1]         NaN -0.05190526         NaN  0.93335132 -0.76585202 -1.03451871
+ [7]         NaN -8.21083336 -0.50283994 -1.38308541
+
+$varTVec
+ [1]         NaN  0.04619309         NaN  0.05836471  0.55554861  0.77233160
+ [7]         NaN 31.33276939  0.42909464 10.53306016
+
+$AF_caseVec
+ [1] 0.000000000 0.000000000 0.000000000 0.005102041 0.000000000 0.000000000
+ [7] 0.000000000 0.239795918 0.000000000 0.061224490
+
+$AF_ctrlVec
+ [1] 0.0000000000 0.0005543237 0.0000000000 0.0000000000 0.0027716186
+ [6] 0.0044345898 0.0000000000 0.2954545455 0.0038802661 0.0737250554
+
+$N_caseVec
+ [1]  0 98  0 98 98 98  0 98 98 98
+
+$N_ctrlVec
+ [1]   0 902   0 902 902 902   0 902 902 902
+
+$N_case_homVec
+ [1] 0 0 0 0 0 0 0 3 0 0
+
+$N_case_hetVec
+ [1]  0  0  0  1  0  0  0 41  0 12
+
+$N_ctrl_homVec
+ [1] 0 0 0 0 0 0 0 3 0 0
+
+$N_ctrl_hetVec
+ [1]  0  0  0  1  0  0  0 41  0 12
+
+$pvalNAVec
+ [1]          NaN 0.8091651000          NaN 0.0001118184 0.3041829000
+ [6] 0.2391306000          NaN 0.1424149000 0.4427057000 0.6699920000
+
+(2021-12-16 21:45:51) ---- Analyzing Chunk 6/10: chrom InitialChunk ---- 
+[1] "bgen"
+ [1] 30832 30950 31053 31156 32862 33012 33201 35205 35452 35582
+[1] "binary"
+[1] TRUE
+i is 0
+Completed 0/10 markers in the chunk.
+gIndex 30832
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 1
+gIndex 30950
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 2
+gIndex 31053
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 3
+gIndex 31156
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 207
+t_indexForNonZero.size() 207
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 3
+i is 4
+gIndex 32862
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 1
+t_indexForNonZero.size() 1
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 1
+Bmu2 3.56085e-07
+m_varRatio 0.940664
+var1 0.0807197
+var2 0.0858114
+scoreTest 2
+OK2 
+i is HEREHERE 4
+i is 5
+gIndex 33012
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 2
+t_indexForNonZero.size() 2
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 2
+Bmu2 3.80609e-05
+m_varRatio 0.940664
+var1 0.314623
+var2 0.334469
+scoreTest 1b
+scoreTest 1b21000
+scoreTest 1b32
+scoreTest 1b4998
+scoreTest 1c
+scoreTest 2
+OK2 
+i is HEREHERE 5
+i is 6
+gIndex 33201
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 328
+t_indexForNonZero.size() 328
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 6
+i is 7
+gIndex 35205
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 5
+t_indexForNonZero.size() 5
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 5
+Bmu2 4.17289e-05
+m_varRatio 0.940664
+var1 0.449444
+var2 0.477795
+scoreTest 2
+OK2 
+i is HEREHERE 7
+i is 8
+gIndex 35452
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 9
+gIndex 35582
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 11
+t_indexForNonZero.size() 11
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 11
+Bmu2 0.000438963
+m_varRatio 0.940664
+var1 1.10894
+var2 1.1789
+scoreTest 2
+OK2 
+i is HEREHERE 9
+[1] "OutList"
+$markerVec
+ [1] "rs51" "rs52" "rs53" "rs54" "rs55" "rs56" "rs57" "rs58" "rs59" "rs60"
+
+$infoVec
+ [1] "1:51:A:C" "1:52:A:C" "1:53:A:C" "1:54:A:C" "1:55:A:C" "1:56:A:C"
+ [7] "1:57:A:C" "1:58:A:C" "1:59:A:C" "1:60:A:C"
+
+$altFreqVec
+ [1] 0.0000 0.0000 0.0000 0.1080 0.0005 0.0010 0.1830 0.0025 0.0000 0.0055
+
+$altCountsVec
+ [1]   0   0   0 216   1   2 366   5   0  11
+
+$missingRateVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$pvalVec
+ [1]        NaN        NaN        NaN 0.13893620 0.73805880 0.01124455
+ [7] 0.21732820 0.52259240        NaN 0.19933600
+
+$BetaVec
+ [1]        NaN        NaN        NaN -0.3987239 -1.1770888  4.6079852
+ [7] -0.2554174  0.9536823        NaN  1.2187720
+
+$seBetaVec
+ [1]       NaN       NaN       NaN 0.2694510 3.5197376 1.7828077 0.2070397
+ [8] 1.4916332       NaN 0.9496094
+
+$TstatVec
+ [1]         NaN         NaN         NaN -5.49177352 -0.09501423  1.44977986
+ [7] -5.95858715  0.42862712         NaN  1.35155106
+
+$varTVec
+ [1]         NaN         NaN         NaN 13.77337278  0.08071968  0.31462338
+ [7] 23.32882382  0.44944437         NaN  1.10894499
+
+$AF_caseVec
+ [1] 0.000000000 0.000000000 0.000000000 0.076530612 0.000000000 0.010204082
+ [7] 0.158163265 0.005102041 0.000000000 0.015306122
+
+$AF_ctrlVec
+ [1] 0.0000000000 0.0000000000 0.0000000000 0.1114190687 0.0005543237
+ [6] 0.0000000000 0.1856984479 0.0022172949 0.0000000000 0.0044345898
+
+$N_caseVec
+ [1]  0  0  0 98 98 98 98 98  0 98
+
+$N_ctrlVec
+ [1]   0   0   0 902 902 902 902 902   0 902
+
+$N_case_homVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$N_case_hetVec
+ [1]  0  0  0 15  0  2 31  1  0  3
+
+$N_ctrl_homVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$N_ctrl_hetVec
+ [1]  0  0  0 15  0  2 31  1  0  3
+
+$pvalNAVec
+ [1]         NaN         NaN         NaN 0.138936200 0.738058800 0.009746977
+ [7] 0.217328200 0.522592400         NaN 0.199336000
+
+(2021-12-16 21:45:51) ---- Analyzing Chunk 7/10: chrom InitialChunk ---- 
+[1] "bgen"
+ [1] 35838 35974 36103 36267 38969 39169 41628 41752 44116 44232
+[1] "binary"
+[1] TRUE
+i is 0
+Completed 0/10 markers in the chunk.
+gIndex 35838
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 3
+t_indexForNonZero.size() 3
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 3
+Bmu2 4.38467e-06
+m_varRatio 0.940664
+var1 0.267889
+var2 0.284787
+scoreTest 2
+OK2 
+i is HEREHERE 0
+i is 1
+gIndex 35974
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 1
+t_indexForNonZero.size() 1
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 1
+Bmu2 3.68081e-07
+m_varRatio 0.940664
+var1 0.0642429
+var2 0.0682952
+scoreTest 2
+OK2 
+i is HEREHERE 1
+i is 2
+gIndex 36103
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 3
+gIndex 36267
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 670
+t_indexForNonZero.size() 670
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 3
+i is 4
+gIndex 38969
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 5
+t_indexForNonZero.size() 5
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 5
+Bmu2 1.05911e-05
+m_varRatio 0.940664
+var1 0.253388
+var2 0.269371
+scoreTest 2
+OK2 
+i is HEREHERE 4
+i is 5
+gIndex 39169
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 481
+t_indexForNonZero.size() 481
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 5
+i is 6
+gIndex 41628
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 7
+gIndex 41752
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 472
+t_indexForNonZero.size() 472
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 7
+i is 8
+gIndex 44116
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 9
+gIndex 44232
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 12
+t_indexForNonZero.size() 12
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 12
+Bmu2 0.000156565
+m_varRatio 0.940664
+var1 0.907482
+var2 0.964725
+scoreTest 2
+OK2 
+i is HEREHERE 9
+[1] "OutList"
+$markerVec
+ [1] "rs61" "rs62" "rs63" "rs64" "rs65" "rs66" "rs67" "rs68" "rs69" "rs70"
+
+$infoVec
+ [1] "1:61:A:C" "1:62:A:C" "1:63:A:C" "1:64:A:C" "1:65:A:C" "1:66:A:C"
+ [7] "1:67:A:C" "1:68:A:C" "1:69:A:C" "1:70:A:C"
+
+$altFreqVec
+ [1] 0.0015 0.0005 0.0000 0.4345 0.0025 0.2835 0.0000 0.2725 0.0000 0.0060
+
+$altCountsVec
+ [1]   3   1   0 869   5 567   0 545   0  12
+
+$missingRateVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$pvalVec
+ [1] 0.5254548 0.7705652       NaN 0.1615933 0.5641502 0.4868433       NaN
+ [8] 0.9447951       NaN 0.9013946
+
+$BetaVec
+ [1] -1.22678461 -1.15060999         NaN  0.22193803 -1.14564061  0.12049753
+ [7]         NaN -0.01259535         NaN -0.13006233
+
+$seBetaVec
+ [1] 1.9320676 3.9453679       NaN 0.1585574 1.9865861 0.1732934       NaN
+ [8] 0.1818971       NaN 1.0497381
+
+$TstatVec
+ [1] -0.3286425 -0.0739185        NaN  8.8279252 -0.2902910  4.0124915
+ [7]        NaN -0.3806788        NaN -0.1180292
+
+$varTVec
+ [1]  0.26788930  0.06424288         NaN 39.77653211  0.25338751 33.29936857
+ [7]         NaN 30.22375924         NaN  0.90748206
+
+$AF_caseVec
+ [1] 0.000000000 0.000000000 0.000000000 0.489795918 0.000000000 0.301020408
+ [7] 0.000000000 0.270408163 0.000000000 0.005102041
+
+$AF_ctrlVec
+ [1] 0.0016629712 0.0005543237 0.0000000000 0.4284922395 0.0027716186
+ [6] 0.2815964523 0.0000000000 0.2727272727 0.0000000000 0.0060975610
+
+$N_caseVec
+ [1] 98 98  0 98 98 98  0 98  0 98
+
+$N_ctrlVec
+ [1] 902 902   0 902 902 902   0 902   0 902
+
+$N_case_homVec
+ [1]  0  0  0 24  0 15  0  9  0  0
+
+$N_case_hetVec
+ [1]  0  0  0 48  0 29  0 35  0  1
+
+$N_ctrl_homVec
+ [1]  0  0  0 24  0 15  0  9  0  0
+
+$N_ctrl_hetVec
+ [1]  0  0  0 48  0 29  0 35  0  1
+
+$pvalNAVec
+ [1] 0.5254548 0.7705652       NaN 0.1615933 0.5641502 0.4868433       NaN
+ [8] 0.9447951       NaN 0.9013946
+
+(2021-12-16 21:45:51) ---- Analyzing Chunk 8/10: chrom InitialChunk ---- 
+[1] "bgen"
+ [1] 44474 45175 45336 45466 45677 46547 46665 46816 46957 47531
+[1] "binary"
+[1] TRUE
+i is 0
+Completed 0/10 markers in the chunk.
+gIndex 44474
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 45
+t_indexForNonZero.size() 45
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 45
+Bmu2 0.0111845
+m_varRatio 0.940664
+var1 3.64463
+var2 3.87452
+scoreTest 2
+OK2 
+i is HEREHERE 0
+i is 1
+gIndex 45175
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 3
+t_indexForNonZero.size() 3
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 3
+Bmu2 3.45064e-06
+m_varRatio 0.940664
+var1 0.201688
+var2 0.21441
+scoreTest 2
+OK2 
+i is HEREHERE 1
+i is 2
+gIndex 45336
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 3
+gIndex 45466
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 7
+t_indexForNonZero.size() 7
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 7
+Bmu2 6.54635e-05
+m_varRatio 0.940664
+var1 0.461091
+var2 0.490175
+scoreTest 2
+OK2 
+i is HEREHERE 3
+i is 4
+gIndex 45677
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 58
+t_indexForNonZero.size() 58
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 58
+Bmu2 0.0237363
+m_varRatio 0.940664
+var1 5.02376
+var2 5.34065
+scoreTest 2
+OK2 
+i is HEREHERE 4
+i is 5
+gIndex 46547
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 2
+t_indexForNonZero.size() 2
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 2
+Bmu2 2.09422e-06
+m_varRatio 0.940664
+var1 0.198242
+var2 0.210746
+scoreTest 2
+OK2 
+i is HEREHERE 5
+i is 6
+gIndex 46665
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 2
+t_indexForNonZero.size() 2
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 2
+Bmu2 2.71021e-06
+m_varRatio 0.940664
+var1 0.152773
+var2 0.16241
+scoreTest 2
+OK2 
+i is HEREHERE 6
+i is 7
+gIndex 46816
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 2
+t_indexForNonZero.size() 2
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 2
+Bmu2 5.99883e-06
+m_varRatio 0.940664
+var1 0.217955
+var2 0.231704
+scoreTest 2
+OK2 
+i is HEREHERE 7
+i is 8
+gIndex 46957
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 22
+t_indexForNonZero.size() 22
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 22
+Bmu2 0.00107395
+m_varRatio 0.940664
+var1 1.75813
+var2 1.86903
+scoreTest 2
+OK2 
+i is HEREHERE 8
+i is 9
+gIndex 47531
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+[1] "OutList"
+$markerVec
+ [1] "rs71" "rs72" "rs73" "rs74" "rs75" "rs76" "rs77" "rs78" "rs79" "rs80"
+
+$infoVec
+ [1] "1:71:A:C" "1:72:A:C" "1:73:A:C" "1:74:A:C" "1:75:A:C" "1:76:A:C"
+ [7] "1:77:A:C" "1:78:A:C" "1:79:A:C" "1:80:A:C"
+
+$altFreqVec
+ [1] 0.0225 0.0015 0.0000 0.0035 0.0300 0.0010 0.0010 0.0010 0.0110 0.0000
+
+$altCountsVec
+ [1] 45  3  0  7 60  2  2  2 22  0
+
+$missingRateVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$pvalVec
+ [1] 0.6390776 0.6008028       NaN 0.7487869 0.8303133 0.5669308 0.6379494
+ [8] 0.5638822 0.5753223       NaN
+
+$BetaVec
+ [1]  0.24566087 -1.16510725         NaN  0.47160843 -0.09561086 -1.28598773
+ [7] -1.20392283 -1.23610586  0.42251409         NaN
+
+$seBetaVec
+ [1] 0.5238097 2.2266897       NaN 1.4726749 0.4461547 2.2459625 2.5584474
+ [8] 2.1419835 0.7541792       NaN
+
+$TstatVec
+ [1]  0.8953420 -0.2349884        NaN  0.2174542 -0.4803261 -0.2549364
+ [7] -0.1839271 -0.2694160  0.7428346        NaN
+
+$varTVec
+ [1] 3.6446261 0.2016882       NaN 0.4610906 5.0237614 0.1982417 0.1527731
+ [8] 0.2179555 1.7581297       NaN
+
+$AF_caseVec
+ [1] 0.030612245 0.000000000 0.000000000 0.005102041 0.030612245 0.000000000
+ [7] 0.000000000 0.000000000 0.015306122 0.000000000
+
+$AF_ctrlVec
+ [1] 0.021618625 0.001662971 0.000000000 0.003325942 0.029933481 0.001108647
+ [7] 0.001108647 0.001108647 0.010532151 0.000000000
+
+$N_caseVec
+ [1] 98 98  0 98 98 98 98 98 98  0
+
+$N_ctrlVec
+ [1] 902 902   0 902 902 902 902 902 902   0
+
+$N_case_homVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$N_case_hetVec
+ [1] 6 0 0 1 6 0 0 0 3 0
+
+$N_ctrl_homVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$N_ctrl_hetVec
+ [1] 6 0 0 1 6 0 0 0 3 0
+
+$pvalNAVec
+ [1] 0.6390776 0.6008028       NaN 0.7487869 0.8303133 0.5669308 0.6379494
+ [8] 0.5638822 0.5753223       NaN
+
+(2021-12-16 21:45:51) ---- Analyzing Chunk 9/10: chrom InitialChunk ---- 
+[1] "bgen"
+ [1] 47664 49535 49638 50141 50280 50443 52329 52432 52554 52757
+[1] "binary"
+[1] TRUE
+i is 0
+Completed 0/10 markers in the chunk.
+gIndex 47664
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 289
+t_indexForNonZero.size() 289
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 0
+i is 1
+gIndex 49535
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 2
+gIndex 49638
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 48
+t_indexForNonZero.size() 48
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 48
+Bmu2 0.00838111
+m_varRatio 0.940664
+var1 3.40619
+var2 3.62105
+scoreTest 2
+OK2 
+i is HEREHERE 2
+i is 3
+gIndex 50141
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 2
+t_indexForNonZero.size() 2
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 2
+Bmu2 1.94785e-06
+m_varRatio 0.940664
+var1 0.184423
+var2 0.196056
+scoreTest 2
+OK2 
+i is HEREHERE 3
+i is 4
+gIndex 50280
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 2
+t_indexForNonZero.size() 2
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 2
+Bmu2 8.98675e-07
+m_varRatio 0.940664
+var1 0.160491
+var2 0.170614
+scoreTest 2
+OK2 
+i is HEREHERE 4
+i is 5
+gIndex 50443
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 285
+t_indexForNonZero.size() 285
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 5
+i is 6
+gIndex 52329
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 7
+gIndex 52432
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 8
+gIndex 52554
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 1
+t_indexForNonZero.size() 1
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 1
+Bmu2 4.21009e-07
+m_varRatio 0.940664
+var1 0.0597474
+var2 0.0635162
+scoreTest 2
+OK2 
+i is HEREHERE 8
+i is 9
+gIndex 52757
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 127
+t_indexForNonZero.size() 127
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 9
+[1] "OutList"
+$markerVec
+ [1] "rs81" "rs82" "rs83" "rs84" "rs85" "rs86" "rs87" "rs88" "rs89" "rs90"
+
+$infoVec
+ [1] "1:81:A:C" "1:82:A:C" "1:83:A:C" "1:84:A:C" "1:85:A:C" "1:86:A:C"
+ [7] "1:87:A:C" "1:88:A:C" "1:89:A:C" "1:90:A:C"
+
+$altFreqVec
+ [1] 0.1570 0.0000 0.0240 0.0010 0.0010 0.1520 0.0000 0.0000 0.0005 0.0675
+
+$altCountsVec
+ [1] 314   0  48   2   2 304   0   0   1 135
+
+$missingRateVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$pvalVec
+ [1] 0.30993070        NaN 0.06176592 0.57409120 0.62002720 0.30017750
+ [7]        NaN        NaN 0.77975500 0.98401980
+
+$BetaVec
+ [1]  0.222921365          NaN -1.012128970 -1.308751365 -1.237632241
+ [6]  0.235799075          NaN          NaN -1.144029230 -0.006190248
+
+$seBetaVec
+ [1] 0.2195475       NaN 0.5418329 2.3285879 2.4961736 0.2275937       NaN
+ [8]       NaN 4.0911024 0.3090554
+
+$TstatVec
+ [1]  4.62481998         NaN -3.44750608 -0.24136366 -0.19862871  4.55220366
+ [7]         NaN         NaN -0.06835282 -0.06480900
+
+$varTVec
+ [1] 20.74641869         NaN  3.40619247  0.18442285  0.16049090 19.30543474
+ [7]         NaN         NaN  0.05974744 10.46953227
+
+$AF_caseVec
+ [1] 0.178571429 0.000000000 0.005102041 0.000000000 0.000000000 0.178571429
+ [7] 0.000000000 0.000000000 0.000000000 0.066326531
+
+$AF_ctrlVec
+ [1] 0.1546563193 0.0000000000 0.0260532151 0.0011086475 0.0011086475
+ [6] 0.1491130820 0.0000000000 0.0000000000 0.0005543237 0.0676274945
+
+$N_caseVec
+ [1] 98  0 98 98 98 98  0  0 98 98
+
+$N_ctrlVec
+ [1] 902   0 902 902 902 902   0   0 902 902
+
+$N_case_homVec
+ [1] 5 0 0 0 0 4 0 0 0 2
+
+$N_case_hetVec
+ [1] 25  0  1  0  0 27  0  0  0  9
+
+$N_ctrl_homVec
+ [1] 5 0 0 0 0 4 0 0 0 2
+
+$N_ctrl_hetVec
+ [1] 25  0  1  0  0 27  0  0  0  9
+
+$pvalNAVec
+ [1] 0.30993070        NaN 0.06176592 0.57409120 0.62002720 0.30017750
+ [7]        NaN        NaN 0.77975500 0.98401980
+
+(2021-12-16 21:45:51) ---- Analyzing Chunk 10/10: chrom InitialChunk ---- 
+[1] "bgen"
+ [1] 54008 54354 56032 56216 58816 58936 60531 63197 63327 65067
+[1] "binary"
+[1] TRUE
+i is 0
+Completed 0/10 markers in the chunk.
+gIndex 54008
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 13
+t_indexForNonZero.size() 13
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 13
+Bmu2 0.000181716
+m_varRatio 0.940664
+var1 0.984345
+var2 1.04644
+scoreTest 2
+OK2 
+i is HEREHERE 0
+i is 1
+gIndex 54354
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 204
+t_indexForNonZero.size() 204
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 1
+i is 2
+gIndex 56032
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 3
+gIndex 56216
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 580
+t_indexForNonZero.size() 580
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 3
+i is 4
+gIndex 58816
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+i is 5
+gIndex 58936
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 206
+t_indexForNonZero.size() 206
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 5
+i is 6
+gIndex 60531
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 643
+t_indexForNonZero.size() 643
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 6
+i is 7
+gIndex 63197
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 4
+t_indexForNonZero.size() 4
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTestFast
+t_indexForNonZero 2 4
+Bmu2 2.8992e-06
+m_varRatio 0.940664
+var1 0.218829
+var2 0.232632
+scoreTest 2
+OK2 
+i is HEREHERE 7
+i is 8
+gIndex 63327
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 267
+t_indexForNonZero.size() 267
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+OK1 
+Unified_getMarkerPval 1
+scoreTest
+here 1 2
+here 3 4
+scoreTest 2
+OK2 
+i is HEREHERE 8
+i is 9
+gIndex 65067
+t_genoType HERE
+t_genoType BGEN
+indexNonZero.size() 0
+t_indexForNonZero.size() 0
+g_missingRate_cutoff 0.15
+g_marker_minMAF_cutoff 0
+g_marker_minMAC_cutoff 0.5
+g_marker_minINFO_cutoff 0
+[1] "OutList"
+$markerVec
+ [1] "rs91"  "rs92"  "rs93"  "rs94"  "rs95"  "rs96"  "rs97"  "rs98"  "rs99" 
+[10] "rs100"
+
+$infoVec
+ [1] "1:91:A:C"  "1:92:A:C"  "1:93:A:C"  "1:94:A:C"  "1:95:A:C"  "1:96:A:C" 
+ [7] "1:97:A:C"  "1:98:A:C"  "1:99:A:C"  "1:100:A:C"
+
+$altFreqVec
+ [1] 0.0065 0.1085 0.0000 0.3495 0.0000 0.1095 0.4005 0.0020 0.1420 0.0000
+
+$altCountsVec
+ [1]  13 217   0 699   0 219 801   4 284   0
+
+$missingRateVec
+ [1] 0 0 0 0 0 0 0 0 0 0
+
+$pvalVec
+ [1] 0.46360140 0.29787200        NaN 0.72784710        NaN 0.20918710
+ [7] 0.09054475 0.57577800 0.05024410        NaN
+
+$BetaVec
+ [1]  0.73873490 -0.26385074         NaN -0.05886375         NaN  0.31887158
+ [7] -0.28047556 -1.19617906 -0.46714586         NaN
+
+$seBetaVec
+ [1] 1.0079207 0.2534571       NaN 0.1691532       NaN 0.2539183 0.1657137
+ [8] 2.1377048 0.2385978       NaN
+
+$TstatVec
+ [1]   0.7271700  -4.1072350         NaN  -2.0572518         NaN   4.9457006
+ [7] -10.2135872  -0.2617585  -8.2057749         NaN
+
+$varTVec
+ [1]  0.9843449 15.5665093        NaN 34.9493856        NaN 15.5100075
+ [7] 36.4152489  0.2188288 17.5657661        NaN
+
+$AF_caseVec
+ [1] 0.01020408 0.09183673 0.00000000 0.34183673 0.00000000 0.13775510
+ [7] 0.34693878 0.00000000 0.09183673 0.00000000
+
+$AF_ctrlVec
+ [1] 0.006097561 0.110310421 0.000000000 0.350332594 0.000000000 0.106430155
+ [7] 0.406319290 0.002217295 0.147450111 0.000000000
+
+$N_caseVec
+ [1] 98 98  0 98  0 98 98 98 98  0
+
+$N_ctrlVec
+ [1] 902 902   0 902   0 902 902 902 902   0
+
+$N_case_homVec
+ [1]  0  3  0 10  0  1 10  0  0  0
+
+$N_case_hetVec
+ [1]  2 12  0 47  0 25 48  0 18  0
+
+$N_ctrl_homVec
+ [1]  0  3  0 10  0  1 10  0  0  0
+
+$N_ctrl_hetVec
+ [1]  2 12  0 47  0 25 48  0 18  0
+
+$pvalNAVec
+ [1] 0.46360140 0.29787200        NaN 0.72784710        NaN 0.20918710
+ [7] 0.09054475 0.57577800 0.05024410        NaN
+
+[1] "Analysis done! The results have been saved to './test_new/bgen.txt'."

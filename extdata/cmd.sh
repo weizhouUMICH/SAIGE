@@ -10,12 +10,12 @@
 #step 1: fit the NULL glmm 
 Rscript step1_fitNULLGLMM.R     \
         --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
-        --phenoFile=./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt \
+        --phenoFile=./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt.sub \
         --phenoCol=y_binary \
         --covarColList=x1,x2 \
         --sampleIDColinphenoFile=IID \
         --traitType=binary        \
-        --outputPrefix=./output/example_binary_includenonAutoforvarRatio \
+        --outputPrefix=./output/example_binary \
         --nThreads=4	\
 	--LOCO=FALSE	\
 	--minMAFforGRM=0.01
@@ -221,8 +221,8 @@ Rscript step1_fitNULLGLMM.R     \
         --LOCO=FALSE    \
         --skipModelFitting=FALSE \
         --IsSparseKin=TRUE      \
-	--sparseGRMFile=./output/example_binary_cate.varianceRatio.txt.sparseGRM.mtx	\
-	--sparseGRMSampleIDFile=./output/example_binary.varianceRatio.txt.sparseGRM.mtx.sample	\
+	--sparseGRMFile=./output/sparseGRM_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseGRM.mtx	\
+	--sparseGRMSampleIDFile=./output/sparseGRM_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt	\
         --isCateVarianceRatio=TRUE
 
 

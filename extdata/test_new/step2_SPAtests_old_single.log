@@ -1,0 +1,514 @@
+R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] SAIGE_0.44.6.4
+
+loaded via a namespace (and not attached):
+[1] compiler_4.1.2     Matrix_1.3-2       Rcpp_1.0.6         grid_4.1.2        
+[5] RcppParallel_5.0.2 lattice_0.20-45   
+$vcfFile
+[1] ""
+
+$vcfFileIndex
+[1] ""
+
+$vcfField
+[1] "DS"
+
+$bgenFile
+[1] "../input/genotype_100markers.bgen"
+
+$bgenFileIndex
+[1] "../input/genotype_100markers.bgen.bgi"
+
+$savFile
+[1] ""
+
+$savFileIndex
+[1] ""
+
+$idstoExcludeFile
+[1] ""
+
+$idstoIncludeFile
+[1] ""
+
+$rangestoExcludeFile
+[1] ""
+
+$rangestoIncludeFile
+[1] ""
+
+$chrom
+[1] "1"
+
+$start
+[1] 1
+
+$end
+[1] 2.5e+08
+
+$IsDropMissingDosages
+[1] TRUE
+
+$minMAF
+[1] 0
+
+$minMAC
+[1] 0.5
+
+$maxMAFforGroupTest
+[1] 0.5
+
+$minInfo
+[1] 0
+
+$sampleFile
+[1] "../input/samplelist.txt"
+
+$GMMATmodelFile
+[1] "../output/example_binary.rda"
+
+$varianceRatioFile
+[1] "../output/example_binary.varianceRatio.txt"
+
+$SAIGEOutputFile
+[1] "./old_single_bgen.txt"
+
+$numLinesOutput
+[1] 2
+
+$IsSparse
+[1] TRUE
+
+$SPAcutoff
+[1] 2
+
+$IsOutputAFinCaseCtrl
+[1] TRUE
+
+$IsOutputNinCaseCtrl
+[1] FALSE
+
+$IsOutputHetHomCountsinCaseCtrl
+[1] TRUE
+
+$LOCO
+[1] FALSE
+
+$condition
+[1] ""
+
+$sparseSigmaFile
+[1] ""
+
+$groupFile
+[1] ""
+
+$kernel
+[1] "linear.weighted"
+
+$method
+[1] "optimal.adj"
+
+$weights.beta.rare
+[1] "1,25"
+
+$weights.beta.common
+[1] "1,25"
+
+$weightMAFcutoff
+[1] 0.01
+
+$r.corr
+[1] "0"
+
+$IsSingleVarinGroupTest
+[1] FALSE
+
+$IsOutputMAFinCaseCtrlinGroupTest
+[1] FALSE
+
+$cateVarRatioMinMACVecExclude
+[1] "0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$cateVarRatioMaxMACVecInclude
+[1] "1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$dosageZerodCutoff
+[1] 0.2
+
+$IsOutputPvalueNAinGroupTestforBinary
+[1] FALSE
+
+$IsAccountforCasecontrolImbalanceinGroupTest
+[1] TRUE
+
+$weightsIncludeinGroupFile
+[1] FALSE
+
+$IsOutputBETASEinBurdenTest
+[1] FALSE
+
+$IsOutputlogPforSingle
+[1] FALSE
+
+$sampleFile_male
+[1] ""
+
+$X_PARregion
+[1] ""
+
+$is_rewrite_XnonPAR_forMales
+[1] FALSE
+
+$method_to_CollapseUltraRare
+[1] "absence_or_presence"
+
+$MACCutoff_to_CollapseUltraRare
+[1] 10
+
+$DosageCutoff_for_UltraRarePresence
+[1] 0.5
+
+$help
+[1] FALSE
+
+weights.beta.rare  is  1 25 
+weights.beta.common  is  1 25 
+cateVarRatioMinMACVecExclude  is  0.5 1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+cateVarRatioMaxMACVecInclude  is  1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+single-variant association test will be performed
+Garbage collection 13 = 7+2+4 (level 2) ... 
+81.9 Mbytes of cons cells used (59%)
+20.1 Mbytes of vectors used (31%)
+300  samples have been used to fit the glmm null model
+[1] "Leave-one-chromosome-out is not applied"
+Single variance ratio is provided, so categorical variance ratio won't be used!
+variance Ratio is  1 
+10000  sample IDs are found in sample file
+isCondition is  FALSE 
+[1] 10000     4
+[1] "IID"          "IndexInModel" "IndexDose.x"  "IndexDose.y" 
+300  samples were used in fitting the NULL glmm model and are found in sample file
+sparse kinship matrix is not used
+Samples with missing dosages will be dropped from the analysis
+Analysis started at  1642030513 Seconds
+minMAC:  0.5 
+minMAF:  0 
+Minimum MAF of markers to be tested is  0.0008333333 
+It is a binary trait
+Analyzing  33  cases and  267  controls 
+isCondition is  FALSE 
+Analysis started at  1642030513 Seconds
+no query list is provided
+10000 samples are found in the bgen file
+100 markers are found in the bgen file 
+   user  system elapsed 
+  1.174   0.116   1.339 
+[1] 2
+numPassMarker:  0 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.188   0.116   1.355 
+[1] 4
+numPassMarker:  1 
+   user  system elapsed 
+  1.190   0.116   1.357 
+[1] 6
+numPassMarker:  1 
+   user  system elapsed 
+  1.191   0.116   1.359 
+[1] 8
+numPassMarker:  1 
+   user  system elapsed 
+  1.193   0.116   1.361 
+[1] 10
+numPassMarker:  1 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.194   0.116   1.363 
+[1] 12
+numPassMarker:  2 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.197   0.116   1.366 
+[1] 14
+numPassMarker:  3 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.197   0.118   1.370 
+[1] 16
+numPassMarker:  4 
+G1tilde_P_G2tilde is  
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.198   0.119   1.373 
+[1] 18
+numPassMarker:  6 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.201   0.119   1.376 
+[1] 20
+numPassMarker:  7 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.203   0.119   1.379 
+[1] 22
+numPassMarker:  8 
+[1] "rs23 rs23 rs23"
+G1tilde_P_G2tilde is  
+$BETA
+$BETA$BETA
+[1] -0.3063381
+
+
+$SE
+$SE$SE
+[1] 0.2916467
+
+
+$Tstat
+$Tstat$Tstat
+[1] -3.601528
+
+
+$p.value
+$p.value$p.value
+[1] 0.2935462
+
+
+$p.value.NA
+$p.value.NA$p.value.NA
+[1] 0.2935462
+
+
+$Is.converge
+$Is.converge$Is.converge
+[1] TRUE
+
+
+$var1
+$var1$var1
+[1] 11.75671
+
+
+$var2
+$var2$var2
+[1] 11.75671
+
+
+   user  system elapsed 
+  1.205   0.119   1.382 
+[1] 24
+numPassMarker:  9 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.207   0.119   1.385 
+[1] 26
+numPassMarker:  10 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.210   0.119   1.387 
+[1] 28
+numPassMarker:  11 
+G1tilde_P_G2tilde is  
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.212   0.119   1.391 
+[1] 30
+numPassMarker:  13 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.214   0.119   1.394 
+[1] 32
+numPassMarker:  14 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.216   0.119   1.397 
+[1] 34
+numPassMarker:  15 
+   user  system elapsed 
+  1.218   0.119   1.399 
+[1] 36
+numPassMarker:  15 
+G1tilde_P_G2tilde is  
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.220   0.119   1.402 
+[1] 38
+numPassMarker:  17 
+   user  system elapsed 
+  1.222   0.119   1.404 
+[1] 40
+numPassMarker:  17 
+   user  system elapsed 
+  1.224   0.119   1.406 
+[1] 42
+numPassMarker:  17 
+   user  system elapsed 
+  1.225   0.119   1.408 
+[1] 44
+numPassMarker:  17 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.227   0.119   1.410 
+[1] 46
+numPassMarker:  18 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.229   0.120   1.413 
+[1] 48
+numPassMarker:  19 
+G1tilde_P_G2tilde is  
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.231   0.120   1.416 
+[1] 50
+numPassMarker:  21 
+   user  system elapsed 
+  1.233   0.120   1.419 
+[1] 52
+numPassMarker:  21 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.235   0.120   1.421 
+[1] 54
+numPassMarker:  22 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.237   0.120   1.424 
+[1] 56
+numPassMarker:  23 
+G1tilde_P_G2tilde is  
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.240   0.120   1.427 
+[1] 58
+numPassMarker:  25 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.242   0.120   1.430 
+[1] 60
+numPassMarker:  26 
+G1tilde_P_G2tilde is  
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.244   0.120   1.433 
+[1] 62
+numPassMarker:  28 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.247   0.120   1.435 
+[1] 64
+numPassMarker:  29 
+G1tilde_P_G2tilde is  
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.249   0.120   1.438 
+[1] 66
+numPassMarker:  31 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.251   0.120   1.441 
+[1] 68
+numPassMarker:  32 
+   user  system elapsed 
+  1.253   0.120   1.443 
+[1] 70
+numPassMarker:  32 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.255   0.120   1.446 
+[1] 72
+numPassMarker:  33 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.257   0.120   1.448 
+[1] 74
+numPassMarker:  34 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.259   0.120   1.451 
+[1] 76
+numPassMarker:  35 
+   user  system elapsed 
+  1.261   0.120   1.454 
+[1] 78
+numPassMarker:  35 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.263   0.120   1.457 
+[1] 80
+numPassMarker:  36 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.266   0.120   1.460 
+[1] 82
+numPassMarker:  37 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.268   0.120   1.463 
+[1] 84
+numPassMarker:  38 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.270   0.120   1.466 
+[1] 86
+numPassMarker:  39 
+   user  system elapsed 
+  1.270   0.122   1.468 
+[1] 88
+numPassMarker:  39 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.270   0.124   1.471 
+[1] 90
+numPassMarker:  40 
+G1tilde_P_G2tilde is  
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.273   0.124   1.474 
+[1] 92
+numPassMarker:  42 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.275   0.124   1.476 
+[1] 94
+numPassMarker:  43 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.277   0.124   1.479 
+[1] 96
+numPassMarker:  44 
+G1tilde_P_G2tilde is  
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.280   0.124   1.483 
+[1] 98
+numPassMarker:  46 
+G1tilde_P_G2tilde is  
+   user  system elapsed 
+  1.280   0.126   1.485 
+[1] 100
+numPassMarker:  47 
+closed the genofile!
+Analysis ended at  1642030513 Seconds
+Analysis took  0.1960378 Seconds

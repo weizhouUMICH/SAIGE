@@ -1,0 +1,2481 @@
+R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+loaded via a namespace (and not attached):
+[1] compiler_4.1.2
+[1] "is_imputed_data"
+[1] "PKKKKKKKKKK"
+[1] FALSE
+Any dosages <=  0.2  for genetic variants with MAC <= 10 are set to be 0 in group tests
+single-variant association test will be performed
+variance Ratio is  0.9406643 
+Garbage collection 13 = 7+2+4 (level 2) ... 
+78.2 Mbytes of cons cells used (56%)
+19.1 Mbytes of vectors used (30%)
+[1] "Leave-one-chromosome-out is not applied"
+[1] "XV"         "XVX"        "XXVX_inv"   "XVX_inv"    "S_a"       
+[6] "XVX_inv_XV" "V"         
+dosageFile type is  plink 
+allle order in the plink file is  alt-first .
+Reading bim file....
+Reading fam file....
+Setting position of samples in PLINK files....
+isSparseGRM  FALSE 
+isCondition  TRUE 
+HERE
+[1] 1000
+q 1
+t_genoIndex 7
+q ok
+q ok1a
+altFreq 0.0015
+q ok1c
+1
+q ok2c
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0015
+m_flagSparseGRM 0
+is_region 1
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   0.2230
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.589946
+StdStat: 0.538914
+t_Tstat: -0.246813
+t_var1: 0.209748
+scoreTest 2
+q ok1d
+q ok1b
+q ok2
+[1] "HERE"
+[1] "outIndex"
+[1] 1
+Number of all markers to test:	 100 
+Number of markers in each chunk:	 10 
+Number of chunks for all markers:	 10 
+[1] 1
+[1] 10
+(2022-01-06 16:06:34) ---- Analyzing Chunk 1/10: chrom InitialChunk ---- 
+[1] "plink"
+ [1] 0 1 2 3 4 5 6 7 8 9
+[1] "binary"
+[1] TRUE
+Completed 0/10 markers in the chunk.
+0 i
+rs1 marker
+0
+1 i
+rs2 marker
+0
+2 i
+rs3 marker
+2
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.001
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.793631
+StdStat: 0.261599
+t_Tstat: -0.0620771
+t_var1: 0.0563107
+t_Tstat -0.0620771
+t_Tstat_ctemp    0.0005
+
+t_Tstat_c -0.062548
+t_var1 0.0563107
+t_varT_ctemp    7.6334e-07
+
+t_varT_c 0.0563099
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.069477
+t_pval_c 6.94635e-310
+t_pval_noSPA_str_c 7.920998E-01
+t_Beta_c -1.11078
+S_c -0.062548
+t_varT_c 0.0563099
+scoreTest 2
+3 i
+rs4 marker
+20
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.01
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.933056
+StdStat: 0.0840003
+t_Tstat: -0.105975
+t_var1: 1.59165
+t_Tstat -0.105975
+t_Tstat_ctemp   -0.0544
+
+t_Tstat_c -0.0515974
+t_var1 1.59165
+t_varT_ctemp    0.0102
+
+t_varT_c 1.58147
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.00168343
+t_pval_c 0.7921
+t_pval_noSPA_str_c 9.672723E-01
+t_Beta_c -0.0326262
+S_c -0.0515974
+t_varT_c 1.58147
+scoreTest 2
+4 i
+rs5 marker
+0
+5 i
+rs6 marker
+0
+6 i
+rs7 marker
+0
+7 i
+rs8 marker
+3
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0015
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.589946
+StdStat: 0.538914
+t_Tstat: -0.246813
+t_var1: 0.209748
+t_Tstat -0.246813
+t_Tstat_ctemp   -0.2468
+
+t_Tstat_c -1.11022e-16
+t_var1 0.209748
+t_varT_ctemp    0.2097
+
+t_varT_c 1.11022e-16
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.11022e-16
+t_pval_c 0.967272
+t_pval_noSPA_str_c 1.000000E+00
+t_Beta_c -1
+S_c -1.11022e-16
+t_varT_c 1.11022e-16
+scoreTest 2
+8 i
+rs9 marker
+4
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.002
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.374039
+StdStat: 0.888934
+t_Tstat: -0.572658
+t_var1: 0.415004
+t_Tstat -0.572658
+t_Tstat_ctemp    0.0016
+
+t_Tstat_c -0.574296
+t_var1 0.415004
+t_varT_ctemp    9.2424e-06
+
+t_varT_c 0.414994
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.794748
+t_pval_c 1
+t_pval_noSPA_str_c 3.726681E-01
+t_Beta_c -1.38387
+S_c -0.574296
+t_varT_c 0.414994
+scoreTest 2
+9 i
+rs10 marker
+4
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.002
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.654787
+StdStat: 0.447122
+t_Tstat: 0.303506
+t_var1: 0.460767
+t_Tstat 0.303506
+t_Tstat_ctemp    0.0006
+
+t_Tstat_c 0.302862
+t_var1 0.460767
+t_varT_ctemp    1.4274e-06
+
+t_varT_c 0.460766
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.199072
+t_pval_c 0.372668
+t_pval_noSPA_str_c 6.554712E-01
+t_Beta_c 0.657302
+S_c 0.302862
+t_varT_c 0.460766
+scoreTest 2
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-06 16:06:34) ---- Analyzing Chunk 2/10: chrom InitialChunk ---- 
+[1] "plink"
+ [1] 10 11 12 13 14 15 16 17 18 19
+[1] "binary"
+[1] TRUE
+Completed 0/10 markers in the chunk.
+0 i
+rs11 marker
+2
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.001
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.748701
+StdStat: 0.320352
+t_Tstat: -0.0918451
+t_var1: 0.0821971
+t_Tstat -0.0918451
+t_Tstat_ctemp    0.0003
+
+t_Tstat_c -0.0921296
+t_var1 0.0821971
+t_varT_ctemp    2.7862e-07
+
+t_varT_c 0.0821968
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.103263
+t_pval_c 6.94635e-310
+t_pval_noSPA_str_c 7.479490E-01
+t_Beta_c -1.12084
+S_c -0.0921296
+t_varT_c 0.0821968
+scoreTest 2
+1 i
+rs12 marker
+30
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.015
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.895838
+StdStat: 0.130921
+t_Tstat: -0.198845
+t_var1: 2.30683
+t_Tstat -0.198845
+t_Tstat_ctemp    0.0082
+
+t_Tstat_c -0.207033
+t_var1 2.30683
+t_varT_ctemp    0.0002
+
+t_varT_c 2.3066
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.0185826
+t_pval_c 0.747949
+t_pval_noSPA_str_c 8.915697E-01
+t_Beta_c -0.089757
+S_c -0.207033
+t_varT_c 2.3066
+scoreTest 2
+2 i
+rs13 marker
+2
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.001
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.432922
+StdStat: 0.784201
+t_Tstat: 0.454184
+t_var1: 0.335434
+t_Tstat 0.454184
+t_Tstat_ctemp    0.0005
+
+t_Tstat_c 0.453701
+t_var1 0.335434
+t_varT_ctemp    8.0034e-07
+
+t_varT_c 0.335434
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.613668
+t_pval_c 0.89157
+t_pval_noSPA_str_c 4.334100E-01
+t_Beta_c 1.35258
+S_c 0.453701
+t_varT_c 0.335434
+scoreTest 2
+3 i
+rs14 marker
+72
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0375
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.877728
+StdStat: 0.15385
+t_Tstat: -0.353537
+t_var1: 5.28048
+t_Tstat -0.353537
+t_Tstat_ctemp   -0.0603
+
+t_Tstat_c -0.293223
+t_var1 5.28048
+t_varT_ctemp    0.0125
+
+t_varT_c 5.26796
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.0163213
+t_pval_c 0.43341
+t_pval_noSPA_str_c 8.983431E-01
+t_Beta_c -0.0556616
+S_c -0.293223
+t_varT_c 5.26796
+scoreTest 2
+4 i
+rs15 marker
+230
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.122
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   17.3936
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.253951
+StdStat: 1.1408
+t_Tstat: -4.61449
+t_var1: 16.3616
+t_Tstat -4.61449
+t_Tstat_ctemp   -0.0813
+
+t_Tstat_c -4.53322
+t_var1 16.3616
+t_varT_ctemp    0.0227
+
+t_varT_c 16.3388
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.25775
+t_pval_c 0.898343
+t_pval_noSPA_str_c 2.620779E-01
+t_Beta_c -0.277451
+S_c -4.53322
+t_varT_c 16.3388
+scoreTest 2
+5 i
+rs16 marker
+3
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0015
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.19539
+StdStat: 1.2948
+t_Tstat: 0.67351
+t_var1: 0.270572
+t_Tstat 0.67351
+t_Tstat_ctemp    0.0021
+
+t_Tstat_c 0.671419
+t_var1 0.270572
+t_varT_ctemp    1.5060e-05
+
+t_varT_c 0.270557
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.6662
+t_pval_c 0.262078
+t_pval_noSPA_str_c 1.967682E-01
+t_Beta_c 2.48161
+S_c 0.671419
+t_varT_c 0.270557
+scoreTest 2
+6 i
+rs17 marker
+12
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.006
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.948689
+StdStat: 0.0643527
+t_Tstat: -0.0772233
+t_var1: 1.44
+t_Tstat -0.0772233
+t_Tstat_ctemp    0.0029
+
+t_Tstat_c -0.0801418
+t_var1 1.44
+t_varT_ctemp    2.9327e-05
+
+t_varT_c 1.43997
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.00446029
+t_pval_c 0.196768
+t_pval_noSPA_str_c 9.467525E-01
+t_Beta_c -0.055655
+S_c -0.0801418
+t_varT_c 1.43997
+scoreTest 2
+7 i
+rs18 marker
+3
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0015
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.387238
+StdStat: 0.864636
+t_Tstat: -0.534407
+t_var1: 0.382012
+t_Tstat -0.534407
+t_Tstat_ctemp    0.0022
+
+t_Tstat_c -0.536588
+t_var1 0.382012
+t_varT_ctemp    1.6391e-05
+
+t_varT_c 0.381995
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.753745
+t_pval_c 0.946752
+t_pval_noSPA_str_c 3.852931E-01
+t_Beta_c -1.4047
+S_c -0.536588
+t_varT_c 0.381995
+scoreTest 2
+8 i
+rs19 marker
+0
+9 i
+rs20 marker
+620
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.381
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   38.8407
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.986075
+StdStat: 0.0174536
+t_Tstat: -0.105498
+t_var1: 36.536
+t_Tstat -0.105498
+t_Tstat_ctemp   -0.0661
+
+t_Tstat_c -0.039352
+t_var1 36.536
+t_varT_ctemp    0.0151
+
+t_varT_c 36.521
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 4.24024e-05
+t_pval_c 0.385293
+t_pval_noSPA_str_c 9.948044E-01
+t_Beta_c -0.00107752
+S_c -0.039352
+t_varT_c 36.521
+scoreTest 2
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-06 16:06:34) ---- Analyzing Chunk 3/10: chrom InitialChunk ---- 
+[1] "plink"
+ [1] 20 21 22 23 24 25 26 27 28 29
+[1] "binary"
+[1] TRUE
+Completed 0/10 markers in the chunk.
+0 i
+rs21 marker
+0
+1 i
+rs22 marker
+409
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.2295
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   28.1773
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.45733
+StdStat: 0.743251
+t_Tstat: 3.82651
+t_var1: 26.5054
+t_Tstat 3.82651
+t_Tstat_ctemp    0.0670
+
+t_Tstat_c 3.75954
+t_var1 26.5054
+t_varT_ctemp    0.0154
+
+t_varT_c 26.49
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.533567
+t_pval_c 6.94635e-310
+t_pval_noSPA_str_c 4.651111E-01
+t_Beta_c 0.141923
+S_c 3.75954
+t_varT_c 26.49
+scoreTest 2
+2 i
+rs23 marker
+509
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.3035
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   34.8815
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.0107781
+StdStat: 2.54981
+t_Tstat: -14.6057
+t_var1: 32.8118
+scoreTest 1b
+scoreTest 1b3509
+scoreTest 1c
+t_Tstat -14.6057
+t_Tstat_ctemp    0.1510
+
+t_Tstat_c -14.7568
+t_var1 32.8118
+t_varT_ctemp    0.0786
+
+t_varT_c 32.7332
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 6.65263
+t_pval_c 0.465111
+t_pval_noSPA_str_c 9.900958E-03
+t_Beta_c -0.450819
+S_c -14.7568
+t_varT_c 32.7332
+scoreTest 2
+3 i
+rs24 marker
+0
+4 i
+rs25 marker
+0
+5 i
+rs26 marker
+754
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.498
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   39.8008
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.0707935
+StdStat: 1.8068
+t_Tstat: 11.0554
+t_var1: 37.4392
+t_Tstat 11.0554
+t_Tstat_ctemp   -0.0611
+
+t_Tstat_c 11.1165
+t_var1 37.4392
+t_varT_ctemp    0.0128
+
+t_varT_c 37.4264
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 3.30183
+t_pval_c 0.00994155
+t_pval_noSPA_str_c 6.920280E-02
+t_Beta_c 0.297022
+S_c 11.1165
+t_varT_c 37.4264
+scoreTest 2
+6 i
+rs27 marker
+224
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.117
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   15.9588
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.386083
+StdStat: 0.866743
+t_Tstat: -3.35821
+t_var1: 15.0118
+t_Tstat -3.35821
+t_Tstat_ctemp   -0.0083
+
+t_Tstat_c -3.34986
+t_var1 15.0118
+t_varT_ctemp    0.0002
+
+t_varT_c 15.0116
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.747525
+t_pval_c 0.0692028
+t_pval_noSPA_str_c 3.872608E-01
+t_Beta_c -0.223151
+S_c -3.34986
+t_varT_c 15.0116
+scoreTest 2
+7 i
+rs28 marker
+1
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0005
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.881126
+StdStat: 0.149542
+t_Tstat: -0.0205518
+t_var1: 0.0188876
+t_Tstat -0.0205518
+t_Tstat_ctemp   -7.2347e-05
+
+t_Tstat_c -0.0204795
+t_var1 0.0188876
+t_varT_ctemp    1.8022e-08
+
+t_varT_c 0.0188876
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.0222056
+t_pval_c 0.387261
+t_pval_noSPA_str_c 8.815415E-01
+t_Beta_c -1.08428
+S_c -0.0204795
+t_varT_c 0.0188876
+scoreTest 2
+8 i
+rs29 marker
+462
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.2655
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   30.3119
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.341242
+StdStat: 0.951715
+t_Tstat: -5.08196
+t_var1: 28.5134
+t_Tstat -5.08196
+t_Tstat_ctemp    0.0210
+
+t_Tstat_c -5.10298
+t_var1 28.5134
+t_varT_ctemp    0.0015
+
+t_varT_c 28.5118
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.913317
+t_pval_c 0.881541
+t_pval_noSPA_str_c 3.392358E-01
+t_Beta_c -0.178977
+S_c -5.10298
+t_varT_c 28.5118
+scoreTest 2
+9 i
+rs30 marker
+312
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.1755
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   23.9386
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.520113
+StdStat: 0.643171
+t_Tstat: -3.05206
+t_var1: 22.5182
+t_Tstat -3.05206
+t_Tstat_ctemp   -0.1428
+
+t_Tstat_c -2.90929
+t_var1 22.5182
+t_varT_ctemp    0.0702
+
+t_varT_c 22.448
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.377046
+t_pval_c 0.339236
+t_pval_noSPA_str_c 5.391882E-01
+t_Beta_c -0.129601
+S_c -2.90929
+t_varT_c 22.448
+scoreTest 2
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-06 16:06:34) ---- Analyzing Chunk 4/10: chrom InitialChunk ---- 
+[1] "plink"
+ [1] 30 31 32 33 34 35 36 37 38 39
+[1] "binary"
+[1] TRUE
+Completed 0/10 markers in the chunk.
+0 i
+rs31 marker
+16
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.008
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.273783
+StdStat: 1.09439
+t_Tstat: -1.01677
+t_var1: 0.863184
+t_Tstat -1.01677
+t_Tstat_ctemp    0.0022
+
+t_Tstat_c -1.01893
+t_var1 0.863184
+t_varT_ctemp    1.5984e-05
+
+t_varT_c 0.863168
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.2028
+t_pval_c 6.94635e-310
+t_pval_noSPA_str_c 2.727630E-01
+t_Beta_c -1.18045
+S_c -1.01893
+t_varT_c 0.863168
+scoreTest 2
+1 i
+rs32 marker
+1
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0005
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.232521
+StdStat: 1.19389
+t_Tstat: 0.570029
+t_var1: 0.227963
+t_Tstat 0.570029
+t_Tstat_ctemp    0.0005
+
+t_Tstat_c 0.569575
+t_var1 0.227963
+t_varT_ctemp    7.0928e-07
+
+t_varT_c 0.227962
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.42311
+t_pval_c 0.272763
+t_pval_noSPA_str_c 2.328923E-01
+t_Beta_c 2.49855
+S_c 0.569575
+t_varT_c 0.227962
+scoreTest 2
+2 i
+rs33 marker
+17
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0085
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.655859
+StdStat: 0.445637
+t_Tstat: -0.485873
+t_var1: 1.18873
+t_Tstat -0.485873
+t_Tstat_ctemp    0.0022
+
+t_Tstat_c -0.488094
+t_var1 1.18873
+t_varT_ctemp    1.6988e-05
+
+t_varT_c 1.18871
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.200415
+t_pval_c 0.232892
+t_pval_noSPA_str_c 6.543857E-01
+t_Beta_c -0.410608
+S_c -0.488094
+t_varT_c 1.18871
+scoreTest 2
+3 i
+rs34 marker
+4
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.002
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.293218
+StdStat: 1.05109
+t_Tstat: 0.597437
+t_var1: 0.323078
+t_Tstat 0.597437
+t_Tstat_ctemp    0.0005
+
+t_Tstat_c 0.596903
+t_var1 0.323078
+t_varT_ctemp    9.8343e-07
+
+t_varT_c 0.323077
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.10281
+t_pval_c 0.654386
+t_pval_noSPA_str_c 2.936496E-01
+t_Beta_c 1.84756
+S_c 0.596903
+t_varT_c 0.323077
+scoreTest 2
+4 i
+rs35 marker
+5
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0025
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.562019
+StdStat: 0.579845
+t_Tstat: -0.288076
+t_var1: 0.246825
+t_Tstat -0.288076
+t_Tstat_ctemp    0.0025
+
+t_Tstat_c -0.290573
+t_var1 0.246825
+t_varT_ctemp    2.1477e-05
+
+t_varT_c 0.246804
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.342106
+t_pval_c 0.29365
+t_pval_noSPA_str_c 5.586164E-01
+t_Beta_c -1.17735
+S_c -0.290573
+t_varT_c 0.246804
+scoreTest 2
+5 i
+rs36 marker
+0
+6 i
+rs37 marker
+34
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.017
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.528372
+StdStat: 0.630493
+t_Tstat: -0.949048
+t_var1: 2.26577
+t_Tstat -0.949048
+t_Tstat_ctemp    0.0050
+
+t_Tstat_c -0.954053
+t_var1 2.26577
+t_varT_ctemp    8.6254e-05
+
+t_varT_c 2.26568
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.401741
+t_pval_c 0.558616
+t_pval_noSPA_str_c 5.261914E-01
+t_Beta_c -0.421089
+S_c -0.954053
+t_varT_c 2.26568
+scoreTest 2
+7 i
+rs38 marker
+100
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.051
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   7.2950
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.00910912
+StdStat: 2.60793
+t_Tstat: 6.83166
+t_var1: 6.86216
+scoreTest 1b
+scoreTest 1b3100
+scoreTest 1c
+t_Tstat 6.83166
+t_Tstat_ctemp   -0.2867
+
+t_Tstat_c 7.11833
+t_var1 6.86216
+t_varT_ctemp    0.2830
+
+t_varT_c 6.5792
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 7.70165
+t_pval_c 0.526191
+t_pval_noSPA_str_c 5.517047E-03
+t_Beta_c 1.08195
+S_c 7.11833
+t_varT_c 6.5792
+scoreTest 2
+8 i
+rs39 marker
+0
+9 i
+rs40 marker
+0
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-06 16:06:34) ---- Analyzing Chunk 5/10: chrom InitialChunk ---- 
+[1] "plink"
+ [1] 40 41 42 43 44 45 46 47 48 49
+[1] "binary"
+[1] TRUE
+Completed 0/10 markers in the chunk.
+0 i
+rs41 marker
+0
+1 i
+rs42 marker
+1
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0005
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.809165
+StdStat: 0.241503
+t_Tstat: -0.0519053
+t_var1: 0.0461931
+t_Tstat -0.0519053
+t_Tstat_ctemp    0.0004
+
+t_Tstat_c -0.0523338
+t_var1 0.0461931
+t_varT_ctemp    6.3234e-07
+
+t_varT_c 0.0461925
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.0592917
+t_pval_c 6.94635e-310
+t_pval_noSPA_str_c 8.076190E-01
+t_Beta_c -1.13295
+S_c -0.0523338
+t_varT_c 0.0461925
+scoreTest 2
+2 i
+rs43 marker
+0
+3 i
+rs44 marker
+1
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0005
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.000111818
+StdStat: 3.8634
+t_Tstat: 0.933351
+t_var1: 0.0583647
+scoreTest 1b
+scoreTest 1b31
+scoreTest 1c
+t_Tstat 0.933351
+t_Tstat_ctemp    0.0006
+
+t_Tstat_c 0.932801
+t_var1 0.0583647
+t_varT_ctemp    1.0417e-06
+
+t_varT_c 0.0583637
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 14.9086
+t_pval_c 0.807619
+t_pval_noSPA_str_c 1.128497E-04
+t_Beta_c 15.9826
+S_c 0.932801
+t_varT_c 0.0583637
+scoreTest 2
+4 i
+rs45 marker
+5
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0025
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.304183
+StdStat: 1.0275
+t_Tstat: -0.765852
+t_var1: 0.555549
+t_Tstat -0.765852
+t_Tstat_ctemp    0.0007
+
+t_Tstat_c -0.766507
+t_var1 0.555549
+t_varT_ctemp    1.4790e-06
+
+t_varT_c 0.555547
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.05758
+t_pval_c 0.000523142
+t_pval_noSPA_str_c 3.037686E-01
+t_Beta_c -1.37973
+S_c -0.766507
+t_varT_c 0.555547
+scoreTest 2
+5 i
+rs46 marker
+8
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.004
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.239131
+StdStat: 1.17716
+t_Tstat: -1.03452
+t_var1: 0.772332
+t_Tstat -1.03452
+t_Tstat_ctemp    0.0007
+
+t_Tstat_c -1.03525
+t_var1 0.772332
+t_varT_ctemp    1.8355e-06
+
+t_varT_c 0.77233
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.38767
+t_pval_c 0.303769
+t_pval_noSPA_str_c 2.387987E-01
+t_Beta_c -1.34042
+S_c -1.03525
+t_varT_c 0.77233
+scoreTest 2
+6 i
+rs47 marker
+0
+7 i
+rs48 marker
+492
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.29
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   33.3092
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.142415
+StdStat: 1.46686
+t_Tstat: -8.21083
+t_var1: 31.3328
+t_Tstat -8.21083
+t_Tstat_ctemp   -0.0202
+
+t_Tstat_c -8.19065
+t_var1 31.3328
+t_varT_ctemp    0.0014
+
+t_varT_c 31.3314
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 2.1412
+t_pval_c 0.238799
+t_pval_noSPA_str_c 1.433895E-01
+t_Beta_c -0.26142
+S_c -8.19065
+t_varT_c 31.3314
+scoreTest 2
+8 i
+rs49 marker
+7
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0035
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.442706
+StdStat: 0.767632
+t_Tstat: -0.50284
+t_var1: 0.429095
+t_Tstat -0.50284
+t_Tstat_ctemp    0.0006
+
+t_Tstat_c -0.503407
+t_var1 0.429095
+t_varT_ctemp    1.1069e-06
+
+t_varT_c 0.429094
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.59059
+t_pval_c 0.14339
+t_pval_noSPA_str_c 4.421909E-01
+t_Beta_c -1.17319
+S_c -0.503407
+t_varT_c 0.429094
+scoreTest 2
+9 i
+rs50 marker
+136
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0725
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   11.1975
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.669992
+StdStat: 0.426159
+t_Tstat: -1.38309
+t_var1: 10.5331
+t_Tstat -1.38309
+t_Tstat_ctemp    0.0294
+
+t_Tstat_c -1.4125
+t_var1 10.5331
+t_varT_ctemp    0.0030
+
+t_varT_c 10.5301
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.189473
+t_pval_c 0.442191
+t_pval_noSPA_str_c 6.633558E-01
+t_Beta_c -0.13414
+S_c -1.4125
+t_varT_c 10.5301
+scoreTest 2
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-06 16:06:34) ---- Analyzing Chunk 6/10: chrom InitialChunk ---- 
+[1] "plink"
+ [1] 50 51 52 53 54 55 56 57 58 59
+[1] "binary"
+[1] TRUE
+Completed 0/10 markers in the chunk.
+0 i
+rs51 marker
+0
+1 i
+rs52 marker
+0
+2 i
+rs53 marker
+0
+3 i
+rs54 marker
+207
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.108
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   14.6422
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.138936
+StdStat: 1.47976
+t_Tstat: -5.49177
+t_var1: 13.7734
+t_Tstat -5.49177
+t_Tstat_ctemp    0.0544
+
+t_Tstat_c -5.54616
+t_var1 13.7734
+t_varT_ctemp    0.0102
+
+t_varT_c 13.7632
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 2.23494
+t_pval_c 6.94635e-310
+t_pval_noSPA_str_c 1.349223E-01
+t_Beta_c -0.40297
+S_c -5.54616
+t_varT_c 13.7632
+scoreTest 2
+4 i
+rs55 marker
+1
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0005
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.738059
+StdStat: 0.334425
+t_Tstat: -0.0950142
+t_var1: 0.0807197
+t_Tstat -0.0950142
+t_Tstat_ctemp   -7.1418e-05
+
+t_Tstat_c -0.0949428
+t_var1 0.0807197
+t_varT_ctemp    1.7562e-08
+
+t_varT_c 0.0807197
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.111672
+t_pval_c 0.134922
+t_pval_noSPA_str_c 7.382484E-01
+t_Beta_c -1.1762
+S_c -0.0949428
+t_varT_c 0.0807197
+scoreTest 2
+5 i
+rs56 marker
+2
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.001
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.00974698
+StdStat: 2.58468
+t_Tstat: 1.44978
+t_var1: 0.314623
+scoreTest 1b
+scoreTest 1b32
+scoreTest 1c
+t_Tstat 1.44978
+t_Tstat_ctemp    0.0013
+
+t_Tstat_c 1.44843
+t_var1 0.314623
+t_varT_ctemp    6.2278e-06
+
+t_varT_c 0.314617
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 6.66831
+t_pval_c 0.738248
+t_pval_noSPA_str_c 9.814235E-03
+t_Beta_c 4.6038
+S_c 1.44843
+t_varT_c 0.314617
+scoreTest 2
+6 i
+rs57 marker
+328
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.183
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   24.8004
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.217328
+StdStat: 1.23366
+t_Tstat: -5.95859
+t_var1: 23.3288
+t_Tstat -5.95859
+t_Tstat_ctemp   -0.3517
+
+t_Tstat_c -5.60692
+t_var1 23.3288
+t_varT_ctemp    0.4258
+
+t_varT_c 22.903
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.37264
+t_pval_c 0.0117853
+t_pval_noSPA_str_c 2.413589E-01
+t_Beta_c -0.244812
+S_c -5.60692
+t_varT_c 22.903
+scoreTest 2
+7 i
+rs58 marker
+5
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0025
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.522592
+StdStat: 0.639354
+t_Tstat: 0.428627
+t_var1: 0.449444
+t_Tstat 0.428627
+t_Tstat_ctemp    0.0027
+
+t_Tstat_c 0.425877
+t_var1 0.449444
+t_varT_ctemp    2.6036e-05
+
+t_varT_c 0.449418
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.403569
+t_pval_c 0.241359
+t_pval_noSPA_str_c 5.252516E-01
+t_Beta_c 0.947619
+S_c 0.425877
+t_varT_c 0.449418
+scoreTest 2
+8 i
+rs59 marker
+0
+9 i
+rs60 marker
+11
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0055
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.199336
+StdStat: 1.28345
+t_Tstat: 1.35155
+t_var1: 1.10894
+t_Tstat 1.35155
+t_Tstat_ctemp    0.0027
+
+t_Tstat_c 1.34883
+t_var1 1.10894
+t_varT_ctemp    2.5516e-05
+
+t_varT_c 1.10892
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.64064
+t_pval_c 0.525252
+t_pval_noSPA_str_c 2.002375E-01
+t_Beta_c 1.21635
+S_c 1.34883
+t_varT_c 1.10892
+scoreTest 2
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-06 16:06:34) ---- Analyzing Chunk 7/10: chrom InitialChunk ---- 
+[1] "plink"
+ [1] 60 61 62 63 64 65 66 67 68 69
+[1] "binary"
+[1] TRUE
+Completed 0/10 markers in the chunk.
+0 i
+rs61 marker
+3
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0015
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.525455
+StdStat: 0.634959
+t_Tstat: -0.328642
+t_var1: 0.267889
+t_Tstat -0.328642
+t_Tstat_ctemp    0.0005
+
+t_Tstat_c -0.329129
+t_var1 0.267889
+t_varT_ctemp    8.1536e-07
+
+t_varT_c 0.267888
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.40437
+t_pval_c 6.94635e-310
+t_pval_noSPA_str_c 5.248412E-01
+t_Beta_c -1.2286
+S_c -0.329129
+t_varT_c 0.267888
+scoreTest 2
+1 i
+rs62 marker
+1
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0005
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.770565
+StdStat: 0.291636
+t_Tstat: -0.0739185
+t_var1: 0.0642429
+t_Tstat -0.0739185
+t_Tstat_ctemp   -9.5596e-05
+
+t_Tstat_c -0.0738229
+t_var1 0.0642429
+t_varT_ctemp    3.1466e-08
+
+t_varT_c 0.0642428
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.0848316
+t_pval_c 0.524841
+t_pval_noSPA_str_c 7.708536E-01
+t_Beta_c -1.14912
+S_c -0.0738229
+t_varT_c 0.0642428
+scoreTest 2
+2 i
+rs63 marker
+0
+3 i
+rs64 marker
+670
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.4345
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   42.2856
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.161593
+StdStat: 1.39973
+t_Tstat: 8.82793
+t_var1: 39.7765
+t_Tstat 8.82793
+t_Tstat_ctemp   -0.2717
+
+t_Tstat_c 9.09966
+t_var1 39.7765
+t_varT_ctemp    0.2542
+
+t_varT_c 39.5223
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 2.09512
+t_pval_c 0.770854
+t_pval_noSPA_str_c 1.477706E-01
+t_Beta_c 0.230241
+S_c 9.09966
+t_varT_c 39.5223
+scoreTest 2
+4 i
+rs65 marker
+5
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0025
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.56415
+StdStat: 0.576688
+t_Tstat: -0.290291
+t_var1: 0.253388
+t_Tstat -0.290291
+t_Tstat_ctemp    0.0016
+
+t_Tstat_c -0.291874
+t_var1 0.253388
+t_varT_ctemp    8.6253e-06
+
+t_varT_c 0.253379
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.336217
+t_pval_c 0.147771
+t_pval_noSPA_str_c 5.620210E-01
+t_Beta_c -1.15193
+S_c -0.291874
+t_varT_c 0.253379
+scoreTest 2
+5 i
+rs66 marker
+481
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.2835
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   35.3998
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.486843
+StdStat: 0.695338
+t_Tstat: 4.01249
+t_var1: 33.2994
+t_Tstat 4.01249
+t_Tstat_ctemp    0.1422
+
+t_Tstat_c 3.87029
+t_var1 33.2994
+t_varT_ctemp    0.0696
+
+t_varT_c 33.2297
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.450776
+t_pval_c 0.562021
+t_pval_noSPA_str_c 5.019669E-01
+t_Beta_c 0.116471
+S_c 3.87029
+t_varT_c 33.2297
+scoreTest 2
+6 i
+rs67 marker
+0
+7 i
+rs68 marker
+472
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.2725
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   32.1302
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.944795
+StdStat: 0.0692444
+t_Tstat: -0.380679
+t_var1: 30.2238
+t_Tstat -0.380679
+t_Tstat_ctemp   -0.0137
+
+t_Tstat_c -0.366944
+t_var1 30.2238
+t_varT_ctemp    0.0006
+
+t_varT_c 30.2231
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.00445512
+t_pval_c 0.501967
+t_pval_noSPA_str_c 9.467834E-01
+t_Beta_c -0.0121412
+S_c -0.366944
+t_varT_c 30.2231
+scoreTest 2
+8 i
+rs69 marker
+0
+9 i
+rs70 marker
+12
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.006
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.901395
+StdStat: 0.1239
+t_Tstat: -0.118029
+t_var1: 0.907482
+t_Tstat -0.118029
+t_Tstat_ctemp    0.0038
+
+t_Tstat_c -0.121809
+t_var1 0.907482
+t_varT_ctemp    4.9187e-05
+
+t_varT_c 0.907433
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.016351
+t_pval_c 0.946783
+t_pval_noSPA_str_c 8.982512E-01
+t_Beta_c -0.134235
+S_c -0.121809
+t_varT_c 0.907433
+scoreTest 2
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-06 16:06:34) ---- Analyzing Chunk 8/10: chrom InitialChunk ---- 
+[1] "plink"
+ [1] 70 71 72 73 74 75 76 77 78 79
+[1] "binary"
+[1] TRUE
+Completed 0/10 markers in the chunk.
+0 i
+rs71 marker
+45
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0225
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.639078
+StdStat: 0.468989
+t_Tstat: 0.895342
+t_var1: 3.64463
+t_Tstat 0.895342
+t_Tstat_ctemp    0.0116
+
+t_Tstat_c 0.88373
+t_var1 3.64463
+t_varT_ctemp    0.0005
+
+t_varT_c 3.64416
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.21431
+t_pval_c 6.94635e-310
+t_pval_noSPA_str_c 6.434103E-01
+t_Beta_c 0.242506
+S_c 0.88373
+t_varT_c 3.64416
+scoreTest 2
+1 i
+rs72 marker
+3
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0015
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.600803
+StdStat: 0.523246
+t_Tstat: -0.234988
+t_var1: 0.201688
+t_Tstat -0.234988
+t_Tstat_ctemp    0.0003
+
+t_Tstat_c -0.235251
+t_var1 0.201688
+t_varT_ctemp    2.3798e-07
+
+t_varT_c 0.201688
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.2744
+t_pval_c 0.64341
+t_pval_noSPA_str_c 6.003954E-01
+t_Beta_c -1.16641
+S_c -0.235251
+t_varT_c 0.201688
+scoreTest 2
+2 i
+rs73 marker
+0
+3 i
+rs74 marker
+7
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0035
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.748787
+StdStat: 0.320239
+t_Tstat: 0.217454
+t_var1: 0.461091
+t_Tstat 0.217454
+t_Tstat_ctemp    0.0025
+
+t_Tstat_c 0.214984
+t_var1 0.461091
+t_varT_ctemp    2.1009e-05
+
+t_varT_c 0.46107
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.100241
+t_pval_c 0.600395
+t_pval_noSPA_str_c 7.515404E-01
+t_Beta_c 0.466272
+S_c 0.214984
+t_varT_c 0.46107
+scoreTest 2
+4 i
+rs75 marker
+58
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.03
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.830313
+StdStat: 0.2143
+t_Tstat: -0.480326
+t_var1: 5.02376
+t_Tstat -0.480326
+t_Tstat_ctemp    0.0165
+
+t_Tstat_c -0.496803
+t_var1 5.02376
+t_varT_ctemp    0.0009
+
+t_varT_c 5.02283
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.0491384
+t_pval_c 0.75154
+t_pval_noSPA_str_c 8.245694E-01
+t_Beta_c -0.0989091
+S_c -0.496803
+t_varT_c 5.02283
+scoreTest 2
+5 i
+rs76 marker
+2
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.001
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.566931
+StdStat: 0.572578
+t_Tstat: -0.254936
+t_var1: 0.198242
+t_Tstat -0.254936
+t_Tstat_ctemp    0.0006
+
+t_Tstat_c -0.255511
+t_var1 0.198242
+t_varT_ctemp    1.1385e-06
+
+t_varT_c 0.198241
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.329328
+t_pval_c 0.824569
+t_pval_noSPA_str_c 5.660553E-01
+t_Beta_c -1.2889
+S_c -0.255511
+t_varT_c 0.198241
+scoreTest 2
+6 i
+rs77 marker
+2
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.001
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.637949
+StdStat: 0.470568
+t_Tstat: -0.183927
+t_var1: 0.152773
+t_Tstat -0.183927
+t_Tstat_ctemp    0.0012
+
+t_Tstat_c -0.185079
+t_var1 0.152773
+t_varT_ctemp    4.5687e-06
+
+t_varT_c 0.152769
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.224223
+t_pval_c 0.566055
+t_pval_noSPA_str_c 6.358409E-01
+t_Beta_c -1.2115
+S_c -0.185079
+t_varT_c 0.152769
+scoreTest 2
+7 i
+rs78 marker
+2
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.001
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.563882
+StdStat: 0.577085
+t_Tstat: -0.269416
+t_var1: 0.217955
+t_Tstat -0.269416
+t_Tstat_ctemp    0.0014
+
+t_Tstat_c -0.270775
+t_var1 0.217955
+t_varT_ctemp    6.3545e-06
+
+t_varT_c 0.217949
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.336404
+t_pval_c 0.635841
+t_pval_noSPA_str_c 5.619126E-01
+t_Beta_c -1.24237
+S_c -0.270775
+t_varT_c 0.217949
+scoreTest 2
+8 i
+rs79 marker
+22
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.011
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.575322
+StdStat: 0.56023
+t_Tstat: 0.742835
+t_var1: 1.75813
+t_Tstat 0.742835
+t_Tstat_ctemp    0.0060
+
+t_Tstat_c 0.736836
+t_var1 1.75813
+t_varT_ctemp    0.0001
+
+t_varT_c 1.75801
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.308831
+t_pval_c 0.561913
+t_pval_noSPA_str_c 5.783983E-01
+t_Beta_c 0.419132
+S_c 0.736836
+t_varT_c 1.75801
+scoreTest 2
+9 i
+rs80 marker
+0
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-06 16:06:34) ---- Analyzing Chunk 9/10: chrom InitialChunk ---- 
+[1] "plink"
+ [1] 80 81 82 83 84 85 86 87 88 89
+[1] "binary"
+[1] TRUE
+Completed 0/10 markers in the chunk.
+0 i
+rs81 marker
+289
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.157
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   22.0551
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.309931
+StdStat: 1.01537
+t_Tstat: 4.62482
+t_var1: 20.7464
+t_Tstat 4.62482
+t_Tstat_ctemp   -0.0850
+
+t_Tstat_c 4.70986
+t_var1 20.7464
+t_varT_ctemp    0.0249
+
+t_varT_c 20.7215
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.07052
+t_pval_c 6.94635e-310
+t_pval_noSPA_str_c 3.008282E-01
+t_Beta_c 0.227293
+S_c 4.70986
+t_varT_c 20.7215
+scoreTest 2
+1 i
+rs82 marker
+0
+2 i
+rs83 marker
+48
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.024
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.0617659
+StdStat: 1.86797
+t_Tstat: -3.44751
+t_var1: 3.40619
+t_Tstat -3.44751
+t_Tstat_ctemp    0.0119
+
+t_Tstat_c -3.45942
+t_var1 3.40619
+t_varT_ctemp    0.0005
+
+t_varT_c 3.4057
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 3.51399
+t_pval_c 0.300828
+t_pval_noSPA_str_c 6.085288E-02
+t_Beta_c -1.01577
+S_c -3.45942
+t_varT_c 3.4057
+scoreTest 2
+3 i
+rs84 marker
+2
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.001
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.574091
+StdStat: 0.562036
+t_Tstat: -0.241364
+t_var1: 0.184423
+t_Tstat -0.241364
+t_Tstat_ctemp    0.0004
+
+t_Tstat_c -0.241736
+t_var1 0.184423
+t_varT_ctemp    4.7661e-07
+
+t_varT_c 0.184422
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.31686
+t_pval_c 0.0608529
+t_pval_noSPA_str_c 5.735005E-01
+t_Beta_c -1.31077
+S_c -0.241736
+t_varT_c 0.184422
+scoreTest 2
+4 i
+rs85 marker
+2
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.001
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.620027
+StdStat: 0.495812
+t_Tstat: -0.198629
+t_var1: 0.160491
+t_Tstat -0.198629
+t_Tstat_ctemp    0.0003
+
+t_Tstat_c -0.198933
+t_var1 0.160491
+t_varT_ctemp    3.1815e-07
+
+t_varT_c 0.160491
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.246583
+t_pval_c 0.5735
+t_pval_noSPA_str_c 6.194916E-01
+t_Beta_c -1.23953
+S_c -0.198933
+t_varT_c 0.160491
+scoreTest 2
+5 i
+rs86 marker
+285
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.152
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   20.5232
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.300177
+StdStat: 1.03605
+t_Tstat: 4.5522
+t_var1: 19.3054
+t_Tstat 4.5522
+t_Tstat_ctemp    0.0832
+
+t_Tstat_c 4.46905
+t_var1 19.3054
+t_varT_ctemp    0.0238
+
+t_varT_c 19.2816
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.03582
+t_pval_c 0.619492
+t_pval_noSPA_str_c 3.087947E-01
+t_Beta_c 0.231777
+S_c 4.46905
+t_varT_c 19.2816
+scoreTest 2
+6 i
+rs87 marker
+0
+7 i
+rs88 marker
+0
+8 i
+rs89 marker
+1
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0005
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.779755
+StdStat: 0.279638
+t_Tstat: -0.0683528
+t_var1: 0.0597474
+t_Tstat -0.0683528
+t_Tstat_ctemp   -0.0001
+
+t_Tstat_c -0.0682472
+t_var1 0.0597474
+t_varT_ctemp    3.8440e-08
+
+t_varT_c 0.0597474
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.0779561
+t_pval_c 0.308795
+t_pval_noSPA_str_c 7.800866E-01
+t_Beta_c -1.14226
+S_c -0.0682472
+t_varT_c 0.0597474
+scoreTest 2
+9 i
+rs90 marker
+127
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0675
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   11.1299
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.98402
+StdStat: 0.0200296
+t_Tstat: -0.064809
+t_var1: 10.4695
+t_Tstat -0.064809
+t_Tstat_ctemp    0.0316
+
+t_Tstat_c -0.0964107
+t_var1 10.4695
+t_varT_ctemp    0.0034
+
+t_varT_c 10.4661
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.000888107
+t_pval_c 0.780087
+t_pval_noSPA_str_c 9.762257E-01
+t_Beta_c -0.00921171
+S_c -0.0964107
+t_varT_c 10.4661
+scoreTest 2
+[1] "write Output 1"
+[1] "write Output 2"
+(2022-01-06 16:06:34) ---- Analyzing Chunk 10/10: chrom InitialChunk ---- 
+[1] "plink"
+ [1] 90 91 92 93 94 95 96 97 98 99
+[1] "binary"
+[1] TRUE
+Completed 0/10 markers in the chunk.
+0 i
+rs91 marker
+13
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.0065
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.463601
+StdStat: 0.73293
+t_Tstat: 0.72717
+t_var1: 0.984345
+t_Tstat 0.72717
+t_Tstat_ctemp    0.0032
+
+t_Tstat_c 0.72394
+t_var1 0.984345
+t_varT_ctemp    3.5911e-05
+
+t_varT_c 0.984309
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.532444
+t_pval_c 6.94635e-310
+t_pval_noSPA_str_c 4.655810E-01
+t_Beta_c 0.735481
+S_c 0.72394
+t_varT_c 0.984309
+scoreTest 2
+1 i
+rs92 marker
+204
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.1085
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   16.5484
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.297872
+StdStat: 1.04101
+t_Tstat: -4.10724
+t_var1: 15.5665
+t_Tstat -4.10724
+t_Tstat_ctemp    0.0537
+
+t_Tstat_c -4.16089
+t_var1 15.5665
+t_varT_ctemp    0.0099
+
+t_varT_c 15.5566
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.1129
+t_pval_c 0.465581
+t_pval_noSPA_str_c 2.914518E-01
+t_Beta_c -0.267468
+S_c -4.16089
+t_varT_c 15.5566
+scoreTest 2
+2 i
+rs93 marker
+0
+3 i
+rs94 marker
+580
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.3495
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   37.1539
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.727847
+StdStat: 0.347991
+t_Tstat: -2.05725
+t_var1: 34.9494
+t_Tstat -2.05725
+t_Tstat_ctemp    0.1823
+
+t_Tstat_c -2.23951
+t_var1 34.9494
+t_varT_ctemp    0.1144
+
+t_varT_c 34.835
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.143976
+t_pval_c 0.291452
+t_pval_noSPA_str_c 7.043595E-01
+t_Beta_c -0.0642892
+S_c -2.23951
+t_varT_c 34.835
+scoreTest 2
+4 i
+rs95 marker
+0
+5 i
+rs96 marker
+206
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.1095
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   16.4884
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.209187
+StdStat: 1.2558
+t_Tstat: 4.9457
+t_var1: 15.51
+t_Tstat 4.9457
+t_Tstat_ctemp    0.0479
+
+t_Tstat_c 4.8978
+t_var1 15.51
+t_varT_ctemp    0.0079
+
+t_varT_c 15.5021
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 1.54743
+t_pval_c 0.70436
+t_pval_noSPA_str_c 2.135154E-01
+t_Beta_c 0.315944
+S_c 4.8978
+t_varT_c 15.5021
+scoreTest 2
+6 i
+rs97 marker
+643
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.4005
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   38.7123
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.0905447
+StdStat: 1.69253
+t_Tstat: -10.2136
+t_var1: 36.4152
+t_Tstat -10.2136
+t_Tstat_ctemp   -0.2279
+
+t_Tstat_c -9.9857
+t_var1 36.4152
+t_varT_ctemp    0.1788
+
+t_varT_c 36.2364
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 2.75177
+t_pval_c 0.213515
+t_pval_noSPA_str_c 9.714694E-02
+t_Beta_c -0.275571
+S_c -9.9857
+t_varT_c 36.2364
+scoreTest 2
+7 i
+rs98 marker
+4
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.002
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTestFast
+pval_noadj: 0.575778
+StdStat: 0.559562
+t_Tstat: -0.261758
+t_var1: 0.218829
+t_Tstat -0.261758
+t_Tstat_ctemp    0.0009
+
+t_Tstat_c -0.262651
+t_var1 0.218829
+t_varT_ctemp    2.7437e-06
+
+t_varT_c 0.218826
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 0.315253
+t_pval_c 0.0971469
+t_pval_noSPA_str_c 5.744744E-01
+t_Beta_c -1.20027
+S_c -0.262651
+t_varT_c 0.218826
+scoreTest 2
+8 i
+rs99 marker
+267
+Unified_getMarkerPval 1
+getMarkerPval start
+t_altFreq 0.142
+m_flagSparseGRM 0
+is_region 0
+getMarkerPval start 2
+scoreTest
+here 0 1
+here 1 3
+   18.6738
+m_varRatioVal 0.940664
+here 1 2
+pval_noadj: 0.0502441
+StdStat: 1.95788
+t_Tstat: -8.20577
+t_var1: 17.5658
+t_Tstat -8.20577
+t_Tstat_ctemp   -0.0995
+
+t_Tstat_c -8.10631
+t_var1 17.5658
+t_varT_ctemp    0.0341
+
+t_varT_c 17.5317
+std::numeric_limits<double>::min() 2.22507e-308
+stat_c 3.7482
+t_pval_c 0.574474
+t_pval_noSPA_str_c 5.286445E-02
+t_Beta_c -0.46238
+S_c -8.10631
+t_varT_c 17.5317
+scoreTest 2
+9 i
+rs100 marker
+0
+[1] "write Output 1"
+[1] "write Output 2"
+[1] "Analysis done! The results have been saved to './plink_single_cond.txt'."

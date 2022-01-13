@@ -1,0 +1,495 @@
+R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+loaded via a namespace (and not attached):
+[1] compiler_4.1.2
+[1] "is_imputed_data"
+[1] "PKKKKKKKKKK"
+[1] FALSE
+Any dosages <=  0.2  for genetic variants with MAC <= 10 are set to be 0 in group tests
+group-based test will be performed
+Ultra rare variants with MAC <=  10  will be collpased for set-based tests in the 'absence or presence' way.  For the resulted collpased marker, any individual having  0.5 <= dosage <  1.5  for any ultra rare variant has 1 in the genotype vector, having dosage >=  1.5  for any ultra rare variant has 2 in the genotype vector, otherwise 0. 
+max_markers_region
+[1] 0.010 0.001 0.050 0.100
+max_markers_region2
+variance Ratio is  0.9999654 0.9999022 0.9998742 0.999806 0.9997225 0.9997364 0.9995841 0.9992256 
+[1] 1000 1000
+[1] "dim(sparseSigma)"
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+[1,]    0    2    3    6    7    8    9    1    2     3
+[2,]    0    0    0    0    0    0    0    1    1     1
+[1] TRUE
+Garbage collection 13 = 7+2+4 (level 2) ... 
+78.5 Mbytes of cons cells used (56%)
+19.3 Mbytes of vectors used (30%)
+[1] "Leave-one-chromosome-out is not applied"
+[1] "XV"         "XVX"        "XXVX_inv"   "XVX_inv"    "S_a"       
+[6] "XVX_inv_XV" "V"         
+HERE
+dosageFile type is  plink 
+allle order in the plink file is  alt-first .
+Reading bim file....
+Reading fam file....
+Setting position of samples in PLINK files....
+Start extracting marker-level information from 'groupFile' of ./group_plink.txt ....
+[1] "Analyzing Region of GENE1 (1/2)."
+[1] "rs1, rs2, rs3, rs4, rs5, rs6, rs7, rs8, rs9, rs10, rs11, rs12, rs13, rs14, rs15, rs16, rs17, rs18, rs19, rs20, rs21, rs22, rs23, rs24, rs25, rs26, rs27, rs28, rs29, rs30, rs31, rs32, rs33, rs34, rs35, rs36, rs37, rs38, rs39, rs40, rs41, rs42, rs43, rs44, rs45, rs46, rs47, rs48, rs49, rs50"
+Start analyzing chunk 0.....
+In chunks 0-0, 17 markers are ultra-rare and 9 markers are not ultra-rare.
+line 771
+In chunks 0-1, 12 are collapsed ultra-rare variant.
+Analyzing chunks (0/1, 0/1)........
+Analyzing chunks (1/1, 0/1)........
+Analyzing chunks (1/1, 1/1)........
+[1] "OKKKKKK1"
+ [1] "1:1:A:C"  "1:2:A:C"  "1:3:A:C"  "1:4:A:C"  "1:5:A:C"  "1:6:A:C" 
+ [7] "1:7:A:C"  "1:8:A:C"  "1:9:A:C"  "1:10:A:C" "1:11:A:C" "1:12:A:C"
+[13] "1:13:A:C" "1:14:A:C" "1:15:A:C" "1:16:A:C" "1:17:A:C" "1:18:A:C"
+[19] "1:19:A:C" "1:20:A:C" "1:21:A:C" "1:22:A:C" "1:23:A:C" "1:24:A:C"
+[25] "1:25:A:C" "1:26:A:C" "1:27:A:C" "1:28:A:C" "1:29:A:C" "1:30:A:C"
+[31] "1:31:A:C" "1:32:A:C" "1:33:A:C" "1:34:A:C" "1:35:A:C" "1:36:A:C"
+[37] "1:37:A:C" "1:38:A:C" "1:39:A:C" "1:40:A:C" "1:41:A:C" "1:42:A:C"
+[43] "1:43:A:C" "1:44:A:C" "1:45:A:C" "1:46:A:C" "1:47:A:C" "1:48:A:C"
+[49] "1:49:A:C" "1:50:A:C" "UR"       "UR"       "UR"       "UR"      
+[55] "UR"       "UR"       "UR"       "UR"       "UR"       "UR"      
+[61] "UR"       "UR"      
+ [1] "rs1"  "rs2"  "rs3"  "rs4"  "rs5"  "rs6"  "rs7"  "rs8"  "rs9"  "rs10"
+[11] "rs11" "rs12" "rs13" "rs14" "rs15" "rs16" "rs17" "rs18" "rs19" "rs20"
+[21] "rs21" "rs22" "rs23" "rs24" "rs25" "rs26" "rs27" "rs28" "rs29" "rs30"
+[31] "rs31" "rs32" "rs33" "rs34" "rs35" "rs36" "rs37" "rs38" "rs39" "rs40"
+[41] "rs41" "rs42" "rs43" "rs44" "rs45" "rs46" "rs47" "rs48" "rs49" "rs50"
+[51] "UR"   "UR"   "UR"   "UR"   "UR"   "UR"   "UR"   "UR"   "UR"   "UR"  
+[61] "UR"   "UR"  
+[1] "OKKKKKK2"
+[1] "info.Region"
+   CHR POS           MarkerID Allele1 Allele2 AC_Allele2 AF_Allele2 MissingRate
+1    1   1                rs1       A       C          0     0.0000           0
+2    1   2                rs2       A       C          0     0.0000           0
+3    1   3                rs3       A       C          2     0.0010           0
+4    1   4                rs4       A       C         20     0.0100           0
+5    1   5                rs5       A       C          0     0.0000           0
+6    1   6                rs6       A       C          0     0.0000           0
+7    1   7                rs7       A       C          0     0.0000           0
+8    1   8                rs8       A       C          3     0.0015           0
+9    1   9                rs9       A       C          4     0.0020           0
+10   1  10               rs10       A       C          4     0.0020           0
+11   1  11               rs11       A       C          2     0.0010           0
+12   1  12               rs12       A       C         30     0.0150           0
+13   1  13               rs13       A       C          2     0.0010           0
+14   1  14               rs14       A       C         75     0.0375           0
+15   1  15               rs15       A       C        244     0.1220           0
+16   1  16               rs16       A       C          3     0.0015           0
+17   1  17               rs17       A       C         12     0.0060           0
+18   1  18               rs18       A       C          3     0.0015           0
+19   1  19               rs19       A       C          0     0.0000           0
+20   1  20               rs20       A       C        762     0.3810           0
+21   1  21               rs21       A       C          0     0.0000           0
+22   1  22               rs22       A       C        459     0.2295           0
+23   1  23               rs23       A       C        607     0.3035           0
+24   1  24               rs24       A       C          0     0.0000           0
+25   1  25               rs25       A       C          0     0.0000           0
+26   1  26               rs26       A       C        996     0.4980           0
+27   1  27               rs27       A       C        234     0.1170           0
+28   1  28               rs28       A       C          1     0.0005           0
+29   1  29               rs29       A       C        531     0.2655           0
+30   1  30               rs30       A       C        351     0.1755           0
+31   1  31               rs31       A       C         16     0.0080           0
+32   1  32               rs32       A       C          1     0.0005           0
+33   1  33               rs33       A       C         17     0.0085           0
+34   1  34               rs34       A       C          4     0.0020           0
+35   1  35               rs35       A       C          5     0.0025           0
+36   1  36               rs36       A       C          0     0.0000           0
+37   1  37               rs37       A       C         34     0.0170           0
+38   1  38               rs38       A       C        102     0.0510           0
+39   1  39               rs39       A       C          0     0.0000           0
+40   1  40               rs40       A       C          0     0.0000           0
+41   1  41               rs41       A       C          0     0.0000           0
+42   1  42               rs42       A       C          1     0.0005           0
+43   1  43               rs43       A       C          0     0.0000           0
+44   1  44               rs44       A       C          1     0.0005           0
+45   1  45               rs45       A       C          5     0.0025           0
+46   1  46               rs46       A       C          8     0.0040           0
+47   1  47               rs47       A       C          0     0.0000           0
+48   1  48               rs48       A       C        580     0.2900           0
+49   1  49               rs49       A       C          7     0.0035           0
+50   1  50               rs50       A       C        145     0.0725           0
+51  UR  UR           lof:0.01      UR      UR         45     0.0225           0
+52  UR  UR          lof:0.001      UR      UR          5     0.0025           0
+53  UR  UR           lof:0.05      UR      UR         45     0.0225           0
+54  UR  UR            lof:0.1      UR      UR         45     0.0225           0
+55  UR  UR      missense:0.01      UR      UR         11     0.0055           0
+56  UR  UR     missense:0.001      UR      UR          5     0.0025           0
+57  UR  UR      missense:0.05      UR      UR         11     0.0055           0
+58  UR  UR       missense:0.1      UR      UR         11     0.0055           0
+59  UR  UR  lof;missense:0.01      UR      UR         54     0.0270           0
+60  UR  UR lof;missense:0.001      UR      UR         10     0.0050           0
+61  UR  UR  lof;missense:0.05      UR      UR         54     0.0270           0
+62  UR  UR   lof;missense:0.1      UR      UR         54     0.0270           0
+          BETA        SE       Tstat        var     p.value  p.value.NA
+1          NaN       NaN         NaN        NaN         NaN         NaN
+2          NaN       NaN         NaN        NaN         NaN         NaN
+3          NaN       NaN         NaN        NaN         NaN         NaN
+4  -0.06620871 0.7904151 -0.10597531  1.6006249 0.933243700 0.933243700
+5          NaN       NaN         NaN        NaN         NaN         NaN
+6          NaN       NaN         NaN        NaN         NaN         NaN
+7          NaN       NaN         NaN        NaN         NaN         NaN
+8          NaN       NaN         NaN        NaN         NaN         NaN
+9          NaN       NaN         NaN        NaN         NaN         NaN
+10         NaN       NaN         NaN        NaN         NaN         NaN
+11         NaN       NaN         NaN        NaN         NaN         NaN
+12 -0.08573217 0.6566201 -0.19884537  2.3193788 0.896118800 0.896118800
+13         NaN       NaN         NaN        NaN         NaN         NaN
+14 -0.06582540 0.4314987 -0.35353664  5.3708244 0.878752700 0.878752700
+15         NaN       NaN         NaN        NaN         NaN         NaN
+16         NaN       NaN         NaN        NaN         NaN         NaN
+17 -0.05462778 0.8410707 -0.07722332  1.4136275 0.948213600 0.948213600
+18         NaN       NaN         NaN        NaN         NaN         NaN
+19         NaN       NaN         NaN        NaN         NaN         NaN
+20         NaN       NaN         NaN        NaN         NaN         NaN
+21         NaN       NaN         NaN        NaN         NaN         NaN
+22         NaN       NaN         NaN        NaN         NaN         NaN
+23         NaN       NaN         NaN        NaN         NaN         NaN
+24         NaN       NaN         NaN        NaN         NaN         NaN
+25         NaN       NaN         NaN        NaN         NaN         NaN
+26         NaN       NaN         NaN        NaN         NaN         NaN
+27         NaN       NaN         NaN        NaN         NaN         NaN
+28         NaN       NaN         NaN        NaN         NaN         NaN
+29         NaN       NaN         NaN        NaN         NaN         NaN
+30         NaN       NaN         NaN        NaN         NaN         NaN
+31 -1.14917687 1.0631169 -1.01677496  0.8847854 0.279719100 0.279719100
+32         NaN       NaN         NaN        NaN         NaN         NaN
+33 -0.40132038 0.9088335 -0.48587279  1.2106856 0.658795000 0.658795000
+34         NaN       NaN         NaN        NaN         NaN         NaN
+35         NaN       NaN         NaN        NaN         NaN         NaN
+36         NaN       NaN         NaN        NaN         NaN         NaN
+37 -0.41308197 0.6597419 -0.94904789  2.2974808 0.531231900 0.531231900
+38  0.98387313 0.3794952  6.83166304  6.9436423 0.009525803 0.009525803
+39         NaN       NaN         NaN        NaN         NaN         NaN
+40         NaN       NaN         NaN        NaN         NaN         NaN
+41         NaN       NaN         NaN        NaN         NaN         NaN
+42         NaN       NaN         NaN        NaN         NaN         NaN
+43         NaN       NaN         NaN        NaN         NaN         NaN
+44         NaN       NaN         NaN        NaN         NaN         NaN
+45         NaN       NaN         NaN        NaN         NaN         NaN
+46         NaN       NaN         NaN        NaN         NaN         NaN
+47         NaN       NaN         NaN        NaN         NaN         NaN
+48         NaN       NaN         NaN        NaN         NaN         NaN
+49         NaN       NaN         NaN        NaN         NaN         NaN
+50 -0.13035212 0.3069973 -1.38308541 10.6103789 0.671125800 0.671125800
+51         NaN 0.5233419 -1.12041681  3.6511446 0.557632900 0.557632900
+52         NaN 1.5982251  1.38939757  0.3914931 0.039822882 0.026380090
+53         NaN 0.5233419 -1.12041681  3.6511446 0.557632900 0.557632900
+54         NaN 0.5233419 -1.12041681  3.6511446 0.557632900 0.557632900
+55         NaN 0.9645123  0.48088989  1.0749406 0.642773700 0.642773700
+56         NaN 1.5163792  0.34178664  0.4348949 0.604264200 0.604264200
+57         NaN 0.9645123  0.48088989  1.0749406 0.642773700 0.642773700
+58         NaN 0.9645123  0.48088989  1.0749406 0.642773700 0.642773700
+59         NaN 0.4807679 -1.09371047  4.3264244 0.599012700 0.599012700
+60         NaN 1.1033403  1.73118421  0.8214498 0.056122220 0.056122220
+61         NaN 0.4807679 -1.09371047  4.3264244 0.599012700 0.599012700
+62         NaN 0.4807679 -1.09371047  4.3264244 0.599012700 0.599012700
+   Is.SPA.converge  AF_ctrlVec N_caseVec N_ctrlVec
+1              NaN         NaN       NaN       NaN
+2              NaN         NaN       NaN       NaN
+3              NaN         NaN       NaN       NaN
+4      0.010204082 0.009977827        98       902
+5              NaN         NaN       NaN       NaN
+6              NaN         NaN       NaN       NaN
+7              NaN         NaN       NaN       NaN
+8              NaN         NaN       NaN       NaN
+9              NaN         NaN       NaN       NaN
+10             NaN         NaN       NaN       NaN
+11             NaN         NaN       NaN       NaN
+12     0.015306122 0.014966741        98       902
+13             NaN         NaN       NaN       NaN
+14     0.030612245 0.038248337        98       902
+15             NaN         NaN       NaN       NaN
+16             NaN         NaN       NaN       NaN
+17     0.010204082 0.005543237        98       902
+18             NaN         NaN       NaN       NaN
+19             NaN         NaN       NaN       NaN
+20             NaN         NaN       NaN       NaN
+21             NaN         NaN       NaN       NaN
+22             NaN         NaN       NaN       NaN
+23             NaN         NaN       NaN       NaN
+24             NaN         NaN       NaN       NaN
+25             NaN         NaN       NaN       NaN
+26             NaN         NaN       NaN       NaN
+27             NaN         NaN       NaN       NaN
+28             NaN         NaN       NaN       NaN
+29             NaN         NaN       NaN       NaN
+30             NaN         NaN       NaN       NaN
+31     0.000000000 0.008869180        98       902
+32             NaN         NaN       NaN       NaN
+33     0.005102041 0.008869180        98       902
+34             NaN         NaN       NaN       NaN
+35             NaN         NaN       NaN       NaN
+36             NaN         NaN       NaN       NaN
+37     0.010204082 0.017738359        98       902
+38     0.081632653 0.047671840        98       902
+39             NaN         NaN       NaN       NaN
+40             NaN         NaN       NaN       NaN
+41             NaN         NaN       NaN       NaN
+42             NaN         NaN       NaN       NaN
+43             NaN         NaN       NaN       NaN
+44             NaN         NaN       NaN       NaN
+45             NaN         NaN       NaN       NaN
+46             NaN         NaN       NaN       NaN
+47             NaN         NaN       NaN       NaN
+48             NaN         NaN       NaN       NaN
+49             NaN         NaN       NaN       NaN
+50     0.061224490 0.073725055        98       902
+51     0.020408163 0.022727273        98       902
+52     0.010204082 0.001662971        98       902
+53     0.020408163 0.022727273        98       902
+54     0.020408163 0.022727273        98       902
+55     0.010204082 0.004988914        98       902
+56     0.005102041 0.002217295        98       902
+57     0.010204082 0.004988914        98       902
+58     0.010204082 0.004988914        98       902
+59     0.025510204 0.027161863        98       902
+60     0.015306122 0.003880266        98       902
+61     0.025510204 0.027161863        98       902
+62     0.025510204 0.027161863        98       902
+[1] "write Output 1"
+[1] "write Output 2"
+[1] "Analyzing Region of GENE2 (2/2)."
+[1] "rs51, rs52, rs53, rs54, rs55, rs56, rs57, rs58, rs59, rs60, rs61, rs62, rs63, rs64, rs65, rs66, rs67, rs68, rs69, rs70, rs71, rs72, rs73, rs74, rs75, rs76, rs77, rs78, rs79, rs80, rs81, rs82, rs83, rs84, rs85, rs86, rs87, rs88, rs89, rs90, rs91, rs92, rs93, rs94, rs95, rs96, rs97, rs98, rs99, rs100"
+Start analyzing chunk 0.....
+In chunks 0-0, 15 markers are ultra-rare and 8 markers are not ultra-rare.
+line 771
+In chunks 0-1, 12 are collapsed ultra-rare variant.
+Analyzing chunks (0/1, 0/1)........
+Analyzing chunks (1/1, 0/1)........
+Analyzing chunks (1/1, 1/1)........
+[1] "OKKKKKK1"
+ [1] "1:51:A:C"  "1:52:A:C"  "1:53:A:C"  "1:54:A:C"  "1:55:A:C"  "1:56:A:C" 
+ [7] "1:57:A:C"  "1:58:A:C"  "1:59:A:C"  "1:60:A:C"  "1:61:A:C"  "1:62:A:C" 
+[13] "1:63:A:C"  "1:64:A:C"  "1:65:A:C"  "1:66:A:C"  "1:67:A:C"  "1:68:A:C" 
+[19] "1:69:A:C"  "1:70:A:C"  "1:71:A:C"  "1:72:A:C"  "1:73:A:C"  "1:74:A:C" 
+[25] "1:75:A:C"  "1:76:A:C"  "1:77:A:C"  "1:78:A:C"  "1:79:A:C"  "1:80:A:C" 
+[31] "1:81:A:C"  "1:82:A:C"  "1:83:A:C"  "1:84:A:C"  "1:85:A:C"  "1:86:A:C" 
+[37] "1:87:A:C"  "1:88:A:C"  "1:89:A:C"  "1:90:A:C"  "1:91:A:C"  "1:92:A:C" 
+[43] "1:93:A:C"  "1:94:A:C"  "1:95:A:C"  "1:96:A:C"  "1:97:A:C"  "1:98:A:C" 
+[49] "1:99:A:C"  "1:100:A:C" "UR"        "UR"        "UR"        "UR"       
+[55] "UR"        "UR"        "UR"        "UR"        "UR"        "UR"       
+[61] "UR"        "UR"       
+ [1] "rs51"  "rs52"  "rs53"  "rs54"  "rs55"  "rs56"  "rs57"  "rs58"  "rs59" 
+[10] "rs60"  "rs61"  "rs62"  "rs63"  "rs64"  "rs65"  "rs66"  "rs67"  "rs68" 
+[19] "rs69"  "rs70"  "rs71"  "rs72"  "rs73"  "rs74"  "rs75"  "rs76"  "rs77" 
+[28] "rs78"  "rs79"  "rs80"  "rs81"  "rs82"  "rs83"  "rs84"  "rs85"  "rs86" 
+[37] "rs87"  "rs88"  "rs89"  "rs90"  "rs91"  "rs92"  "rs93"  "rs94"  "rs95" 
+[46] "rs96"  "rs97"  "rs98"  "rs99"  "rs100" "UR"    "UR"    "UR"    "UR"   
+[55] "UR"    "UR"    "UR"    "UR"    "UR"    "UR"    "UR"    "UR"   
+[1] "OKKKKKK2"
+[1] "info.Region"
+   CHR POS           MarkerID Allele1 Allele2 AC_Allele2 AF_Allele2 MissingRate
+1    1  51               rs51       A       C          0     0.0000           0
+2    1  52               rs52       A       C          0     0.0000           0
+3    1  53               rs53       A       C          0     0.0000           0
+4    1  54               rs54       A       C        216     0.1080           0
+5    1  55               rs55       A       C          1     0.0005           0
+6    1  56               rs56       A       C          2     0.0010           0
+7    1  57               rs57       A       C        366     0.1830           0
+8    1  58               rs58       A       C          5     0.0025           0
+9    1  59               rs59       A       C          0     0.0000           0
+10   1  60               rs60       A       C         11     0.0055           0
+11   1  61               rs61       A       C          3     0.0015           0
+12   1  62               rs62       A       C          1     0.0005           0
+13   1  63               rs63       A       C          0     0.0000           0
+14   1  64               rs64       A       C        869     0.4345           0
+15   1  65               rs65       A       C          5     0.0025           0
+16   1  66               rs66       A       C        567     0.2835           0
+17   1  67               rs67       A       C          0     0.0000           0
+18   1  68               rs68       A       C        545     0.2725           0
+19   1  69               rs69       A       C          0     0.0000           0
+20   1  70               rs70       A       C         12     0.0060           0
+21   1  71               rs71       A       C         45     0.0225           0
+22   1  72               rs72       A       C          3     0.0015           0
+23   1  73               rs73       A       C          0     0.0000           0
+24   1  74               rs74       A       C          7     0.0035           0
+25   1  75               rs75       A       C         60     0.0300           0
+26   1  76               rs76       A       C          2     0.0010           0
+27   1  77               rs77       A       C          2     0.0010           0
+28   1  78               rs78       A       C          2     0.0010           0
+29   1  79               rs79       A       C         22     0.0110           0
+30   1  80               rs80       A       C          0     0.0000           0
+31   1  81               rs81       A       C        314     0.1570           0
+32   1  82               rs82       A       C          0     0.0000           0
+33   1  83               rs83       A       C         48     0.0240           0
+34   1  84               rs84       A       C          2     0.0010           0
+35   1  85               rs85       A       C          2     0.0010           0
+36   1  86               rs86       A       C        304     0.1520           0
+37   1  87               rs87       A       C          0     0.0000           0
+38   1  88               rs88       A       C          0     0.0000           0
+39   1  89               rs89       A       C          1     0.0005           0
+40   1  90               rs90       A       C        135     0.0675           0
+41   1  91               rs91       A       C         13     0.0065           0
+42   1  92               rs92       A       C        217     0.1085           0
+43   1  93               rs93       A       C          0     0.0000           0
+44   1  94               rs94       A       C        699     0.3495           0
+45   1  95               rs95       A       C          0     0.0000           0
+46   1  96               rs96       A       C        219     0.1095           0
+47   1  97               rs97       A       C        801     0.4005           0
+48   1  98               rs98       A       C          4     0.0020           0
+49   1  99               rs99       A       C        284     0.1420           0
+50   1 100              rs100       A       C          0     0.0000           0
+51  UR  UR           lof:0.01      UR      UR          9     0.0045           0
+52  UR  UR          lof:0.001      UR      UR          5     0.0025           0
+53  UR  UR           lof:0.05      UR      UR          9     0.0045           0
+54  UR  UR            lof:0.1      UR      UR          9     0.0045           0
+55  UR  UR      missense:0.01      UR      UR         33     0.0165           0
+56  UR  UR     missense:0.001      UR      UR         10     0.0050           0
+57  UR  UR      missense:0.05      UR      UR         33     0.0165           0
+58  UR  UR       missense:0.1      UR      UR         33     0.0165           0
+59  UR  UR  lof;missense:0.01      UR      UR         41     0.0205           0
+60  UR  UR lof;missense:0.001      UR      UR         15     0.0075           0
+61  UR  UR  lof;missense:0.05      UR      UR         41     0.0205           0
+62  UR  UR   lof;missense:0.1      UR      UR         41     0.0205           0
+           BETA        SE       Tstat        var    p.value p.value.NA
+1           NaN       NaN         NaN        NaN        NaN        NaN
+2           NaN       NaN         NaN        NaN        NaN        NaN
+3           NaN       NaN         NaN        NaN        NaN        NaN
+4           NaN       NaN         NaN        NaN        NaN        NaN
+5           NaN       NaN         NaN        NaN        NaN        NaN
+6           NaN       NaN         NaN        NaN        NaN        NaN
+7           NaN       NaN         NaN        NaN        NaN        NaN
+8           NaN       NaN         NaN        NaN        NaN        NaN
+9           NaN       NaN         NaN        NaN        NaN        NaN
+10  1.214259597 0.9478498  1.35155106  1.1130660 0.20017000 0.20017000
+11          NaN       NaN         NaN        NaN        NaN        NaN
+12          NaN       NaN         NaN        NaN        NaN        NaN
+13          NaN       NaN         NaN        NaN        NaN        NaN
+14          NaN       NaN         NaN        NaN        NaN        NaN
+15          NaN       NaN         NaN        NaN        NaN        NaN
+16          NaN       NaN         NaN        NaN        NaN        NaN
+17          NaN       NaN         NaN        NaN        NaN        NaN
+18          NaN       NaN         NaN        NaN        NaN        NaN
+19          NaN       NaN         NaN        NaN        NaN        NaN
+20 -0.128063896 1.0416422 -0.11802923  0.9216433 0.90215130 0.90215130
+21  0.245436469 0.5235704  0.89534202  3.6479584 0.63923080 0.63923080
+22          NaN       NaN         NaN        NaN        NaN        NaN
+23          NaN       NaN         NaN        NaN        NaN        NaN
+24          NaN       NaN         NaN        NaN        NaN        NaN
+25 -0.094953663 0.4446187 -0.48032613  5.0585319 0.83088860 0.83088860
+26          NaN       NaN         NaN        NaN        NaN        NaN
+27          NaN       NaN         NaN        NaN        NaN        NaN
+28          NaN       NaN         NaN        NaN        NaN        NaN
+29  0.416347740 0.7486555  0.74283459  1.7841687 0.57812390 0.57812390
+30          NaN       NaN         NaN        NaN        NaN        NaN
+31          NaN       NaN         NaN        NaN        NaN        NaN
+32          NaN       NaN         NaN        NaN        NaN        NaN
+33 -0.999623709 0.5384753 -3.44750608  3.4488038 0.06339703 0.06339703
+34          NaN       NaN         NaN        NaN        NaN        NaN
+35          NaN       NaN         NaN        NaN        NaN        NaN
+36          NaN       NaN         NaN        NaN        NaN        NaN
+37          NaN       NaN         NaN        NaN        NaN        NaN
+38          NaN       NaN         NaN        NaN        NaN        NaN
+39          NaN       NaN         NaN        NaN        NaN        NaN
+40 -0.006170051 0.3085508 -0.06480900 10.5038034 0.98404590 0.98404590
+41  0.734491904 1.0050219  0.72716996  0.9900313 0.46488800 0.46488800
+42          NaN       NaN         NaN        NaN        NaN        NaN
+43          NaN       NaN         NaN        NaN        NaN        NaN
+44          NaN       NaN         NaN        NaN        NaN        NaN
+45          NaN       NaN         NaN        NaN        NaN        NaN
+46          NaN       NaN         NaN        NaN        NaN        NaN
+47          NaN       NaN         NaN        NaN        NaN        NaN
+48          NaN       NaN         NaN        NaN        NaN        NaN
+49          NaN       NaN         NaN        NaN        NaN        NaN
+50          NaN       NaN         NaN        NaN        NaN        NaN
+51          NaN 1.2587798 -0.77010366  0.6311034 0.33235020 0.33235020
+52          NaN 1.5620776 -0.50834519  0.4098215 0.42715200 0.42715200
+53          NaN 1.2587798 -0.77010366  0.6311034 0.33235020 0.33235020
+54          NaN 1.2587798 -0.77010366  0.6311034 0.33235020 0.33235020
+55          NaN 0.6194120  0.36472704  2.6063981 0.82126650 0.82126650
+56          NaN 0.9881848  0.57256764  1.0240559 0.57152800 0.57152800
+57          NaN 0.6194120  0.36472704  2.6063981 0.82126650 0.82126650
+58          NaN 0.6194120  0.36472704  2.6063981 0.82126650 0.82126650
+59          NaN 0.5645439 -0.33702380  3.1376502 0.84910170 0.84910170
+60          NaN 0.8381034  0.06422245  1.4236552 0.95707450 0.95707450
+61          NaN 0.5645439 -0.33702380  3.1376502 0.84910170 0.84910170
+62          NaN 0.5645439 -0.33702380  3.1376502 0.84910170 0.84910170
+   Is.SPA.converge  AF_ctrlVec N_caseVec N_ctrlVec
+1              NaN         NaN       NaN       NaN
+2              NaN         NaN       NaN       NaN
+3              NaN         NaN       NaN       NaN
+4              NaN         NaN       NaN       NaN
+5              NaN         NaN       NaN       NaN
+6              NaN         NaN       NaN       NaN
+7              NaN         NaN       NaN       NaN
+8              NaN         NaN       NaN       NaN
+9              NaN         NaN       NaN       NaN
+10     0.015306122 0.004434590        98       902
+11             NaN         NaN       NaN       NaN
+12             NaN         NaN       NaN       NaN
+13             NaN         NaN       NaN       NaN
+14             NaN         NaN       NaN       NaN
+15             NaN         NaN       NaN       NaN
+16             NaN         NaN       NaN       NaN
+17             NaN         NaN       NaN       NaN
+18             NaN         NaN       NaN       NaN
+19             NaN         NaN       NaN       NaN
+20     0.005102041 0.006097561        98       902
+21     0.030612245 0.021618625        98       902
+22             NaN         NaN       NaN       NaN
+23             NaN         NaN       NaN       NaN
+24             NaN         NaN       NaN       NaN
+25     0.030612245 0.029933481        98       902
+26             NaN         NaN       NaN       NaN
+27             NaN         NaN       NaN       NaN
+28             NaN         NaN       NaN       NaN
+29     0.015306122 0.010532151        98       902
+30             NaN         NaN       NaN       NaN
+31             NaN         NaN       NaN       NaN
+32             NaN         NaN       NaN       NaN
+33     0.005102041 0.026053215        98       902
+34             NaN         NaN       NaN       NaN
+35             NaN         NaN       NaN       NaN
+36             NaN         NaN       NaN       NaN
+37             NaN         NaN       NaN       NaN
+38             NaN         NaN       NaN       NaN
+39             NaN         NaN       NaN       NaN
+40     0.066326531 0.067627494        98       902
+41     0.010204082 0.006097561        98       902
+42             NaN         NaN       NaN       NaN
+43             NaN         NaN       NaN       NaN
+44             NaN         NaN       NaN       NaN
+45             NaN         NaN       NaN       NaN
+46             NaN         NaN       NaN       NaN
+47             NaN         NaN       NaN       NaN
+48             NaN         NaN       NaN       NaN
+49             NaN         NaN       NaN       NaN
+50             NaN         NaN       NaN       NaN
+51     0.000000000 0.004988914        98       902
+52     0.000000000 0.002771619        98       902
+53     0.000000000 0.004988914        98       902
+54     0.000000000 0.004988914        98       902
+55     0.020408163 0.016075388        98       902
+56     0.010204082 0.004434590        98       902
+57     0.020408163 0.016075388        98       902
+58     0.020408163 0.016075388        98       902
+59     0.020408163 0.020509978        98       902
+60     0.010204082 0.007206208        98       902
+61     0.020408163 0.020509978        98       902
+62     0.020408163 0.020509978        98       902
+[1] "write Output 1"
+[1] "write Output 2"
+[1] "Analysis done! The results have been saved to './plink_gene_out.txt' and './plink_gene_out.txt.markerInfo'."
+Warning message:
+In CCT(pvals) : There are p-values that are exactly 1!

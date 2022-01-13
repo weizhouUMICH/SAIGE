@@ -1,0 +1,1373 @@
+R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] SAIGE_0.44.6.4
+
+loaded via a namespace (and not attached):
+[1] compiler_4.1.2     Matrix_1.3-2       Rcpp_1.0.6         grid_4.1.2        
+[5] RcppParallel_5.0.2 lattice_0.20-45   
+$vcfFile
+[1] ""
+
+$vcfFileIndex
+[1] ""
+
+$vcfField
+[1] "DS"
+
+$bgenFile
+[1] "../input/genotype_100markers.bgen"
+
+$bgenFileIndex
+[1] "../input/genotype_100markers.bgen.bgi"
+
+$savFile
+[1] ""
+
+$savFileIndex
+[1] ""
+
+$idstoExcludeFile
+[1] ""
+
+$idstoIncludeFile
+[1] ""
+
+$rangestoExcludeFile
+[1] ""
+
+$rangestoIncludeFile
+[1] ""
+
+$chrom
+[1] "1"
+
+$start
+[1] 1
+
+$end
+[1] 2.5e+08
+
+$IsDropMissingDosages
+[1] TRUE
+
+$minMAF
+[1] 0
+
+$minMAC
+[1] 0.5
+
+$maxMAFforGroupTest
+[1] 0.5
+
+$minInfo
+[1] 0
+
+$sampleFile
+[1] "../input/samplelist.txt"
+
+$GMMATmodelFile
+[1] "../output/example_binary.rda"
+
+$varianceRatioFile
+[1] "../output/example_binary.varianceRatio.txt.fake"
+
+$SAIGEOutputFile
+[1] "./old_single_bgen_cond.txt"
+
+$numLinesOutput
+[1] 2
+
+$IsSparse
+[1] TRUE
+
+$SPAcutoff
+[1] 2
+
+$IsOutputAFinCaseCtrl
+[1] TRUE
+
+$IsOutputNinCaseCtrl
+[1] FALSE
+
+$IsOutputHetHomCountsinCaseCtrl
+[1] TRUE
+
+$LOCO
+[1] FALSE
+
+$condition
+[1] "rs18,rs33,rs50"
+
+$sparseSigmaFile
+[1] ""
+
+$groupFile
+[1] ""
+
+$kernel
+[1] "linear.weighted"
+
+$method
+[1] "optimal.adj"
+
+$weights.beta.rare
+[1] "1,25"
+
+$weights.beta.common
+[1] "1,25"
+
+$weightMAFcutoff
+[1] 0.01
+
+$r.corr
+[1] "0"
+
+$IsSingleVarinGroupTest
+[1] FALSE
+
+$IsOutputMAFinCaseCtrlinGroupTest
+[1] FALSE
+
+$cateVarRatioMinMACVecExclude
+[1] "0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$cateVarRatioMaxMACVecInclude
+[1] "1.5,2.5,3.5,4.5,5.5,10.5,20.5"
+
+$dosageZerodCutoff
+[1] 0.2
+
+$IsOutputPvalueNAinGroupTestforBinary
+[1] FALSE
+
+$IsAccountforCasecontrolImbalanceinGroupTest
+[1] TRUE
+
+$weightsIncludeinGroupFile
+[1] FALSE
+
+$IsOutputBETASEinBurdenTest
+[1] FALSE
+
+$IsOutputlogPforSingle
+[1] FALSE
+
+$sampleFile_male
+[1] ""
+
+$X_PARregion
+[1] ""
+
+$is_rewrite_XnonPAR_forMales
+[1] FALSE
+
+$method_to_CollapseUltraRare
+[1] "absence_or_presence"
+
+$MACCutoff_to_CollapseUltraRare
+[1] 10
+
+$DosageCutoff_for_UltraRarePresence
+[1] 0.5
+
+$help
+[1] FALSE
+
+weights.beta.rare  is  1 25 
+weights.beta.common  is  1 25 
+cateVarRatioMinMACVecExclude  is  0.5 1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+cateVarRatioMaxMACVecInclude  is  1.5 2.5 3.5 4.5 5.5 10.5 20.5 
+single-variant association test will be performed
+Garbage collection 13 = 7+2+4 (level 2) ... 
+81.9 Mbytes of cons cells used (59%)
+20.3 Mbytes of vectors used (32%)
+1000  samples have been used to fit the glmm null model
+[1] "Leave-one-chromosome-out is not applied"
+Single variance ratio is provided, so categorical variance ratio won't be used!
+variance Ratio is  0.2 
+10000  sample IDs are found in sample file
+isCondition is  TRUE 
+[1] 10000     4
+[1] "IID"          "IndexInModel" "IndexDose.x"  "IndexDose.y" 
+1000  samples were used in fitting the NULL glmm model and are found in sample file
+sparse kinship matrix is not used
+Samples with missing dosages will be dropped from the analysis
+Analysis started at  1641790483 Seconds
+minMAC:  0.5 
+minMAF:  0 
+Minimum MAF of markers to be tested is  0.00025 
+conditionlist is  condMarkers	rs18	rs33	rs50 
+[1] "ids_to_include"
+[1] "rs18" "rs33" "rs50"
+TEST 3
+TEST 1 OK
+TEST2 3
+ranges_to_include.nrow() 0
+ranges_to_exclude.nrow() 0
+ids_to_include.size() 3
+ids_to_exclude.size() 0
+3 markers will be analyzed 
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1559409 83.3    2611008 139.5  2611008 139.5
+Vcells 2746246 21.0    8388608  64.0  4488128  34.3
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1559406 83.3    2611008 139.5  2611008 139.5
+Vcells 2737931 20.9    8388608  64.0  4488128  34.3
+Mtest:  3 
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1559415 83.3    2611008 139.5  2611008 139.5
+Vcells 2737932 20.9    8388608  64.0  4488128  34.3
+Wall Time in Parse2 = 6.60419e-05
+CPU Time  in Parse2= 6.5e-05
+Wall Time in Parse2 = 4.81606e-05
+CPU Time  in Parse2= 4.7e-05
+Wall Time in Parse2 = 4.41074e-05
+CPU Time  in Parse2= 4.3e-05
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1559725 83.3    2611008 139.5  2611008 139.5
+Vcells 2742617 21.0    8388608  64.0  4488128  34.3
+closed the genofile!
+conditioning on  rs18 rs33 rs50 
+isCondition is  TRUE 
+It is a binary trait
+Analyzing  98  cases and  902  controls 
+G1tilde_P_G2tilde is  
+G1tilde_P_G2tilde is  
+G1tilde_P_G2tilde is  
+[1] "covMsub * GratioMatrix_cond"
+             [,1]         [,2]         [,3]
+[1,]  0.081959127 -0.001179383 -0.010478654
+[2,] -0.001296596  0.252813807  0.002602836
+[3,] -0.011042554  0.002512132  2.234452637
+isCondition is  TRUE 
+Analysis started at  1641790483 Seconds
+no query list is provided
+10000 samples are found in the bgen file
+100 markers are found in the bgen file 
+   user  system elapsed 
+  1.453   0.113   1.596 
+[1] 2
+numPassMarker:  0 
+[1] "covM[1,c(2:ncol(covM))]"
+[1]  0.0002461676 -0.0005504078 -0.0067932831
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]        [,2]         [,3]
+[1,] 1.426612e-05 -0.00099033 -0.009037793
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.06284772 
+var1_c is  0.01197164 
+G1tilde_P_G2tilde is  4.923352e-05 -0.0001100816 -0.001358657 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.008920589  0.067072107 -0.193975291
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]       [,2]       [,3]
+[1,] -0.009195379 0.06666447 -0.1944775
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.1168593 
+var1_c is  0.3369753 
+G1tilde_P_G2tilde is  -0.001784118 0.01341442 -0.03879506 
+   user  system elapsed 
+  1.488   0.137   1.655 
+[1] 4
+numPassMarker:  2 
+   user  system elapsed 
+  1.490   0.137   1.658 
+[1] 6
+numPassMarker:  2 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.003290501 -0.002670927 -0.031821759
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]        [,3]
+[1,] -0.001971113 -0.002006719 -0.02657618
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.2563527 
+var1_c is  0.04457072 
+G1tilde_P_G2tilde is  -0.0006581002 -0.0005341854 -0.006364352 
+   user  system elapsed 
+  1.508   0.141   1.681 
+[1] 8
+numPassMarker:  3 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.002885790 -0.005997489  0.033700954
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]       [,3]
+[1,] -0.003759391 -0.005780154 0.03552251
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.5744451 
+var1_c is  0.08820646 
+G1tilde_P_G2tilde is  -0.0005771581 -0.001199498 0.006740191 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.001949889 -0.006923755 -0.063912938
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]       [,3]
+[1,] -0.003886249 -0.007371486 -0.0659777
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0.2899176 
+var1_c is  0.09788325 
+G1tilde_P_G2tilde is  -0.0003899777 -0.001384751 -0.01278259 
+   user  system elapsed 
+  1.540   0.153   1.726 
+[1] 10
+numPassMarker:  5 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -4.661721e-05 -2.208683e-03 -1.727759e-02
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]        [,3]
+[1,] 6.930843e-05 -0.001725596 -0.01390358
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.09501252 
+var1_c is  0.01747028 
+G1tilde_P_G2tilde is  -9.323442e-06 -0.0004417366 -0.003455518 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.01005957 -0.03873059  0.09631408
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+           [,1]        [,2]       [,3]
+[1,] -0.0154857 -0.03778277 0.09986522
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.2147736 
+var1_c is  0.4900159 
+G1tilde_P_G2tilde is  -0.002011915 -0.007746118 0.01926282 
+   user  system elapsed 
+  1.563   0.161   1.758 
+[1] 12
+numPassMarker:  7 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.001234379 -0.004671565 -0.044083790
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]        [,2]       [,3]
+[1,] -0.003568258 -0.00485137 -0.0456556
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0.4449982 
+var1_c is  0.07127942 
+G1tilde_P_G2tilde is  -0.0002468757 -0.000934313 -0.008816758 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.029261009  0.008530281  0.205271662
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]       [,2]      [,3]
+[1,] -0.02380069 0.01145325 0.2177437
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.3623527 
+var1_c is  1.121559 
+G1tilde_P_G2tilde is  -0.005852202 0.001706056 0.04105433 
+   user  system elapsed 
+  1.592   0.161   1.787 
+[1] 14
+numPassMarker:  9 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.1151542  0.1195568  0.3681521
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]     [,2]      [,3]
+[1,] -0.09663218 0.125164 0.4349274
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -4.67278 
+var1_c is  3.467838 
+G1tilde_P_G2tilde is  -0.02303085 0.02391136 0.07363042 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.002478165 -0.004027072 -0.037293701
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]        [,3]
+[1,] -0.001968093 -0.003466189 -0.03716309
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0.6638082 
+var1_c is  0.05749703 
+G1tilde_P_G2tilde is  -0.000495633 -0.0008054143 -0.00745874 
+   user  system elapsed 
+  1.622   0.161   1.818 
+[1] 16
+numPassMarker:  11 
+[1] "covM[1,c(2:ncol(covM))]"
+[1]  0.16691457 -0.02332885 -0.20804166
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+          [,1]        [,2]       [,3]
+[1,] 0.1638728 -0.02354553 -0.2115885
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0.1080338 
+var1_c is  0.2918825 
+G1tilde_P_G2tilde is  0.03338291 -0.00466577 -0.04160833 
+[1] "covM[1,c(2:ncol(covM))]"
+[1]  0.409795637 -0.005896917 -0.052393271
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+          [,1]         [,2]        [,3]
+[1,] 0.4061084 -0.004300328 -0.04864623
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0 
+var1_c is  -0.0007374487 
+G1tilde_P_G2tilde is  0.08195913 -0.001179383 -0.01047865 
+   user  system elapsed 
+  1.651   0.161   1.848 
+[1] 18
+numPassMarker:  13 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.31368517 -0.05889844 -0.79088685
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+           [,1]        [,2]       [,3]
+[1,] -0.2870562 -0.06520612 -0.7988882
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.6472457 
+var1_c is  7.707086 
+G1tilde_P_G2tilde is  -0.06273703 -0.01177969 -0.1581774 
+   user  system elapsed 
+  1.667   0.161   1.864 
+[1] 20
+numPassMarker:  14 
+[1] "covM[1,c(2:ncol(covM))]"
+[1]  0.01763071 -0.45160080 -1.53887991
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]       [,2]      [,3]
+[1,] 0.009508433 -0.4439665 -1.510251
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  3.47392 
+var1_c is  5.56102 
+G1tilde_P_G2tilde is  0.003526142 -0.09032016 -0.307776 
+   user  system elapsed 
+  1.682   0.161   1.881 
+[1] 22
+numPassMarker:  15 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] 0.3831349 0.5100958 0.2836483
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+          [,1]      [,2]      [,3]
+[1,] 0.3453651 0.5222173 0.3511735
+[1] "rs23 rs23 rs23"
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -13.86186 
+var1_c is  6.86061 
+G1tilde_P_G2tilde is  0.07662697 0.1020192 0.05672965 
+$BETA
+$BETA$BETA
+[1] -2.093619
+
+
+$SE
+$SE$SE
+[1] 0.3876236
+
+
+$Tstat
+$Tstat$Tstat
+[1] -14.60572
+
+
+$p.value
+$p.value$p.value
+[1] 6.620906e-08
+
+
+$p.value.NA
+$p.value.NA$p.value.NA
+[1] 3.205749e-08
+
+
+$Is.converge
+$Is.converge$Is.converge
+[1] TRUE
+
+
+$var1
+$var1$var1
+[1] 6.976302
+
+
+$var2
+$var2$var2
+[1] 34.88151
+
+
+$Tstat_c
+$Tstat_c$Tstat_c
+[1] -13.86186
+
+
+$p.value.c
+$p.value.c$p.value.c
+[1] 2.173503e-07
+
+
+$var1_c
+$var1_c$var1_c
+[1] 6.86061
+
+
+$BETA_c
+$BETA_c$BETA_c
+[1] -2.0205
+
+
+$SE_c
+$SE_c$SE_c
+[1] 0.3897682
+
+
+   user  system elapsed 
+  1.700   0.161   1.899 
+[1] 24
+numPassMarker:  16 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.3899615  0.2040964  1.0506882
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+           [,1]      [,2]    [,3]
+[1,] -0.3678514 0.2022952 1.02444
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  10.75423 
+var1_c is  7.861905 
+G1tilde_P_G2tilde is  -0.07799231 0.04081928 0.2101376 
+   user  system elapsed 
+  1.715   0.177   1.932 
+[1] 26
+numPassMarker:  17 
+[1] "covM[1,c(2:ncol(covM))]"
+[1]  0.1021991 -0.2585390  0.6374570
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+          [,1]       [,2]      [,3]
+[1,] 0.1011969 -0.2632988 0.6158993
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -3.240633 
+var1_c is  3.168559 
+G1tilde_P_G2tilde is  0.02043983 -0.05170779 0.1274914 
+[1] "covM[1,c(2:ncol(covM))]"
+[1]  0.001983467 -0.001488797 -0.006897854
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]          [,2]        [,3]
+[1,] 0.0002196691 -0.0006226994 -0.00405093
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.01939766 
+var1_c is  0.004012751 
+G1tilde_P_G2tilde is  0.0003966935 -0.0002977593 -0.001379571 
+   user  system elapsed 
+  1.749   0.177   1.966 
+[1] 28
+numPassMarker:  19 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.03554845 -0.21870065 -0.12825871
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]       [,2]       [,3]
+[1,] -0.01127713 -0.2240255 -0.1462749
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -5.231026 
+var1_c is  6.05386 
+G1tilde_P_G2tilde is  -0.007109689 -0.04374013 -0.02565174 
+[1] "covM[1,c(2:ncol(covM))]"
+[1]  0.03886225 -0.30197902  0.25510465
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+           [,1]       [,2]      [,3]
+[1,] 0.08028555 -0.3067569 0.2634111
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -3.085101 
+var1_c is  4.771374 
+G1tilde_P_G2tilde is  0.00777245 -0.0603958 0.05102093 
+   user  system elapsed 
+  1.780   0.177   1.998 
+[1] 30
+numPassMarker:  21 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.001840902 -0.019612075  0.024030693
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]        [,2]       [,3]
+[1,] -0.001417929 -0.01741832 0.03856778
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -1.02374 
+var1_c is  0.1834535 
+G1tilde_P_G2tilde is  -0.0003681804 -0.003922415 0.004806139 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.0004432985 -0.0025910394  0.2187425442
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]      [,3]
+[1,] -0.002956995 -0.002847001 0.2160004
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0.596848 
+var1_c is  0.04761052 
+G1tilde_P_G2tilde is  -8.86597e-05 -0.0005182079 0.04374851 
+   user  system elapsed 
+  1.809   0.177   2.028 
+[1] 32
+numPassMarker:  23 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.00648298  1.26406904  0.01301418
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]    [,2]       [,3]
+[1,] -0.004300328 1.26371 0.01542943
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -5.551115e-17 
+var1_c is  -7.184338e-05 
+G1tilde_P_G2tilde is  -0.001296596 0.2528138 0.002602836 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.002690607 -0.004806592 -0.044184646
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]      [,3]
+[1,] -0.001136713 -0.006177256 -0.050987
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0.5862548 
+var1_c is  0.06864865 
+G1tilde_P_G2tilde is  -0.0005381214 -0.0009613183 -0.008836929 
+   user  system elapsed 
+  1.839   0.177   2.058 
+[1] 34
+numPassMarker:  25 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.001425499 -0.002749584 -0.032020272
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]        [,2]        [,3]
+[1,] -0.001709599 -0.00287901 -0.03350825
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.2951983 
+var1_c is  0.05245818 
+G1tilde_P_G2tilde is  -0.0002850998 -0.0005499167 -0.006404054 
+   user  system elapsed 
+  1.856   0.177   2.077 
+[1] 36
+numPassMarker:  26 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.01106101 -0.04339928 -0.14682002
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]        [,2]       [,3]
+[1,] -0.008779085 -0.04349569 -0.1399545
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.9997105 
+var1_c is  0.4809858 
+G1tilde_P_G2tilde is  -0.002212202 -0.008679857 -0.029364 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.04599325 -0.12816234 -0.10473586
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]       [,2]       [,3]
+[1,] -0.02721509 -0.1349746 -0.1446104
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  6.707093 
+var1_c is  1.455127 
+G1tilde_P_G2tilde is  -0.009198649 -0.02563247 -0.02094717 
+   user  system elapsed 
+  1.886   0.177   2.107 
+[1] 38
+numPassMarker:  28 
+   user  system elapsed 
+  1.888   0.177   2.110 
+[1] 40
+numPassMarker:  28 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.0005962412 -0.0005302502 -0.0064484891
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+              [,1]          [,2]        [,3]
+[1,] -0.0001691928 -0.0006590996 -0.00675319
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.05374051 
+var1_c is  0.009820394 
+G1tilde_P_G2tilde is  -0.0001192482 -0.00010605 -0.001289698 
+   user  system elapsed 
+  1.903   0.177   2.126 
+[1] 42
+numPassMarker:  29 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.0006938886 -0.0006057063 -0.0069101227
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+              [,1]          [,2]         [,3]
+[1,] -0.0002489534 -0.0008036584 -0.008410561
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0.9312972 
+var1_c is  0.01240808 
+G1tilde_P_G2tilde is  -0.0001387777 -0.0001211413 -0.001382025 
+   user  system elapsed 
+  1.918   0.177   2.142 
+[1] 44
+numPassMarker:  30 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.003448540 -0.008904891 -0.033845137
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]       [,3]
+[1,] -0.003603706 -0.009703981 -0.0379569
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.7782942 
+var1_c is  0.1180789 
+G1tilde_P_G2tilde is  -0.0006897081 -0.001780978 -0.006769027 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.004006386 -0.013100812 -0.115412809
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]        [,2]       [,3]
+[1,] -0.004794907 -0.01382469 -0.1171336
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -1.059933 
+var1_c is  0.1639343 
+G1tilde_P_G2tilde is  -0.0008012772 -0.002620162 -0.02308256 
+   user  system elapsed 
+  1.948   0.177   2.172 
+[1] 46
+numPassMarker:  32 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.2464320 -0.1381059  1.9941773
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+           [,1]       [,2]     [,3]
+[1,] -0.2284933 -0.1243698 2.092858
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -8.332446 
+var1_c is  6.55998 
+G1tilde_P_G2tilde is  -0.0492864 -0.02762118 0.3988355 
+   user  system elapsed 
+  1.964   0.177   2.190 
+[1] 48
+numPassMarker:  33 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.001250016 -0.010187987 -0.078775033
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+              [,1]         [,2]        [,3]
+[1,] -0.0005300705 -0.009010378 -0.07139577
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.5187034 
+var1_c is  0.09110366 
+G1tilde_P_G2tilde is  -0.0002500032 -0.002037597 -0.01575501 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.05521277  0.01256066 11.17226319
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]       [,2]     [,3]
+[1,] -0.04864623 0.01542943 11.19747
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -2.220446e-16 
+var1_c is  0.005041284 
+G1tilde_P_G2tilde is  -0.01104255 0.002512132 2.234453 
+   user  system elapsed 
+  1.993   0.177   2.219 
+[1] 50
+numPassMarker:  35 
+   user  system elapsed 
+  1.995   0.177   2.222 
+[1] 52
+numPassMarker:  35 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.08309726 -0.20546141  0.02348580
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]       [,2]       [,3]
+[1,] -0.08879914 -0.1999019 0.07292872
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -5.679031 
+var1_c is  2.9183 
+G1tilde_P_G2tilde is  -0.01661945 -0.04109228 0.004697161 
+   user  system elapsed 
+  2.011   0.177   2.238 
+[1] 54
+numPassMarker:  36 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.0006445313 -0.0019134733 -0.0149149389
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+              [,1]         [,2]        [,3]
+[1,] -6.425258e-05 -0.001817029 -0.01370338
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.09855265 
+var1_c is  0.01715746 
+G1tilde_P_G2tilde is  -0.0001289063 -0.0003826947 -0.002982988 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.001358045 -0.003505337 -0.036439942
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]        [,3]
+[1,] -0.003717716 -0.003730409 -0.04026395
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  1.441878 
+var1_c is  0.06686703 
+G1tilde_P_G2tilde is  -0.0002716089 -0.0007010673 -0.007287988 
+   user  system elapsed 
+  2.040   0.177   2.268 
+[1] 56
+numPassMarker:  38 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.1671394 -0.1735924  1.6705873
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+           [,1]       [,2]     [,3]
+[1,] -0.1584589 -0.1681433 1.739204
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -6.030907 
+var1_c is  4.892746 
+G1tilde_P_G2tilde is  -0.03342788 -0.03471848 0.3341175 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.002169867 -0.008297760 -0.069371509
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]        [,3]
+[1,] -0.003277977 -0.006211293 -0.06282581
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0.4135022 
+var1_c is  0.09545893 
+G1tilde_P_G2tilde is  -0.0004339735 -0.001659552 -0.0138743 
+   user  system elapsed 
+  2.071   0.193   2.316 
+[1] 58
+numPassMarker:  40 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.006830840  0.117815728  0.004918767
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]      [,2]         [,3]
+[1,] -0.007843543 0.1168136 -0.001258783
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  1.389059 
+var1_c is  0.2335637 
+G1tilde_P_G2tilde is  -0.001366168 0.02356315 0.0009837534 
+   user  system elapsed 
+  2.089   0.193   2.334 
+[1] 60
+numPassMarker:  41 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.002609846 -0.004674050 -0.041347275
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]        [,3]
+[1,] -0.001101054 -0.004979008 -0.04165316
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.3392976 
+var1_c is  0.05691956 
+G1tilde_P_G2tilde is  -0.0005219692 -0.00093481 -0.008269455 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.0002331633 -0.0018140219 -0.0131040073
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]        [,3]
+[1,] 0.0001122985 -0.001583974 -0.01149641
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.07663729 
+var1_c is  0.01365541 
+G1tilde_P_G2tilde is  -4.663266e-05 -0.0003628044 -0.002620801 
+   user  system elapsed 
+  2.118   0.193   2.365 
+[1] 62
+numPassMarker:  43 
+[1] "covM[1,c(2:ncol(covM))]"
+[1]  0.45054355  0.05850983 -1.54436767
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+          [,1]       [,2]      [,3]
+[1,] 0.4398264 0.04787802 -1.615008
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  9.247658 
+var1_c is  8.317825 
+G1tilde_P_G2tilde is  0.09010871 0.01170197 -0.3088735 
+   user  system elapsed 
+  2.135   0.193   2.383 
+[1] 64
+numPassMarker:  44 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.001191540 -0.005520836  0.277376454
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+              [,1]       [,2]      [,3]
+[1,] -0.0009111833 -0.0041223 0.2861701
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.2579889 
+var1_c is  0.05249146 
+G1tilde_P_G2tilde is  -0.000238308 -0.001104167 0.05547529 
+[1] "covM[1,c(2:ncol(covM))]"
+[1]  0.0194018 -0.3816054 -0.7017021
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]       [,2]       [,3]
+[1,] 0.001747874 -0.3851198 -0.7387554
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  3.7983 
+var1_c is  7.048112 
+G1tilde_P_G2tilde is  0.00388036 -0.07632109 -0.1403404 
+   user  system elapsed 
+  2.164   0.193   2.413 
+[1] 66
+numPassMarker:  46 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.06386887  0.17725794  0.75836482
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+           [,1]      [,2]      [,3]
+[1,] -0.0399209 0.1622505 0.6984835
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.2977653 
+var1_c is  6.409106 
+G1tilde_P_G2tilde is  -0.01277377 0.03545159 0.151673 
+   user  system elapsed 
+  2.177   0.196   2.429 
+[1] 68
+numPassMarker:  47 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.005834434  0.119179068 -0.140210822
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]      [,2]       [,3]
+[1,] -0.004941712 0.1201646 -0.1355202
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.09752222 
+var1_c is  0.1903225 
+G1tilde_P_G2tilde is  -0.001166887 0.02383581 -0.02804216 
+   user  system elapsed 
+  2.193   0.196   2.447 
+[1] 70
+numPassMarker:  48 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.0193335  0.0888704 -0.2813259
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]       [,2]       [,3]
+[1,] -0.02326388 0.08806579 -0.2923823
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0.8677972 
+var1_c is  0.7720288 
+G1tilde_P_G2tilde is  -0.003866699 0.01777408 -0.05626518 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.001931771 -0.004367744 -0.036581676
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+              [,1]         [,2]        [,3]
+[1,] -0.0002855098 -0.004190408 -0.03327987
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.2440057 
+var1_c is  0.04285296 
+G1tilde_P_G2tilde is  -0.0003863542 -0.0008735489 -0.007316335 
+   user  system elapsed 
+  2.223   0.197   2.479 
+[1] 72
+numPassMarker:  50 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.0003871218 -0.0068185473 -0.0043716428
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]        [,3]
+[1,] -0.004497246 -0.005817962 0.002464499
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0.2137147 
+var1_c is  0.09802731 
+G1tilde_P_G2tilde is  -7.742437e-05 -0.001363709 -0.0008743286 
+   user  system elapsed 
+  2.239   0.197   2.495 
+[1] 74
+numPassMarker:  51 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.02995429 -0.08203370 -0.29465203
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]        [,2]       [,3]
+[1,] -0.03036918 -0.08231912 -0.2981376
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.5903133 
+var1_c is  1.065027 
+G1tilde_P_G2tilde is  -0.005990859 -0.01640674 -0.05893041 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.001985890 -0.002863515 -0.028539273
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]        [,3]
+[1,] -0.001435398 -0.003117447 -0.02847265
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.2623942 
+var1_c is  0.04213122 
+G1tilde_P_G2tilde is  -0.000397178 -0.0005727029 -0.005707855 
+   user  system elapsed 
+  2.268   0.197   2.525 
+[1] 76
+numPassMarker:  53 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.0006050081 -0.0029640854 -0.0247167765
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]        [,3]
+[1,] -0.001117265 -0.001960406 -0.02092585
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.189096 
+var1_c is  0.0324694 
+G1tilde_P_G2tilde is  -0.0001210016 -0.0005928171 -0.004943355 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.002044869 -0.003427174  0.200428591
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]      [,3]
+[1,] -0.001960003 -0.002721762 0.2036278
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.247426 
+var1_c is  0.04561892 
+G1tilde_P_G2tilde is  -0.0004089738 -0.0006854347 0.04008572 
+   user  system elapsed 
+  2.297   0.197   2.555 
+[1] 78
+numPassMarker:  55 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.01181769  0.15634332 -0.15043095
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]      [,2]       [,3]
+[1,] -0.00899122 0.1560244 -0.1551199
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0.7685663 
+var1_c is  0.3694571 
+G1tilde_P_G2tilde is  -0.002363537 0.03126866 -0.03008619 
+   user  system elapsed 
+  2.313   0.197   2.571 
+[1] 80
+numPassMarker:  56 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.1312619 -0.2515833 -0.2219779
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+          [,1]       [,2]       [,3]
+[1,] -0.125367 -0.2530535 -0.2597059
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  4.323813 
+var1_c is  4.391427 
+G1tilde_P_G2tilde is  -0.02625239 -0.05031666 -0.04439558 
+   user  system elapsed 
+  2.329   0.197   2.588 
+[1] 82
+numPassMarker:  57 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.01845154 -0.06583000 -0.05246387
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]        [,2]        [,3]
+[1,] -0.01790222 -0.06053975 -0.02167217
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -3.504457 
+var1_c is  0.7232996 
+G1tilde_P_G2tilde is  -0.003690309 -0.013166 -0.01049277 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.001259528 -0.002578833 -0.025076663
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]       [,3]
+[1,] -0.001229961 -0.003073125 -0.0270562
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.2472973 
+var1_c is  0.03919796 
+G1tilde_P_G2tilde is  -0.0002519056 -0.0005157666 -0.005015333 
+   user  system elapsed 
+  2.358   0.197   2.619 
+[1] 84
+numPassMarker:  59 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.001494435 -0.002497624 -0.023492079
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+              [,1]         [,2]        [,3]
+[1,] -0.0006900778 -0.002948379 -0.02479414
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.2046364 
+var1_c is  0.03411076 
+G1tilde_P_G2tilde is  -0.0002988869 -0.0004995248 -0.004698416 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.1246455  0.3481854 -0.9703797
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+          [,1]      [,2]       [,3]
+[1,] -0.132767 0.3504434 -0.9804224
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  4.396557 
+var1_c is  4.060523 
+G1tilde_P_G2tilde is  -0.02492909 0.06963707 -0.1940759 
+   user  system elapsed 
+  2.389   0.208   2.662 
+[1] 86
+numPassMarker:  61 
+   user  system elapsed 
+  2.392   0.208   2.665 
+[1] 88
+numPassMarker:  61 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -4.519176e-05 -1.764852e-03 -1.225180e-02
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]         [,2]        [,3]
+[1,] 0.0001750624 -0.001532865 -0.01094823
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.07069242 
+var1_c is  0.01270007 
+G1tilde_P_G2tilde is  -9.038352e-06 -0.0003529704 -0.00245036 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.04503076  0.41568702 -0.46690076
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]      [,2]       [,3]
+[1,] -0.05620409 0.4180706 -0.4500677
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.02313954 
+var1_c is  2.193674 
+G1tilde_P_G2tilde is  -0.009006153 0.0831374 -0.09338015 
+   user  system elapsed 
+  2.413   0.220   2.700 
+[1] 90
+numPassMarker:  63 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.004437372 -0.017095915  0.421914063
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+             [,1]        [,2]      [,3]
+[1,] -0.004978039 -0.01696794 0.4196587
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  0.769432 
+var1_c is  0.2060486 
+G1tilde_P_G2tilde is  -0.0008874744 -0.003419183 0.08438281 
+[1] "covM[1,c(2:ncol(covM))]"
+[1]  0.10196342 -0.07234392 -0.21224004
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+           [,1]        [,2]       [,3]
+[1,] 0.09792743 -0.07489355 -0.2237282
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -4.027776 
+var1_c is  3.303113 
+G1tilde_P_G2tilde is  0.02039268 -0.01446878 -0.04244801 
+   user  system elapsed 
+  2.443   0.221   2.731 
+[1] 92
+numPassMarker:  65 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.068409638 -0.005045179  1.242813871
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]        [,2]     [,3]
+[1,] -0.06679037 -0.02394027 1.162597
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -1.988493 
+var1_c is  7.401226 
+G1tilde_P_G2tilde is  -0.01368193 -0.001009036 0.2485628 
+   user  system elapsed 
+  2.459   0.221   2.747 
+[1] 94
+numPassMarker:  66 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.1003145 -0.1886164  0.8186033
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+            [,1]       [,2]      [,3]
+[1,] -0.08813749 -0.2065933 0.7258399
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  4.845471 
+var1_c is  3.275367 
+G1tilde_P_G2tilde is  -0.0200629 -0.03772327 0.1637207 
+   user  system elapsed 
+  2.476   0.221   2.765 
+[1] 96
+numPassMarker:  67 
+[1] "covM[1,c(2:ncol(covM))]"
+[1]  0.2891629 -0.5029989  1.1720805
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+          [,1]       [,2]     [,3]
+[1,] 0.2887246 -0.4909951 1.247307
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -9.87389 
+var1_c is  7.63587 
+G1tilde_P_G2tilde is  0.05783258 -0.1005998 0.2344161 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.001449985 -0.003212993 -0.032321499
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+              [,1]         [,2]        [,3]
+[1,] -0.0008773065 -0.003775314 -0.03338339
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -0.2691331 
+var1_c is  0.04650487 
+G1tilde_P_G2tilde is  -0.000289997 -0.0006425986 -0.0064643 
+   user  system elapsed 
+  2.506   0.221   2.796 
+[1] 98
+numPassMarker:  69 
+[1] "covM[1,c(2:ncol(covM))]"
+[1] -0.1148208  0.2965674  0.4346654
+[1] "(GratioMatrixall[1,c(2:ncol(covM))])"
+[1] 0.2 0.2 0.2
+[1] "G1tilde_P_G2tilde_new"
+1 x 3 Matrix of class "dgeMatrix"
+           [,1]     [,2]      [,3]
+[1,] -0.1075441 0.295147 0.4485359
+G2tilde_P_G2tilde_inv is  12.2098 0.06199941 0.06027053 0.05639075 3.955812 -0.004168728 0.05719321 -0.004317237 0.4478244 
+Tstat_c is  -8.18598 
+var1_c is  3.711457 
+G1tilde_P_G2tilde is  -0.02296417 0.05931348 0.08693308 
+   user  system elapsed 
+  2.523   0.221   2.814 
+[1] 100
+numPassMarker:  70 
+closed the genofile!
+Analysis ended at  1641790484 Seconds
+Analysis took  1.258387 Seconds

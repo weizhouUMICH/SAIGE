@@ -1,0 +1,1 @@
+plink2 --bgen ./input/genotype_100markers.bgen ref-first --sample ./input/genotype_100markers.bgen.samples --make-bed --out ./input/genotype_100markers
