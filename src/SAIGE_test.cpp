@@ -24,7 +24,7 @@ namespace SAIGE {
 
 SAIGEClass::SAIGEClass(
 	arma::mat & t_XVX,
-	arma::mat & t_XXVX_inv,
+	arma::mat  t_XXVX_inv,
 	arma::mat & t_XV,
 	arma::mat & t_XVX_inv_XV,
 	arma::mat & t_X,
@@ -62,11 +62,21 @@ SAIGEClass::SAIGEClass(
     m_tauvec = t_tauvec;
     m_traitType = t_traitType;
     m_y = t_y;
+
+    m_case_indices = arma::find(m_y == 1);
+    m_ctrl_indices = arma::find(m_y == 0);
+
     m_n = t_y.size();
+    m_p = t_XV.n_rows;
     m_SPA_Cutoff = t_SPA_Cutoff;
     m_impute_method =  t_impute_method;
     m_isCondition = t_isCondition;
     m_condition_genoIndex = t_condition_genoIndex;
+    if(m_isCondition){	
+	        m_numMarker_cond = t_condition_genoIndex.size();      
+    }else{
+		m_numMarker_cond = 0;
+    }	    
     //m_p = t_X.nrow();
 
     if(m_traitType == "binary"){
@@ -105,29 +115,25 @@ void SAIGEClass::scoreTest(arma::vec & t_GVec,
 		     arma::vec & t_P2Vec,
 		     double& t_gy, 
 		     bool t_is_region){
-
-    arma::vec g, g1, g2;
     arma::vec Sm, var2m;
     double S, var2;
-    g = m_XV * t_GVec;
-    g1 = t_GVec - m_XXVX_inv * g;
-    t_gtilde = g1;
+   getadjG(t_GVec, t_gtilde);
     if(t_is_region && m_traitType == "binary"){
-      t_gy = dot(g1, m_y);
+      t_gy = dot(t_gtilde, m_y);
     }
-    S = dot(g1, m_res);
+
+
+    S = dot(t_gtilde, m_res);
     S = S/m_tauvec[0];
+
+
     if(!m_flagSparseGRM){
-     //g2 = arma::square(g1);
-     //var2m = dot(g2 , m_mu2)*m_tauvec[0];
-      g2 = g1 % m_mu2 *m_tauvec[0];
+      t_P2Vec = t_gtilde % m_mu2 *m_tauvec[0];
     }else{
       arma::sp_mat m_SigmaMat_sp = gen_sp_SigmaMat();
-      g2 = arma::spsolve(m_SigmaMat_sp, g1);
+      t_P2Vec = arma::spsolve(m_SigmaMat_sp, t_gtilde);
     }	      
-    var2m = dot(g2 , g1);
-    t_P2Vec = g2;
-    //}
+    var2m = dot(t_P2Vec , t_gtilde);
     var2 = var2m(0,0);
     double var1 = var2 * m_varRatioVal;
     double stat = S*S/var1;
@@ -233,8 +239,40 @@ void SAIGEClass::scoreTestFast(arma::vec & t_GVec,
 
 
 void SAIGEClass::getadjG(arma::vec & t_GVec, arma::vec & g){
-    g = m_XV * t_GVec;
+/*	  double mem1, mem2;
+  process_mem_usage(mem1, mem2);
+   std::cout << "VM scoreTest a 2 in getadjG: " << mem1/10000 << "; RSS scoreTest a 2 in getadjGFast: " << mem2/10000 << std::endl;
+*/
+   g = m_XV * t_GVec;
+ // process_mem_usage(mem1, mem2);
+ //  std::cout << "VM scoreTest a 2 1 in getadjG: " << mem1/10000 << "; RSS scoreTest a 2 in getadjGFast: " << mem2/10000 << std::endl;
     g = t_GVec - m_XXVX_inv * g;
+ // process_mem_usage(mem1, mem2);
+ //  std::cout << "VM scoreTest a 2 2 in getadjG: " << mem1/10000 << "; RSS scoreTest a 2 in getadjGFast: " << mem2/10000 << std::endl;
+}
+
+
+void SAIGEClass::getadjGFast(arma::vec & t_GVec, arma::vec & g)
+{
+
+  // To increase computational efficiency when lots of GVec elements are 0
+
+ arma::vec m_XVG(m_p, arma::fill::zeros);
+  for(int i = 0; i < m_n; i++){
+    if(t_GVec(i) != 0){
+      m_XVG += m_XV.col(i) * t_GVec(i);
+    }
+  }
+
+   //g*=m_XXVX_inv
+  //g = t_GVec - m_XXVX_inv * m_XVG;
+  //arma::vec g1(m_n, arma::fill::zeros);
+   for(int i = 0; i < m_n; i++){
+  	g(i) = -dot(m_XXVX_inv.row(i), m_XVG);
+  }
+
+  g += t_GVec ;
+  
 }
 
 
@@ -258,10 +296,7 @@ void SAIGEClass::setupSparseMat(int r, arma::umat & locationMatinR, arma::vec & 
 
 
 arma::sp_mat SAIGEClass::gen_sp_SigmaMat() {
-    // sparse x sparse -> sparse
     arma::sp_mat resultMat(m_locationMat, m_valueVec, m_dimNum, m_dimNum);
-    //arma::sp_fmat A = sprandu<sp_fmat>(100, 200, 0.1);
-    //arma::sp_mat result1 = result * A;
     return resultMat;
 }
 
@@ -270,6 +305,7 @@ arma::sp_mat SAIGEClass::gen_sp_SigmaMat() {
 // This function only uses variance ratio and does not use sparse GRM
 void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
 			       arma::uvec & iIndex,
+			       arma::uvec & iIndexComVec,
                                double& t_Beta, 
                                double& t_seBeta, 
                                double& t_pval,
@@ -303,12 +339,13 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
   if((t_altFreq > 0.05 && t_altFreq < 0.95) || m_flagSparseGRM || is_region){
     isScoreFast = false;
   }  
-
+ arma::vec timeoutput3 = getTime();
   if(!isScoreFast){
   	is_gtilde = true;
   	scoreTest(t_GVec, t_Beta, t_seBeta, t_pval_str, t_altFreq, t_Tstat, t_var1, t_var2, t_gtilde, m_flagSparseGRM, t_P2Vec, t_gy, is_region);
   }else{
   	is_gtilde = false;
+	//arma::uvec iIndexVec = arma::find(t_GVec > 0);
         scoreTestFast(t_GVec, iIndex, t_Beta, t_seBeta, t_pval_str, t_altFreq, t_Tstat, t_var1, t_var2);
   }
 
@@ -327,30 +364,91 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
         //throw;
         pval_noadj = 0;
   }
-  double q, qinv, m1, NAmu, NAsigma, tol1, p_iIndexComVecSize;
-  arma::vec gNB, gNA, muNB, muNA;
-  if(StdStat > m_SPA_Cutoff && m_traitType != "quantitative"){
-   
-       if(!is_gtilde){
-        getadjG(t_GVec, t_gtilde);
-	is_gtilde = true;
-       }
-       	double mem1, mem2;
-          process_mem_usage(mem1, mem2);
-   std::cout << "VM 4 a: " << mem1/1000000 << "; RSS 4 a: " << mem2/1000000 << std::endl; 
-   	arma::uvec iIndexComVec = arma::find(t_GVec == 0);
-	int t_gtilden = t_gtilde.n_elem;
-	int iIndexComVecSize = iIndexComVec.n_elem;
-        p_iIndexComVecSize = double(iIndexComVecSize)/t_gtilden;
 
+
+ arma::vec timeoutput3_a = getTime();
+  double q, qinv, m1, NAmu, NAsigma, tol1, p_iIndexComVecSize;
+
+  //arma::uvec iIndexComVec = arma::find(t_GVec == 0);
+  //arma::uvec iIndexVec = arma::find(t_GVec != 0);
+ 
+  
+  unsigned int iIndexComVecSize = iIndexComVec.n_elem;
+  unsigned int iIndexSize = iIndex.n_elem;
+ 
+  arma::vec gNB(iIndexSize, arma::fill::none);
+  arma::vec gNA(iIndexComVecSize, arma::fill::none);
+  arma::vec muNB(iIndexSize, arma::fill::none);
+  arma::vec muNA(iIndexComVecSize, arma::fill::none);
+/*
+    std::cout << "iIndexComVecSize " << iIndexComVecSize << std::endl;
+    std::cout << "iIndexSize " << iIndexSize << std::endl;
+    std::cout << "gNA.n_elem 1 " << gNA.n_elem << std::endl;
+        std::cout << "gNB.n_elem 1 " << gNB.n_elem << std::endl;
+        std::cout << "muNA.n_elem 1 " << muNA.n_elem << std::endl;
+        std::cout << "muNB.n_elem 1 " << muNB.n_elem << std::endl;
+*/
+
+
+  double gmuNB;
+  if(StdStat > m_SPA_Cutoff && m_traitType != "quantitative"){
+
+       if(!is_gtilde){
+          t_gtilde.resize(m_n);
+          getadjGFast(t_GVec, t_gtilde);
+	  is_gtilde = true;
+       }
+	//int t_gtilden = t_gtilde.n_elem;
+        p_iIndexComVecSize = double(iIndexComVecSize)/m_n;
    	m1 = dot(m_mu, t_gtilde);
+
 	if(p_iIndexComVecSize >= 0.5){
-   		gNB = t_gtilde.elem(iIndex);
-   		gNA = t_gtilde.elem(iIndexComVec);
-   		muNB = m_mu.elem(iIndex);
-   		muNA = m_mu.elem(iIndexComVec);
-   		NAmu= m1-dot(gNB,muNB);
+		unsigned int j1 = 0;
+		unsigned int j2 = 0;
+/*
+		for(unsigned int j = 0; j < m_n ; j++){	
+			//std::cout << "j " << j << std::endl;
+			if(t_GVec(j) != 0){
+			//std::cout << "j1 " << j1 << std::endl;
+				gNB(j1) = t_gtilde(j);
+				muNB(j1) = m_mu(j);
+				j1 = j1 + 1;	
+			}else{
+			//std::cout << "j2 " << j2 << std::endl;
+				gNA(j2) = t_gtilde(j);
+				muNA(j2) = m_mu(j);
+				j2 = j2 + 1;
+          //process_mem_usage(mem1, mem2);
+//   std::cout << "VM 4 a 1.3c: " << mem1/1000 << "; RSS 4 a 1.3: " << mem2/1000 << std::endl;
+			}	
+		}
+		*/
+//	std::cout << "gNB.n_elem " <<  gNB.n_elem << std::endl;	
+//	std::cout << "gNA.n_elem " <<  gNA.n_elem << std::endl;	
+	gNB = t_gtilde(iIndex);
+	gNA = t_gtilde(iIndexComVec);
+   	muNB = m_mu(iIndex);
+   	muNA = m_mu(iIndexComVec);
+
+	/*
+	    std::cout << "gNA.n_elem 2 " << gNA.n_elem << std::endl;
+        std::cout << "gNB.n_elem 2 " << gNB.n_elem << std::endl;
+        std::cout << "muNA.n_elem 2 " << muNA.n_elem << std::endl;
+        std::cout << "muNB.n_elem 2 " << muNB.n_elem << std::endl;
+*/
+
+
+  	gmuNB = dot(gNB,muNB);	 
+   	NAmu= m1-gmuNB;
 	}
+	/*else{
+		gNA.clear();
+		gNB.clear();
+		muNA.clear();
+		gNB.clear();
+
+	}*/
+
    	if(m_traitType == "binary"){
                 q = t_Tstat/sqrt(t_var1/t_var2) + m1;
 
@@ -376,8 +474,6 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
 	tol1 = std::pow(tol0, 0.25);
 	if(p_iIndexComVecSize >= 0.5){
 		std::cout << "SPA_fast" << std::endl;
-          process_mem_usage(mem1, mem2);
-   std::cout << "VM 4 b: " << mem1/1000000 << "; RSS 4 b: " << mem2/1000000 << std::endl; 
         	SPA_fast(m_mu, t_gtilde, q, qinv, pval_noadj, false, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol1, m_traitType, t_SPApval, t_isSPAConverge);
 	}else{
 		std::cout << "SPA" << std::endl;
@@ -407,6 +503,11 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
    }else{
         t_pval = t_pval_noSPA;
    }
+
+ arma::vec timeoutput4 = getTime();
+ //printTime(timeoutput3, timeoutput3_a, "Test Marker  ScoreTest");
+//printTime(timeoutput3, timeoutput4, "Test Marker 3 to 4");
+//printTime(timeoutput3_a, timeoutput4, "Test Marker SPA");
 
    //condition
    if(t_isCondition){
@@ -509,6 +610,11 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
     	t_pval_c = t_pval_noSPA_c;	    
     }	    
    }
+
+    gNA.clear();
+    gNB.clear();
+    muNA.clear();
+    gNB.clear();
 }
 
 
@@ -552,16 +658,13 @@ void SAIGEClass::assignConditionFactors_scalefactor(
 	arma::vec & t_scalefactor_G2_cond	
 		){
 	m_scalefactor_G2_cond = t_scalefactor_G2_cond;
-	std::cout << "assign_conditionMarkers_factors_binary_region 2" << std::endl;
 	arma::mat scalefactor_G2_cond_Mat = arma::diagmat(arma::sqrt(m_scalefactor_G2_cond));
-	std::cout << "assign_conditionMarkers_factors_binary_region 3" << std::endl;
 	arma::mat weightMat_G2_G2 = m_G2_Weight_cond * m_G2_Weight_cond.t(); 
 	arma::mat VarMat_cond_scaled = scalefactor_G2_cond_Mat * m_VarMat_cond * scalefactor_G2_cond_Mat;
 	arma::mat VarMat_cond_scaled_weighted = VarMat_cond_scaled % weightMat_G2_G2;
        
 	m_VarInvMat_cond_scaled_weighted = VarMat_cond_scaled_weighted.i();
 	//m_VarInvMat_cond_region_binary = (1/scalefactor_G2_cond_Mat) * m_VarInvMat_cond	* (1/scalefactor_G2_cond_Mat);
-	std::cout << "assign_conditionMarkers_factors_binary_region 4" << std::endl;
 	
 }
 

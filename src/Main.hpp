@@ -27,17 +27,15 @@ void setRegion_GlobalVarsInCPP(std::string t_impute_method,
 			       double g_dosage_zerod_cutoff,
                                double g_dosage_zerod_MAC_cutoff);
 
+Rcpp::DataFrame mainMarkerInCPP(
+                           std::string & t_genoType,     // "PLINK", "BGEN"
+                           std::string & t_traitType,
+                           arma::ivec & t_genoIndex,
+                           bool & t_isMoreOutput,
+                           bool & t_isImputation);
 
-
-Rcpp::List mainMarkerInCPP(
-                           std::string t_genoType,     // "PLINK", "BGEN"
-                           std::string t_traitType,
-			   arma::ivec & t_genoIndex,
-                           bool t_isMoreOutput);
-
-
-arma::vec Unified_getOneMarker(std::string t_genoType,   // "PLINK", "BGEN"
-                               uint64_t t_gIndex,        // different meanings for different genoType
+void Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN"
+                               uint32_t & t_gIndex,        // different meanings for different genoType
                                std::string& t_ref,       // REF allele
                                std::string& t_alt,       // ALT allele (should probably be minor allele, otherwise, computation time will increase)
                                std::string& t_marker,    // marker ID extracted from genotype file
@@ -47,15 +45,17 @@ arma::vec Unified_getOneMarker(std::string t_genoType,   // "PLINK", "BGEN"
                                double& t_altCounts,      // counts of ALT allele
                                double& t_missingRate,    // missing rate
                                double& t_imputeInfo,     // imputation information score, i.e., R2 (all 1 for PLINK)
-                               bool t_isOutputIndexForMissing,               // if true, output index of missing genotype data
-                               std::vector<uint32_t>& t_indexForMissing,     // index of missing genotype data
-                               bool t_isOnlyOutputNonZero,                   // if true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
-                               std::vector<uint32_t>& t_indexForNonZero);
+                               bool & t_isOutputIndexForMissing,               // if true, output index of missing genotype data
+                               std::vector<uint>& t_indexForMissing,     // index of missing genotype data
+                               bool & t_isOnlyOutputNonZero,                   // if true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
+                               std::vector<uint>& t_indexForNonZero,
+			       std::vector<double>& t_GVec);
 
 void Unified_getMarkerPval(
                            arma::vec & t_GVec,
                            bool t_isOnlyOutputNonZero,
-                           std::vector<uint32_t> & t_indexForNonZero,
+                           arma::uvec & t_indexForNonZero_vec,
+                           arma::uvec & t_indexForZero_vec,
                            double& t_Beta,
                            double& t_seBeta,
                            double& t_pval,

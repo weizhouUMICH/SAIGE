@@ -144,7 +144,7 @@ void PlinkClass::setPosSampleInPlink(std::vector<std::string> t_SampleInModel)
 //   return posMarkerInPlink;
 // }
 
-arma::vec PlinkClass::getOneMarker(uint64_t t_gIndex,        // different meanings for different genoType
+void PlinkClass::getOneMarker(uint32_t & t_gIndex,        // different meanings for different genoType
                                    std::string& t_ref,       // REF allele
                                    std::string& t_alt,       // ALT allele (should probably be minor allele, otherwise, computation time will increase)
                                    std::string& t_marker,    // marker ID extracted from genotype file
@@ -154,16 +154,17 @@ arma::vec PlinkClass::getOneMarker(uint64_t t_gIndex,        // different meanin
                                    double& t_altCounts,      // counts of ALT allele
                                    double& t_missingRate,    // missing rate
                                    double& t_imputeInfo,     // imputation information score, i.e., R2 (all 1 for PLINK)
-                                   bool t_isOutputIndexForMissing,               // if true, output index of missing genotype data
-                                   std::vector<uint32_t>& t_indexForMissing,     // index of missing genotype data
-                                   bool t_isOnlyOutputNonZero,                   // if true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
-                                   std::vector<uint32_t>& t_indexForNonZero,     // only used when t_isOnlyOutputNonZero = TRUE
-                                   bool t_isTrueGenotype)    // only used in PLINK. check m_genoMaps for details about the genotype mapping in PLINK.
-{
+                                   bool & t_isOutputIndexForMissing,               // if true, output index of missing genotype data
+                                   std::vector<uint>& t_indexForMissing,     // index of missing genotype data
+                                   bool & t_isOnlyOutputNonZero,                   // if true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
+                                   std::vector<uint>& t_indexForNonZero,     // only used when t_isOnlyOutputNonZero = TRUE
+                                   bool & t_isTrueGenotype,    // only used in PLINK. check m_genoMaps for details about the genotype mapping in PLINK.
+				   std::vector<double>& OneMarkerG1)
+{		
   int sum = 0;
   int numMissing = 0;
   
-  std::vector<double> OneMarkerG1;
+  //std::vector<double> OneMarkerG1;
   
   // t_isTrueGenotype = FALSE is used only when calculating GRM
   if(!t_isTrueGenotype){
@@ -247,7 +248,7 @@ arma::vec PlinkClass::getOneMarker(uint64_t t_gIndex,        // different meanin
     t_altCounts = 2 * (double)count * t_altFreq;
   }
   
-  return OneMarkerG1;
+  //return OneMarkerG1;
 }
 
 // C++ version of which(). Note: start from 0, not 1 
