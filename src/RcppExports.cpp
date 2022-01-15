@@ -46,15 +46,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // mainMarkerInCPP
-Rcpp::List mainMarkerInCPP(std::string t_genoType, std::string t_traitType, arma::ivec& t_genoIndex, bool t_isMoreOutput);
+Rcpp::List mainMarkerInCPP(std::string& t_genoType, std::string& t_traitType, arma::ivec& t_genoIndex, bool& t_isMoreOutput);
 RcppExport SEXP _SAIGE_mainMarkerInCPP(SEXP t_genoTypeSEXP, SEXP t_traitTypeSEXP, SEXP t_genoIndexSEXP, SEXP t_isMoreOutputSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type t_genoType(t_genoTypeSEXP);
-    Rcpp::traits::input_parameter< std::string >::type t_traitType(t_traitTypeSEXP);
+    Rcpp::traits::input_parameter< std::string& >::type t_genoType(t_genoTypeSEXP);
+    Rcpp::traits::input_parameter< std::string& >::type t_traitType(t_traitTypeSEXP);
     Rcpp::traits::input_parameter< arma::ivec& >::type t_genoIndex(t_genoIndexSEXP);
-    Rcpp::traits::input_parameter< bool >::type t_isMoreOutput(t_isMoreOutputSEXP);
+    Rcpp::traits::input_parameter< bool& >::type t_isMoreOutput(t_isMoreOutputSEXP);
     rcpp_result_gen = Rcpp::wrap(mainMarkerInCPP(t_genoType, t_traitType, t_genoIndex, t_isMoreOutput));
     return rcpp_result_gen;
 END_RCPP

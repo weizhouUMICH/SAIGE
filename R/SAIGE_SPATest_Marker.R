@@ -1,7 +1,11 @@
 mainMarker = function(genoType, genoIndex, traitType, isMoreOutput, isImputation, isCondition)
 {
     # Check 'Main.cpp'
-   OutList = mainMarkerInCPP(genoType, traitType, genoIndex, isMoreOutput);
+   #time_mainMarkerInCPP = system.time({OutList = mainMarkerInCPP(genoType, traitType, genoIndex, isMoreOutput)})
+   OutList = mainMarkerInCPP(genoType, traitType, genoIndex, isMoreOutput)
+
+   #print("time_mainMarkerInCPP")
+   #print(time_mainMarkerInCPP)
 
    OutList$CHR = sapply(strsplit(as.character(OutList$infoVec), ":"), "[[", 1) 
    OutList$POS = sapply(strsplit(as.character(OutList$infoVec), ":"), "[[", 2) 
@@ -63,6 +67,7 @@ mainMarker = function(genoType, genoIndex, traitType, isMoreOutput, isImputation
 
   noNAIndices = which(!is.na(OutList$pvalVec))
   obj.mainMarker = obj.mainMarker[noNAIndices,]
+  rm(OutList)
   return(obj.mainMarker)
 }
 
@@ -128,14 +133,27 @@ SAIGE.Marker = function(objNull,
     cat("Restart the analysis from chunk:\t", outIndex, "\n")
 
   chrom = "InitialChunk"
+
+
+
+
   for(i in outIndex:nChunks)
   {
+ 
+
+
+#time_left = system.time({	
     tempList = genoIndexList[[i]]
     #print("tempList")
     #print(tempList)
     #print(tempList$genoIndex)
     genoIndex = as.integer(tempList$genoIndex)
     tempChrom = tempList$chrom
+
+
+#})
+#print("time_left")
+#print(time_left)
     #print("genoIndex here")
     #print(genoIndex)
     # set up objects that do not change for different variants
@@ -143,17 +161,23 @@ SAIGE.Marker = function(objNull,
     #  setMarker("SAIGE", objNull, control, chrom, Group, ifOutGroup)
     #  chrom = tempChrom
     #}
-    ptm <- proc.time()
-    print(ptm)
-    print("gc()")
-    print(gc())
+    #ptm <- proc.time()
+    #print(ptm)
+    #print("gc()")
+    #print(gc())
     cat(paste0("(",Sys.time(),") ---- Analyzing Chunk ", i, "/", nChunks, ": chrom ", chrom," ---- \n"))
 	
 
     # main function to calculate summary statistics for markers in one chunk
-    resMarker = mainMarker(genoType, genoIndex, objNull$traitType, isMoreOutput, isImputation, isCondition)
+    #time_mainMarker = system.time({resMarker = mainMarker(genoType, genoIndex, objNull$traitType, isMoreOutput, isImputation, isCondition)})
+    resMarker = mainMarkerInCPP(genoType, genoIndex, objNull$traitType, isMoreOutput, isImputation)
+    resMarker = resMarker[which(!is.na(resMarker$BETA)), ]	    
+#    print("time_mainMarker")
+#   print(time_mainMarker)    
 
-    writeOutputFile(Output = list(resMarker),
+
+    #timeoutput=system.time({writeOutputFile(Output = list(resMarker),
+    writeOutputFile(Output = resMarker,
                     OutputFile = list(OutputFile),
                     OutputFileIndex = OutputFileIndex,
                     AnalysisType = "Marker",
@@ -161,8 +185,14 @@ SAIGE.Marker = function(objNull,
                     indexChunk = i,
                     Start = (i==1),
                     End = (i==nChunks))
+                    #End = (i==nChunks))})
+    #print("timeoutput")
+    #print(timeoutput)
     ptm <- proc.time()
     print(ptm)
+  print("gc()")
+  print(gc())
+  rm(resMarker)
   }
 
   # information to users

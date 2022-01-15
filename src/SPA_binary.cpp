@@ -220,8 +220,8 @@ Rcpp::List SPA_binary(arma::vec & mu, arma::vec & g, double q, double qinv, doub
 	List result;
 	double p1, p2, pval;
 	bool Isconverge = true;
-	Rcpp::List outuni1 = getroot_K1_Binom(0, mu, g, q, tol, 1000);
-	Rcpp::List outuni2 = getroot_K1_Binom(0, mu, g, qinv, tol, 1000);
+	Rcpp::List outuni1 = getroot_K1_Binom(0, mu, g, q, tol);
+	Rcpp::List outuni2 = getroot_K1_Binom(0, mu, g, qinv, tol);
 	//double outuni1root = outuni1["root"];
 	//double outuni2root = outuni2["root"];
 	//bool Isconverge1 = outuni1["Isconverge"];
@@ -473,9 +473,9 @@ Rcpp::List SPA_binary_fast(arma::vec & mu, arma::vec & g, double q, double qinv,
 	List result;
 	double p1, p2, pval;
 	bool Isconverge = true;
-	Rcpp::List outuni1 = getroot_K1_fast_Binom(0, mu, g, q, gNA,gNB,muNA,muNB,NAmu, NAsigma, tol, 1000);
+	Rcpp::List outuni1 = getroot_K1_fast_Binom(0, mu, g, q, gNA,gNB,muNA,muNB,NAmu, NAsigma, tol);
 	//double qinv = -1*q;
-	Rcpp::List outuni2 = getroot_K1_fast_Binom(0, mu, g, qinv, gNA,gNB,muNA,muNB,NAmu, NAsigma, tol, 1000);
+	Rcpp::List outuni2 = getroot_K1_fast_Binom(0, mu, g, qinv, gNA,gNB,muNA,muNB,NAmu, NAsigma, tol);
 	//std::cout << "outuni1root" << outuni1["root"] << std::endl;
 	//std::cout << "outuni2root" << outuni2["root"] << std::endl;
 

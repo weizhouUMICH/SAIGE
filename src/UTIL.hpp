@@ -35,11 +35,13 @@ arma::vec getRPsiR(arma::mat t_muMat, arma::mat t_iRMat, int t_n, int t_J, int t
 bool imputeGenoAndFlip(arma::vec& t_GVec,
                        double & t_altFreq,
 		       double & t_altCount,
-                       std::vector<uint32_t> t_indexForMissing,
+                       std::vector<uint32_t> &  t_indexForMissing,
                        std::string t_impute_method,
                        double t_dosage_zerod_cutoff,
                        double t_dosage_zerod_MAC_cutoff,
-                       double & t_MAC);
+                       double & t_MAC,
+		       std::vector<uint> & t_indexZero,
+                       std::vector<uint> & t_indexNonZero);
 
 arma::vec getTime();
 
@@ -60,6 +62,8 @@ double getinvStd(double t_freq);
 // }
 
 arma::vec nb(unsigned int n);
+
+
 
 #endif
 

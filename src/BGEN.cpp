@@ -20,7 +20,7 @@
 #include <time.h>
 #include <stdint.h>
 #include <zlib.h>
-
+#include "UTIL.hpp"
 // #include <boost/iostreams/filter/zstd.hpp>
 // #include "zstd.h"
 // #include <boost/date_time.hpp>
@@ -126,10 +126,12 @@ void BgenClass::setPosSampleInBgen(std::vector<std::string> & t_SampleInModel)
 
 
 void BgenClass::Parse2(unsigned char *buf, unsigned int bufLen, const unsigned char *zBuf, unsigned int zBufLen,std::string & snpName,std::vector< double > & dosages, double & AC, double & AF, 
-                       std::vector<uint32_t> & indexforMissing, 
-                       double & info, std::vector<unsigned int> & indexNonZero) {
-  
-  uLong destLen = bufLen;
+                       std::vector<uint> & indexforMissing, 
+                       double & info, std::vector<uint> & indexNonZero) {
+ 
+       arma::vec timeoutput0 = getTime();
+       uLongf destLen = bufLen;
+
   if (uncompress(buf, &destLen, zBuf, zBufLen) != Z_OK || destLen != bufLen) {
     std::cerr << "ERROR: uncompress() failed" << std::endl;
     exit(1);
@@ -157,10 +159,10 @@ void BgenClass::Parse2(unsigned char *buf, unsigned int bufLen, const unsigned c
     std::cerr << "ERROR: " << snpName << " has maximum ploidy = " << Pmax << " (not 2)" << std::endl;
     exit(1);
   }
- 
- /* 
+       arma::vec timeoutput1 = getTime(); 
+  
   const unsigned char *ploidyMissBytes = bufAt;
-  std::cout << "N " << N << std::endl;
+//  std::cout << "N " << N << std::endl;
   for (unsigned int i = 0; i < N; i++) {
     unsigned int ploidyMiss = *bufAt; bufAt++;
     if (ploidyMiss != 2U && ploidyMiss != 130U) {
@@ -169,22 +171,10 @@ void BgenClass::Parse2(unsigned char *buf, unsigned int bufLen, const unsigned c
       exit(1);
     }
   }
-*/
-      //deal with missing dosages
-    std::vector <bool> missingIdxVec;
-    missingIdxVec.clear();
-    missingIdxVec.reserve(N);
-    missingIdxVec.resize(N);
-    int missingSamplesize = 0;
 
-    for (uint i = 0; i < N; i++) {
-      uint ploidyMiss = *bufAt; bufAt++;
-      bool const missing = (ploidyMiss & 0x80) ;
-      missingIdxVec[i] = missing;
-        if(missing){
-          missingSamplesize = missingSamplesize + 1;
-        }
+  /*
     }
+*/
 
   unsigned int Phased = *bufAt; bufAt++;
   if (Phased != 0U) {
@@ -199,71 +189,131 @@ void BgenClass::Parse2(unsigned char *buf, unsigned int bufLen, const unsigned c
   double lut[256];
   for (int i = 0; i <= 255; i++)
     lut[i] = i/255.0;
-  
+
+  arma::vec timeoutput2 = getTime();
+
+/*
   double sum_eij = 0, sum_fij_minus_eij2 = 0, sum_eij_sub = 0; // sum_fij_minus_eij2_sub = 0; // for INFO
-  double p11,p10,dosage,dosage_new,eij,fij;  // p00, eijsub, fijsub
+  double p11,p10,dosage,eij,fij;  // p00, eijsub, fijsub
   dosages.clear();
   dosages.reserve(m_N);
   if(!m_isSparseDosagesInBgen){
     dosages.resize(m_N);
   }
   std::size_t missing_cnt = 0;
-  AC = 0; 
+  //AC = 0; 
   for (unsigned int i = 0; i < N; i++) {
-    //if(i == 1){std::cout << "ploidyMissBytes[i] " << ploidyMissBytes[i] << std::endl;}
-    //if (ploidyMissBytes[i] != 130U){
+  
+    if (ploidyMissBytes[i] != 130U){
       //bufAt += 2;
       p11 = lut[*bufAt]; bufAt++;
       p10 = lut[*bufAt]; bufAt++;
-      // p00 = 1 - p11 - p10; //can remove
+      //p00 = 1 - p11 - p10; //can remove
       dosage = 2*p11 + p10;
-     // std::cout << "i "<< i << " p11 " << p11 << " p10 "<< p10 << std::endl; 
-    if(!missingIdxVec[i]){
       eij = dosage;
       fij = 4*p11 + p10;
       sum_eij += eij;
       sum_fij_minus_eij2 += fij - eij*eij;
-      if(m_AlleleOrder == "alt-first"){
-	    dosage_new = dosage;  
+    
+     if(m_AlleleOrder == "alt-first"){
+            dosage = dosage;
       }else{
-	    dosage_new = 2-dosage;  
-      }	
-
-
-      if(m_posSampleInModel[i] >= 0){
-        if(!m_isSparseDosagesInBgen){
-          // dosages[m_posSampleInModel[i]] = 2 - dosage;
-          // updated by BWJ on 2021-02-28
-          // dosages[m_posSampleInModel[i]] = dosage;
-          // changed back by BWJ on 2021-03-14 (change default setting to "ref-first")
-          dosages[m_posSampleInModel[i]] = dosage_new;
-        }else{
-          if(dosage_new > 0){
-              dosages.push_back(dosage_new);
-            // updated by BWJ on 2021-02-28
-        //    dosages.push_back(dosage);
-            }
+            dosage = 2-dosage;
+      } 
+        if(m_posSampleInModel[i] >= 0){
+          if(!m_isSparseDosagesInBgen){
+              dosages[m_posSampleInModel[i]] = dosage;
+              if(dosage > 0){
+                indexNonZero.push_back(m_posSampleInModel[i]);
+//		AC = AC + (2 - dosage);
+              }
+          }else{
+              if(dosage > 0){
+                dosages.push_back(dosage);
+                indexNonZero.push_back(m_posSampleInModel[i]);
+              }
+          }
+          sum_eij_sub += eij;
         }
-	if(dosage_new > 0){
-            indexNonZero.push_back(m_posSampleInModel[i]);
-	    AC = AC + dosage_new;
-	}
-	sum_eij_sub += eij;
-      }
-    }else{  
-      
-      //else if(ploidyMissBytes[i] == 130U){
-      //bufAt += 2;
-      if(m_posSampleInModel[i] >= 0){
-        indexforMissing.push_back(m_posSampleInModel[i]);
-        ++missing_cnt;
-        if(!m_isSparseDosagesInBgen){
-          dosages[m_posSampleInModel[i]] = -1;
+     }else if(ploidyMissBytes[i] == 130U){
+        bufAt += 2;
+        if(m_posSampleInModel[i] >= 0){
+          indexforMissing.push_back(m_posSampleInModel[i]);
+          ++missing_cnt;
+          if(!m_isSparseDosagesInBgen){
+            dosages[m_posSampleInModel[i]] = -1;
+          }
         }
-      }
+     }
+  }	
+	
+*/	
+double sum_eij = 0, sum_fij_minus_eij2 = 0, sum_eij_sub = 0, sum_fij_minus_eij2_sub = 0; // for INFO
+    double p11,p10,p00,dosage,eij,fij, eijsub, fijsub;
+    dosages.clear();
+    dosages.reserve(m_N);
+    if(!m_isSparseDosagesInBgen){
+      dosages.resize(m_N);
     }
-  //}
+    std::size_t missing_cnt = 0;
+double dosage_new;
+    for (uint i = 0; i < N; i++) {
+     //if(i == 1){std::cout << "ploidyMissBytes[i] " << ploidyMissBytes[i] << std::endl;}
+     if (ploidyMissBytes[i] != 130U){
+      //bufAt += 2;
+      p11 = lut[*bufAt]; bufAt++;
+      p10 = lut[*bufAt]; bufAt++;
+      p00 = 1 - p11 - p10; //can remove
+      dosage = 2*p11 + p10;
+
+  //if(m_AlleleOrder == "alt-first"){
+    //        dosage_new = dosage;
+    //  }else{
+            dosage_new = 2-dosage;
+    //  }
+
+        eij = dosage;
+        fij = 4*p11 + p10;
+        sum_eij += eij;
+        sum_fij_minus_eij2 += fij - eij*eij;
+        if(m_posSampleInModel[i] >= 0){
+          if(!m_isSparseDosagesInBgen){
+              dosages[m_posSampleInModel[i]] = dosage_new;
+              if(dosage_new > 0){
+                indexNonZero.push_back(m_posSampleInModel[i]);
+              }
+          }else{
+              if(dosage_new > 0){
+                dosages.push_back(dosage_new);
+                indexNonZero.push_back(m_posSampleInModel[i]);
+              }
+          }
+          sum_eij_sub += eij;
+   }
+     }else if(ploidyMissBytes[i] == 130U){
+        bufAt += 2;
+        if(m_posSampleInModel[i] >= 0){
+          indexforMissing.push_back(m_posSampleInModel[i]);
+          ++missing_cnt;
+          if(!m_isSparseDosagesInBgen){
+            dosages[m_posSampleInModel[i]] = -1;
+          }
+        }
+     }
+    }	  
+
+   arma::vec timeoutput3 = getTime();
+   //printTime(timeoutput2, timeoutput3, "Parse2");
+    //}
   //std::cout << "sum_eij_sub: " << sum_eij_sub << std::endl;
+  
+     //if(m_AlleleOrder == "alt-first"){
+     //      AC = sum_eij_sub;
+     // }else{
+      	   AC = 2* ((double) (m_N - missing_cnt)) - sum_eij_sub;
+            //dosage = 2-dosage;
+      //}
+   
   //AC = 2* ((double) (m_N - missing_cnt)) - sum_eij_sub;
   if(m_N == missing_cnt){
     AF = 0;
@@ -271,16 +321,23 @@ void BgenClass::Parse2(unsigned char *buf, unsigned int bufLen, const unsigned c
     AF = AC/ 2/ ((double) (m_N - missing_cnt)) ;
   }
   
+  //std::cout << "AC: " << AC << std::endl;
   double thetaHat = sum_eij / (2* (m_N - missing_cnt));
   //std::cout << "sum_eij " << sum_eij << std::endl;
   //std::cout << "missing_cnt " << sum_eij << std::endl;
   info = thetaHat==0 || thetaHat==1 ? 1 :
     1 - sum_fij_minus_eij2 / (2*(m_N - missing_cnt)*thetaHat*(1-thetaHat));
-  }
-//} 
+  //}
+arma::vec timeoutput4 = getTime();
+//}
+//printTime(timeoutput0, timeoutput1, "time 0 to 1 Parse2");
+//printTime(timeoutput1, timeoutput2, "time 1 to 2 Parse2");
+//printTime(timeoutput2, timeoutput3, "time 2 to 3 Parse2");
+//printTime(timeoutput3, timeoutput4, "time 3 to 4 Parse2"); 
+//printTime(timeoutput3, timeoutput4, "time 3 to 4 Unified_getOneMarker");
 }
 
-arma::vec BgenClass::getOneMarker(uint64_t t_gIndex,        // different meanings for different genoType
+void BgenClass::getOneMarker(uint32_t & t_gIndex,        // different meanings for different genoType
                                   std::string& t_ref,       // REF allele
                                   std::string& t_alt,       // ALT allele (should probably be minor allele, otherwise, computation time will increase)
                                   std::string& t_marker,    // marker ID extracted from genotype file
@@ -290,20 +347,32 @@ arma::vec BgenClass::getOneMarker(uint64_t t_gIndex,        // different meaning
                                   double& t_altCounts,      // counts of ALT allele
                                   double& t_missingRate,    // missing rate
                                   double& t_imputeInfo,     // imputation information score, i.e., R2 (all 1 for PLINK)
-                                  bool t_isOutputIndexForMissing,               // if true, output index of missing genotype data
-                                  std::vector<uint32_t>& t_indexForMissing,     // index of missing genotype data
-                                  bool t_isOnlyOutputNonZero,                   // is true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
-                                  std::vector<uint32_t>& t_indexForNonZero,
-                                  bool& t_isBoolRead)        // only used in BGEN, Wei, if you want, you can add details here.
+                                  bool & t_isOutputIndexForMissing,               // if true, output index of missing genotype data
+                                  std::vector<uint>& t_indexForMissing,     // index of missing genotype data
+                                  bool & t_isOnlyOutputNonZero,                   // is true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
+                                  std::vector<uint>& t_indexForNonZero,
+                                  bool & t_isBoolRead,        // only used in BGEN, Wei, if you want, you can add details here.
+				std::vector<double> & dosages)
 {
+
+arma::vec timeoutput1 = getTime();	
   if(t_gIndex > 0){fseek(m_fin, t_gIndex, SEEK_SET);}
+arma::vec timeoutput2 = getTime();
+
   std::string SNPID, RSID, chromosome, first_allele,second_allele ;
   uint32_t position;
   std::vector< std::string > alleles ;
-  std::vector< double > dosages;
+  //std::vector< double > dosages;
   double AC, AF, info;
-  std::vector<uint32_t> indexforMissing;
-  std::vector< unsigned int > indexNonZero;
+  //std::vector<uint32_t> indexforMissing;
+  //std::vector< unsigned int > indexNonZero;
+  //
+  t_indexForMissing.clear();
+  t_indexForNonZero.clear();
+//arma::vec timeoutput3 = getTime();
+
+
+
   char snpID[65536], rsID[65536], chrStr[65536];
   unsigned int maxLA = 65536, maxLB = 65536;
   char *allele1, *allele0;
@@ -311,11 +380,11 @@ arma::vec BgenClass::getOneMarker(uint64_t t_gIndex,        // different meaning
   allele0 = (char *) malloc(maxLB+1);
   uint16_t LS; size_t numBoolRead = fread(&LS, 2, 1, m_fin); // cout << "LS: " << LS << " " << std::flush;
   // bool isBoolRead;  // BWJ (2021-02-28): I think it will not be used since we currently use t_gIndex to specify bytes position. This bool value can still be outputted through a reference. If we are sure it is not useful any more, we can remove it.
-  Rcpp::List result ;
+  //Rcpp::List result ;
   if ( numBoolRead > 0 ) {
     // isBoolRead = true;
     t_isBoolRead = true;
-    fread(snpID, 1, LS, m_fin); snpID[LS] = '\0'; // cout << "snpID: " << string(snpID) << " " << std::flush;
+    fread(snpID, 1, LS, m_fin); snpID[LS] = '\0'; // 
     uint16_t LR; fread(&LR, 2, 1, m_fin); // cout << "LR: " << LR << " " << std::flush;
     fread(rsID, 1, LR, m_fin); rsID[LR] = '\0'; // cout << "rsID: " << string(rsID) << " " << std::flush;
     RSID = std::string(rsID)=="." ? snpID : rsID;
@@ -328,6 +397,7 @@ arma::vec BgenClass::getOneMarker(uint64_t t_gIndex,        // different meaning
     uint32_t physpos; fread(&physpos, 4, 1, m_fin); // cout << "physpos: " << physpos << " " << std::flush;
     position = physpos;
     uint16_t K; fread(&K, 2, 1, m_fin); //cout << "K: " << K << endl;
+          //std::cout << "chr:pos: " << chromosome << ":" << position << std::endl;
     if (K != 2) {
       std::cerr << "ERROR: Non-bi-allelic variant found: " << K << " alleles" << std::endl;
       exit(1);
@@ -359,8 +429,14 @@ arma::vec BgenClass::getOneMarker(uint64_t t_gIndex,        // different meaning
     AF = 0;
     info = 0;
     if (m_bufLens > m_buf.size()) m_buf.resize(m_bufLens); //fix the length
-    Parse2(&m_buf[0], m_bufLens, &m_zBuf[0], m_zBufLens, RSID, dosages, AC, AF, indexforMissing, info, indexNonZero);
-    
+    arma::vec timeoutput3a = getTime();
+    Parse2(&m_buf[0], m_bufLens, &m_zBuf[0], m_zBufLens, RSID, dosages, AC, AF, t_indexForMissing, info, t_indexForNonZero);
+    arma::vec timeoutput3 = getTime();
+//printTime(timeoutput1, timeoutput2, "time 1 to 2 Unified_getOneMarker");
+//printTime(timeoutput2, timeoutput3, "time 2 to 3 Unified_getOneMarker");
+//printTime(timeoutput3a, timeoutput3, "time 3a to 3 Unified_getOneMarker");
+	
+
     // output
     // t_alt = first_allele;       // ALT allele (usually minor allele)
     // t_ref = second_allele;       // REF allele (usually major allele)
@@ -372,9 +448,9 @@ arma::vec BgenClass::getOneMarker(uint64_t t_gIndex,        // different meaning
     t_altFreq = AF;        // frequency of ALT allele
     t_altCounts = AC;      // counts of ALT allele
     t_imputeInfo = info;     // imputation information score, i.e., R2 (all 1 for PLINK)
-    t_indexForMissing = indexforMissing;     // index of missing genotype data
+    //t_indexForMissing = indexforMissing;     // index of missing genotype data
     t_missingRate = (double) t_indexForMissing.size() / (double) m_N;    // missing rate
-    t_indexForNonZero = indexNonZero;
+    //t_indexForNonZero = indexNonZero;
    
     //std::cout << "indexNonZero.size() " << indexNonZero.size() << std::endl;
     //std::cout << "t_indexForNonZero.size() " << t_indexForNonZero.size() << std::endl;
@@ -397,7 +473,7 @@ arma::vec BgenClass::getOneMarker(uint64_t t_gIndex,        // different meaning
   }
   // dosages.clear();
   // indexforMissing.clear();
-  return dosages;
+  //return dosages;
 }
 
 

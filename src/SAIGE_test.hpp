@@ -30,6 +30,7 @@ class SAIGEClass
       double m_varRatioVal;
       arma::vec m_varRatio;
       arma::vec m_y;
+
       bool m_isOutputAFinCaseCtrl;
       bool m_isOutputNinCaseCtrl;
       bool m_isOutputHetHomCountsinCaseCtrl;
@@ -48,6 +49,7 @@ class SAIGEClass
       arma::vec m_cateVarRatioMinMACVecExclude; 
       arma::vec m_cateVarRatioMaxMACVecInclude;
       arma::mat m_P2Mat_cond;
+      int m_numMarker_cond;
       arma::mat m_VarInvMat_cond;
       arma::mat m_VarMat_cond;
       arma::vec m_Tstat_cond;
@@ -67,7 +69,7 @@ class SAIGEClass
 
   SAIGEClass(
         arma::mat & t_XVX,
-        arma::mat & t_XXVX_inv,
+        arma::mat  t_XXVX_inv,
         arma::mat & t_XV,
         arma::mat & t_XVX_inv_XV,
         arma::mat & t_X,
@@ -120,9 +122,11 @@ class SAIGEClass
      void get_mu(arma::vec & t_mu);
 
      void getadjG(arma::vec & t_GVec, arma::vec & g);
+     void getadjGFast(arma::vec & t_GVec, arma::vec & g);
 
      void getMarkerPval(arma::vec & t_GVec,
-                               arma::uvec & iIndex,
+			        arma::uvec & iIndex,
+                               arma::uvec & iIndexComVec,
                                double& t_Beta,
                                double& t_seBeta,
                                double& t_pval,
