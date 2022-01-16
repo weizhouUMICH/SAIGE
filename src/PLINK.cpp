@@ -159,7 +159,8 @@ void PlinkClass::getOneMarker(uint32_t & t_gIndex,        // different meanings 
                                    bool & t_isOnlyOutputNonZero,                   // if true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
                                    std::vector<uint>& t_indexForNonZero,     // only used when t_isOnlyOutputNonZero = TRUE
                                    bool & t_isTrueGenotype,    // only used in PLINK. check m_genoMaps for details about the genotype mapping in PLINK.
-				   std::vector<double>& OneMarkerG1)
+				   arma::vec & OneMarkerG1)
+				   //std::vector<double>& OneMarkerG1)
 {		
   int sum = 0;
   int numMissing = 0;
@@ -173,9 +174,10 @@ void PlinkClass::getOneMarker(uint32_t & t_gIndex,        // different meanings 
     if(t_isOnlyOutputNonZero)
       Rcpp::stop("Check PlinkClass::getOneMarker, if t_isTrueGenotype = FALSE, then t_isOnlyOutputNonZero should be FALSE.");
   }
-  
+ 
+   
   if(!t_isOnlyOutputNonZero)
-    OneMarkerG1.resize(m_N);
+    OneMarkerG1.set_size(m_N);
   
   uint64_t posSeek = 3 + m_numBytesofEachMarker0 * t_gIndex;
   m_ibedFile.seekg(posSeek);
@@ -201,7 +203,8 @@ void PlinkClass::getOneMarker(uint32_t & t_gIndex,        // different meanings 
     t_alt = m_ref[t_gIndex];
     genoMaps = m_genoMaps_ref_first;
   }
-  
+ 
+  uint j = 0; 
   for(uint32_t i = 0; i < m_N; i++)
   {
     uint32_t ind = m_posSampleInPlink[i];             // C++ start from 0
@@ -229,10 +232,11 @@ void PlinkClass::getOneMarker(uint32_t & t_gIndex,        // different meanings 
     }	    
     if(t_isOnlyOutputNonZero){
       if(bufferG1 > 0){
-        OneMarkerG1.push_back(bufferG1);
+        OneMarkerG1[j] = bufferG1;
+	j = j + 1;
       }
     }else{
-      OneMarkerG1.at(i) = bufferG1;
+      OneMarkerG1[i] = bufferG1;
     }
   }
   

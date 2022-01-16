@@ -20,8 +20,8 @@ private:
   FILE *m_fin;
   std::vector <unsigned char> m_buf;
   std::vector <unsigned char> m_zBuf;
-  unsigned int m_zBufLens;
-  unsigned int m_bufLens; 
+  uint m_zBufLens;
+  uint m_bufLens; 
 
 
   std::vector<int32_t> m_posSampleInBgen;
@@ -55,7 +55,8 @@ public:
 
   void setPosSampleInBgen(std::vector<std::string> & t_SampleInModel);
 
-  void Parse2(unsigned char *buf, unsigned int bufLen, const unsigned char *zBuf, unsigned int zBufLen,std::string & snpName,std::vector< double > & dosages, double & AC, double & AF, std::vector<uint> & indexforMissing, double & info, std::vector<uint> & iIndex);
+  //void Parse2(unsigned char *buf, unsigned int bufLen, const unsigned char *zBuf, unsigned int zBufLen,std::string & snpName,std::vector< double > & dosages, double & AC, double & AF, std::vector<uint> & indexforMissing, double & info, std::vector<uint> & iIndex);
+  void Parse2(unsigned char *buf, unsigned int bufLen, const unsigned char *zBuf, unsigned int zBufLen,std::string & snpName, arma::vec & dosages, double & AC, double & AF, std::vector<uint> & indexforMissing, double & info, std::vector<uint> & iIndex);
 
   void getOneMarker(uint32_t & t_gIndex,        // different meanings for different genoType
                          std::string& t_ref,       // REF allele
@@ -72,7 +73,8 @@ public:
                          bool & t_isOnlyOutputNonZero,                   // is true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
                          std::vector<uint>& t_indexForNonZero,
                          bool& t_isBoolRead,        // only used in BGEN, Wei, if you want, you can add details here.
- 			std::vector<double> & dosages);
+ 			arma::vec & dosages);
+ 			//std::vector<double> & dosages);
 
 
   // Rcpp::List getOneMarker(int t_fileStartPos);

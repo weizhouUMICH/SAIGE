@@ -4,6 +4,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
 
+#include <vector>
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
 // std::this_thread::sleep_for (std::chrono::seconds(1));
@@ -170,8 +171,10 @@ Rcpp::DataFrame mainMarkerInCPP(
   std::vector<uint> indexForMissing;
 
   int n = ptr_gSAIGEobj->m_n;
-  std::vector<double> t_GVec0;
-  arma::vec gtildeVec;
+  //std::vector<double> t_GVec0;
+  //std::vector<double> t_GVec0(n);
+  arma::vec t_GVec(n);
+  arma::vec gtildeVec(n);
   arma::vec t_P2Vec;
 //  }	  
   ptr_gSAIGEobj->assignSingleVarianceRatio();
@@ -198,20 +201,30 @@ Rcpp::DataFrame mainMarkerInCPP(
    indexZeroVec.clear();
    indexNonZeroVec.clear();
    indexForMissing.clear();
-   t_GVec0.clear();
-arma::vec timeoutput1 = getTime();
+   //t_GVec0.clear();
+   //t_GVec.clear();
+   arma::vec timeoutput1 = getTime();
 	
    Unified_getOneMarker(t_genoType, gIndex, ref, alt, marker, pd, chr, altFreq, altCounts, missingRate, imputeInfo,
                                           isOutputIndexForMissing, // bool t_isOutputIndexForMissing,
                                           indexForMissing,
                                           isOnlyOutputNonZero, // bool t_isOnlyOutputNonZero,
-                                          indexNonZeroVec, t_GVec0);
+                                          indexNonZeroVec, t_GVec);
    //arma::vec timeoutput2 = getTime();   
 //printTime(timeoutput1, timeoutput2, "Unified_getOneMarker"); 
 
-   arma::vec t_GVec(t_GVec0);
-   t_GVec0.clear(); 
 
+
+   //std::cout << "t_GVec0.size()) " << t_GVec0.size() << std::endl;
+   //arma::vec t_GVec(t_GVec0.size());
+   //arma::vec t_GVec = arma::conv_to< arma::colvec >::from(t_GVec0);
+
+   //arma::vec t_GVec(t_GVec0);
+   //t_GVec0.clear(); 
+
+   //for(uint j = 0; j < n; j++){
+   //	t_GVec(j) = t_GVec0.at(j);	
+   //}
 
     //for(int indi = 0; indi < indexForNonZero.size(); indi++){
     //  std::cout << indexForNonZero[indi] << std::endl;
@@ -221,7 +234,11 @@ arma::vec timeoutput1 = getTime();
 //   std::cout << "indexNonZeroVec.size() " << indexNonZeroVec.size() << std::endl;
     //int n = t_GVec.size();
     //arma::vec gtildeVec(n);
-    std::string pds = std::to_string(pd); 
+
+  
+
+
+   std::string pds = std::to_string(pd); 
     std::string info = chr+":"+pds+":"+ref+":"+alt;
 
     chrVec.at(i) = chr;
@@ -236,16 +253,24 @@ arma::vec timeoutput1 = getTime();
     missingRateVec.at(i) = missingRate;
     imputationInfoVec.at(i) = imputeInfo;
 
+
+
     // MAF and MAC are for Quality Control (QC)
     double MAF = std::min(altFreq, 1 - altFreq);
     double MAC = MAF * n * (1 - missingRate) *2;
-/*
+
+    
+    
+   /* 
+    
     std::cout << "missingRate " << missingRate << std::endl;
    std::cout << "MAF " << MAF << std::endl;
    std::cout << "MAC " << MAC << std::endl;
    std::cout << "altFreq " << altFreq << std::endl;
    std::cout << "n " << n << std::endl;
-  */  
+   */ 
+
+
     // Quality Control (QC) based on missing rate, MAF, and MAC
     if((missingRate > g_missingRate_cutoff) || (MAF < g_marker_minMAF_cutoff) || (MAC < g_marker_minMAC_cutoff || imputeInfo < g_marker_minINFO_cutoff)){
       continue;
@@ -253,13 +278,14 @@ arma::vec timeoutput1 = getTime();
     // Check UTIL.cpp
     //
     //
-arma::vec timeoutput3 = getTime();
+    arma::vec timeoutput3 = getTime();
+    indexZeroVec.clear();
+    indexNonZeroVec.clear();
 
-	   indexZeroVec.clear();
-   indexNonZeroVec.clear();
 
     flip = imputeGenoAndFlip(t_GVec, altFreq, altCounts,indexForMissing, g_impute_method, g_dosage_zerod_cutoff, g_dosage_zerod_MAC_cutoff, MAC, indexZeroVec, indexNonZeroVec);
    
+
 arma::vec timeoutput4 = getTime();
 //printTime(timeoutput3, timeoutput4, "imputeGenoAndFlip");
 
@@ -285,6 +311,11 @@ arma::vec timeoutput4 = getTime();
     t_P2Vec.clear();
     G1tilde_P_G2tilde_Vec.clear();    
    arma::vec timeoutput5 = getTime(); 
+ 
+ 
+ 
+ 
+   
     //check 'Main.cpp'
     bool is_region = false; 
     Unified_getMarkerPval( 
@@ -353,11 +384,14 @@ arma::vec timeoutput6 = getTime();
       N_Vec.at(i) = n;
 
     }
+
     
    } //    if((missingRate > g_missingRate_cutoff) || (MAF < g_marker_minMAF_cutoff) || (MAC < g_marker_minMAC_cutoff || imputeInfo < g_marker_minINFO_cutoff)){
-   t_GVec.clear();
+ 
+  
+  
+    t_GVec.clear();
   }
-
 
   //Rcpp::List OutList = Rcpp::List::create(Rcpp::Named("markerVec") = markerVec,
   Rcpp::DataFrame OUT_DF = Rcpp::DataFrame::create(
@@ -398,13 +432,13 @@ arma::vec timeoutput6 = getTime();
 	     OUT_DF["N_caseVec"] = N_caseVec;
 	     OUT_DF["N_ctrlVec"] = N_ctrlVec;
 	     
-	     if(isMoreOutput){
+	     if(t_isMoreOutput){
 		OUT_DF["N_case_hom"] = N_case_homVec;
 		OUT_DF["N_case_het"] = N_case_hetVec;
 		OUT_DF["N_ctrl_hom"] = N_ctrl_homVec;
 		OUT_DF["N_ctrl_het"] = N_ctrl_hetVec;
 	     }
-	}else if(traitType == "quantitative"){	
+	}else if(t_traitType == "quantitative"){	
 	    if(isCondition){
 		OUT_DF["BETAi_c"] = Beta_cVec;
 		OUT_DF["SE_c"] = seBeta_cVec;
@@ -436,7 +470,7 @@ void Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN"
                                std::vector<uint>& t_indexForMissing,     // index of missing genotype data
                                bool & t_isOnlyOutputNonZero,                   // if true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
                                std::vector<uint>& t_indexForNonZero, //
-			       std::vector<double>& t_GVec 
+			       arma::vec & t_GVec 
 			       )     // the index of non-zero genotype in the all subjects. Only valid if t_isOnlyOutputNonZero == true.
 {
   //arma::vec GVec(ptr_gSAIGEobj->m_n);
@@ -771,7 +805,8 @@ Rcpp::List mainRegionInCPP(
   double Beta_c, seBeta_c, pval_c, pval_noSPA_c, Tstat_c, varT_c;
   bool isSPAConverge, is_gtilde;
   arma::vec P1Vec(t_n), P2Vec(t_n);
-  std::vector<double> GVec0(t_n);
+  //std::vector<double> GVec0(t_n);
+  arma::vec GVec(t_n);
   std::vector<uint> indexZeroVec;
   std::vector<uint> indexNonZeroVec;
 
@@ -808,8 +843,8 @@ Rcpp::List mainRegionInCPP(
                                           indexForMissing,
                                           isOnlyOutputNonZero, // bool t_isOnlyOutputNonZero,
                                           indexNonZeroVec,
-					  GVec0);
-   arma::vec GVec(GVec0);
+					  GVec);
+   //arma::vec GVec(GVec0);
    //GVec0.clear();
 
     std::string info = chr+":"+std::to_string(pd)+":"+ref+":"+alt;
@@ -1354,7 +1389,8 @@ void assign_conditionMarkers_factors(
   arma::vec w0G2_cond_Vec(q);
   arma::vec gsumVec(t_n, arma::fill::zeros);
   boost::math::beta_distribution<> beta_dist(1, 25);
-  std::vector<double> GVec0(t_n);
+  //std::vector<double> GVec0(t_n);
+  arma::vec GVec(t_n);
   double Beta, seBeta, pval, pval_noSPA, Tstat, varT, gy, w0G2_cond;
   bool isSPAConverge, is_gtilde;
   arma::vec P2Vec(t_n);
@@ -1383,9 +1419,9 @@ void assign_conditionMarkers_factors(
                                           isOutputIndexForMissing, // bool t_isOutputIndexForMissing,
                                           indexForMissing,
                                           isOnlyOutputNonZero, // bool t_isOnlyOutputNonZero,
-                                          indexNonZeroVec, GVec0);
-     arma::vec GVec(GVec0);
-     GVec0.clear();
+                                          indexNonZeroVec, GVec);
+     //arma::vec GVec(GVec0);
+     //GVec0.clear();
 
     std::string info = chr+":"+std::to_string(pd)+":"+ref+":"+alt;
 

@@ -40,6 +40,8 @@ class SAIGEClass
       arma::uvec m_case_het_indices;
       arma::uvec m_ctrl_hom_indices;
       arma::uvec m_ctrl_het_indices;
+      arma::uvec m_n_case;
+      arma::uvec m_n_ctrl;
       arma::sp_mat m_SigmaMat_sp;
       bool m_flagSparseGRM; 
       double m_SPA_Cutoff;

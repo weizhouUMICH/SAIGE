@@ -97,7 +97,8 @@ public:
                          bool & t_isOnlyOutputNonZero,                   // is true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
                          std::vector<uint>& t_indexForNonZero,
                          bool & t_isTrueGenotype, // only used in PLINK. check m_genoMaps for details about the genotype mapping in PLINK
-			 std::vector<double>& OneMarkerG1);
+			 arma::vec & OneMarkerG1);
+			 //std::vector<double>& OneMarkerG1);
   
 
   
