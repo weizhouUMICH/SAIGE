@@ -136,6 +136,9 @@ if(nMissing > 0){
 	}	
  }
 
+ arma::uvec t_indexZero_test = arma::find(t_GVec == 9);
+ arma::uvec t_indexNonZero = arma::find(t_GVec != 9);
+
   return flip;
 }
 

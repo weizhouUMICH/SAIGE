@@ -83,6 +83,8 @@ SAIGEClass::SAIGEClass(
       //if(m_isOutputAFinCaseCtrl){
         m_case_indices = arma::find(m_y == 1);
         m_ctrl_indices = arma::find(m_y == 0);
+	m_n_case = m_case_indices.n_elem;
+	m_n_ctrl = m_ctrl_indices.n_elem;
       //}
     }
     m_dimNum = t_dimNum;

@@ -49,7 +49,7 @@ void Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN"
                                std::vector<uint>& t_indexForMissing,     // index of missing genotype data
                                bool & t_isOnlyOutputNonZero,                   // if true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
                                std::vector<uint>& t_indexForNonZero,
-			       std::vector<double>& t_GVec);
+			       arma::vec & t_GVec);
 
 void Unified_getMarkerPval(
                            arma::vec & t_GVec,

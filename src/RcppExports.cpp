@@ -46,8 +46,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // mainMarkerInCPP
-Rcpp::List mainMarkerInCPP(std::string& t_genoType, std::string& t_traitType, arma::ivec& t_genoIndex, bool& t_isMoreOutput);
-RcppExport SEXP _SAIGE_mainMarkerInCPP(SEXP t_genoTypeSEXP, SEXP t_traitTypeSEXP, SEXP t_genoIndexSEXP, SEXP t_isMoreOutputSEXP) {
+Rcpp::DataFrame mainMarkerInCPP(std::string& t_genoType, std::string& t_traitType, arma::ivec& t_genoIndex, bool& t_isMoreOutput, bool& t_isImputation);
+RcppExport SEXP _SAIGE_mainMarkerInCPP(SEXP t_genoTypeSEXP, SEXP t_traitTypeSEXP, SEXP t_genoIndexSEXP, SEXP t_isMoreOutputSEXP, SEXP t_isImputationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -55,7 +55,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string& >::type t_traitType(t_traitTypeSEXP);
     Rcpp::traits::input_parameter< arma::ivec& >::type t_genoIndex(t_genoIndexSEXP);
     Rcpp::traits::input_parameter< bool& >::type t_isMoreOutput(t_isMoreOutputSEXP);
-    rcpp_result_gen = Rcpp::wrap(mainMarkerInCPP(t_genoType, t_traitType, t_genoIndex, t_isMoreOutput));
+    Rcpp::traits::input_parameter< bool& >::type t_isImputation(t_isImputationSEXP);
+    rcpp_result_gen = Rcpp::wrap(mainMarkerInCPP(t_genoType, t_traitType, t_genoIndex, t_isMoreOutput, t_isImputation));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -689,7 +690,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_setMarker_GlobalVarsInCPP", (DL_FUNC) &_SAIGE_setMarker_GlobalVarsInCPP, 10},
     {"_SAIGE_setRegion_GlobalVarsInCPP", (DL_FUNC) &_SAIGE_setRegion_GlobalVarsInCPP, 10},
-    {"_SAIGE_mainMarkerInCPP", (DL_FUNC) &_SAIGE_mainMarkerInCPP, 4},
+    {"_SAIGE_mainMarkerInCPP", (DL_FUNC) &_SAIGE_mainMarkerInCPP, 5},
     {"_SAIGE_setPLINKobjInCPP", (DL_FUNC) &_SAIGE_setPLINKobjInCPP, 5},
     {"_SAIGE_setBGENobjInCPP", (DL_FUNC) &_SAIGE_setBGENobjInCPP, 5},
     {"_SAIGE_setSAIGEobjInCPP", (DL_FUNC) &_SAIGE_setSAIGEobjInCPP, 23},

@@ -166,25 +166,29 @@ SAIGE.Marker = function(objNull,
     #print("gc()")
     #print(gc())
     cat(paste0("(",Sys.time(),") ---- Analyzing Chunk ", i, "/", nChunks, ": chrom ", chrom," ---- \n"))
-	
 
     # main function to calculate summary statistics for markers in one chunk
     #time_mainMarker = system.time({resMarker = mainMarker(genoType, genoIndex, objNull$traitType, isMoreOutput, isImputation, isCondition)})
-    resMarker = mainMarkerInCPP(genoType, genoIndex, objNull$traitType, isMoreOutput, isImputation)
-    resMarker = resMarker[which(!is.na(resMarker$BETA)), ]	    
+    resMarker = as.data.frame(mainMarkerInCPP(genoType, objNull$traitType, genoIndex, isMoreOutput, isImputation)) 
+	    
+
+    resMarker = resMarker[which(!is.na(resMarker$BETA)), ]
 #    print("time_mainMarker")
 #   print(time_mainMarker)    
 
 
     #timeoutput=system.time({writeOutputFile(Output = list(resMarker),
-    writeOutputFile(Output = resMarker,
-                    OutputFile = list(OutputFile),
+  if(nrow(resMarker) > 0){
+  writeOutputFile(Output = resMarker,
+                    OutputFile = OutputFile,
                     OutputFileIndex = OutputFileIndex,
                     AnalysisType = "Marker",
                     nEachChunk = format(nMarkersEachChunk, scientific=F),
                     indexChunk = i,
                     Start = (i==1),
                     End = (i==nChunks))
+
+  }
                     #End = (i==nChunks))})
     #print("timeoutput")
     #print(timeoutput)
@@ -192,7 +196,7 @@ SAIGE.Marker = function(objNull,
     print(ptm)
   print("gc()")
   print(gc())
-  rm(resMarker)
+  #rm(resMarker)
   }
 
   # information to users
