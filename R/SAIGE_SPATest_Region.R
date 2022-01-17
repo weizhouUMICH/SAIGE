@@ -83,15 +83,15 @@ SAIGE.Region = function(objNull,
     chrom = region$chrom
 
     print(paste0("Analyzing Region of ", regionName, " (",i,"/",nRegions,")."))
-    print(paste(SNP, collapse = ", "))
+    #print(paste(SNP, collapse = ", "))
 
     outList0 = mainRegion(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, isImputation, annolist, isCondition)
     if(length(outList0) == 0){
       next
     } 
     outList = outList0$outList
-    print("outList$VarMat")
-    print(outList$VarMat)
+    #print("outList$VarMat")
+    #print(outList$VarMat)
 
     if(isCondition){
       weightMat_G2_G2 = outList$G2_Weight_cond %*% t(outList$G2_Weight_cond)
@@ -99,8 +99,8 @@ SAIGE.Region = function(objNull,
     info.Region = outList0$info.Region
     ### Get annotation maf indicators
     annoMAFIndicatorMat = outList$annoMAFIndicatorMat
-    print("dim(annoMAFIndicatorMat)")
-    print(dim(annoMAFIndicatorMat))
+    #print("dim(annoMAFIndicatorMat)")
+    #print(dim(annoMAFIndicatorMat))
     #annoMAFIndicatorMat = annoMAFIndicatorMat[complete.cases(annoMAFIndicatorMat),,drop=F]
     #annoMAFIndicatorMat = annoMAFIndicatorMat[which(rowSums(annoMAFIndicatorMat) != 0),,drop=F]
     #print(dim(annoMAFIndicatorMat))
@@ -117,8 +117,8 @@ SAIGE.Region = function(objNull,
     varTestedIndices = which(rowSums(annoMAFIndicatorMat) > 0)
     annoMAFIndicatorMat = annoMAFIndicatorMat[varTestedIndices, , drop=F]
     MAFVec = outList$MAFVec[varTestedIndices]
-    print("MAFVec")
-    print(MAFVec)
+    #print("MAFVec")
+    #print(MAFVec)
     AnnoWeights = dbeta(MAFVec,1,25)
     weightMat = AnnoWeights %*% t(AnnoWeights)
     if(isCondition){    
@@ -139,10 +139,10 @@ SAIGE.Region = function(objNull,
 		jm = (j-1)*(length(maxMAFlist)) + m
 		maxMAFName = maxMAFlist[m]
 		tempPos = which(annoMAFIndicatorMat[,jm] != 0)
-	        print("tempPos")
-	        print(tempPos)
-		print("length(tempPos)")
-	        print(length(tempPos))
+#	        print("tempPos")
+#	        print(tempPos)
+#		print("length(tempPos)")
+#	        print(length(tempPos))
 	       if(length(tempPos) > 0){
 		annoMAFIndVec = c(annoMAFIndVec, jm)
 		Phi = wadjVarSMat[tempPos, tempPos, drop=F]
@@ -155,17 +155,17 @@ SAIGE.Region = function(objNull,
 			re_phi = get_newPhi_scaleFactor(q.sum, mu.a, g.sum, p.new, Score, Phi)
 		        Phi = re_phi$val
                 }
-	        print("r.corr")
-		print(r.corr)
+#	        print("r.corr")
+#		print(r.corr)
 
 
 		groupOutList = get_SKAT_pvalue(Score, Phi, r.corr)
-		print("Score")
-		print(Score)
-		 print("Phi")
-                print(Phi)
-		print("groupOutList")
-		print(groupOutList)
+#		print("Score")
+#		print(Score)
+#		 print("Phi")
+ #               print(Phi)
+#		print("groupOutList")
+#		print(groupOutList)
 
 		resultDF = data.frame(Region = regionName,
                                                     Group = AnnoName,
@@ -185,13 +185,13 @@ SAIGE.Region = function(objNull,
 #t(t(b * sqrt(a1)) * sqrt(a2))
 			#G1tilde_P_G2tilde_Mat_scaled = diag(as.vector(re_phi$scaleFactor)) %*% (outList$G1tilde_P_G2tilde_Weighted_Mat) %*% diag(as.vector(outList$scalefactor_G2_cond))
 			#VarInvMat_cond_scaled = diag(as.vector(1/(outList$scalefactor_G2_cond))) %*% outList$VarInvMat_G2_cond %*% diag(as.vector(1/(outList$scalefactor_G2_cond))) * (1/weightMat_G2_G2)
-			print("dim(G1tilde_P_G2tilde_Mat_scaled)")
-			print(dim(G1tilde_P_G2tilde_Mat_scaled))
-			print("dim(outList$VarInvMat_G2_cond_scaled)")
-			print(dim(outList$VarInvMat_G2_cond_scaled))
+			#print("dim(G1tilde_P_G2tilde_Mat_scaled)")
+			#print(dim(G1tilde_P_G2tilde_Mat_scaled))
+			#print("dim(outList$VarInvMat_G2_cond_scaled)")
+			#print(dim(outList$VarInvMat_G2_cond_scaled))
 		        adjCondTemp = G1tilde_P_G2tilde_Mat_scaled %*% outList$VarInvMat_G2_cond_scaled	
-			print("dim(adjCondTemp)")
-			print(dim(adjCondTemp))
+			#print("dim(adjCondTemp)")
+			#print(dim(adjCondTemp))
 		#outList$VarMatAdjCond = adjCondTemp %*% t(G1tilde_P_G2tilde_Mat_scaled)
 			VarMatAdjCond = adjCondTemp %*% t(G1tilde_P_G2tilde_Mat_scaled)
 		#outList$TstatAdjCond = adjCondTemp %*% (outList$Tstat_G2_cond * outList$G2_Weight_cond)
@@ -261,6 +261,9 @@ SAIGE.Region = function(objNull,
 
    pval.Region = rbind(pval.Region, cctVec)
 
+
+   #print(pval.Region)
+   #print(info.Region)
    writeOutputFile(Output = list(pval.Region,  info.Region),
                     OutputFile = list(OutputFile, paste0(OutputFile, ".markerInfo")),
                     OutputFileIndex = OutputFileIndex,
@@ -301,11 +304,11 @@ SAIGE.getRegionList = function(groupFile,
     anno=group_info_list[[i]]$anno
     RegionData = rbind(RegionData, cbind(rep(gene, length(var)), var, anno))
   }
-  print("RegionData")
-  print(RegionData)
+  #print("RegionData")
+  #print(RegionData)
   colnames(RegionData) = c("REGION", "SNP", "ANNO")
   RegionData = as.data.frame(RegionData)
-  print(RegionData)
+  #print(RegionData)
 
   #if(!is.null(markerInfo)){
   # updated on 2021-08-05
@@ -314,13 +317,13 @@ SAIGE.getRegionList = function(groupFile,
   colnames(markerInfo)[1] = "CHROM"
   RegionData = merge(RegionData, markerInfo, by.y = "MARKER", by.x = "SNP", all.x = T, sort = F)
   posNA = which(is.na(RegionData$genoIndex))
-  print("RegionData")
-  print(RegionData)
-  print("posNA")  
-  print(posNA)
+ # print("RegionData")
+ # print(RegionData)
+ # print("posNA")  
+ # print(posNA)
 
   if(length(posNA) != 0){
-    print(head(RegionData[posNA,1:2]))
+    #print(head(RegionData[posNA,1:2]))
     stop("Total ",length(posNA)," markers in 'RegionFile' are not in 'GenoFile'.
          Please remove these markers before region-level analysis.")
   }
@@ -352,19 +355,19 @@ SAIGE.getRegionList = function(groupFile,
 
   RegionList = list()
   uRegion = unique(RegionData$REGION)
-  print("uRegion")
-  print(uRegion)
+  #print("uRegion")
+  #print(uRegion)
   RegionData = as.data.frame(RegionData)
-  print("RegionData")
-  print(RegionData)
-  print("RegionData$genoIndex[1]")
-  print(as.numeric(RegionData$genoIndex[1]))
+  #print("RegionData")
+  #print(RegionData)
+  #print("RegionData$genoIndex[1]")
+  #print(as.numeric(RegionData$genoIndex[1]))
 
 
   for(r in uRegion){
     print(paste0("Analyzing region ",r,"...."))
-    print(RegionData$REGION)
-    print(r)
+    #print(RegionData$REGION)
+    #print(r)
     #which(as.vector(RegionData$REGION) == r)
     posSNP = which(RegionData$REGION == r)
     SNP = RegionData$SNP[posSNP]
@@ -383,9 +386,9 @@ SAIGE.getRegionList = function(groupFile,
     # genoIndex = markerInfo$genoIndex[posMarker]
     # chrom = markerInfo$CHROM[posMarker]
     genoIndex = as.numeric(RegionData$genoIndex[posSNP])
-    cat("genoIndex is ", genoIndex, "\n")
-    cat("posSNP is ", posSNP, "\n")
-    print(RegionData$genoIndex)
+    #cat("genoIndex is ", genoIndex, "\n")
+    #cat("posSNP is ", posSNP, "\n")
+    #print(RegionData$genoIndex)
     chrom = RegionData$CHROM[posSNP]
     uchrom = unique(chrom)
 
@@ -446,11 +449,11 @@ mainRegion = function(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputF
  
  if(length(OutList) > 1){
   noNAIndices = which(!is.na(OutList$pvalVec))
-  print("dim(OutList$VarMat)")
-  print(dim(OutList$VarMat))
+  #print("dim(OutList$VarMat)")
+  #print(dim(OutList$VarMat))
 
   URindices = which(OutList$infoVec == "UR")
-  print(length(which(OutList$infoVec == "")))
+  #print(length(which(OutList$infoVec == "")))
   OutList$infoVec[which(OutList$infoVec == "")] = "NA:NA:NA:NA"
   if(length(URindices) > 1){
   	OutList$infoVec[URindices] = "UR:UR:UR:UR"

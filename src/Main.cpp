@@ -820,11 +820,11 @@ Rcpp::List mainRegionInCPP(
   unsigned int i2 = 0;    // index of Markers (Ultra-Rare Variants, URV)
 
   unsigned int jm; 
-  std::cout << "q0 " << q0 << std::endl; 
+  //std::cout << "q0 " << q0 << std::endl; 
   // cycle for q markers
   for(unsigned int i = 0; i < q0; i++)
   {
-  std::cout << "i start " << i << std::endl; 
+  //std::cout << "i start " << i << std::endl; 
     // marker-level information
     double altFreq, altCounts, missingRate, imputeInfo;
     std::vector<uint32_t> indexForMissing;
@@ -892,7 +892,7 @@ Rcpp::List mainRegionInCPP(
         std::cout << "Start analyzing chunk " << ichunk << "....." << std::endl;
       }
       
-  std::cout << "okk3b" << std::endl;
+  //std::cout << "okk3b" << std::endl;
       Unified_getMarkerPval(
                     GVec,
                           false, // bool t_isOnlyOutputNonZero,
@@ -927,9 +927,9 @@ Rcpp::List mainRegionInCPP(
       i1 += 1;
       i1InChunk += 1;
 
-      std::cout << "i1InChunk is " << i1InChunk << std::endl;
-    std::cout << "ichunk is " << ichunk << std::endl;
-    std::cout << "i is " << i << std::endl;
+      //std::cout << "i1InChunk is " << i1InChunk << std::endl;
+      //std::cout << "ichunk is " << ichunk << std::endl;
+     //std::cout << "i is " << i << std::endl;
 
 
 
@@ -1012,17 +1012,19 @@ Rcpp::List mainRegionInCPP(
       i1InChunk = 0;
       nchunks = nchunks + 1;
     }
-
+/*
     std::cout << "i1InChunk is " << i1InChunk << std::endl;
     std::cout << "ichunk is " << ichunk << std::endl;
     std::cout << "m1 is " << m1 << std::endl;
     std::cout << "P1Mat.n_rows is " << P1Mat.n_rows << std::endl;
+*/
     Rcpp::checkUserInterrupt();
   }
+  /*
   for(unsigned int maxi = 0; maxi < MACVec.size(); maxi++){  
     std::cout << "MACVec.at(mi) " << MACVec.at(maxi) << std::endl;
   }
-
+*/
   if(i1 == 0){
     std::cout << "Only ultra-rare variants are found. This region will be skipped." << std::endl;
     Rcpp::List OutList = Rcpp::List::create();
@@ -1030,18 +1032,18 @@ Rcpp::List mainRegionInCPP(
   }
 
 
-
+/*
   std::cout << "ok1" << std::endl;
   std::cout << "i1InChunk is " << i1InChunk << std::endl;
   std::cout << "ichunk is " << ichunk << std::endl;
   std::cout << "m1 is " << m1 << std::endl;
   std::cout << "ok2" << std::endl;
-
+*/
 //the second last chunk
   if(i1InChunk != 0){	  
     P1Mat = P1Mat.rows(0, i1InChunk - 1);
     P2Mat = P2Mat.cols(0, i1InChunk - 1);
-    std::cout << "nchunks " << nchunks << std::endl;
+    //std::cout << "nchunks " << nchunks << std::endl;
     //if(nchunks != 1){
     std::cout << "In chunks 0-" << ichunk << ", " << i2 << " markers are ultra-rare and " << i1 << " markers are not ultra-rare." << std::endl;
     P1Mat.save(t_outputFile + "_P1Mat_Chunk_" + std::to_string(ichunk) + ".bin");
@@ -1050,11 +1052,13 @@ Rcpp::List mainRegionInCPP(
     //}
     mPassCVVec.push_back(i1InChunk);
     //nchunks = nchunks + 1;
+/*
     std::cout << "i1InChunk 2 is " << i1InChunk << std::endl;
     std::cout << "ichunk 2 is " << ichunk << std::endl;
     std::cout << "m1 2 is " << m1 << std::endl;
     std::cout << "P1Mat.n_rows " << P1Mat.n_rows << std::endl;
     std::cout << "P1Mat.n_cols " << P1Mat.n_cols << std::endl;
+*/
     nchunks = nchunks + 1; 
     i1InChunk = 0;
   }
@@ -1082,8 +1086,8 @@ Rcpp::List mainRegionInCPP(
 	jm = j*q_maf+m;
 	arma::vec genoURVec = genoURMat.col(jm);
 	arma::uvec indexForNonZero = arma::find(genoURVec != 0);
-	std::cout << "jm " << jm << std::endl;
-	std::cout << "indexForNonZero.n_elem" << indexForNonZero.n_elem << std::endl;
+//	std::cout << "jm " << jm << std::endl;
+//	std::cout << "indexForNonZero.n_elem" << indexForNonZero.n_elem << std::endl;
 	if(indexForNonZero.n_elem > 0){
 	//URindVec.push_back(jm+1);
 	double altFreq = arma::mean(genoURVec)/2;
@@ -1207,7 +1211,7 @@ std::vector<uint32_t> indexForMissing;
   //if(i1InChunk > 0){
    // }
 //} //if(i2 != 0){if there are ultra-rare variants
-   std::cout << "P1Mat.n_rows ok1 " << P1Mat.n_rows << std::endl; 
+  // std::cout << "P1Mat.n_rows ok1 " << P1Mat.n_rows << std::endl; 
   if(i1InChunk != 0){
     nchunks = nchunks + 1;
     P1Mat = P1Mat.rows(0, i1InChunk - 1);
@@ -1219,7 +1223,7 @@ std::vector<uint32_t> indexForMissing;
 //    }
     mPassCVVec.push_back(i1InChunk);
   }
-   std::cout << "P1Mat.n_rows ok2 " << P1Mat.n_rows << std::endl; 
+   //std::cout << "P1Mat.n_rows ok2 " << P1Mat.n_rows << std::endl; 
 
   }// if(i2 > 0)    
   int mPassCVVecsize = mPassCVVec.size();
@@ -1227,9 +1231,9 @@ std::vector<uint32_t> indexForMissing;
   // not so many markers in the region, so all matrix is in memory
   //nchunks = ichunk + 1;
   //
-  std::cout << "i1 " << i1 << std::endl;
+  //std::cout << "i1 " << i1 << std::endl;
   arma::mat VarMat(i1, i1);
-  std::cout << "VarMat.n_rows " << VarMat.n_rows << std::endl;
+  //std::cout << "VarMat.n_rows " << VarMat.n_rows << std::endl;
 
   if(nchunks == 1){
     VarMat = P1Mat * P2Mat;
@@ -1337,7 +1341,7 @@ std::vector<uint32_t> indexForMissing;
 
   //arma::mat scaled_m_VarInvMat_cond;
   if(isCondition){
-  std::cout << "okk5" << std::endl;
+  //std::cout << "okk5" << std::endl;
     arma::mat AdjCondMat = G1tilde_P_G2tilde_Weighted_Mat * (ptr_gSAIGEobj->m_VarInvMat_cond / (w0G2Mat_cond));
     arma::mat VarMatAdjCond = AdjCondMat * (G1tilde_P_G2tilde_Weighted_Mat.t());
     arma::vec TstatAdjCond = AdjCondMat * (ptr_gSAIGEobj->m_Tstat_cond % w0G2Vec_cond ); 
@@ -1484,6 +1488,6 @@ void assign_conditionMarkers_factors(
 // [[Rcpp::export]]
 void assign_conditionMarkers_factors_binary_region(
 			   arma::vec & scalefactor_G2_cond){
-	std::cout << "assign_conditionMarkers_factors_binary_region" << std::endl;
+	//std::cout << "assign_conditionMarkers_factors_binary_region" << std::endl;
 	ptr_gSAIGEobj->assignConditionFactors_scalefactor(scalefactor_G2_cond);
 }	
