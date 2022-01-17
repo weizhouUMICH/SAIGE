@@ -56,8 +56,8 @@ ReadGroupFile<-function(groupFile){
                 group_info_list[[i]][[anno_name_1]]<-list(markerID= markerID)
         }
   }
-  print("group_info_list")
-  print(group_info_list)
+  #print("group_info_list")
+  #print(group_info_list)
   return(group_info_list)
 }
 

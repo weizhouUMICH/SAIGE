@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <boost/math/distributions/normal.hpp>
 #include "SPA_survival.hpp"
-#include "utils.hpp"
+#include "UTIL.hpp"
 
 
 // [[Rcpp::export]]

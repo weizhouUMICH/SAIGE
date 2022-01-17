@@ -15,7 +15,6 @@
 #include "SPA_binary.hpp"
 #include "SPA_survival.hpp"
 #include "UTIL.hpp"
-#include "utils.hpp"
 
 // [[Rcpp::export]]
 void SPA(arma::vec & mu, arma::vec & g, double q, double qinv, double pval_noadj, double tol, bool logp, std::string traitType, double & pval, bool & isSPAConverge){

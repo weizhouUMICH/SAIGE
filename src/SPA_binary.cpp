@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <boost/math/distributions/normal.hpp>
 #include "SPA_binary.hpp"
-#include "utils.hpp"
+#include "UTIL.hpp"
 //boost::math::normal norm;
 
 

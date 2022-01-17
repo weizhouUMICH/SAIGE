@@ -472,23 +472,23 @@ writeOutputFile = function(Output,
   message4 = paste("Have completed the analysis of chunk", indexChunk)
   message5 = "Have completed the analyses of all chunks."
 
-#  n1 = length(Output)
-#  n2 = length(OutputFile)
+  n1 = length(Output)
+  n2 = length(OutputFile)
   print("write Output 1")
 
-#  if(n1 != n2)
-#    stop("length(Output) != length(OutputFile)")
+  if(n1 != n2)
+    stop("length(Output) != length(OutputFile)")
 
-#  if(n1 != 0){
-#    for(i in 1:n1){
+  if(n1 != 0){
+    for(i in 1:n1){
       if(Start){
-        write.table(Output, OutputFile, quote = F, sep = "\t", append = F, col.names = T, row.names = F)
+        write.table(Output[[i]], OutputFile[[i]], quote = F, sep = "\t", append = F, col.names = T, row.names = F)
       }else{
-        #write.table(Output[[i]], OutputFile[[i]], quote = F, sep = "\t", append = T, col.names = F, row.names = F)
-        write.table(Output, OutputFile, quote = F, sep = "\t", append = T, col.names = F, row.names = F)
+        write.table(Output[[i]], OutputFile[[i]], quote = F, sep = "\t", append = T, col.names = F, row.names = F)
+        #write.table(Output, OutputFile, quote = F, sep = "\t", append = T, col.names = F, row.names = F)
       }
-#    }
-#  }
+    }
+  }
   print("write Output 2")
   if(Start)
     write.table(c(message1, message2, message3), OutputFileIndex,

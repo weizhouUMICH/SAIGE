@@ -475,10 +475,10 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
 	double tol0 = std::numeric_limits<double>::epsilon();
 	tol1 = std::pow(tol0, 0.25);
 	if(p_iIndexComVecSize >= 0.5){
-		std::cout << "SPA_fast" << std::endl;
+		//std::cout << "SPA_fast" << std::endl;
         	SPA_fast(m_mu, t_gtilde, q, qinv, pval_noadj, false, gNA, gNB, muNA, muNB, NAmu, NAsigma, tol1, m_traitType, t_SPApval, t_isSPAConverge);
 	}else{
-		std::cout << "SPA" << std::endl;
+		//std::cout << "SPA" << std::endl;
 		SPA(m_mu, t_gtilde, q, qinv, pval_noadj, tol1, logp, m_traitType, t_SPApval, t_isSPAConverge);	
 	}
 
