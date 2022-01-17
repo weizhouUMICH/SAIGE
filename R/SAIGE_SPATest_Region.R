@@ -365,7 +365,7 @@ SAIGE.getRegionList = function(groupFile,
 
 
   for(r in uRegion){
-    print(paste0("Analyzing region ",r,"...."))
+    #print(paste0("Analyzing region ",r,"...."))
     #print(RegionData$REGION)
     #print(r)
     #which(as.vector(RegionData$REGION) == r)
