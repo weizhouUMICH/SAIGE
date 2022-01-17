@@ -1,29 +1,36 @@
 SPAGMMATtest = function(bgenFile = "",
                  bgenFileIndex = "",
-                 vcfFile = "",
+		 sampleFile = "",
+		 vcfFile = "",
                  vcfFileIndex = "",
                  vcfField = "DS",
-                 savFile = "",
+
+		 savFile = "",
                  savFileIndex = "",
-                 sampleFile = "",
-                 bedFile="",
+
+		 bedFile="",
                  bimFile="",
                  famFile="",
                  AlleleOrder = "alt-first", #new
-                 idstoExcludeFile = NULL,
+
+		 idstoExcludeFile = NULL,
                  idstoIncludeFile = NULL,
                  rangestoExcludeFile = NULL,
                  rangestoIncludeFile = NULL,
-                 chrom = "",
-                 start = 1,
-                 end = 250000000,
-                 max_missing = 0.15,  #new
+
+		 chrom = "", #for vcf file
+                 start = 1, #for vcf
+                 end = 250000000, #for vcf
+
+		 max_missing = 0.15,  #new
 		 impute_method = "mean",  #"drop", "mean", "minor"     #new
-                 min_MAC = 0.5,
+
+		 min_MAC = 0.5,
                  min_MAF = 0,
                  min_Info = 0,
 		 is_imputed_data = FALSE, #new
-                 GMMATmodelFile = "",
+
+		 GMMATmodelFile = "",
                  LOCO=TRUE,
                  varianceRatioFile = "",
                  cateVarRatioMinMACVecExclude=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5),
@@ -47,14 +54,18 @@ SPAGMMATtest = function(bgenFile = "",
 		 dosage_zerod_cutoff = 0.2,
 		 dosage_zerod_MAC_cutoff = 10,
 		 is_output_moreDetails = FALSE, #new
-                 X_PARregion="60001-2699520,154931044-155270560",
-                 is_rewrite_XnonPAR_forMales=FALSE,
-                 sampleFile_male="",
-                 method_to_CollapseUltraRare="absence_or_presence",
+                 X_PARregion="60001-2699520,154931044-155270560",   ##not activate
+                 is_rewrite_XnonPAR_forMales=FALSE, #not activate
+                 sampleFile_male="", #not activate
+
+		 method_to_CollapseUltraRare="absence_or_presence",  #saige-gene+
 		 MACCutoff_to_CollapseUltraRare = 10,
                  DosageCutoff_for_UltraRarePresence = 0.5,
+
+
                  function_group_test =c("lof", "missense", "synonymous"),  #new
                  maxMAFforGroupTest = c(0.1),
+
                  max_markers_region = 100   #new
 		 ){
 
