@@ -179,8 +179,8 @@ SAIGE.Marker = function(objNull,
 
     #timeoutput=system.time({writeOutputFile(Output = list(resMarker),
   if(nrow(resMarker) > 0){
-  writeOutputFile(Output = resMarker,
-                    OutputFile = OutputFile,
+  writeOutputFile(Output = list(resMarker),
+                    OutputFile = list(OutputFile),
                     OutputFileIndex = OutputFileIndex,
                     AnalysisType = "Marker",
                     nEachChunk = format(nMarkersEachChunk, scientific=F),

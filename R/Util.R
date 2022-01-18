@@ -493,7 +493,6 @@ writeOutputFile = function(Output,
   if(Start)
     write.table(c(message1, message2, message3), OutputFileIndex,
                 quote = F, sep = "\t", append = F, col.names = F, row.names = F)
-
   write.table(message4, OutputFileIndex, quote = F, sep = "\t", append = T, col.names = F, row.names = F)
 
   if(End)
