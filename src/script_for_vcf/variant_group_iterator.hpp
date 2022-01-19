@@ -105,26 +105,45 @@ public:
   typedef const value_type *pointer;
   typedef std::input_iterator_tag iterator_category;
 
-  variant_group_iterator(const variant_group_iterator& src) :
-    rdr_(src.rdr_),
-    group_id_(src.group_id_),
-    sites_(src.sites_),
-    merged_regions_(src.merged_regions_),
-    region_offset_(src.region_offset_),
-    variant_(src.variant_)
+  variant_group_iterator& operator=(const variant_group_iterator& src)
   {
+    if (&src != this)
+    {
+      rdr_ = src.rdr_;
+      group_id_ = src.group_id_;
+      sites_ = src.sites_;
+      merged_regions_ = src.merged_regions_;
+      region_offset_ = src.region_offset_;
+      variant_ = src.variant_;
+    }
 
+    return *this;
   }
 
-  variant_group_iterator(variant_group_iterator&& src) :
-    rdr_(src.rdr_),
-    group_id_(std::move(src.group_id_)),
-    sites_(std::move(src.sites_)),
-    merged_regions_(std::move(src.merged_regions_)),
-    region_offset_(src.region_offset_),
-    variant_(std::move(src.variant_))
+  variant_group_iterator& operator=(variant_group_iterator&& src)
   {
-    src.rdr_ = nullptr;
+    if (&src != this)
+    {
+      rdr_ = src.rdr_;
+      src.rdr_ = nullptr;
+      group_id_ = std::move(src.group_id_);
+      sites_ = std::move(src.sites_);
+      merged_regions_ = std::move(src.merged_regions_);
+      region_offset_ = src.region_offset_;
+      variant_ = std::move(src.variant_);
+    }
+
+    return *this;
+  }
+
+  variant_group_iterator(const variant_group_iterator& src)
+  {
+    operator=(src);
+  }
+
+  variant_group_iterator(variant_group_iterator&& src)
+  {
+    operator=(std::move(src));
   }
 
   variant_group_iterator(savvy::reader& rdr, std::string marker_group_file_line) :
