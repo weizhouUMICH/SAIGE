@@ -115,6 +115,7 @@ public:
       merged_regions_ = src.merged_regions_;
       region_offset_ = src.region_offset_;
       variant_ = src.variant_;
+      use_sites_ = src.use_sites_;
     }
 
     return *this;
@@ -131,6 +132,7 @@ public:
       merged_regions_ = std::move(src.merged_regions_);
       region_offset_ = src.region_offset_;
       variant_ = std::move(src.variant_);
+      use_sites_ = src.use_sites_;
     }
 
     return *this;
@@ -147,7 +149,8 @@ public:
   }
 
   variant_group_iterator(savvy::reader& rdr, std::string marker_group_file_line) :
-    rdr_(&rdr)
+    rdr_(&rdr),
+    use_sites_(true)
   {
     std::tie(group_id_, sites_) = parse_marker_group_line(marker_group_file_line);
     init();
@@ -156,9 +159,20 @@ public:
   variant_group_iterator(savvy::reader& rdr, std::string group_id, std::list<savvy::site_info> sites) :
     rdr_(&rdr),
     group_id_(std::move(group_id)),
-    sites_(std::move(sites))
+    sites_(std::move(sites)),
+    use_sites_(true)
   {
     init();
+  }
+
+  variant_group_iterator(savvy::reader& rdr, const savvy::genomic_region& reg) :
+    rdr_(&rdr),
+    merged_regions_({reg}),
+    region_offset_(0),
+    use_sites_(false)
+  {
+    rdr_->reset_bounds(merged_regions_[region_offset_]);
+    increment();
   }
 
   variant_group_iterator() :
@@ -213,8 +227,11 @@ private:
   {
     while (region_offset_ < merged_regions_.size())
     {
-      while (!sites_.empty() && rdr_->read(variant_))
+      while ((!sites_.empty() || !use_sites_) && rdr_->read(variant_))
       {
+        if (!use_sites_)
+          return;
+
         while (!sites_.empty())
         {
           if (sites_.front().position() >= variant_.position() || sites_.front().chromosome() != variant_.chromosome())
@@ -276,6 +293,7 @@ private:
   std::vector<savvy::genomic_region> merged_regions_;
   std::size_t region_offset_;
   value_type variant_;
+  bool use_sites_;
 };
 
 #endif // VARIANT_GROUP_ITERATOR_HPP
