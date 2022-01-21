@@ -1,3 +1,5 @@
+if(FALSE){
+
 > outfile="~/projects/Dec2021/SAIGE/extdata/test_new/group_plink.txt"
 > a=c("GENE1","var1", paste0("rs",seq(1,50)))
 > a
@@ -15,3 +17,17 @@
 > write.table(t(a), outfile, quote=F, col.names=F, row.names=F,append=T)
 > b=c("GENE2","anno",rep("missense",30),rep("lof",20))
 > write.table(t(b), outfile, quote=F, col.names=F, row.names=F, append=T)
+}
+
+
+ outfile="~/projects/Dec2021/SAIGE/extdata/test_new/group_vcf.txt"
+a=c("GENE1","var1", paste0("1:",seq(1,50), "_A/C"))
+write.table(t(a), outfile, quote=F, col.names=F, row.names=F)
+b=c("GENE1","anno", rep("lof",10),rep("missense",20),rep("lof",20))
+write.table(t(b), outfile, quote=F, col.names=F, row.names=F, append=T)
+a=c("GENE2","var", paste0("1:",seq(51,100), "_A/C"))
+write.table(t(a), outfile, quote=F, col.names=F, row.names=F,append=T)
+b=c("GENE2","anno",rep("missense",30),rep("lof",20))
+write.table(t(b), outfile, quote=F, col.names=F, row.names=F, append=T)
+
+#chr:pos_ref/alt

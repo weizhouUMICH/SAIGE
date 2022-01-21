@@ -57,13 +57,13 @@ SAIGE.Region = function(objNull,
   method=out.method$method
   r.corr=out.method$r.corr
 
-
   RegionList = SAIGE.getRegionList(groupFile, annolist, markerInfo)
   nRegions = length(RegionList)
 
-
   P1Mat = matrix(0, max_markers_region, n);
   P2Mat = matrix(0, n, max_markers_region);
+
+
 
   chrom1 = "FakeCHR";
 
@@ -78,7 +78,19 @@ SAIGE.Region = function(objNull,
       next
     }	    
     SNP = region$SNP
-    genoIndex = region$genoIndex
+    if(genoType != "vcf"){
+    	genoIndex = region$genoIndex
+    }else{
+        SNPlist = paste(c(regionName, SNP), collapse = "\t") 
+        set_iterator_inVcf(SNPlist, chrom1, 1, 200000000)
+        isVcfEnd =  check_Vcf_end()
+    	if(!isVcfEnd){
+		genoIndex = rep(-1, length(SNP))
+    	}else{
+        	warning("No markers in region ", regionName, " are found in the VCF file")
+		next
+    	}	
+    }	    
     annoIndicatorMat = region$annoIndicatorMat
     chrom = region$chrom
 
@@ -310,7 +322,8 @@ SAIGE.getRegionList = function(groupFile,
   RegionData = as.data.frame(RegionData)
   #print(RegionData)
 
-  #if(!is.null(markerInfo)){
+##for non-VCF files  
+if(!is.null(markerInfo)){
   # updated on 2021-08-05
   colnames(markerInfo)[3] = "MARKER"
   colnames(markerInfo)[6] = "genoIndex"
@@ -327,6 +340,7 @@ SAIGE.getRegionList = function(groupFile,
     stop("Total ",length(posNA)," markers in 'RegionFile' are not in 'GenoFile'.
          Please remove these markers before region-level analysis.")
   }
+}
 
   #HeaderInRegionData = colnames(RegionData)
   HeaderInRegionData = unique(RegionData$ANNO)
@@ -337,32 +351,10 @@ SAIGE.getRegionList = function(groupFile,
   for(q in 1:length(annoVec)){
   	RegionAnnoHeaderList[[q]] = strsplit(annoVec[q],";")[[1]]
   }	  
-  #RegionAnnoHeader = unique(unlist(RegionAnnoHeaderList))
-
-  #if(!is.null(RegionAnnoHeader)){
-  #  if(any(!RegionAnnoHeader %in% HeaderInRegionData))
-  #    stop("At least one element in 'RegionAnnoHeader' is not in the header of RegionFile.")
-  #  posAnno = which(HeaderInRegionData %in% RegionAnnoHeader)
-  #}else{
-  #  print("Since no 'RegionAnnoHeader' is given, region-based testing will not incorporate any annotation information.")
-  #  posAnno = NULL
-  #}
-
-
-
-
-
 
   RegionList = list()
   uRegion = unique(RegionData$REGION)
-  #print("uRegion")
-  #print(uRegion)
   RegionData = as.data.frame(RegionData)
-  #print("RegionData")
-  #print(RegionData)
-  #print("RegionData$genoIndex[1]")
-  #print(as.numeric(RegionData$genoIndex[1]))
-
 
   for(r in uRegion){
     #print(paste0("Analyzing region ",r,"...."))
@@ -376,23 +368,15 @@ SAIGE.getRegionList = function(groupFile,
     if(any(duplicated(SNP)))
       stop("Please check RegionFile: in region ", r,": duplicated SNPs exist.")
 
-    # posMarker = match(SNP, markerInfo$ID, 0)
-    # if(any(posMarker == 0))
-    #   stop(paste0("At least one marker in region ", r," are not in 'GenoFile' and 'GenoFileIndex'."))
+    if(!is.null(markerInfo)){
+      genoIndex = as.numeric(RegionData$genoIndex[posSNP])
+      chrom = RegionData$CHROM[posSNP]
+      uchrom = unique(chrom)
+      if(length(uchrom) != 1)
+        stop("In region ",r,", markers are from multiple chromosomes.")
+    }
 
-    #regionMat = cbind(BASE=1, RegionData[posSNP, posAnno, drop=F])
-    #rownames(regionMat) = SNP
-
-    # genoIndex = markerInfo$genoIndex[posMarker]
-    # chrom = markerInfo$CHROM[posMarker]
-    genoIndex = as.numeric(RegionData$genoIndex[posSNP])
-    #cat("genoIndex is ", genoIndex, "\n")
-    #cat("posSNP is ", posSNP, "\n")
-    #print(RegionData$genoIndex)
-    chrom = RegionData$CHROM[posSNP]
-    uchrom = unique(chrom)
-
-    annoIndicatorMat = matrix(0, nrow=length(genoIndex), ncol=length(annoVec)) 	 
+    annoIndicatorMat = matrix(0, nrow=length(posSNP), ncol=length(annoVec)) 	 
     annoVecNew = c() 
   for(q in 1:length(annoVec)){
 	indiceVec = which(RegionData$ANNO[posSNP] %in% RegionAnnoHeaderList[[q]])
@@ -409,7 +393,7 @@ SAIGE.getRegionList = function(groupFile,
         #stop("At least one annotation is required\n")
   }else{
    if(length(annoVecNew) < length(annoVec)){
-        annoIndicatorMat = matrix(0, nrow=length(genoIndex), ncol=length(annoVecNew))	   
+        annoIndicatorMat = matrix(0, nrow=length(posSNP), ncol=length(annoVecNew))	   
     for(q in 1:length(annoVecNew)){
         RegionAnnoHeaderListNew[[q]] = strsplit(annoVecNew[q],";")[[1]]
         indiceVec = which(RegionData$ANNO[posSNP] %in% RegionAnnoHeaderListNew[[q]])
@@ -422,15 +406,22 @@ SAIGE.getRegionList = function(groupFile,
   }	    
 
 
-    if(length(uchrom) != 1)
-      stop("In region ",r,", markers are from multiple chromosomes.")
   }
+
+   if(!is.null(markerInfo)){ 
     RegionList[[r]] = list(SNP = SNP,
 			   annoIndicatorMat = annoIndicatorMat,
-                           #regionMat = regionMat,
                            genoIndex = genoIndex,
-                           chrom = uchrom, 
+#                           chrom = uchrom, 
 			   annoVec = annoVecNew)
+   }else{
+    RegionList[[r]] = list(SNP = SNP,
+			   annoIndicatorMat = annoIndicatorMat,
+ #                          chrom = uchrom, 
+			   annoVec = annoVecNew)
+
+   }	   
+
   }
 
 

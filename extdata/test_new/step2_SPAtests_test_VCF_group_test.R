@@ -9,8 +9,8 @@ options(stringsAsFactors=F)
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.44.2.b")
 print(sessionInfo())
 
-library(SAIGE, lib.loc="~/projects/Dec2021/install")
-
+#library(SAIGE, lib.loc="~/projects/Dec2021/install")
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_old_check/install")
 
 library(optparse)
 library(data.table)
@@ -19,10 +19,10 @@ library(methods)
 SPAGMMATtest(vcfFile="../input/genotype_100markers.vcf.gz",
              vcfFileIndex="../input/genotype_100markers.vcf.gz.csi",
              vcfField="GT",
-             SAIGEOutputFile="./new_group_bgen_GENE1.txt",
+             SAIGEOutputFile="./vcf_gene_out.txt",
              chrom="1",
-	     groupFile="./group_plink_GENE1.txt",
-	     maxMAFforGroupTest=c(0.01,0.001,0.1),
+	     groupFile="~/projects/Dec2021/SAIGE/extdata/test_new/group_vcf.txt",
+	     maxMAFforGroupTest=c(0.01,0.001,0.05,0.1),
 	     function_group_test =c("lof", "lof;missense", "missense"),
 	     GMMATmodelFile="../output/example_binary.rda",
 	     varianceRatioFile="../output/example_binary_cate_v2.varianceRatio.txt",
