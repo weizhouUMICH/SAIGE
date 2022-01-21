@@ -140,6 +140,8 @@ rm ./new_group_bgen_GENE1*
 Rscript step2_SPAtests_test_BGEN_group_test.R &> step2_SPAtests_test_BGEN_group_test.log
 
 
+rm ./new_group_vcf_GENE1*
+Rscript step2_SPAtests_test_VCF_group_test.R
 #########Conditional analysis
 
 
