@@ -108,49 +108,69 @@ SAIGE.Marker = function(objNull,
 
   if(is.null(OutputFileIndex))
     OutputFileIndex = paste0(OutputFile, ".index")
+  
+  genoType = objGeno$genoType
 
   outIndex = checkOutputFile(OutputFile, OutputFileIndex, "Marker", format(nMarkersEachChunk, scientific=F))    # this function is in 'Util.R'
   outIndex = outIndex$indexChunk
-
-
-  ## set up an object for genotype
-  genoType = objGeno$genoType
-  markerInfo = objGeno$markerInfo
-  if(LOCO){
-    markerInfo = markerInfo[which(markerInfo$CHROM == chrom),]  
-  }
-  CHROM = markerInfo$CHROM
-  genoIndex = markerInfo$genoIndex
-
-  ##only for one chrom
-  # all markers were split into multiple chunks,
-  genoIndexList = splitMarker(genoIndex, nMarkersEachChunk, CHROM);
-  nChunks = length(genoIndexList)
-  cat("Number of all markers to test:\t", nrow(markerInfo), "\n")
-  cat("Number of markers in each chunk:\t", nMarkersEachChunk, "\n")
-  cat("Number of chunks for all markers:\t", nChunks, "\n")
   if(outIndex != 1)
     cat("Restart the analysis from chunk:\t", outIndex, "\n")
 
+
+  ## set up an object for genotype
+  if(genoType != "vcf"){
+    markerInfo = objGeno$markerInfo
+    if(LOCO){
+      markerInfo = markerInfo[which(markerInfo$CHROM == chrom),]  
+    }
+    CHROM = markerInfo$CHROM
+    genoIndex = markerInfo$genoIndex
+    ##only for one chrom
+    # all markers were split into multiple chunks,
+    genoIndexList = splitMarker(genoIndex, nMarkersEachChunk, CHROM);
+    nChunks = length(genoIndexList)
+    cat("Number of all markers to test:\t", nrow(markerInfo), "\n")
+    cat("Number of markers in each chunk:\t", nMarkersEachChunk, "\n")
+    cat("Number of chunks for all markers:\t", nChunks, "\n")
+    if(outIndex > nChunks){
+      stop("The analysis has been finished! Please delete ", OutputFileIndex, " if the analysis needs to be run again")
+      is_marker_test = FALSE 
+    }else{
+      is_marker_test = TRUE
+      i = outIndex    
+    }
+    
+  }else{
+    if(outIndex > 1){
+	move_forward_iterator_Vcf(outIndex*nMarkersEachChunk)    
+    }
+    isVcfEnd =  check_Vcf_end()
+    if(!isVcfEnd){
+    	outIndex = 1
+    	genoIndex = rep(-1, nMarkersEachChunk) 
+	nChunks = outIndex + 1
+	is_marker_test = TRUE
+    }else{
+	is_marker_test = FALSE    
+	stop("No markers are left in VCF")
+    }
+  }
+
   chrom = "InitialChunk"
 
+  while(is_marker_test){
+  #for(i in outIndex:nChunks)
+  #{
+#time_left = system.time({
+    if(genoType != "vcf"){	  
+      tempList = genoIndexList[[i]]
+      genoIndex = as.integer(tempList$genoIndex)
+      tempChrom = tempList$chrom
+    }
 
-
-
-  for(i in outIndex:nChunks)
-  {
- 
-
-
-#time_left = system.time({	
-    tempList = genoIndexList[[i]]
     #print("tempList")
     #print(tempList)
     #print(tempList$genoIndex)
-    genoIndex = as.integer(tempList$genoIndex)
-    tempChrom = tempList$chrom
-
-
 #})
 #print("time_left")
 #print(time_left)
@@ -170,9 +190,8 @@ SAIGE.Marker = function(objNull,
     # main function to calculate summary statistics for markers in one chunk
     #time_mainMarker = system.time({resMarker = mainMarker(genoType, genoIndex, objNull$traitType, isMoreOutput, isImputation, isCondition)})
     resMarker = as.data.frame(mainMarkerInCPP(genoType, objNull$traitType, genoIndex, isMoreOutput, isImputation)) 
-	    
-
     resMarker = resMarker[which(!is.na(resMarker$BETA)), ]
+
 #    print("time_mainMarker")
 #   print(time_mainMarker)    
 
@@ -194,16 +213,31 @@ SAIGE.Marker = function(objNull,
     #print(timeoutput)
     ptm <- proc.time()
     print(ptm)
-  print("gc()")
-  print(gc())
-  #rm(resMarker)
+    print("gc()")
+    print(gc())
+    #rm(resMarker)
+
+
+  if(genoType == "vcf"){
+    isVcfEnd =  check_Vcf_end()
+    if(isVcfEnd){
+	is_marker_test = FALSE	     
+    }
+  }else{
+    i = i + 1
+    if(i > nChunks){
+      is_marker_test = FALSE
+    }	    
   }
+	  
+  } #while(is_marker_test){
 
   # information to users
   output = paste0("Analysis done! The results have been saved to '", OutputFile,"'.")
 
   return(output)
 }
+
 
 splitMarker = function(genoIndex, nMarkersEachChunk, CHROM)
 {

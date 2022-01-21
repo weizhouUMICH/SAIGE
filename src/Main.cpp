@@ -31,6 +31,7 @@
 
 static PLINK::PlinkClass* ptr_gPLINKobj = NULL;
 static BGEN::BgenClass* ptr_gBGENobj = NULL;
+static VCF::VcfClass* ptr_gVCFobj = NULL;
 // global objects for different analysis methods
 static SAIGE::SAIGEClass* ptr_gSAIGEobj = NULL;
 //single, SAIGE
@@ -455,7 +456,7 @@ arma::vec timeoutput6 = getTime();
 
 
 // a unified function to get single marker from genotype file
-void Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN"
+void Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN", "Vcf"
                                uint32_t & t_gIndex,        // different meanings for different genoType
                                std::string& t_ref,       // REF allele
                                std::string& t_alt,       // ALT allele (should probably be minor allele, otherwise, computation time will increase)
@@ -487,7 +488,13 @@ void Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN"
                                       t_isOutputIndexForMissing, t_indexForMissing, t_isOnlyOutputNonZero, t_indexForNonZero,
                                       isBoolRead, t_GVec);
   }
-  
+
+  if(t_genoType == "vcf"){
+    bool isBoolRead = true;
+    ptr_gVCFobj->getOneMarker(t_ref, t_alt, t_marker, t_pd, t_chr, t_altFreq, t_altCounts, t_missingRate, t_imputeInfo,
+                                      t_isOutputIndexForMissing, t_indexForMissing, t_isOnlyOutputNonZero, t_indexForNonZero, isBoolRead, t_GVec);
+    ptr_gVCFobj->move_forward_iterator(1);
+  }	  
   //return GVec;
 }
 
@@ -563,31 +570,20 @@ void setBGENobjInCPP(std::string t_bgenFileName,
   //int n = ptr_gBGENobj->getN();
 }
 
-/*
+
 // [[Rcpp::export]]
 void setVCFobjInCPP(std::string t_vcfFileName,
             std::string t_vcfFileIndex,
             std::string t_vcfField,
-            std::string t_chr,
-            int32_t t_start,
-            int32_t t_end,
-            bool t_isDropMissingDosageInVcf,
-            bool t_isSparseDosageInVcf,
             std::vector<std::string> t_SampleInModel)
 {
   ptr_gVCFNobj = new VCF::VcfClass(t_vcfFileName,
 		  		t_vcfFileIndex,
 				t_vcfField,
-				t_chr,
-				t_start,
-				t_end,
-				t_isDropMissingDosageInVcf,
-				t_isSparseDosageInVcf,
 				t_SampleInModel);
 		  
-  //int n = ptr_gVCFobj->getN();
 }
-*/
+
 
 
 //////// ---------- Main functions to set objects for different analysis methods --------- ////////////
@@ -1377,12 +1373,11 @@ std::vector<uint32_t> indexForMissing;
 
 // [[Rcpp::export]]
 void assign_conditionMarkers_factors(
-                           std::string t_genoType,     // "PLINK", "BGEN"
+                           std::string t_genoType,     // "plink", "bgen", "vcf"
                            std::vector<uint32_t> & t_genoIndex,
                            unsigned int t_n)           // sample size
 {
   unsigned int q = t_genoIndex.size();
-
   arma::mat P1Mat(q, t_n);
   arma::mat P2Mat(t_n, q);
   arma::mat VarInvMat(q, q);
@@ -1490,4 +1485,21 @@ void assign_conditionMarkers_factors_binary_region(
 			   arma::vec & scalefactor_G2_cond){
 	//std::cout << "assign_conditionMarkers_factors_binary_region" << std::endl;
 	ptr_gSAIGEobj->assignConditionFactors_scalefactor(scalefactor_G2_cond);
+}
+
+// [[Rcpp::export]]
+void set_iterator_inVcf(std::string & variantList){
+	pt_gVCFobj->set_iterator(variantList);	
 }	
+
+// [[Rcpp::export]]
+bool check_Vcf_end(){
+	bool isEnd = false:
+	isEnd = pt_gVCFobj->check_iterator_end();
+}
+
+
+// [[Rcpp::export]]
+void move_forward_iterator_Vcf(int i){
+	ptr_gVCFobj->move_forward_iterator(i);
+}

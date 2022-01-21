@@ -181,10 +181,10 @@ setGenoInput = function(bgenFile = "",
   }
   
 
-  #if(dosageFileType == "vcf"){
-  #  setVCFobjInCPP(vcfFile, vcfFileIndex, vcfField, chrom, start, end)
-  #  markerInfo = NULL
-  #}
+  if(dosageFileType == "vcf"){
+    setVCFobjInCPP(vcfFile, vcfFileIndex, vcfField, t_SampleInModel = sampleInModel)	  
+    markerInfo = NULL
+  }
 
 
   Files = c("idstoIncludeFile", "idstoExcludeFile", "rangestoIncludeFile", "rangestoExcludeFile")
@@ -332,18 +332,24 @@ getSampleIDsFromBGEN = function(bgenFile)
 }
 
 
-extract_genoIndex_condition = function(condition, markerInfo){
-       if(condition != ""){
+extract_genoIndex_condition = function(condition, markerInfo, genoType){
+   if(condition != ""){
+   	if(genoType != "vcf"){
        		condition_original = unlist(strsplit(condition, ","))
        		posInd = which(markerInfo$ID %in% condition_original)
-		if(length(posInd) > 0){
+		if(length(posInd) == length(condition_original)){
 			genoIndex = markerInfo$genoIndex
        			cond_genoIndex = genoIndex[posInd]
 		}else{
-			stop("conditioning markers are not found in the geno file\n")	
+
+			stop(length(condition_original)-length(posInd), " conditioning markers are not found in the geno file. Please Check.\n")	
 		}	
        }else{
-		cond_genoIndex = c(-1)
-	}	       
-       return(cond_genoIndex)
+		set_iterator_inVcf(condition)
+      		cond_genoIndex = rep(-1, length(condition_original)) 
+       }
+   }else{
+	stop("condition is empty!")
+   }	   
+   return(cond_genoIndex)
 }	
