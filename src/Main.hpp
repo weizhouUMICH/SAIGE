@@ -126,4 +126,7 @@ void assign_conditionMarkers_factors(
 void assign_conditionMarkers_factors_binary_region(
                            arma::vec & scalefactor_G2_cond);
 
+void set_iterator_inVcf(std::string & variantList);
+
+bool check_Vcf_end();
 #endif
