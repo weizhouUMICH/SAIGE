@@ -16,14 +16,15 @@ library(optparse)
 library(data.table)
 library(methods)
 
-SPAGMMATtest(vcfFile="../input/genotype_10markers.vcf.gz",
-	     vcfFileIndex="../input/genotype_10markers.vcf.gz.csi",
+SPAGMMATtest(vcfFile="../input/genotype_100markers.vcf.gz",
+	     vcfFileIndex="../input/genotype_100markers.vcf.gz.csi",
 	     vcfField="GT",
 	     SAIGEOutputFile="./new_single_vcf.txt",
 	     chrom="1",
 	     GMMATmodelFile="../output/example_binary.rda",
 	     varianceRatioFile="../output/example_binary.varianceRatio.txt",
 	     LOCO=FALSE,
-	     is_output_moreDetails=TRUE
+	     is_output_moreDetails=TRUE,
+	     numLinesOutput = 100 
 	     )
 

@@ -49,7 +49,6 @@ namespace VCF {
      //using namespace Rcpp;
      m_marker_file = savvy::reader(t_vcfFileName);
      bool isVcfOpen = m_marker_file.good();
-
     std::string fmtField;
     if(isVcfOpen){
     fmtField = t_vcfField;
@@ -105,7 +104,9 @@ namespace VCF {
 		isEndFile = false;
 	}else{
 		isEndFile = true;
-	}	
+	}
+	return(isEndFile);
+	std::cout << "isEndFile " << isEndFile << std::endl;	
   }
 
   void VcfClass::setPosSampleInVcf(std::vector<std::string> & t_SampleInModel)
@@ -113,19 +114,23 @@ namespace VCF {
      std::cout << "Setting position of samples in VCF files...." << std::endl;
      m_N = t_SampleInModel.size();
 
+     getSampleIDlist_vcfMatrix();
      Rcpp::CharacterVector SampleInVcf(m_N0);
      for(uint32_t i = 0; i < m_N0; i++)
        SampleInVcf(i) = m_SampleInVcf.at(i);
+     std::cout << "Setting position of samples in VCF files...." << std::endl;
 
      Rcpp::CharacterVector SampleInModel(m_N);
      for(uint32_t i = 0; i < m_N; i++)
        SampleInModel(i) = t_SampleInModel.at(i);
+     std::cout << "Setting position of samples in VCF files...." << std::endl;
 
      Rcpp::IntegerVector posSampleInVcf = Rcpp::match(SampleInModel, SampleInVcf);
      for(uint32_t i = 0; i < m_N; i++){
        if(Rcpp::IntegerVector::is_na(posSampleInVcf.at(i)))
           Rcpp::stop("At least one subject requested is not in VCF file.");
      }
+     std::cout << "Setting position of samples in VCF files...." << std::endl;
 
      Rcpp::IntegerVector posSampleInModel = Rcpp::match(SampleInVcf, SampleInModel);
      m_posSampleInModel.resize(m_N0);
@@ -166,17 +171,20 @@ namespace VCF {
        {
          std::cerr << "Warning: skipping multiallelic variant" << std::endl;
        }
-
+       std::cout << "m_it_ != end 0" << std::endl;
        t_chr = m_it_->chromosome();
        //t_pd = std::to_string(m_it_->position());
        t_pd = m_it_->position();
        t_ref = m_it_->ref();
        t_alt = m_it_->alts()[0];
-       t_marker = t_chr + ":" + std::to_string(t_pd) + ":" + t_ref + ":" + t_alt;
+       t_marker = m_it_->id(); 
+       //t_chr + ":" + std::to_string(t_pd) + ":" + t_ref + ":" + t_alt;
+       std::cout << "m_it_ != end 1" << std::endl;
        //int numAlt = 1;
        float markerInfo = 1.f;
        m_it_->get_info("R2", markerInfo);
        t_imputeInfo = double(markerInfo);
+       std::cout << "m_it_ != end 2" << std::endl;
 
 
 
@@ -185,30 +193,41 @@ namespace VCF {
        int missing_cnt = 0;
 
 
+       std::cout << "dosages.n_elem " << dosages.n_elem << std::endl;
+       //dosages.clear();
        dosages.clear();
+       dosages.set_size(m_N);
+       dosages.fill(arma::fill::zeros);
        //t_dosage.clear();
        //t_dosage.reserve(m_N);
-
+       std::cout << "dosages.n_elem " << dosages.n_elem << std::endl;
        savvy::compressed_vector<float> variant_dosages;
        m_it_->get_format(m_fmtField, variant_dosages);
        std::size_t ploidy = m_N0 ? variant_dosages.size() / m_N0 : 1;
        savvy::stride_reduce(variant_dosages, ploidy);
+       std::cout << "m_it_ != end 3" << std::endl;
        for (auto dose_it = variant_dosages.begin(); dose_it != variant_dosages.end(); ++dose_it) {
-        int i = dose_it.offset();
-        //std::cout << "i " << i << std::endl;
-        if(m_posSampleInModel[i] >= 0) {
+        int j = dose_it.offset();
+        std::cout << "j " << j << std::endl;
+	std::cout << m_posSampleInModel[j] << std::endl;
+        if(m_posSampleInModel[j] >= 0) {
+	std::cout << m_posSampleInModel[j] << std::endl;
+	std::cout << *dose_it << std::endl;
           if (std::isnan(*dose_it)) {
+            dosages[m_posSampleInModel[j]] = -1;		  
             ++missing_cnt;
-            t_indexForMissingforOneMarker.push_back(m_posSampleInModel[i]);
+            t_indexForMissingforOneMarker.push_back(m_posSampleInModel[j]);
           }else{
-	    dosages[m_posSampleInModel[i]] = *dose_it; 		 	 if(*dose_it > 0){
-              t_indexForNonZero.push_back(m_posSampleInModel[i]);
-	    }		    
+	    dosages[m_posSampleInModel[j]] = *dose_it; 		 	 
+	    if(*dose_it > 0){
+              t_indexForNonZero.push_back(m_posSampleInModel[j]);
+	     }		    
             //dosagesforOneMarker[genetest_sample_idx_vcfDosage[i]] = *dose_it;
             t_altCounts = t_altCounts + *dose_it;
           }
         }
       }
+       std::cout << "m_it_ != end 4" << std::endl;
 
        if(missing_cnt > 0){
          if(missing_cnt == m_N){
@@ -216,8 +235,10 @@ namespace VCF {
          }else{
            t_altFreq = t_altCounts / 2 / (double)(m_N - missing_cnt);
          }
+	 t_missingRate = missing_cnt/double(m_N);
         }else{
-          t_altFreq = t_altCounts / 2 / (double)(m_N); 
+          t_altFreq = t_altCounts / 2 / (double)(m_N);
+	 t_missingRate = 0; 
         } 
      }else{
        isReadVariant = false;	     
@@ -231,5 +252,9 @@ void VcfClass::setIsSparseDosageInVcf (bool t_isSparseDosageInVcf){
   m_isSparseDosagesInVcf = t_isSparseDosageInVcf;
 }
 
+void VcfClass::getSampleIDlist_vcfMatrix(){
+  std::vector< std::string > sampleIDList (m_marker_file.samples().begin(), m_marker_file.samples().end());
+  m_SampleInVcf = sampleIDList;
+}
 
 }

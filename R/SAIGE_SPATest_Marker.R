@@ -141,15 +141,19 @@ SAIGE.Marker = function(objNull,
     }
     
   }else{
+    set_iterator_inVcf("", chrom, 1, 200000000)
+
     if(outIndex > 1){
 	move_forward_iterator_Vcf(outIndex*nMarkersEachChunk)    
     }
     isVcfEnd =  check_Vcf_end()
     if(!isVcfEnd){
-    	outIndex = 1
+    	#outIndex = 1
     	genoIndex = rep(-1, nMarkersEachChunk) 
-	nChunks = outIndex + 1
+	#nChunks = outIndex + 1
 	is_marker_test = TRUE
+        i = outIndex
+        cat("i is ", i, "\n")	
     }else{
 	is_marker_test = FALSE    
 	stop("No markers are left in VCF")
@@ -162,7 +166,7 @@ SAIGE.Marker = function(objNull,
   #for(i in outIndex:nChunks)
   #{
 #time_left = system.time({
-    if(genoType != "vcf"){	  
+    if(genoType != "vcf"){	
       tempList = genoIndexList[[i]]
       genoIndex = as.integer(tempList$genoIndex)
       tempChrom = tempList$chrom
@@ -185,8 +189,11 @@ SAIGE.Marker = function(objNull,
     #print(ptm)
     #print("gc()")
     #print(gc())
-    cat(paste0("(",Sys.time(),") ---- Analyzing Chunk ", i, "/", nChunks, ": chrom ", chrom," ---- \n"))
-
+    if(genoType != "vcf"){
+      cat(paste0("(",Sys.time(),") ---- Analyzing Chunk ", i, "/", nChunks, ": chrom ", chrom," ---- \n"))
+    }else{
+      cat(paste0("(",Sys.time(),") ---- Analyzing Chunk ", i, " :  chrom ", chrom," ---- \n"))
+    }	    
     # main function to calculate summary statistics for markers in one chunk
     #time_mainMarker = system.time({resMarker = mainMarker(genoType, genoIndex, objNull$traitType, isMoreOutput, isImputation, isCondition)})
     resMarker = as.data.frame(mainMarkerInCPP(genoType, objNull$traitType, genoIndex, isMoreOutput, isImputation)) 
@@ -198,6 +205,14 @@ SAIGE.Marker = function(objNull,
 
     #timeoutput=system.time({writeOutputFile(Output = list(resMarker),
   if(nrow(resMarker) > 0){
+print(OutputFile)
+print(OutputFileIndex)
+
+  if(genoType == "vcf"){
+    isEnd_Output =  check_Vcf_end()
+  }else{
+    isEnd_Output = (i==nChunks)	
+  }
   writeOutputFile(Output = list(resMarker),
                     OutputFile = list(OutputFile),
                     OutputFileIndex = OutputFileIndex,
@@ -205,7 +220,7 @@ SAIGE.Marker = function(objNull,
                     nEachChunk = format(nMarkersEachChunk, scientific=F),
                     indexChunk = i,
                     Start = (i==1),
-                    End = (i==nChunks))
+                    End = isEnd_Output)
 
   }
                     #End = (i==nChunks))})
@@ -218,13 +233,15 @@ SAIGE.Marker = function(objNull,
     #rm(resMarker)
 
 
+    
+    i = i + 1
   if(genoType == "vcf"){
     isVcfEnd =  check_Vcf_end()
+    cat("isVcfEnd ", isVcfEnd, "\n")
     if(isVcfEnd){
 	is_marker_test = FALSE	     
     }
   }else{
-    i = i + 1
     if(i > nChunks){
       is_marker_test = FALSE
     }	    

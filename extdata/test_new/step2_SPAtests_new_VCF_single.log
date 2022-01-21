@@ -1,0 +1,157 @@
+R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+loaded via a namespace (and not attached):
+[1] compiler_4.1.2
+Any dosages <=  0.2  for genetic variants with MAC <=  10  are set to be 0 in group tests
+single-variant association test will be performed
+variance Ratio is  0.9406641 
+Garbage collection 13 = 7+2+4 (level 2) ... 
+78.3 Mbytes of cons cells used (56%)
+19.2 Mbytes of vectors used (30%)
+[1] "Leave-one-chromosome-out is not applied"
+dosageFile type is  vcf 
+Open VCF done
+To read the field GT
+Number of meta lines in the vcf file (lines starting with ##): 6
+Number of samples in the vcf file: 1000
+Setting position of samples in VCF files....
+Setting position of samples in VCF files....
+Setting position of samples in VCF files....
+Setting position of samples in VCF files....
+isSparseGRM  FALSE 
+isCondition  FALSE 
+i is  1 
+(2022-01-21 11:31:01) ---- Analyzing Chunk 1 :  chrom InitialChunk ---- 
+q is 10
+before Unified_getOneMarker 
+ptr_gVCFobj->getOneMarker 0 
+m_it_ != end 0
+m_it_ != end 1
+m_it_ != end 2
+dosages.n_elem 1000
+dosages.n_elem 1000
+m_it_ != end 3
+j 31
+31
+31
+1
+j 101
+101
+101
+1
+j 111
+111
+111
+1
+j 112
+112
+112
+1
+j 117
+117
+117
+1
+j 265
+265
+265
+1
+j 268
+268
+268
+1
+j 269
+269
+269
+1
+j 310
+310
+310
+1
+j 312
+312
+312
+1
+j 316
+316
+316
+1
+j 317
+317
+317
+1
+j 320
+320
+320
+1
+j 322
+322
+322
+1
+j 425
+425
+425
+1
+j 429
+429
+429
+1
+j 570
+570
+570
+1
+j 573
+573
+573
+1
+j 578
+578
+578
+1
+j 884
+884
+884
+1
+m_it_ != end 4
+isendhere 0
+isendhere 2 0
+after Unified_getOneMarker 
+isReadMarker 1
+before Unified_getOneMarker 
+ptr_gVCFobj->getOneMarker 0 
+m_it_ != end 0
+m_it_ != end 1
+m_it_ != end 2
+dosages.n_elem 0
+dosages.n_elem 0
+m_it_ != end 3
+j 980
+980
+980
+1
+
+ *** caught segfault ***
+address 0x1ea0, cause 'memory not mapped'
+
+Traceback:
+ 1: mainMarkerInCPP(genoType, objNull$traitType, genoIndex, isMoreOutput,     isImputation)
+ 2: as.data.frame(mainMarkerInCPP(genoType, objNull$traitType, genoIndex,     isMoreOutput, isImputation))
+ 3: SAIGE.Marker(obj.model, objGeno, OutputFile, OutputFileIndex,     nMarkersEachChunk, is_output_moreDetails, is_imputed_data,     LOCO, chrom, isCondition)
+ 4: SPAGMMATtest(vcfFile = "../input/genotype_10markers.vcf.gz",     vcfFileIndex = "../input/genotype_10markers.vcf.gz.csi",     vcfField = "GT", SAIGEOutputFile = "./new_single_vcf.txt",     chrom = "1", GMMATmodelFile = "../output/example_binary.rda",     varianceRatioFile = "../output/example_binary.varianceRatio.txt",     LOCO = FALSE, is_output_moreDetails = TRUE)
+An irrecoverable exception occurred. R is aborting now ...

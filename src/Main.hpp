@@ -34,7 +34,7 @@ Rcpp::DataFrame mainMarkerInCPP(
                            bool & t_isMoreOutput,
                            bool & t_isImputation);
 
-void Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN"
+bool Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN"
                                uint32_t & t_gIndex,        // different meanings for different genoType
                                std::string& t_ref,       // REF allele
                                std::string& t_alt,       // ALT allele (should probably be minor allele, otherwise, computation time will increase)
@@ -136,4 +136,5 @@ void assign_conditionMarkers_factors_binary_region(
 void set_iterator_inVcf(std::string & variantList);
 
 bool check_Vcf_end();
+
 #endif

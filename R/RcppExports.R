@@ -49,8 +49,8 @@ assign_conditionMarkers_factors_binary_region <- function(scalefactor_G2_cond) {
     invisible(.Call('_SAIGE_assign_conditionMarkers_factors_binary_region', PACKAGE = 'SAIGE', scalefactor_G2_cond))
 }
 
-set_iterator_inVcf <- function(variantList) {
-    invisible(.Call('_SAIGE_set_iterator_inVcf', PACKAGE = 'SAIGE', variantList))
+set_iterator_inVcf <- function(variantList, chrom, beg_pd, end_pd) {
+    invisible(.Call('_SAIGE_set_iterator_inVcf', PACKAGE = 'SAIGE', variantList, chrom, beg_pd, end_pd))
 }
 
 check_Vcf_end <- function() {
