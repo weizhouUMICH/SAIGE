@@ -17,15 +17,14 @@ namespace VCF {
 
  // vcf file and the index file (.tbi)
    std::string m_vcfFile, m_vcfIndexFile;
-   std::string m_fmtField;
    //field in vcf to test. GT or DS 
    std::string m_chr;
    int32_t m_start = 0;
    int32_t m_end = 0;
    std::string m_markerIDsToExclude;
    std::string m_markerIDsToInclude; 
-   std::vector<uint32_t> m_posSampleInVcf;
-   std::vector<uint32_t> m_SampleInModel, m_posSampleInModel;
+   std::vector<int32_t> m_posSampleInVcf;
+   std::vector<int32_t> m_SampleInModel, m_posSampleInModel;
    bool m_isDropMissingDosages;
    bool m_isSparseDosagesInVcf; 
 
@@ -44,6 +43,7 @@ namespace VCF {
    //savvy::variant<std::vector<float>> m_record;
 
    //savvy::variant_group_iterator m_it_;
+   std::string m_fmtField;
    savvy::reader m_marker_file{""};
    variant_group_iterator m_it_;
 
@@ -55,9 +55,9 @@ namespace VCF {
  
  
    // setup VcfClass
-   bool setVcfObj(const std::string t_vcfFileName,
-                  const std::string t_vcfFileIndex,
-                  const std::string t_vcfField);
+   bool setVcfObj(const std::string & t_vcfFileName,
+                  const std::string & t_vcfFileIndex,
+                  const std::string & t_vcfField);
    //set up the iterator 
    void set_iterator(std::string & variantList);
    void set_iterator(std::string & chrom, int & beg_pd, int & end_pd);

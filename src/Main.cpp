@@ -19,6 +19,7 @@
 #include "Main.hpp"
 #include "PLINK.hpp"
 #include "BGEN.hpp"
+#include "VCF.hpp"
 #include "SAIGE_test.hpp"
 #include "UTIL.hpp"
 
@@ -575,11 +576,12 @@ void setBGENobjInCPP(std::string t_bgenFileName,
 void setVCFobjInCPP(std::string t_vcfFileName,
             std::string t_vcfFileIndex,
             std::string t_vcfField,
-            std::vector<std::string> t_SampleInModel)
+            std::vector<std::string>  t_SampleInModel)
 {
-  ptr_gVCFNobj = new VCF::VcfClass(t_vcfFileName,
+  ptr_gVCFobj = new VCF::VcfClass(t_vcfFileName,
 		  		t_vcfFileIndex,
 				t_vcfField,
+				false,
 				t_SampleInModel);
 		  
 }
@@ -1489,13 +1491,13 @@ void assign_conditionMarkers_factors_binary_region(
 
 // [[Rcpp::export]]
 void set_iterator_inVcf(std::string & variantList){
-	pt_gVCFobj->set_iterator(variantList);	
+	ptr_gVCFobj->set_iterator(variantList);	
 }	
 
 // [[Rcpp::export]]
 bool check_Vcf_end(){
-	bool isEnd = false:
-	isEnd = pt_gVCFobj->check_iterator_end();
+	bool isEnd = false;
+	isEnd = ptr_gVCFobj->check_iterator_end();
 }
 
 

@@ -23,6 +23,10 @@ rm ./new_single_plink*
 Rscript step2_SPAtests_new_PLINK_single.R
 diff ./new_single_plink.txt ./new_single_bgen.txt
 
+rm ./new_single_vcf*
+../input/genotype_10markers.vcf.gz
+
+
 
 ##single read data
 step1Prefix=/net/csgspare3/snowwhite.archive/zczhao/SAIGE-GENE-UPDATE/realdata/step1/output/UKB_WES_200k_X427.2
