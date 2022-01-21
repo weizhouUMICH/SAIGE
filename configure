@@ -18,7 +18,7 @@ set -eu
 
 ##install savvy library
 #rm -rf thirdParty/cget
-#cget ignore xz
+#cget ignore --prefix thirdParty/cget xz
 #cget install -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" --prefix thirdParty/cget -f thirdParty/requirements.txt
 
 ##install the bgen library
