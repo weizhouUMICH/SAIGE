@@ -2,8 +2,7 @@
 #include <RcppArmadillo.h>
  
 #include "savvy/reader.hpp"
-#include "savvy/varint.hpp"
-#include "savvy/sav_reader.hpp"
+#include "savvy/region.hpp"
 #include "variant_group_iterator.hpp"
 
 
@@ -43,60 +42,68 @@ namespace VCF {
    }
  
   
-   bool VcfClass::setVcfObj(const std::string t_vcfFileName,
-                  const std::string t_vcfFileIndex,
-                  const std::string t_vcfField)
+   bool VcfClass::setVcfObj(const std::string & t_vcfFileName,
+                  const std::string & t_vcfFileIndex,
+                  const std::string & t_vcfField)
    {
-     using namespace Rcpp;
+     //using namespace Rcpp;
      m_marker_file = savvy::reader(t_vcfFileName);
      bool isVcfOpen = m_marker_file.good();
 
-     if(isVcfOpen){
-     m_fmtField = t_vcfField;
-     std::cout << "Open VCF done" << std::endl;
-     std::cout << "To read the field " << m_fmtField << std::endl;
-     std::cout << "Number of meta lines in the vcf file (lines starting with ##): " << m_marker_file.headers().size() << std::endl;
-     m_N0 = m_marker_file.samples().size();
-    std::cout << "Number of samples in the vcf file: " << m_N0 << std::endl;
+    std::string fmtField;
+    if(isVcfOpen){
+    fmtField = t_vcfField;
+    std::cout << "Open VCF done" << std::endl;
+    cout << "To read the field " << t_vcfField << endl;
+    std::cout << "Number of meta lines in the vcf file (lines starting with ##): " << m_marker_file.headers().size() << endl;
+    m_N0 = m_marker_file.samples().size();
+    std::cout << "Number of samples in the vcf file: " << m_N0 << endl;
 
-     if (std::find_if(m_marker_file.format_headers().begin(), m_marker_file.format_headers().end(),
-      [](const savvy::header_value_details& h) { return h.id == m_fmtField; }) == m_marker_file.format_headers().end()) {
-     if ((m_fmtField == "DS" || m_fmtField == "GT") && std::find_if(m_marker_file.format_headers().begin(), m_marker_file.format_headers().end(),
-        [](const savvy::header_value_details& h) { return h.id == "HDS"; }) != m_marker_file.format_headers().end()) {
-        m_fmtField = "HDS";
+    if (std::find_if(m_marker_file.format_headers().begin(), m_marker_file.format_headers().end(),
+      [&](const savvy::header_value_details& h) { return h.id == fmtField; }) == m_marker_file.format_headers().end()) {
+      if ((fmtField == "DS" || fmtField == "GT") && std::find_if(m_marker_file.format_headers().begin(), m_marker_file.format_headers().end(),
+        [&](const savvy::header_value_details& h) { return h.id == "HDS"; }) != m_marker_file.format_headers().end()) {
+        fmtField = "HDS";
       } else {
-        std::cerr << "ERROR: vcfField (" << m_fmtField << ") not present in genotype file." << std::endl;
+        std::cerr << "ERROR: vcfField (" << fmtField << ") not present in genotype file." << std::endl;
         return false;
       }
     }
-   }else {
+    m_fmtField = fmtField;
+  } else {
     std::cerr << "WARNING: Open VCF failed" << std::endl;
-   }
+  }
   return(isVcfOpen);
  }
  
   void VcfClass::set_iterator(std::string & chrom, int & beg_pd, int& end_pd)
   {
       m_it_ = variant_group_iterator(m_marker_file, savvy::region(chrom, beg_pd, end_pd));
-      variant_group_iterator end{};
+      //variant_group_iterator end{};
   }
 
 
   void VcfClass::set_iterator(std::string & variantList)
   {
       m_it_ = variant_group_iterator(m_marker_file, variantList);
-      variant_group_iterator end{}; 
+      //variant_group_iterator end{}; 
   }
 
   void VcfClass::move_forward_iterator(int i)
-  {	  
-	m_it_ = m_it_ + i;
+  {	
+
+	for(int j = 0; j < i; j++){
+		++m_it_;
+	}
   }
 
   bool VcfClass::check_iterator_end()
   {	 
-	bool isEndFile = false;  
-        if(m_it_== end){
+	bool isEndFile = false;
+        variant_group_iterator end{};	
+        if(m_it_ != end){
+		isEndFile = false;
+	}else{
 		isEndFile = true;
 	}	
   }
@@ -153,7 +160,7 @@ namespace VCF {
    {
 
      bool isReadVariant = true;
-
+     variant_group_iterator end{};
      if(m_it_ != end){
        if (m_it_->alts().size() != 1)
        {

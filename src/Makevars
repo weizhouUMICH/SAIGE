@@ -5,7 +5,7 @@ PKG_CPPFLAGS = \
 
 CXX_STD = CXX11 
 
-PKG_LIBS = $(ZLIB_LIB) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) -L../thirdParty/cget/lib/ -lsuperlu
+PKG_LIBS = $(ZLIB_LIB) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) -L../thirdParty/cget/lib/ -lsuperlu -lzstd
 PKG_LIBS += $(shell ${R_HOME}/bin/Rscript -e "RcppParallel::RcppParallelLibs()")
 
 

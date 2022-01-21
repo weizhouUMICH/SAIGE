@@ -93,6 +93,13 @@ void setBGENobjInCPP(std::string t_bgenFileName,
                      std::vector<std::string> & t_SampleInModel,
                      std::string t_AlleleOrder);
 
+void setVCFobjInCPP(std::string t_vcfFileName,
+            std::string t_vcfFileIndex,
+            std::string t_vcfField,
+            std::vector<std::string> & t_SampleInModel);
+
+
+
 void setSAIGEobjInCPP(arma::mat & t_XVX,
         arma::mat & t_XXVX_inv,
         arma::mat & t_XV,
