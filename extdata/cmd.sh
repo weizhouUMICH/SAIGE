@@ -10,7 +10,7 @@
 #step 1: fit the NULL glmm 
 Rscript step1_fitNULLGLMM.R     \
         --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly \
-        --phenoFile=./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt.sub \
+        --phenoFile=./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt \
         --phenoCol=y_binary \
         --covarColList=x1,x2 \
         --sampleIDColinphenoFile=IID \

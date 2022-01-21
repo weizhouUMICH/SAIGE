@@ -1,29 +1,21 @@
 PLINK v2.00a3LM 64-bit Intel (20 Apr 2021)
 Options in effect:
-  --bgen ./input/genotype_100markers.bgen ref-first
-  --make-bed
-  --out ./input/genotype_100markers
-  --sample ./input/genotype_100markers.bgen.samples
+  --bfile ../input/genotype_100markers
+  --export vcf id-paste=iid
+  --out ../input/genotype_100markers
 
 Hostname: mendel
-Working directory: /net/dumbo/home/zhowei/projects/Dec2021/SAIGE/extdata
-Start time: Thu Dec 16 21:55:33 2021
+Working directory: /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_old_check/SAIGE/extdata/test_new
+Start time: Fri Jan 21 11:51:23 2022
 
-Random number seed: 1639709733
+Random number seed: 1642783883
 257569 MiB RAM detected; reserving 128784 MiB for main workspace.
 Allocated 54330 MiB successfully, after larger attempt(s) failed.
 Using up to 88 threads (change this with --threads).
---bgen: 100 variants detected, format v1.2.
-10000 samples imported from .sample file to
-./input/genotype_100markers-temporary.psam .
---bgen: ./input/genotype_100markers-temporary.pgen +
-./input/genotype_100markers-temporary.pvar written.
 10000 samples (0 females, 0 males, 10000 ambiguous; 10000 founders) loaded from
-./input/genotype_100markers-temporary.psam.
-100 variants loaded from ./input/genotype_100markers-temporary.pvar.
+../input/genotype_100markers.fam.
+100 variants loaded from ../input/genotype_100markers.bim.
 Note: No phenotype data present.
-Writing ./input/genotype_100markers.fam ... done.
-Writing ./input/genotype_100markers.bim ... done.
-Writing ./input/genotype_100markers.bed ... done.
+--export vcf to ../input/genotype_100markers.vcf ... done.
 
-End time: Thu Dec 16 21:55:33 2021
+End time: Fri Jan 21 11:51:23 2022

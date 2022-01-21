@@ -9,8 +9,8 @@ options(stringsAsFactors=F)
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.44.2.b")
 print(sessionInfo())
 
-library(SAIGE, lib.loc="~/projects/Dec2021/install")
-
+#library(SAIGE, lib.loc="~/projects/Dec2021/install")
+library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_old_check/install")
 
 library(optparse)
 library(data.table)
@@ -25,6 +25,7 @@ SPAGMMATtest(bedFile="../input/genotype_100markers.bed",
 	     varianceRatioFile="../output/example_binary.varianceRatio.txt",
 	     LOCO=FALSE,
 	     AlleleOrder="alt-first",
-	     is_output_moreDetails=TRUE
+	     is_output_moreDetails=TRUE,
+	     numLinesOutput = 100
 	     )
 

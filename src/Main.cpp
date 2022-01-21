@@ -58,7 +58,7 @@ double g_DosageCutoff_for_UltraRarePresence;
 
 double g_dosage_zerod_MAC_cutoff;
 double g_dosage_zerod_cutoff;
-
+bool g_markerTestEnd = false;
 
 // [[Rcpp::export]]
 void setMarker_GlobalVarsInCPP(std::string t_impute_method,
@@ -127,6 +127,7 @@ Rcpp::DataFrame mainMarkerInCPP(
 {
 
   int q = t_genoIndex.n_elem;  // number of markers
+  std::cout << "q is " << q << std::endl;
   // set up output
   std::vector<std::string> markerVec(q);  // marker IDs
   std::vector<std::string> chrVec(q);  // marker IDs
@@ -207,14 +208,24 @@ Rcpp::DataFrame mainMarkerInCPP(
    //t_GVec.clear();
    arma::vec timeoutput1 = getTime();
 	
-   Unified_getOneMarker(t_genoType, gIndex, ref, alt, marker, pd, chr, altFreq, altCounts, missingRate, imputeInfo,
+  std::cout << "before Unified_getOneMarker " << std::endl;
+   bool isReadMarker = Unified_getOneMarker(t_genoType, gIndex, ref, alt, marker, pd, chr, altFreq, altCounts, missingRate, imputeInfo,
                                           isOutputIndexForMissing, // bool t_isOutputIndexForMissing,
                                           indexForMissing,
                                           isOnlyOutputNonZero, // bool t_isOnlyOutputNonZero,
                                           indexNonZeroVec, t_GVec);
+  std::cout << "after Unified_getOneMarker " << std::endl;
    //arma::vec timeoutput2 = getTime();   
 //printTime(timeoutput1, timeoutput2, "Unified_getOneMarker"); 
-
+//
+   std::cout << "isReadMarker " << isReadMarker << std::endl;
+   if(!isReadMarker){
+      //std::cout << "isReadMarker " << isReadMarker << std::endl;
+      g_markerTestEnd = true;
+      bool isEndFile = check_Vcf_end();
+      std::cout << "isEndFile " << isEndFile << std::endl;
+      break;
+    }
 
 
    //std::cout << "t_GVec0.size()) " << t_GVec0.size() << std::endl;
@@ -392,7 +403,7 @@ arma::vec timeoutput6 = getTime();
  
   
   
-    t_GVec.clear();
+    //t_GVec.clear();
   }
 
   //Rcpp::List OutList = Rcpp::List::create(Rcpp::Named("markerVec") = markerVec,
@@ -457,7 +468,7 @@ arma::vec timeoutput6 = getTime();
 
 
 // a unified function to get single marker from genotype file
-void Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN", "Vcf"
+bool Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN", "Vcf"
                                uint32_t & t_gIndex,        // different meanings for different genoType
                                std::string& t_ref,       // REF allele
                                std::string& t_alt,       // ALT allele (should probably be minor allele, otherwise, computation time will increase)
@@ -476,6 +487,7 @@ void Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN", "Vcf"
 			       )     // the index of non-zero genotype in the all subjects. Only valid if t_isOnlyOutputNonZero == true.
 {
   //arma::vec GVec(ptr_gSAIGEobj->m_n);
+  bool isBoolRead = true;
   if(t_genoType == "plink"){
    bool isTrueGenotype = true;
    ptr_gPLINKobj->getOneMarker(t_gIndex, t_ref, t_alt, t_marker, t_pd, t_chr, t_altFreq, t_altCounts, t_missingRate, t_imputeInfo, 
@@ -484,19 +496,24 @@ void Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN", "Vcf"
   }
   
   if(t_genoType == "bgen"){
-    bool isBoolRead = true;
+    //bool isBoolRead = true;
     ptr_gBGENobj->getOneMarker(t_gIndex, t_ref, t_alt, t_marker, t_pd, t_chr, t_altFreq, t_altCounts, t_missingRate, t_imputeInfo, 
                                       t_isOutputIndexForMissing, t_indexForMissing, t_isOnlyOutputNonZero, t_indexForNonZero,
                                       isBoolRead, t_GVec);
   }
 
   if(t_genoType == "vcf"){
-    bool isBoolRead = true;
+   std::cout << "ptr_gVCFobj->getOneMarker 0 " << std::endl;
     ptr_gVCFobj->getOneMarker(t_ref, t_alt, t_marker, t_pd, t_chr, t_altFreq, t_altCounts, t_missingRate, t_imputeInfo,
                                       t_isOutputIndexForMissing, t_indexForMissing, t_isOnlyOutputNonZero, t_indexForNonZero, isBoolRead, t_GVec);
+   bool isendhere = check_Vcf_end();
+   std::cout << "isendhere " << isendhere << std::endl;
     ptr_gVCFobj->move_forward_iterator(1);
+   isendhere = check_Vcf_end();
+   std::cout << "isendhere 2 " << isendhere << std::endl;
   }	  
-  //return GVec;
+  
+  return isBoolRead;
 }
 
 // a unified function to get marker-level p-value
@@ -576,7 +593,7 @@ void setBGENobjInCPP(std::string t_bgenFileName,
 void setVCFobjInCPP(std::string t_vcfFileName,
             std::string t_vcfFileIndex,
             std::string t_vcfField,
-            std::vector<std::string>  t_SampleInModel)
+            std::vector<std::string> & t_SampleInModel)
 {
   ptr_gVCFobj = new VCF::VcfClass(t_vcfFileName,
 		  		t_vcfFileIndex,
@@ -835,13 +852,15 @@ Rcpp::List mainRegionInCPP(
     bool isOnlyOutputNonZero = false;
     //  std::vector<uint> indexZeroVec;
   //std::vector<uint> indexNonZeroVec;
-    
-    Unified_getOneMarker(t_genoType, gIndex, ref, alt, marker, pd, chr, altFreq, altCounts, missingRate, imputeInfo,
+    bool isReadMarker = Unified_getOneMarker(t_genoType, gIndex, ref, alt, marker, pd, chr, altFreq, altCounts, missingRate, imputeInfo,
                                           isOutputIndexForMissing, // bool t_isOutputIndexForMissing,
                                           indexForMissing,
                                           isOnlyOutputNonZero, // bool t_isOnlyOutputNonZero,
                                           indexNonZeroVec,
 					  GVec);
+    if(!isReadMarker){
+      break;
+    }	    
    //arma::vec GVec(GVec0);
    //GVec0.clear();
 
@@ -1416,13 +1435,16 @@ void assign_conditionMarkers_factors(
     bool isOnlyOutputNonZero = false; 
     uint32_t gIndex = t_genoIndex.at(i);
     
-    Unified_getOneMarker(t_genoType, gIndex, ref, alt, marker, pd, chr, altFreq, altCounts, missingRate, imputeInfo,
+    bool isReadMarker = Unified_getOneMarker(t_genoType, gIndex, ref, alt, marker, pd, chr, altFreq, altCounts, missingRate, imputeInfo,
                                           isOutputIndexForMissing, // bool t_isOutputIndexForMissing,
                                           indexForMissing,
                                           isOnlyOutputNonZero, // bool t_isOnlyOutputNonZero,
                                           indexNonZeroVec, GVec);
      //arma::vec GVec(GVec0);
      //GVec0.clear();
+    if(!isReadMarker){
+      break;
+    }
 
     std::string info = chr+":"+std::to_string(pd)+":"+ref+":"+alt;
 
@@ -1490,14 +1512,19 @@ void assign_conditionMarkers_factors_binary_region(
 }
 
 // [[Rcpp::export]]
-void set_iterator_inVcf(std::string & variantList){
+void set_iterator_inVcf(std::string & variantList, std::string & chrom, int & beg_pd, int & end_pd){
+   if(!variantList.empty()){
 	ptr_gVCFobj->set_iterator(variantList);	
+   }else{
+	ptr_gVCFobj->set_iterator(chrom, beg_pd, end_pd);
+   }	   
 }	
 
 // [[Rcpp::export]]
 bool check_Vcf_end(){
 	bool isEnd = false;
 	isEnd = ptr_gVCFobj->check_iterator_end();
+	return(isEnd);
 }
 
 
@@ -1505,3 +1532,4 @@ bool check_Vcf_end(){
 void move_forward_iterator_Vcf(int i){
 	ptr_gVCFobj->move_forward_iterator(i);
 }
+

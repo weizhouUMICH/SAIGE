@@ -475,7 +475,8 @@ writeOutputFile = function(Output,
   n1 = length(Output)
   n2 = length(OutputFile)
   print("write Output 1")
-
+  #cat("n1 is ", n1, "\n")
+  #cat("n2 is ", n2, "\n")
   if(n1 != n2)
     stop("length(Output) != length(OutputFile)")
 

@@ -34,7 +34,7 @@ namespace VCF {
    std::vector<std::string> m_SampleInVcf;
  
    bool m_isVcfOpen; 
-   
+    
   public:
  
    //savvy objects for streaming vcf files
@@ -89,7 +89,7 @@ namespace VCF {
                                   arma::vec & dosages);
 
 
- 
+    void getSampleIDlist_vcfMatrix(); 
     uint32_t getN0(){return m_N0;}
     uint32_t getN(){return m_N;}
     uint32_t getM0(){return m_M0;}

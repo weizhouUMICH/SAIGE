@@ -89,14 +89,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // setVCFobjInCPP
-void setVCFobjInCPP(std::string t_vcfFileName, std::string t_vcfFileIndex, std::string t_vcfField, std::vector<std::string> t_SampleInModel);
+void setVCFobjInCPP(std::string t_vcfFileName, std::string t_vcfFileIndex, std::string t_vcfField, std::vector<std::string>& t_SampleInModel);
 RcppExport SEXP _SAIGE_setVCFobjInCPP(SEXP t_vcfFileNameSEXP, SEXP t_vcfFileIndexSEXP, SEXP t_vcfFieldSEXP, SEXP t_SampleInModelSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type t_vcfFileName(t_vcfFileNameSEXP);
     Rcpp::traits::input_parameter< std::string >::type t_vcfFileIndex(t_vcfFileIndexSEXP);
     Rcpp::traits::input_parameter< std::string >::type t_vcfField(t_vcfFieldSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type t_SampleInModel(t_SampleInModelSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type t_SampleInModel(t_SampleInModelSEXP);
     setVCFobjInCPP(t_vcfFileName, t_vcfFileIndex, t_vcfField, t_SampleInModel);
     return R_NilValue;
 END_RCPP
@@ -197,12 +197,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // set_iterator_inVcf
-void set_iterator_inVcf(std::string& variantList);
-RcppExport SEXP _SAIGE_set_iterator_inVcf(SEXP variantListSEXP) {
+void set_iterator_inVcf(std::string& variantList, std::string& chrom, int& beg_pd, int& end_pd);
+RcppExport SEXP _SAIGE_set_iterator_inVcf(SEXP variantListSEXP, SEXP chromSEXP, SEXP beg_pdSEXP, SEXP end_pdSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string& >::type variantList(variantListSEXP);
-    set_iterator_inVcf(variantList);
+    Rcpp::traits::input_parameter< std::string& >::type chrom(chromSEXP);
+    Rcpp::traits::input_parameter< int& >::type beg_pd(beg_pdSEXP);
+    Rcpp::traits::input_parameter< int& >::type end_pd(end_pdSEXP);
+    set_iterator_inVcf(variantList, chrom, beg_pd, end_pd);
     return R_NilValue;
 END_RCPP
 }
@@ -1876,7 +1879,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_mainRegionInCPP", (DL_FUNC) &_SAIGE_mainRegionInCPP, 9},
     {"_SAIGE_assign_conditionMarkers_factors", (DL_FUNC) &_SAIGE_assign_conditionMarkers_factors, 3},
     {"_SAIGE_assign_conditionMarkers_factors_binary_region", (DL_FUNC) &_SAIGE_assign_conditionMarkers_factors_binary_region, 1},
-    {"_SAIGE_set_iterator_inVcf", (DL_FUNC) &_SAIGE_set_iterator_inVcf, 1},
+    {"_SAIGE_set_iterator_inVcf", (DL_FUNC) &_SAIGE_set_iterator_inVcf, 4},
     {"_SAIGE_check_Vcf_end", (DL_FUNC) &_SAIGE_check_Vcf_end, 0},
     {"_SAIGE_move_forward_iterator_Vcf", (DL_FUNC) &_SAIGE_move_forward_iterator_Vcf, 1},
     {"_SAIGE_closeGenoFile_plink", (DL_FUNC) &_SAIGE_closeGenoFile_plink, 0},

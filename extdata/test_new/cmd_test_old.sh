@@ -23,9 +23,12 @@ rm ./new_single_plink*
 Rscript step2_SPAtests_new_PLINK_single.R
 diff ./new_single_plink.txt ./new_single_bgen.txt
 
-rm ./new_single_vcf*
-../input/genotype_10markers.vcf.gz
+plink2 --bfile ../input/genotype_100markers --recode vcf id-paste=iid --out ../input/genotype_100markers
+bgzip -c ../input/genotype_100markers.vcf > ../input/genotype_100markers.vcf.gz
+tabix -f --csi -p vcf ../input/genotype_100markers.vcf.gz
 
+rm ./new_single_vcf*
+Rscript step2_SPAtests_new_VCF_single.R
 
 
 ##single read data
