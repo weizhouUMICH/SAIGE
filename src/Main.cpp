@@ -127,7 +127,7 @@ Rcpp::DataFrame mainMarkerInCPP(
 {
 
   int q = t_genoIndex.n_elem;  // number of markers
-  std::cout << "q is " << q << std::endl;
+  //std::cout << "q is " << q << std::endl;
   // set up output
   std::vector<std::string> markerVec(q);  // marker IDs
   std::vector<std::string> chrVec(q);  // marker IDs
@@ -208,17 +208,14 @@ Rcpp::DataFrame mainMarkerInCPP(
    //t_GVec.clear();
    arma::vec timeoutput1 = getTime();
 	
-  std::cout << "before Unified_getOneMarker " << std::endl;
    bool isReadMarker = Unified_getOneMarker(t_genoType, gIndex, ref, alt, marker, pd, chr, altFreq, altCounts, missingRate, imputeInfo,
                                           isOutputIndexForMissing, // bool t_isOutputIndexForMissing,
                                           indexForMissing,
                                           isOnlyOutputNonZero, // bool t_isOnlyOutputNonZero,
                                           indexNonZeroVec, t_GVec);
-  std::cout << "after Unified_getOneMarker " << std::endl;
    //arma::vec timeoutput2 = getTime();   
 //printTime(timeoutput1, timeoutput2, "Unified_getOneMarker"); 
 //
-   std::cout << "isReadMarker " << isReadMarker << std::endl;
    if(!isReadMarker){
       //std::cout << "isReadMarker " << isReadMarker << std::endl;
       g_markerTestEnd = true;
@@ -503,14 +500,9 @@ bool Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN", "Vcf"
   }
 
   if(t_genoType == "vcf"){
-   std::cout << "ptr_gVCFobj->getOneMarker 0 " << std::endl;
     ptr_gVCFobj->getOneMarker(t_ref, t_alt, t_marker, t_pd, t_chr, t_altFreq, t_altCounts, t_missingRate, t_imputeInfo,
                                       t_isOutputIndexForMissing, t_indexForMissing, t_isOnlyOutputNonZero, t_indexForNonZero, isBoolRead, t_GVec);
-   bool isendhere = check_Vcf_end();
-   std::cout << "isendhere " << isendhere << std::endl;
     ptr_gVCFobj->move_forward_iterator(1);
-   isendhere = check_Vcf_end();
-   std::cout << "isendhere 2 " << isendhere << std::endl;
   }	  
   
   return isBoolRead;

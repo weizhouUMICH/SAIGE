@@ -141,6 +141,7 @@ Rscript step2_SPAtests_test_BGEN_group_test.R &> step2_SPAtests_test_BGEN_group_
 
 
 rm ./new_group_vcf_GENE1*
+rm ./vcf_gene_out.txt*
 Rscript step2_SPAtests_test_VCF_group_test.R
 #########Conditional analysis
 

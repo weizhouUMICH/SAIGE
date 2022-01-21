@@ -334,8 +334,8 @@ getSampleIDsFromBGEN = function(bgenFile)
 
 extract_genoIndex_condition = function(condition, markerInfo, genoType){
    if(condition != ""){
+       	condition_original = unlist(strsplit(condition, ","))
    	if(genoType != "vcf"){
-       		condition_original = unlist(strsplit(condition, ","))
        		posInd = which(markerInfo$ID %in% condition_original)
 		if(length(posInd) == length(condition_original)){
 			genoIndex = markerInfo$genoIndex
@@ -345,7 +345,8 @@ extract_genoIndex_condition = function(condition, markerInfo, genoType){
 			stop(length(condition_original)-length(posInd), " conditioning markers are not found in the geno file. Please Check.\n")	
 		}	
        }else{
-		set_iterator_inVcf(condition)
+	        condition_group_line = paste(c("condition", condition_original), collapse = "\t")	
+		set_iterator_inVcf(condition_group_line, "1", 1, 200000000)
       		cond_genoIndex = rep(-1, length(condition_original)) 
        }
    }else{

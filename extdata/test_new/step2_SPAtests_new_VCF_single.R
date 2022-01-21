@@ -25,6 +25,6 @@ SPAGMMATtest(vcfFile="../input/genotype_100markers.vcf.gz",
 	     varianceRatioFile="../output/example_binary.varianceRatio.txt",
 	     LOCO=FALSE,
 	     is_output_moreDetails=TRUE,
-	     numLinesOutput = 100 
+	     numLinesOutput = 10 
 	     )
 

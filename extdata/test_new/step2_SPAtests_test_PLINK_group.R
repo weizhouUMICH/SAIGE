@@ -30,6 +30,7 @@ SPAGMMATtest(bedFile="../input/genotype_100markers.bed",
 	     AlleleOrder="alt-first",
 	     is_output_moreDetails=TRUE,
 	     max_markers_region = 10,
+	     condition="rs18,rs33",
 	     sparseSigmaFile="../output/example_binary_cate_v2.varianceRatio.txt_relatednessCutoff_0.125_2000_randomMarkersUsed.sparseSigma.mtx"
 	     )
 
