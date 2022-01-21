@@ -122,7 +122,7 @@ void PlinkClass::setPosSampleInPlink(std::vector<std::string> t_SampleInModel)
     if(Rcpp::IntegerVector::is_na(posSampleInPlink.at(i)))
       Rcpp::stop("At least one subject requested is not in Plink file.");
     m_posSampleInPlink.at(i) = posSampleInPlink.at(i) - 1;   // convert "starting from 1" to "starting from 0"
-    std::cout << "m_posSampleInPlink.at(i) " << i << " " << m_posSampleInPlink.at(i) << std::endl;
+    //std::cout << "m_posSampleInPlink.at(i) " << i << " " << m_posSampleInPlink.at(i) << std::endl;
      }
 
 

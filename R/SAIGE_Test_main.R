@@ -309,6 +309,7 @@ SPAGMMATtest = function(bgenFile = "",
     if (isCondition) {
 	 #print("OK1")
         n = length(obj.model$y) #sample size
+
         condition_genoIndex = extract_genoIndex_condition(condition, markerInfo, genoType)
 	assign_conditionMarkers_factors(genoType, condition_genoIndex,  n)
 	 #print("OK2")

@@ -153,7 +153,6 @@ SAIGE.Marker = function(objNull,
 	#nChunks = outIndex + 1
 	is_marker_test = TRUE
         i = outIndex
-        cat("i is ", i, "\n")	
     }else{
 	is_marker_test = FALSE    
 	stop("No markers are left in VCF")
@@ -205,8 +204,6 @@ SAIGE.Marker = function(objNull,
 
     #timeoutput=system.time({writeOutputFile(Output = list(resMarker),
   if(nrow(resMarker) > 0){
-print(OutputFile)
-print(OutputFileIndex)
 
   if(genoType == "vcf"){
     isEnd_Output =  check_Vcf_end()

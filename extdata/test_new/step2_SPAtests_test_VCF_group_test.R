@@ -30,7 +30,8 @@ SPAGMMATtest(vcfFile="../input/genotype_100markers.vcf.gz",
 	     LOCO=FALSE,
 	     AlleleOrder="ref-first",
 	     is_output_moreDetails=TRUE,
-	     max_markers_region = 10,
+	     max_markers_region = 4,
+	     condition="1:18_A/C,1:33_A/C",
 	     sparseSigmaFile="../output/example_binary_cate_v2.varianceRatio.txt_relatednessCutoff_0.125_2000_randomMarkersUsed.sparseSigma.mtx"
 	     )
 
