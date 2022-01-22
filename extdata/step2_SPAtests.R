@@ -14,6 +14,8 @@ library(optparse)
 library(data.table)
 library(methods)
 
+BLASctl_installed <- require(RhpcBLASctl) # install.packages("RhpcBLASctl")
+
 option_list <- list(
   make_option("--vcfFile", type="character",default="",
     help="Path to vcf file."),
@@ -128,8 +130,14 @@ mean, p-value based on traditional score test is returned. Default value is 2.")
   make_option("--MACCutoff_to_CollapseUltraRare", type="numeric", default=10,
     help="MAC cutoff to collpase the ultra rare variants (<= MACCutoff_to_CollapseUltraRare) in the set-based association tests. By default, 10."),
   make_option("--DosageCutoff_for_UltraRarePresence", type="numeric", default=0.5,
-    help="Dosage cutoff to determine whether the ultra rare variants are absent or present in the samples. Dosage >= DosageCutoff_for_UltraRarePresence indicates the varaint in present in the sample. 0< DosageCutoff_for_UltraRarePresence <= 2. By default, 0.5")	      
+    help="Dosage cutoff to determine whether the ultra rare variants are absent or present in the samples. Dosage >= DosageCutoff_for_UltraRarePresence indicates the varaint in present in the sample. 0< DosageCutoff_for_UltraRarePresence <= 2. By default, 0.5")
 )
+
+if (BLASctl_installed){
+  # Set number of threads for BLAS to 1, this step does not benefit from multithreading or multiprocessing
+  original_num_threads <- blas_get_num_procs()
+  blas_set_num_threads(1)
+}
 
 
 parser <- OptionParser(usage="%prog [options]", option_list=option_list)
@@ -222,3 +230,8 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 		 IsOutputMAFinCaseCtrlinGroupTest = opt$IsOutputMAFinCaseCtrlinGroupTest,
 		 IsOutputlogPforSingle = opt$IsOutputlogPforSingle
 )
+
+if(BLASctl_installed){
+  # Restore originally configured BLAS thread count
+  blas_set_num_threads(original_num_threads)
+}
