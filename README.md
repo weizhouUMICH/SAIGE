@@ -57,7 +57,7 @@ https://www.biorxiv.org/content/10.1101/583278v2
 
 ###  Install SAIGE from conda
 
-Warning: please do not use this bioconda version for bgen input. We are working on the issue. 
+#### Warning: please do not use this bioconda version for bgen input. We are working on the issue. 
 
 ![r-saige](https://anaconda.org/bioconda/r-saige/badges/version.svg)
 ![latest_update](https://anaconda.org/bioconda/r-saige/badges/latest_release_date.svg)
