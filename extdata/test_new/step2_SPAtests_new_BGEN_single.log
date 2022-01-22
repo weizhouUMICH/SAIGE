@@ -40,14 +40,14 @@ isCondition  FALSE
 Number of all markers to test:	 100 
 Number of markers in each chunk:	 100 
 Number of chunks for all markers:	 1 
-(2022-01-21 14:36:25) ---- Analyzing Chunk 1/1: chrom InitialChunk ---- 
+(2022-01-22 13:35:00) ---- Analyzing Chunk 1/1: chrom InitialChunk ---- 
 Completed 100/100 markers in the chunk.
 [1] "write Output 1"
 [1] "write Output 2"
    user  system elapsed 
-  1.628   0.110   1.902 
+  1.741   0.168   2.187 
 [1] "gc()"
           used  (Mb) gc trigger  (Mb) max used  (Mb)
-Ncells 1886378 100.8    3642941 194.6  2624948 140.2
-Vcells 3265181  25.0    8388608  64.0  4836172  36.9
+Ncells 1886363 100.8    3642898 194.6  2624948 140.2
+Vcells 3265147  25.0    8388608  64.0  4836172  36.9
 [1] "Analysis done! The results have been saved to './new_single_bgen.txt'."

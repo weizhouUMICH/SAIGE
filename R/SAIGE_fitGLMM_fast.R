@@ -969,8 +969,7 @@ fitNULLGLMM = function(plinkFile = "",
                 family = binomial)
             covoffset = modwitcov$linear.predictors
             dataMerge_sort$covoffset = covoffset
-        }
-        else {
+        }else {
             modwitcov = lm(formula.null, data = dataMerge_sort)
             dataMerge_sort[, which(colnames(dataMerge_sort) == 
                 phenoCol)] = modwitcov$residuals
@@ -1023,8 +1022,7 @@ fitNULLGLMM = function(plinkFile = "",
         }
         if (!noEstFixedEff) {
             fit0 = glm(formula.new, data = data.new, family = binomial)
-        }
-        else {
+        }else{
             fit0 = glm(formula.new, data = data.new, offset = covoffset, 
                 family = binomial)
         }
@@ -1087,8 +1085,7 @@ fitNULLGLMM = function(plinkFile = "",
             print(t_end)
             cat("t_end - t_begin, fitting the NULL model took\n")
             print(t_end - t_begin)
-        }
-        else {
+        }else {
             cat("Skip fitting the NULL GLMM\n")
             load(modelOut)
             if (is.null(modglmm$LOCO)) {
@@ -1132,13 +1129,11 @@ fitNULLGLMM = function(plinkFile = "",
                 cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, 
                 minMAFforGRM = minMAFforGRM, isDiagofKinSetAsOne = isDiagofKinSetAsOne, 
                 includeNonautoMarkersforVarRatio = includeNonautoMarkersforVarRatio)
-        }
-        else {
+        }else {
             cat("Skip estimating variance ratios\n")
         }
         closeGenoFile_plink()
-    }
-    else if (traitType == "quantitative") {
+    }else if (traitType == "quantitative") {
         cat(phenoCol, " is a quantitative trait\n")
         obj.noK = NULL
         fit0 = glm(formula.new, data = data.new, family = gaussian(link = "identity"))
@@ -1188,8 +1183,7 @@ fitNULLGLMM = function(plinkFile = "",
             cat("t_end - t_begin, fitting the NULL model took\n")
             print(t_end - t_begin)
             print("step2")
-        }
-        else {
+        }else{
             cat("Skip fitting the NULL GLMM\n")
             load(modelOut)
             if (is.null(modglmm$LOCO)) {
@@ -1219,8 +1213,7 @@ fitNULLGLMM = function(plinkFile = "",
                 cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude, 
                 minMAFforGRM = minMAFforGRM, isDiagofKinSetAsOne = isDiagofKinSetAsOne, 
                 includeNonautoMarkersforVarRatio = includeNonautoMarkersforVarRatio)
-        }
-        else {
+        }else{
             cat("Skip estimating variance ratios\n")
         }
         closeGenoFile_plink()
