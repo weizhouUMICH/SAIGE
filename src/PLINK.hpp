@@ -99,9 +99,59 @@ public:
                          bool & t_isTrueGenotype, // only used in PLINK. check m_genoMaps for details about the genotype mapping in PLINK
 			 arma::vec & OneMarkerG1);
 			 //std::vector<double>& OneMarkerG1);
-  
+  void getOneMarker(uint32_t t_gIndex,
+                         double& t_altFreq,
+                         double& t_missingRate,
+                         std::string& t_chr,
+			 arma::vec & OneMarkerG1)
+  {
+    std::string ref, alt, marker;
+    uint32_t pd;
+    double altCounts, imputeInfo;
+    std::vector<uint> indexForMissing, indexForNonZero;
+    bool isOutputIndexForMissing = false; 
+    bool isOnlyOutputNonZero = false;
+    bool isTrueGenotype = false;
+    getOneMarker(t_gIndex, ref, alt, marker, pd, t_chr, t_altFreq, altCounts, t_missingRate, imputeInfo,
+                                         isOutputIndexForMissing, indexForMissing, isOnlyOutputNonZero, indexForNonZero, isTrueGenotype, OneMarkerG1);
+  }
 
-  
+  void getOneMarker(uint32_t t_gIndex,
+                         double& t_altFreq,
+                         double& t_missingRate,
+                         std::vector<uint>& t_indexForMissing,
+			 arma::vec & OneMarkerG1)
+  {
+    std::string ref, alt, marker, chr;
+    uint32_t pd;
+    double altCounts, imputeInfo;
+    std::vector<uint> indexForNonZero;
+     bool isOutputIndexForMissing = false;
+    bool isOnlyOutputNonZero = false;
+    bool isTrueGenotype = true;
+    getOneMarker(t_gIndex, ref, alt, marker, pd, chr, t_altFreq, altCounts, t_missingRate, imputeInfo,
+                                         isOutputIndexForMissing, t_indexForMissing, isOnlyOutputNonZero, indexForNonZero, isTrueGenotype, OneMarkerG1);
+  }   
+
+
+  uint32_t getN0(){return m_N0;}
+  uint32_t getN(){return m_N;}
+  uint32_t getM0(){return m_M0;}
+  uint32_t getM(){return m_M;}
+  uint32_t getnumBytesofEachMarker0(){return m_numBytesofEachMarker0;}
+  uint32_t getnumBytesofEachMarker(){return m_numBytesofEachMarker;}
+
+  Rcpp::StringVector getChrVec()
+  {
+    Rcpp::StringVector chrVec(m_M0);
+    for(unsigned int i = 0; i < m_M0; i++){
+      chrVec[i] = Rcpp::String(m_chr.at(i));
+    }
+    return chrVec;
+  }
+
+
+
 };
 
 }
