@@ -101,17 +101,8 @@ Get_Coef_LOCO = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, t
 
 
 
-
-test_stdGeno = function(subSampleInGeno){
-  re1 = system.time({setgeno(genofile, subSampleInGeno)})
-  for(itest in 1:1){
-    cat(itest, " Get_OneSNP_Geno ", Get_OneSNP_Geno(itest), "\nlength ", length(Get_OneSNP_Geno(itest)), "\n")
-  }
-}
-
-
 #Fits the null glmm for binary traits
-glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff, isCovariateTransform, isDiagofKinSetAsOne) {
+glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0), maxiter =20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, indicatorGenoSamplesWithPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff, isCovariateTransform, isDiagofKinSetAsOne) {
   #Fits the null generalized linear mixed model for a binary trait
   #Args:
   #  genofile: string. Plink file for the M1 markers to be used to construct the genetic relationship matrix 
@@ -143,9 +134,19 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     print("Start reading genotype plink file here")
   }
 
-  re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne)})
+  re1 = system.time({setgeno(genofile, subSampleInGeno, indicatorGenoSamplesWithPheno, memoryChunk, isDiagofKinSetAsOne)})
   if(verbose){
     print("Genotype reading is done")
+  }
+
+  if (LOCO){
+    MsubIndVec = getQCdMarkerIndex()
+    chrVec = data.table:::fread(paste0(plinkFile,".bim"), header = F, data.table=F , select = 1)
+    chrVec = chrVec[which(MsubIndVec == TRUE)]
+    updatechrList = updateChrStartEndIndexVec(chrVec)
+    LOCO = updatechrList$LOCO
+    chromosomeStartIndexVec = updatechrList$chromosomeStartIndexVec
+    chromosomeEndIndexVec = updatechrList$chromosomeEndIndexVec
   }
 
   y = fit0$y
@@ -311,7 +312,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
 
 
 #Fits the null glmm for a quantitative trait
-glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff, isCovariateTransform, isDiagofKinSetAsOne){
+glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau = c(0,0), maxiter = 20, tol = 0.02, verbose = TRUE, nrun=30, tolPCG = 1e-5, maxiterPCG = 500, subPheno, indicatorGenoSamplesWithPheno, obj.noK, out.transform, tauInit, memoryChunk, LOCO, chromosomeStartIndexVec, chromosomeEndIndexVec, traceCVcutoff, isCovariateTransform, isDiagofKinSetAsOne){
   #Fits the null linear mixed model for a quantitative trait
   #Args:
   #  genofile: string. Plink file for the M1 markers to be used to construct the genetic relationship matrix
@@ -343,7 +344,19 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
     print("Start reading genotype plink file here")
   }
 
-  re1 = system.time({setgeno(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne)})
+  re1 = system.time({setgeno(genofile, subSampleInGeno, indicatorGenoSamplesWithPheno, memoryChunk, isDiagofKinSetAsOne)})
+
+  if (LOCO){
+    MsubIndVec = getQCdMarkerIndex()
+    chrVec = data.table:::fread(paste0(plinkFile,".bim"), header = F, data.table=F , select = 1)
+    chrVec = chrVec[which(MsubIndVec == TRUE)]
+    updatechrList = updateChrStartEndIndexVec(chrVec)
+    LOCO = updatechrList$LOCO
+    chromosomeStartIndexVec = updatechrList$chromosomeStartIndexVec
+    chromosomeEndIndexVec = updatechrList$chromosomeEndIndexVec
+  }
+
+
 
   if(verbose){
     print("Genotype reading is done")
@@ -793,65 +806,24 @@ fitNULLGLMM = function(plinkFile = "",
         }
         if (!file.exists(paste0(plinkFile, ".bim"))) {
             stop("ERROR! ", plinkFile, ".bim does not exsit\n")
-        }
-        else {
-            chromosomeStartIndexVec = NULL
-            chromosomeEndIndexVec = NULL
-            if (LOCO) {
-                cat("WARNING: leave-one-chromosome-out is activated! Note this option will only be applied to autosomal variants\n")
-                cat("WARNING: Genetic variants needs to be ordered by chromosome and position in the Plink file\n")
-                bimData = data.table:::fread(paste0(plinkFile, 
-                  ".bim"), header = F)
-                for (i in 1:22) {
-                  if (length(which(bimData[, 1] == i)) > 0) {
-                    chromosomeStartIndexVec = c(chromosomeStartIndexVec, 
-                      min(which(bimData[, 1] == i)) - 1)
-                    chromosomeEndIndexVec = c(chromosomeEndIndexVec, 
-                      max(which(bimData[, 1] == i)) - 1)
-                    if (i > 1) {
-                      if (!is.na(chromosomeStartIndexVec[i - 
-                        1])) {
-                        if (chromosomeStartIndexVec[i] <= chromosomeStartIndexVec[i - 
-                          1] | chromosomeEndIndexVec[i] <= chromosomeEndIndexVec[i - 
-                          1]) {
-                          stop(paste0("ERROR! chromosomes need to be ordered from 1 to 22 in ", 
-                            plinkFile, ".bim\n"))
-                        }
-                      }
-                    }
-                  }
-                  else {
-                    chromosomeStartIndexVec = c(chromosomeStartIndexVec, 
-                      NA)
-                    chromosomeEndIndexVec = c(chromosomeEndIndexVec, 
-                      NA)
-                  }
-                }
-                cat("chromosomeStartIndexVec: ", chromosomeStartIndexVec, 
-                  "\n")
-                cat("chromosomeEndIndexVec: ", chromosomeEndIndexVec, 
-                  "\n")
-                if (sum(!is.na(chromosomeStartIndexVec)) <= 1 | 
-                  sum(!is.na(chromosomeEndIndexVec)) <= 1) {
-                  cat("WARNING: The number of autosomal chromosomes is less than 2 and leave-one-chromosome-out can't be conducted! \n")
-                  LOCO = FALSE
-                }
-                chromosomeStartIndexVec_forcpp = chromosomeStartIndexVec
-                chromosomeStartIndexVec_forcpp[is.na(chromosomeStartIndexVec_forcpp)] = -1
-                chromosomeEndIndexVec_forcpp = chromosomeEndIndexVec
-                chromosomeEndIndexVec_forcpp[is.na(chromosomeEndIndexVec_forcpp)] = -1
-                setStartEndIndexVec(chromosomeStartIndexVec_forcpp, 
-                  chromosomeEndIndexVec_forcpp)
-            }
-            else {
+        }else {
+            if (LOCO){
+  		chrVec = data.table:::fread(paste0(plinkFile,".bim"), header = F, data.table=F , select = 1)
+  		updatechrList = updateChrStartEndIndexVec(chrVec)
+  		LOCO = updatechrList$LOCO
+  		chromosomeStartIndexVec = updatechrList$chromosomeStartIndexVec
+  		chromosomeEndIndexVec = updatechrList$chromosomeEndIndexVec
+            }	    
+	    if(!LOCO) {
                 chromosomeStartIndexVec = rep(NA, 22)
                 chromosomeEndIndexVec = rep(NA, 22)
             }
         }
+
+
         if (!file.exists(paste0(plinkFile, ".fam"))) {
             stop("ERROR! ", plinkFile, ".fam does not exsit\n")
-        }
-        else {
+        }else{
             sampleListwithGenov0 = data.table:::fread(paste0(plinkFile, 
                 ".fam"), header = F, , colClasses = list(character = 1:4))
             sampleListwithGenov0 = data.frame(sampleListwithGenov0)
@@ -929,6 +901,9 @@ fitNULLGLMM = function(plinkFile = "",
             by.x = "IID", by.y = "IIDgeno")
         dataMerge_sort = dataMerge[with(dataMerge, order(IndexGeno)), 
             ]
+
+        indicatorGenoSamplesWithPheno = (sampleListwithGeno$IndexGeno %in% dataMerge_sort$IndexGeno)
+		
         if (nrow(dataMerge_sort) < nrow(sampleListwithGeno)) {
             cat(nrow(sampleListwithGeno) - nrow(dataMerge_sort), 
                 " samples in geno file do not have phenotypes\n")
@@ -1035,7 +1010,7 @@ fitNULLGLMM = function(plinkFile = "",
                 modglmm0 <- glmmkin.ai_PCG_Rcpp_Binary(plinkFile, 
                   fit0, tau = c(0, 0), fixtau = c(0, 0), maxiter = maxiter, 
                   tol = tol, verbose = TRUE, nrun = 30, tolPCG = tolPCG, 
-                  maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, 
+                  maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, indicatorGenoSamplesWithPheno = indicatorGenoSamplesWithPheno,  
                   obj.noK = obj.noK, out.transform = out.transform, 
                   tauInit = tauInit, memoryChunk = memoryChunk, 
                   LOCO = LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, 
@@ -1056,7 +1031,7 @@ fitNULLGLMM = function(plinkFile = "",
             system.time(modglmm <- glmmkin.ai_PCG_Rcpp_Binary(plinkFile, 
                 fit0, tau = c(0, 0), fixtau = c(0, 0), maxiter = maxiter, 
                 tol = tol, verbose = TRUE, nrun = 30, tolPCG = tolPCG, 
-                maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, 
+                maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, indicatorGenoSamplesWithPheno = indicatorGenoSamplesWithPheno, 
                 obj.noK = obj.noK, out.transform = out.transform, 
                 tauInit = tauInit, memoryChunk = memoryChunk, 
                 LOCO = LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, 
@@ -1091,11 +1066,20 @@ fitNULLGLMM = function(plinkFile = "",
             if (is.null(modglmm$LOCO)) {
                 modglmm$LOCO = FALSE
             }
-            setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, 
+            setgeno(plinkFile, dataMerge_sort$IndexGeno, indicatorGenoSamplesWithPheno, memoryChunk, 
                 isDiagofKinSetAsOne)
-            if (LOCO) {
+	    if(LOCO){
                 set_Diagof_StdGeno_LOCO()
-            }
+    		MsubIndVec = getQCdMarkerIndex()
+    		chrVec = data.table:::fread(paste0(plinkFile,".bim"), header = F, data.table=F , select = 1)
+   		chrVec = chrVec[which(MsubIndVec == TRUE)]
+    		updatechrList = updateChrStartEndIndexVec(chrVec)
+    		LOCO = updatechrList$LOCO
+    		chromosomeStartIndexVec = updatechrList$chromosomeStartIndexVec
+    		chromosomeEndIndexVec = updatechrList$chromosomeEndIndexVec
+  	    }
+
+
             tau = modglmm$theta
             varAll = tau[2] + (pi^2)/3
             #tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
@@ -1145,7 +1129,7 @@ fitNULLGLMM = function(plinkFile = "",
                 modglmm0 <- glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile, 
                   fit0, tau = c(0, 0), fixtau = c(0, 0), maxiter = maxiter, 
                   tol = tol, verbose = TRUE, nrun = 30, tolPCG = tolPCG, 
-                  maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, 
+                  maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, indicatorGenoSamplesWithPheno = indicatorGenoSamplesWithPheno, 
                   obj.noK = obj.noK, out.transform = out.transform, 
                   tauInit = tauInit, memoryChunk = memoryChunk, 
                   LOCO = LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, 
@@ -1166,7 +1150,7 @@ fitNULLGLMM = function(plinkFile = "",
             system.time(modglmm <- glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile, 
                 fit0, tau = c(0, 0), fixtau = c(0, 0), maxiter = maxiter, 
                 tol = tol, verbose = TRUE, nrun = 30, tolPCG = tolPCG, 
-                maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, 
+                maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, indicatorGenoSamplesWithPheno = indicatorGenoSamplesWithPheno, 
                 obj.noK = obj.noK, out.transform = out.transform, 
                 tauInit = tauInit, memoryChunk = memoryChunk, 
                 LOCO = LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, 
@@ -1189,12 +1173,21 @@ fitNULLGLMM = function(plinkFile = "",
             if (is.null(modglmm$LOCO)) {
                 modglmm$LOCO = FALSE
             }
-            setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk, 
+            setgeno(plinkFile, dataMerge_sort$IndexGeno, indicatorGenoSamplesWithPheno, memoryChunk, 
                 isDiagofKinSetAsOne)
             setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
-            if (LOCO) {
+
+	    if(LOCO){
                 set_Diagof_StdGeno_LOCO()
-            }
+                MsubIndVec = getQCdMarkerIndex()
+                chrVec = data.table:::fread(paste0(plinkFile,".bim"), header = F, data.table=F , select = 1)
+                chrVec = chrVec[which(MsubIndVec == TRUE)]
+                updatechrList = updateChrStartEndIndexVec(chrVec)
+                LOCO = updatechrList$LOCO
+                chromosomeStartIndexVec = updatechrList$chromosomeStartIndexVec
+                chromosomeEndIndexVec = updatechrList$chromosomeEndIndexVec
+             }	
+
         }
         if (!skipVarianceRatioEstimation) {
             cat("Start estimating variance ratios\n")

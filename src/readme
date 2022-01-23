@@ -1,0 +1,61 @@
+u = j & (4 - 1);
+                                bufferGeno = m_OneSNP_Geno[j];
+                                //if(bufferGeno == 0){
+                                //      setGenotype(&geno1, u, HOM_ALT);
+                                //}else if(bufferGeno == 1){
+                                //      setGenotype(&geno1, u, HET);
+                                //}else if(bufferGeno == 2){
+                                //      setGenotype(&geno1, u, HOM_REF);
+                                //}else{
+                                //      setGenotype(&geno1, u, MISSING);
+                                //      m_OneSNP_Geno[j] = 0;  //12-18-2017
+                                //}
+                                setGenotype(&geno1, u, bufferGeno);
+                                if(bufferGeno == 3){
+                                        m_OneSNP_Geno[j] = 0;
+                                }
+                                if((u == 3){
+                                        //genoVec.push_back(geno1);
+                                        genoVecofPointers[i/numMarkersofEachArray]->push_back(geno1); //avoid large continuous memory usage
+                                        geno1 = 0;
+                                }                        
+
+
+
+
+
+
+
+
+
+
+
+for(unsigned int j=0; j< Nnomissing; j++){
+                                u = j & (4 - 1);
+                                bufferGeno = m_OneSNP_Geno[j];
+                                //if(bufferGeno == 0){
+                                //      setGenotype(&geno1, u, HOM_ALT);
+                                //}else if(bufferGeno == 1){
+                                //      setGenotype(&geno1, u, HET);
+                                //}else if(bufferGeno == 2){
+                                //      setGenotype(&geno1, u, HOM_REF);
+                                //}else{
+                                //      setGenotype(&geno1, u, MISSING);
+                                //      m_OneSNP_Geno[j] = 0;  //12-18-2017
+                                //}
+                                setGenotype(&geno1, u, bufferGeno);
+                                if(bufferGeno == 3){
+                                        m_OneSNP_Geno[j] = 0;
+                                }
+                                if((u == 3){
+                                        //genoVec.push_back(geno1);
+                                        genoVecofPointers[i/numMarkersofEachArray]->push_back(geno1); //avoid large continuous memory usage
+                                        geno1 = 0;
+                                }
+                        }
+
+                        if(Nnomissing%4 != 0){
+                                //genoVec.push_back(geno1);
+                                genoVecofPointers[i/numMarkersofEachArray]->push_back(geno1); //avoid large continuous memory usage
+                                geno1 = 0;
+                        }

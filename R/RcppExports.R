@@ -81,6 +81,10 @@ getSubMarkerIndex <- function() {
     .Call('_SAIGE_getSubMarkerIndex', PACKAGE = 'SAIGE')
 }
 
+getQCdMarkerIndex <- function() {
+    .Call('_SAIGE_getQCdMarkerIndex', PACKAGE = 'SAIGE')
+}
+
 getSubMarkerNum <- function() {
     .Call('_SAIGE_getSubMarkerNum', PACKAGE = 'SAIGE')
 }
@@ -149,8 +153,8 @@ parallelsumTwoVec <- function(x) {
     invisible(.Call('_SAIGE_parallelsumTwoVec', PACKAGE = 'SAIGE', x))
 }
 
-setgeno <- function(genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne) {
-    invisible(.Call('_SAIGE_setgeno', PACKAGE = 'SAIGE', genofile, subSampleInGeno, memoryChunk, isDiagofKinSetAsOne))
+setgeno <- function(genofile, subSampleInGeno, indicatorGenoSamplesWithPheno, memoryChunk, isDiagofKinSetAsOne) {
+    invisible(.Call('_SAIGE_setgeno', PACKAGE = 'SAIGE', genofile, subSampleInGeno, indicatorGenoSamplesWithPheno, memoryChunk, isDiagofKinSetAsOne))
 }
 
 Get_OneSNP_Geno <- function(SNPIdx) {

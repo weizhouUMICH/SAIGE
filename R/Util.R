@@ -25,6 +25,52 @@ Check_OutputFile_Create<-function(file){
   }
 }	
 
+###Step 1
+updateChrStartEndIndexVec <- function(chrVec){
+ chromosomeStartIndexVec = NULL
+ chromosomeEndIndexVec = NULL
+ LOCO = TRUE 
+ cat("WARNING: leave-one-chromosome-out is activated! Note this option will only be applied to autosomal variants\n")
+ cat("WARNING: Genetic variants needs to be ordered by chromosome and position in the Plink file\n")
+ #bimData = data.table:::fread(paste0(plinkFile,".bim"), header = F)
+ for (i in 1:22) {
+    if (length(which(bimData[, 1] == i)) > 0) {
+    	chromosomeStartIndexVec = c(chromosomeStartIndexVec,min(which(chrVec == i)) - 1)
+        chromosomeEndIndexVec = c(chromosomeEndIndexVec,max(which(chrVec == i)) - 1)
+        if (i > 1) {
+       	  if (!is.na(chromosomeStartIndexVec[i -1])) {
+            if (chromosomeStartIndexVec[i] <= chromosomeStartIndexVec[i - 1] | chromosomeEndIndexVec[i] <= chromosomeEndIndexVec[i -1]) {
+                          stop(paste0("ERROR! chromosomes need to be ordered from 1 to 22 in ",plinkFile, ".bim\n"))
+            }
+          }
+        }
+     }else{
+        chromosomeStartIndexVec = c(chromosomeStartIndexVec, NA)
+        chromosomeEndIndexVec = c(chromosomeEndIndexVec, NA)
+     }
+ }
+ cat("chromosomeStartIndexVec: ", chromosomeStartIndexVec, "\n")
+ cat("chromosomeEndIndexVec: ", chromosomeEndIndexVec,"\n")
+ if (sum(!is.na(chromosomeStartIndexVec)) <= 1 | sum(!is.na(chromosomeEndIndexVec)) <= 1) {
+   cat("WARNING: The number of autosomal chromosomes is less than 2 and leave-one-chromosome-out can't be conducted! \n")
+   LOCO = FALSE
+ }
+ chromosomeStartIndexVec_forcpp = chromosomeStartIndexVec
+ chromosomeStartIndexVec_forcpp[is.na(chromosomeStartIndexVec_forcpp)] = -1
+ chromosomeEndIndexVec_forcpp = chromosomeEndIndexVec
+ chromosomeEndIndexVec_forcpp[is.na(chromosomeEndIndexVec_forcpp)] = -1
+ setStartEndIndexVec(chromosomeStartIndexVec_forcpp, chromosomeEndIndexVec_forcpp)
+ return(list(LOCO = LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec))
+}
+
+
+
+
+
+
+
+
+
 
 create_resultHeader<-function(traitType,
 			      isGroupTest,
