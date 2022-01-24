@@ -1329,6 +1329,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// setmaxMissingRateforGRM
+void setmaxMissingRateforGRM(float maxMissingforGRM);
+RcppExport SEXP _SAIGE_setmaxMissingRateforGRM(SEXP maxMissingforGRMSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type maxMissingforGRM(maxMissingforGRMSEXP);
+    setmaxMissingRateforGRM(maxMissingforGRM);
+    return R_NilValue;
+END_RCPP
+}
 // set_Diagof_StdGeno_LOCO
 void set_Diagof_StdGeno_LOCO();
 RcppExport SEXP _SAIGE_set_Diagof_StdGeno_LOCO() {
@@ -1982,6 +1992,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getCrossprodMatAndKin_mailman", (DL_FUNC) &_SAIGE_getCrossprodMatAndKin_mailman, 1},
     {"_SAIGE_get_GRMdiagVec", (DL_FUNC) &_SAIGE_get_GRMdiagVec, 0},
     {"_SAIGE_setminMAFforGRM", (DL_FUNC) &_SAIGE_setminMAFforGRM, 1},
+    {"_SAIGE_setmaxMissingRateforGRM", (DL_FUNC) &_SAIGE_setmaxMissingRateforGRM, 1},
     {"_SAIGE_set_Diagof_StdGeno_LOCO", (DL_FUNC) &_SAIGE_set_Diagof_StdGeno_LOCO, 0},
     {"_SAIGE_SPA", (DL_FUNC) &_SAIGE_SPA, 10},
     {"_SAIGE_SPA_fast", (DL_FUNC) &_SAIGE_SPA_fast, 16},

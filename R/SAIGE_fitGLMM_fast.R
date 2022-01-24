@@ -134,6 +134,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
     print("Start reading genotype plink file here")
   }
 
+
   re1 = system.time({setgeno(genofile, subSampleInGeno, indicatorGenoSamplesWithPheno, memoryChunk, isDiagofKinSetAsOne)})
   if(verbose){
     print("Genotype reading is done")
@@ -141,7 +142,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
 
   if (LOCO){
     MsubIndVec = getQCdMarkerIndex()
-    chrVec = data.table:::fread(paste0(plinkFile,".bim"), header = F, data.table=F , select = 1)
+                    chrVec = data.table:::fread(paste0(genofile,".bim"), header = F)[,1]
     chrVec = chrVec[which(MsubIndVec == TRUE)]
     updatechrList = updateChrStartEndIndexVec(chrVec)
     LOCO = updatechrList$LOCO
@@ -348,7 +349,7 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 
   if (LOCO){
     MsubIndVec = getQCdMarkerIndex()
-    chrVec = data.table:::fread(paste0(plinkFile,".bim"), header = F, data.table=F , select = 1)
+                  chrVec = data.table:::fread(paste0(genofile,".bim"), header = F)[,1]
     chrVec = chrVec[which(MsubIndVec == TRUE)]
     updatechrList = updateChrStartEndIndexVec(chrVec)
     LOCO = updatechrList$LOCO
@@ -701,6 +702,8 @@ fitNULLGLMM = function(plinkFile = "",
 		skipVarianceRatioEstimation = FALSE)
 {
     setminMAFforGRM(minMAFforGRM)
+    setmaxMissingRateforGRM(0.15)
+
     if (minMAFforGRM > 0) {
         cat("Markers in the Plink file with MAF >= ", minMAFforGRM, 
             " will be used to construct GRM\n")
@@ -902,8 +905,12 @@ fitNULLGLMM = function(plinkFile = "",
         dataMerge_sort = dataMerge[with(dataMerge, order(IndexGeno)), 
             ]
 
-        indicatorGenoSamplesWithPheno = (sampleListwithGeno$IndexGeno %in% dataMerge_sort$IndexGeno)
-		
+	
+	indicatorGenoSamplesWithPheno =(sampleListwithGeno$IndexGeno %in% dataMerge_sort$IndexGeno)
+	#cat("sum(indicatorGenoSamplesWithPheno) ", sum(indicatorGenoSamplesWithPheno), "\n")	
+	#print(indicatorGenoSamplesWithPheno)
+
+
         if (nrow(dataMerge_sort) < nrow(sampleListwithGeno)) {
             cat(nrow(sampleListwithGeno) - nrow(dataMerge_sort), 
                 " samples in geno file do not have phenotypes\n")
@@ -1044,59 +1051,65 @@ fitNULLGLMM = function(plinkFile = "",
             }
             save(modglmm, file = modelOut)
             tau = modglmm$theta
-            varAll = tau[2] + (pi^2)/3
-            #tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
-	    tauVec_ss = c(0,1)
-	    wVec_ss = rep(1, length(modglmm$y))
-            bVec_ss = rep(1, length(modglmm$y))
-            Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, 
-                bVec_ss, maxiterPCG, tolPCG)
-            t1_Rinv_1 = sum(Rinv_1)
-            cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
-            Pn = sum(modglmm$y == 1)/(length(modglmm$y))
-            Nglmm = 4 * Pn * (1 - Pn) * t1_Rinv_1
-            cat("Nglmm ", Nglmm, "\n")
+            
+	    
+	    #varAll = tau[2] + (pi^2)/3
+            ##tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
+	    #tauVec_ss = c(0,1)
+	    #wVec_ss = rep(1, length(modglmm$y))
+            #bVec_ss = rep(1, length(modglmm$y))
+            #Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, 
+            #    bVec_ss, maxiterPCG, tolPCG)
+            #t1_Rinv_1 = sum(Rinv_1)
+            #cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
+            #Pn = sum(modglmm$y == 1)/(length(modglmm$y))
+            #Nglmm = 4 * Pn * (1 - Pn) * t1_Rinv_1
+            #cat("Nglmm ", Nglmm, "\n")
             t_end = proc.time()
             print(t_end)
             cat("t_end - t_begin, fitting the NULL model took\n")
             print(t_end - t_begin)
-        }else {
-            cat("Skip fitting the NULL GLMM\n")
+        }else {cat("Skip fitting the NULL GLMM\n")
             load(modelOut)
             if (is.null(modglmm$LOCO)) {
                 modglmm$LOCO = FALSE
             }
             setgeno(plinkFile, dataMerge_sort$IndexGeno, indicatorGenoSamplesWithPheno, memoryChunk, 
                 isDiagofKinSetAsOne)
+
+
+            tau = modglmm$theta
+            
+	    
+	    #varAll = tau[2] + (pi^2)/3
+            ##tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
+	    #tauVec_ss = c(0, 1)
+            #wVec_ss = rep(1, length(modglmm$y))
+            #bVec_ss = rep(1, length(modglmm$y))
+            #t_getPCG1ofSigmaAndVector = proc.time()
+            #Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, 
+            #    bVec_ss, maxiterPCG, tolPCG)
+            #t1_Rinv_1 = sum(Rinv_1)
+            #cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
+            #Pn = sum(modglmm$y == 1)/(length(modglmm$y))
+            #Nglmm = 4 * Pn * (1 - Pn) * t1_Rinv_1
+            #cat("Nglmm ", Nglmm, "\n")
+            setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
+        }
+        if (!skipVarianceRatioEstimation) {
 	    if(LOCO){
-                set_Diagof_StdGeno_LOCO()
     		MsubIndVec = getQCdMarkerIndex()
-    		chrVec = data.table:::fread(paste0(plinkFile,".bim"), header = F, data.table=F , select = 1)
+	        #cat("MsubIndVec", MsubIndVec, "\n")
+		print(length(MsubIndVec))
+    		chrVec = data.table:::fread(paste0(plinkFile,".bim"), header = F)[,1]
+		print(length(chrVec))
    		chrVec = chrVec[which(MsubIndVec == TRUE)]
     		updatechrList = updateChrStartEndIndexVec(chrVec)
     		LOCO = updatechrList$LOCO
     		chromosomeStartIndexVec = updatechrList$chromosomeStartIndexVec
     		chromosomeEndIndexVec = updatechrList$chromosomeEndIndexVec
+                set_Diagof_StdGeno_LOCO()
   	    }
-
-
-            tau = modglmm$theta
-            varAll = tau[2] + (pi^2)/3
-            #tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
-	    tauVec_ss = c(0, 1)
-            wVec_ss = rep(1, length(modglmm$y))
-            bVec_ss = rep(1, length(modglmm$y))
-            t_getPCG1ofSigmaAndVector = proc.time()
-            Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss, 
-                bVec_ss, maxiterPCG, tolPCG)
-            t1_Rinv_1 = sum(Rinv_1)
-            cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
-            Pn = sum(modglmm$y == 1)/(length(modglmm$y))
-            Nglmm = 4 * Pn * (1 - Pn) * t1_Rinv_1
-            cat("Nglmm ", Nglmm, "\n")
-            setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
-        }
-        if (!skipVarianceRatioEstimation) {
             cat("Start estimating variance ratios\n")
             scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait(obj.glmm.null = modglmm, 
                 obj.glm.null = fit0, Cutoff = SPAcutoff, maxiterPCG = maxiterPCG, 
@@ -1177,19 +1190,21 @@ fitNULLGLMM = function(plinkFile = "",
                 isDiagofKinSetAsOne)
             setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
 
-	    if(LOCO){
-                set_Diagof_StdGeno_LOCO()
-                MsubIndVec = getQCdMarkerIndex()
-                chrVec = data.table:::fread(paste0(plinkFile,".bim"), header = F, data.table=F , select = 1)
-                chrVec = chrVec[which(MsubIndVec == TRUE)]
-                updatechrList = updateChrStartEndIndexVec(chrVec)
-                LOCO = updatechrList$LOCO
-                chromosomeStartIndexVec = updatechrList$chromosomeStartIndexVec
-                chromosomeEndIndexVec = updatechrList$chromosomeEndIndexVec
-             }	
-
         }
         if (!skipVarianceRatioEstimation) {
+	    if(LOCO){
+    		MsubIndVec = getQCdMarkerIndex()
+	        #cat("MsubIndVec", MsubIndVec, "\n")
+		print(length(MsubIndVec))
+    		chrVec = data.table:::fread(paste0(plinkFile,".bim"), header = F)[,1]
+		print(length(chrVec))
+   		chrVec = chrVec[which(MsubIndVec == TRUE)]
+    		updatechrList = updateChrStartEndIndexVec(chrVec)
+    		LOCO = updatechrList$LOCO
+    		chromosomeStartIndexVec = updatechrList$chromosomeStartIndexVec
+    		chromosomeEndIndexVec = updatechrList$chromosomeEndIndexVec
+                set_Diagof_StdGeno_LOCO()
+  	    }
             cat("Start estimating variance ratios\n")
             scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait(obj.glmm.null = modglmm, 
                 obj.glm.null = fit0, Cutoff = SPAcutoff, maxiterPCG = maxiterPCG, 
@@ -1512,7 +1527,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
       }
     }#end of while(numTestedMarker < numMarkers)
 
-    print("OK2")
+    #print("OK2")
     #OUTtotal = as.data.frame(OUTtotal)
     #colnames(OUTtotal) = resultHeader
     OUT1 = OUTtotal
@@ -1745,8 +1760,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                 }
           }	
 
-
-
 	  if(!isLOCO){          
 	    eta = obj.glmm.null$linear.predictors
             mu = obj.glmm.null$fitted.values
@@ -1817,7 +1830,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
       }
     }#end of while(numTestedMarker < numMarkers)
 
-    print("OK2")
+    #print("OK2")
     #OUTtotal = as.data.frame(OUTtotal)
     #colnames(OUTtotal) = resultHeader
     OUT1 = OUTtotal
@@ -2178,7 +2191,7 @@ refineKinPar = function(relatednessCutoff, W, tauVecNew, nblocks = 10, verbose =
         flush.console()
 	for(m in G1){
 		print(m)
- 		print("OK2")
+ 		#print("OK2")
 		print(iMat[m,1])	
 		print(iMat[m,2])	
 		print(stdGeno[iMat[m,1]])	
@@ -2186,7 +2199,7 @@ refineKinPar = function(relatednessCutoff, W, tauVecNew, nblocks = 10, verbose =
 		print(GRMvec[m])	
 		GRMvec[m] = GRMvec[m] + stdGeno[iMat[m,1]]*stdGeno[iMat[m,2]]/mMarkers
 		print(GRMvec[m])	
-		print("OK3")	
+		#print("OK3")	
 	}
   } 
   print("OK4")

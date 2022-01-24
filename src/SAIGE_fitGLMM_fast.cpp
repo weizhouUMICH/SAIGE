@@ -92,7 +92,9 @@ public:
 
 
         int Msub_MAFge_minMAFtoConstructGRM;
-	arma::ivec Msub_MAFge_minMAFtoConstructGRM_LOCO;
+
+	int Msub_MAFge_minMAFtoConstructGRM_singleChr;
+	arma::ivec Msub_MAFge_minMAFtoConstructGRM_byChr;
 	//end for LOCO
 
 	unsigned char m_genotype_buffer[4];
@@ -208,7 +210,7 @@ public:
                 return & m_OneSNP_Geno;
        }
    
-	void Get_OneSNP_Geno_atBeginning(size_t SNPIdx, vector<int> & indexNA, vector<unsigned char> & genoVecOneMarkerOld, float & altFreq, int & alleleCount, bool & passQC){
+	void Get_OneSNP_Geno_atBeginning(size_t SNPIdx, vector<int> & indexNA, vector<unsigned char> & genoVecOneMarkerOld, float & altFreq, float & missingRate, int & alleleCount, bool & passQC, size_t SNPIdx_new){
 
 		arma::ivec m_OneSNP_GenoTemp;
 		m_OneSNP_GenoTemp.zeros(N);
@@ -220,21 +222,50 @@ public:
 		int u;
 		alleleCount = 0;
 		int numMissing = 0;
-		for(int i=0; i< m_size_of_esi_temp; i++){
+		for(int i=0; i< (m_size_of_esi_temp - 1); i++){
 			geno1 = genoVecOneMarkerOld[i];
 			for(int j=0; j<4; j++){
 				u = j & 3;
-				getGenotype(&geno1, u, bufferGeno);
-				//switch(bufferGeno){
-    				//  case HOM_REF: break;
-    				// case HET: sum+=1; break;
-    				//case HOM_ALT: sum+=2; break;
-    				// case MISSING: numMissing++; break;
-    				///}
+
+				int b = geno1 & 1 ;
+                                geno1 = geno1 >> 1;
+                                int a = geno1 & 1 ;
+                                if (b == 1 && a == 0){
+                                        bufferGeno = 3;
+                                }else if(b == 0 && a == 0){
+                                        bufferGeno = 2;
+                                }else if(b == 0 && a == 1){
+                                        bufferGeno = 1;
+                                }else if(b == 1 && a == 1){
+                                        bufferGeno = 0;
+                                }else{
+                                        cout << "Error GENO!!\n";
+                                        break;
+                                }
+
+
+				//getGenotype(&geno1, u, bufferGeno);
+				//printf("%d", geno1);
+	//			std::cout << "bufferGeno " << bufferGeno << std::endl;
+				/*
+				switch(geno1){
+    				 case HOM_REF: break;
+    				 case HET: sum+=1; break;
+    				 case HOM_ALT: sum+=2; break;
+    				 case MISSING: numMissing++; break;
+    				}
+				*/
 				m_OneSNP_GenoTemp[ind] = bufferGeno;
+				//if(SNPIdx == 0){
+				//	std::cout << "[ind] " << ind << std::endl;
+				//	std::cout << "indicatorGenoSamplesWithPheno_in[ind] " << indicatorGenoSamplesWithPheno_in[ind] << std::endl;
+				//}	
 				if(indicatorGenoSamplesWithPheno_in[ind]){
 					if(bufferGeno == 3){
+	//					std::cout << "SNPIdx " << SNPIdx << std::endl;
+	//					std::cout << "ind " << ind << std::endl;
 						numMissing++;
+						//indexNA.push_back(ptrsubSampleInGeno[ind])
 					}else{
 						alleleCount = alleleCount + bufferGeno;
 					}	
@@ -242,61 +273,161 @@ public:
 				ind++;
                                 geno1 = geno1 >> 1;	
 			  }
+
 	      }	  
+
+		int i = m_size_of_esi_temp - 1;
+		geno1 = genoVecOneMarkerOld[i];
+		//std::cout << "N " << N << std::endl;
+		//while(ind < N){
+                        for(int j=0; j<4; j++){
+                                u = j & 3;
+
+                                int b = geno1 & 1 ;
+                                geno1 = geno1 >> 1;
+                                int a = geno1 & 1 ;
+                                if (b == 1 && a == 0){
+                                        bufferGeno = 3;
+                                }else if(b == 0 && a == 0){
+                                        bufferGeno = 2;
+                                }else if(b == 0 && a == 1){
+                                        bufferGeno = 1;
+                                }else if(b == 1 && a == 1){
+                                        bufferGeno = 0;
+                                }else{
+                                        cout << "Error GENO!!\n";
+                                        break;
+                                }
+
+                                m_OneSNP_GenoTemp[ind] = bufferGeno;
+                                //if(SNPIdx == 0){
+                                //        std::cout << "[ind] " << ind << std::endl;
+                                //        std::cout << "indicatorGenoSamplesWithPheno_in[ind] " << indicatorGenoSamplesWithPheno_in[ind] << std::endl;
+                                //}
+                                if(indicatorGenoSamplesWithPheno_in[ind]){
+                                        if(bufferGeno == 3){
+        //                                      std::cout << "SNPIdx " << SNPIdx << std::endl;
+        //                                      std::cout << "ind " << ind << std::endl;
+                                                numMissing++;
+                                        }else{
+                                                alleleCount = alleleCount + bufferGeno;
+                                        }
+                                }
+                                ind++;
+                                geno1 = geno1 >> 1;
+				if(ind == (N)){
+				break;
+				}
+                          }
+		//}
+
 
 	      altFreq = alleleCount/float((Nnomissing-numMissing) * 2);
 	      //sum = 0;
-	      int fillinMissingGeno = int(round(2*altFreq));
-	      
-	      float missingRate = numMissing/float(Nnomissing);	      
-
+	      //std::cout << "missingRate " << missingRate << std::endl;
+	      //std::cout << "maxMissingRate " << maxMissingRate << std::endl;
+	      missingRate = numMissing/float(Nnomissing);	      
 
               //int indxInOut = 0;
-	      unsigned char geno2;
-	      passQC = false;
 	      //if(minMAFtoConstructGRM > 0){
-               if(altFreq >= minMAFtoConstructGRM && altFreq <= (1-minMAFtoConstructGRM) && missingRate <= maxMissingRate){
-			for(int indx=0; indx < Nnomissing; indx++){
+              //if(altFreq >= minMAFtoConstructGRM && altFreq <= (1-minMAFtoConstructGRM) && missingRate <= maxMissingRate){
+	      	int fillinMissingGeno = int(round(2*altFreq)); 
+	
+		if(numMissing > 0){
+		       //for(int indx=0; indx < Nnomissing; indx++){
                                                 //cout << "HERE5\n";
-				u = indx & 3;
-				bufferGeno = m_OneSNP_GenoTemp[ptrsubSampleInGeno[indx] - 1];
-				if(bufferGeno == 3){
-					bufferGeno = fillinMissingGeno;
-					alleleCount = alleleCount + bufferGeno;
-				}	
-				setGenotype(&geno2, u, bufferGeno);
-				
-				if(u == 3){
+			//	u = indx & 3;
+			//	bufferGeno = m_OneSNP_GenoTemp[ptrsubSampleInGeno[indx] - 1];
+			alleleCount = alleleCount + fillinMissingGeno*numMissing;
+			
+			//		if(bufferGeno == 3){
+			//			bufferGeno = fillinMissingGeno;
+			//			alleleCount = alleleCount + bufferGeno;
+			//		}
+			//	}	
+  			/*
+				//setGenotype(&geno2, u, bufferGeno);
+				if(bufferGeno == 0){
+                                        setGenotype(&geno2, u, HOM_ALT);
+                                }else if(bufferGeno == 1){
+                                        setGenotype(&geno2, u, HET);
+                                }else if(bufferGeno == 2){
+                                        setGenotype(&geno2, u, HOM_REF);
+                                }
+				//else{
+                                //        setGenotype(&geno1, u, MISSING);
+                                        //m_OneSNP_Geno[j] = 0;  //12-18-2017
+                                //}	
+
+				if(u == 3 || indx == (Nnomissing-1)){
                                         genoVecofPointers[SNPIdx/numMarkersofEachArray]->push_back(geno2); //avoid large continuous memory usage
                                         geno2 = 0;
                			}
-			}	
-			passQC = true;	
-	     }
+		*/	
+		}
+			//passQC = true;	
+	     //}
 
 	     altFreq = alleleCount/float(Nnomissing * 2);
+
+	      unsigned char geno2;
+	      passQC = false;
+	     float maf = std::min(altFreq, 1-altFreq);
+
+		if(maf >= minMAFtoConstructGRM && missingRate <= maxMissingRate){
+			for(int indx=0; indx < Nnomissing; indx++){
+                                                //cout << "HERE5\n";
+                              u = indx & 3;
+                              bufferGeno = m_OneSNP_GenoTemp[ptrsubSampleInGeno[indx] - 1];
+			      if(bufferGeno == 3){					
+				bufferGeno = fillinMissingGeno;
+			      }	
+			      if(bufferGeno == 0){
+                                        setGenotype(&geno2, u, HOM_ALT);
+                                }else if(bufferGeno == 1){
+                                        setGenotype(&geno2, u, HET);
+                                }else if(bufferGeno == 2){
+                                        setGenotype(&geno2, u, HOM_REF);
+                              }
+			      if(u == 3 || indx == (Nnomissing-1)){
+                                        genoVecofPointers[SNPIdx_new/numMarkersofEachArray]->push_back(geno2); //avoid large continuous memory usage
+                                        geno2 = 0;
+                              }
+		}
+		passQC = true;
 	}
+	    // altFreq = alleleCount/float(Nnomissing * 2);
 
+   }
+		
 
-
- 	int Get_OneSNP_StdGeno(size_t SNPIdx, arma::fvec * out ){
+   int Get_OneSNP_StdGeno(size_t SNPIdx, arma::fvec * out ){
 		//avoid large continuous memory usage
                 int indexOfVectorPointer = SNPIdx/numMarkersofEachArray;
                 int SNPIdxinVec = SNPIdx % numMarkersofEachArray;
                 ////////////////
-
+		//std::cout << "indexOfVectorPointer " << indexOfVectorPointer << std::endl;
  		out->zeros(Nnomissing);
+		//std::cout << "m_size_of_esi " << m_size_of_esi << std::endl;
+		//std::cout << "SNPIdxinVec " << SNPIdxinVec << std::endl;
+		//std::cout << "genoVecofPointers[indexOfVectorPointer]->size() " << genoVecofPointers[indexOfVectorPointer]->size() << std::endl;
+
+
 
  		size_t Start_idx = m_size_of_esi * SNPIdxinVec;
+
+		//std::cout << "Start_idx " << Start_idx << std::endl;
 		size_t ind= 0;
 		unsigned char geno1;
 		
 		float freq = alleleFreqVec[SNPIdx];
-//		cout << "Get_OneSNP_StdGeno here" << endl; 
+		//cout << "Get_OneSNP_StdGeno here" << endl; 
 		float invStd = invstdvVec[SNPIdx];
 
 		arma::fvec stdGenoLookUpArr(3);
 		setStdGenoLookUpArr(freq, invStd, stdGenoLookUpArr);
+//		std::cout << "freq " << freq << endl;
+//		std::cout << "invStd " << invStd << endl;
 
 		//setStdGenoLookUpArr(freq, invStd);
 		//std::cout << "stdGenoLookUpArr[0]: " << stdGenoLookUpArr[0] << std::endl;
@@ -313,6 +444,9 @@ public:
     			int a = geno1 & 1 ;
     			//(*out)[ind] = ((2-(a+b)) - 2*freq)* invStd;;
     			(*out)[ind] = stdGenoLookUpArr(2-(a+b));
+//			std::cout << "a " << a << endl;
+//			std::cout << "b " << b << endl;
+//			std::cout << "(*out)[ind] " << (*out)[ind] << endl;
 			ind++;
     			geno1 = geno1 >> 1;
     			
@@ -342,6 +476,7 @@ public:
                                 return 1;
                         }
                 }
+		//cout << "SNPIdx " << SNPIdx << endl; 
 
 		stdGenoLookUpArr.clear();
 		return 1;
@@ -356,8 +491,8 @@ public:
 		//cout << "size(m_DiagStd)[0] " << size(m_DiagStd)[0] << endl;
 		if(size(m_DiagStd)[0] != Nnomissing){
 			m_DiagStd.zeros(Nnomissing);
-			for(size_t i=0; i< M; i++){
-				if(alleleFreqVec[i] >= minMAFtoConstructGRM && alleleFreqVec[i] <= 1-minMAFtoConstructGRM){
+			for(size_t i=0; i< numberofMarkerswithMAFge_minMAFtoConstructGRM; i++){
+				//if(alleleFreqVec[i] >= minMAFtoConstructGRM && alleleFreqVec[i] <= 1-minMAFtoConstructGRM){
 
 
 				Get_OneSNP_StdGeno(i, temp);
@@ -373,18 +508,20 @@ public:
 				*/
 				m_DiagStd = m_DiagStd + (*temp) % (*temp);
 
-				}
+				//}
+		//		std::cout << "i " << i << std::endl;
+		//		std::cout << "numberofMarkerswithMAFge_minMAFtoConstructGRM " << numberofMarkerswithMAFge_minMAFtoConstructGRM << std::endl;
 			}
 		
 		}
-
-		//std::cout << "test\n";
-		//for(int i=0; i<10; ++i)
-        	//{
-        	//  cout << m_DiagStd[i] << ' ';
-        	//}
-		//cout << endl;
-	
+/*
+		std::cout << "test\n";
+		for(int i=0; i<10; ++i)
+        	{
+        	  cout << m_DiagStd[i] << ' ';
+        	}
+		cout << endl;
+*/	
 		return & m_DiagStd;
 	}
 
@@ -407,7 +544,7 @@ public:
 
 		//m_DiagStd_LOCO = m_DiagStd - geno.mtx_DiagStd_LOCO.col(geno.chromIndex);
 		m_DiagStd_LOCO = mtx_DiagStd_LOCO.col(chromIndex);
-                Msub_MAFge_minMAFtoConstructGRM  = Msub_MAFge_minMAFtoConstructGRM_LOCO(chromIndex); 
+                Msub_MAFge_minMAFtoConstructGRM_singleChr  = Msub_MAFge_minMAFtoConstructGRM_byChr(chromIndex); 
                 //}
 
                 return & m_DiagStd_LOCO;
@@ -510,15 +647,16 @@ public:
 
         	//test_bedfile.seekg(3);
 		//set up the array of vectors for genotype
-		numMarkersofEachArray = floor((memoryChunk*pow (10.0, 9.0))/(ceil(float(N)/4)));
+		//numMarkersofEachArray = floor((memoryChunk*pow (10.0, 9.0))/(ceil(float(N)/4)));
 		//cout << "numMarkersofEachArray: " << numMarkersofEachArray << endl;
+		numMarkersofEachArray = 1;
 		if(M % numMarkersofEachArray == 0){
                         numofGenoArray = M / numMarkersofEachArray;
 			genoVecofPointers.resize(numofGenoArray);
                         //cout << "size of genoVecofPointers: " << genoVecofPointers.size() << endl;
                         for (int i = 0; i < numofGenoArray ; i++){
                                 genoVecofPointers[i] = new vector<unsigned char>;
-                                genoVecofPointers[i]->reserve(numMarkersofEachArray*ceil(float(N)/4));
+                                genoVecofPointers[i]->reserve(numMarkersofEachArray*ceil(float(Nnomissing)/4));
                         }
 
                 }else{
@@ -530,12 +668,12 @@ public:
                         for (int i = 0; i < numofGenoArray-1; i++){
 			//	cout << "i = " << i << endl;
                                 genoVecofPointers[i] = new vector<unsigned char>;
-                                genoVecofPointers[i]->reserve(numMarkersofEachArray*ceil(float(N)/4));
+                                genoVecofPointers[i]->reserve(numMarkersofEachArray*ceil(float(Nnomissing)/4));
 				//cout <<((*genoVecofPointers[i]).capacity()==numMarkersofEachArray*ceil(float(N)/4))<< endl;
                         }
 			//cout << "here\n";
 			genoVecofPointers[numofGenoArray-1] = new vector<unsigned char>;
-			genoVecofPointers[numofGenoArray-1]->reserve(numMarkersofLastArray*ceil(float(N)/4));
+			genoVecofPointers[numofGenoArray-1]->reserve(numMarkersofLastArray*ceil(float(Nnomissing)/4));
 			}
 			catch(std::bad_alloc& ba)
                         {
@@ -564,7 +702,7 @@ public:
 		//alleleFreqVec.zeros(M);
 		//invstdvVec.zeros(M);
 		//MACVec.zeros(M);
-        	float freq, Std, invStd;
+        	float freq, Std, invStd, missingRate;
         	int alleleCount;
 		std::vector<int> indexNA;
         	int lengthIndexNA;
@@ -582,6 +720,7 @@ public:
 		//test_bedfile.read((char*)(&genoVecTemp[0]),nbyteTemp*M);
 		bool isPassQC = false;
 		cout << "setgeno mark2" << endl;
+		size_t SNPIdx_new = 0;
 		//Mmafge1perc = 0;
 		for(int i = 0; i < M; i++){
 			genoVecOneMarkerOld.clear();
@@ -596,9 +735,12 @@ public:
 
       			indexNA.clear();
 		//}	
-        		Get_OneSNP_Geno_atBeginning(i, indexNA, genoVecOneMarkerOld, freq, alleleCount, isPassQC);
+        		Get_OneSNP_Geno_atBeginning(i, indexNA, genoVecOneMarkerOld, freq, missingRate, alleleCount, isPassQC, SNPIdx_new);
 
+			//std::cout << "freq " << freq << std::endl;
+			//std::cout << "isPassQC " << isPassQC << std::endl;
 			if(isPassQC){
+
       				Std = std::sqrt(2*freq*(1-freq));
       				if(Std == 0){
       					invStd= 0;
@@ -611,6 +753,7 @@ public:
 		
 				MACVec0.push_back(std::min(alleleCount, (int((2*Nnomissing))-alleleCount)));	
 				MarkerswithMAFge_minMAFtoConstructGRM_indVec.push_back(true);
+				SNPIdx_new = SNPIdx_new + 1;
 			}else{
 				MarkerswithMAFge_minMAFtoConstructGRM_indVec.push_back(false);
 			}	
@@ -625,24 +768,52 @@ public:
 			cout << M << " markers with MAF >= " << minMAFtoConstructGRM << " are used for GRM." << endl;
 		}
 
+		
+		int numofGenoArray_old = numofGenoArray;
+		if(numberofMarkerswithMAFge_minMAFtoConstructGRM % numMarkersofEachArray == 0){
+                        numofGenoArray = numberofMarkerswithMAFge_minMAFtoConstructGRM / numMarkersofEachArray;
+                        //genoVecofPointers.resize(numofGenoArray);
+                        //cout << "size of genoVecofPointers: " << genoVecofPointers.size() << endl;
+
+                }else{
+                        numofGenoArray = numberofMarkerswithMAFge_minMAFtoConstructGRM/numMarkersofEachArray + 1;
+		}
+//		cout << " numofGenoArray "<< numofGenoArray << endl;
+//		cout << " numofGenoArray_old "<< numofGenoArray_old << endl;
+//		cout << " genoVecofPointers.size() "<< genoVecofPointers.size() << endl;
+		if(numofGenoArray > numofGenoArray_old){
+
+                        for (int i = numofGenoArray; i < numofGenoArray_old ; i++){
+				delete genoVecofPointers[i];
+                                //genoVecofPointers[i] = new vector<unsigned char>;
+                                //genoVecofPointers[i]->reserve(numMarkersofEachArray*ceil(float(Nnomissing)/4));
+                        }
+		}
+//		cout << " genoVecofPointers.size() "<< genoVecofPointers.size() << endl;
+
+		//genoVecofPointers.resize(MarkerswithMAFge_minMAFtoConstructGRM_indVec);
+
 		invstdvVec.clear();
 		invstdvVec.set_size(numberofMarkerswithMAFge_minMAFtoConstructGRM);
 		alleleFreqVec.clear();
 		alleleFreqVec.set_size(numberofMarkerswithMAFge_minMAFtoConstructGRM);
+		MACVec.clear();
+		MACVec.set_size(numberofMarkerswithMAFge_minMAFtoConstructGRM);
 
 		for(int i = 0; i < numberofMarkerswithMAFge_minMAFtoConstructGRM; i++){
+
 			invstdvVec[i] = invstdvVec0.at(i);
 			alleleFreqVec[i] = alleleFreqVec0.at(i);
 			MACVec[i] = MACVec0.at(i);
+
 		}
-
-
+                //numMarkersofEachArray = floor((memoryChunk*pow (10.0, 9.0))/(ceil(float(Nnomissing)/4)));
         	test_bedfile.close();
-		cout << "setgeno mark5" << endl;
+//		cout << "setgeno mark5" << endl;
 //		printAlleleFreqVec();
 		//printGenoVec();
    		//Get_Diagof_StdGeno();
-		cout << "setgeno mark6" << endl;
+//		cout << "setgeno mark6" << endl;
   	}//End Function
  
 
@@ -705,9 +876,12 @@ public:
   	}
 
 	int getMsub_MAFge_minMAFtoConstructGRM_in() const{
-		return(Msub_MAFge_minMAFtoConstructGRM);	
+		return(numberofMarkerswithMAFge_minMAFtoConstructGRM);	
 	}
 
+	int getMsub_MAFge_minMAFtoConstructGRM_singleChr_in() const{
+		return(Msub_MAFge_minMAFtoConstructGRM_singleChr);	
+	}
 
 
 	//int getnumberofMarkerswithMAFge_minMAFtoConstructGRM(){
@@ -874,6 +1048,11 @@ int getNnomissingOut(){
 // [[Rcpp::export]]
 int getMsub_MAFge_minMAFtoConstructGRM(){
 	return(geno.getMsub_MAFge_minMAFtoConstructGRM_in());
+}
+
+// [[Rcpp::export]]
+int getMsub_MAFge_minMAFtoConstructGRM_singleChr(){
+        return(geno.getMsub_MAFge_minMAFtoConstructGRM_singleChr_in());
 }
 
 
@@ -1058,7 +1237,8 @@ struct CorssProd : public Worker
   		m_M = geno.getM();
   		m_N = geno.getNnomissing();
   		m_bout.zeros(m_N);
-		Msub_mafge1perc=geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
+		Msub_mafge1perc=0;
+		//geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
   	} 
   	CorssProd(const CorssProd& CorssProd, Split)
   		: m_bVec(CorssProd.m_bVec)
@@ -1067,7 +1247,8 @@ struct CorssProd : public Worker
   		m_N = CorssProd.m_N;
   		m_M = CorssProd.m_M;
   		m_bout.zeros(m_N);
-		Msub_mafge1perc=CorssProd.Msub_mafge1perc;
+		Msub_mafge1perc=0;
+		//CorssProd.Msub_mafge1perc;
   	
   	}  
   	// process just the elements of the range I've been asked to
@@ -1078,14 +1259,14 @@ struct CorssProd : public Worker
 				geno.Get_OneSNP_StdGeno(i, &vec);
 				float val1 = dot(vec,  m_bVec);
 				m_bout += val1 * (vec) ;
-			//	Msub_mafge1perc += 1;
+				Msub_mafge1perc += 1;
 			//}
-		/*	std::cout << "i: " << i << std::endl;
-			for(unsigned int j = 0; j < 10; j++){
-				std::cout << "m_bVec[j] " << m_bVec[j] << std::endl;
-				std::cout << "vec[j] " << vec[j] << std::endl;
-			}
-		*/
+			//std::cout << "i: " << i << std::endl;
+			//for(unsigned int j = 0; j < 10; j++){
+			//	std::cout << "m_bVec[j] " << m_bVec[j] << std::endl;
+			//	std::cout << "vec[j] " << vec[j] << std::endl;
+			//}
+		
 			//m_bout += val1 * (vec) / m_M;
   		}
   	}
@@ -1093,7 +1274,7 @@ struct CorssProd : public Worker
   	// join my value with that of another InnerProduct
   	void join(const CorssProd & rhs) { 
     		m_bout += rhs.m_bout;
-		//Msub_mafge1perc += rhs.Msub_mafge1perc; 
+		Msub_mafge1perc += rhs.Msub_mafge1perc; 
   	}
 };
 
@@ -1236,14 +1417,16 @@ arma::fvec parallelCrossProd_LOCO_2(arma::fcolvec & bVec) {
 arma::fvec parallelCrossProd_full(arma::fcolvec & bVec, int & markerNum) {
 
   // declare the InnerProduct instance that takes a pointer to the vector data
-        int M = geno.getM();
-        //int Msub_mafge1perc = geno.getMmafge1perc();
+        //int M = geno.getM();
+	//
+        int Msub_mafge1perc = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM(); 
         CorssProd CorssProd(bVec);
 
+        //std::cout << "Msub_mafge1perc ok  " << Msub_mafge1perc << std::endl;        
   // call paralleReduce to start the work
-        parallelReduce(0, M, CorssProd);
+        parallelReduce(0, Msub_mafge1perc, CorssProd);
         markerNum = CorssProd.Msub_mafge1perc;
-        
+        //std::cout << "markerNum " << markerNum << std::endl;        
 
         //cout << "print test; M: " << M << endl;
         //for(int i=0; i<10; ++i)
@@ -1265,7 +1448,7 @@ arma::fvec parallelCrossProd_LOCO(arma::fcolvec & bVec) {
 
   // declare the InnerProduct instance that takes a pointer to the vector data
         //int Msub = geno.getMsub();
-	int M = geno.getM();
+	//int M = geno.getM();
         int numberMarker_full = 0;
         arma::fvec outvec = parallelCrossProd_full(bVec, numberMarker_full);
 
@@ -1274,19 +1457,21 @@ arma::fvec parallelCrossProd_LOCO(arma::fcolvec & bVec) {
   // call paralleReduce to start the work
 	int startIndex = geno.getStartIndex();
         int endIndex = geno.getEndIndex();
+
 	parallelReduce(startIndex, endIndex+1, CorssProd);
 
+
+
 	outvec = outvec - CorssProd.m_bout;
-/*
+
+	/*
 	for(int i=0; i<10; ++i)
         {
                 std::cout << (outvec)[i] << ' ';
         }
         std::cout << std::endl;
-
-        std::cout << "numberMarker_full: " << numberMarker_full << std::endl;
-        std::cout << "CorssProd.Msub_mafge1perc: " << CorssProd.Msub_mafge1perc << std::endl;
 */
+
 	int markerNum = numberMarker_full - CorssProd.Msub_mafge1perc;
 	//std::cout << "markerNum: " << markerNum << std::endl; 
       	// return the computed product
@@ -1651,7 +1836,7 @@ arma::fvec Get_OneSNP_StdGeno(int SNPIdx)
 arma::fvec getDiagOfSigma(arma::fvec& wVec, arma::fvec& tauVec){
   
 	int Nnomissing = geno.getNnomissing();
-	int M = geno.getM();
+	//int M = geno.getM();
 	int MminMAF = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
 	//cout << "MminMAF=" << MminMAF << endl;
 	//cout << "M=" << M << endl;
@@ -1704,8 +1889,10 @@ arma::fvec getDiagOfSigma_LOCO(arma::fvec& wVec, arma::fvec& tauVec){
         float floatBuffer;
         //float minvElement;
         diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno_LOCO());
-	int Msub_MAFge_minMAFtoConstructGRM = geno.getMsub_MAFge_minMAFtoConstructGRM_in();
-	diagVec = diagVec/(Msub_MAFge_minMAFtoConstructGRM) + tauVec(0)/wVec;
+	int Msub_MAFge_minMAFtoConstructGRM_in_b = geno.getMsub_MAFge_minMAFtoConstructGRM_in();
+	int Msub_MAFge_minMAFtoConstructGRM_singleVar_b = geno.getMsub_MAFge_minMAFtoConstructGRM_singleChr_in();
+	
+	diagVec = diagVec/(Msub_MAFge_minMAFtoConstructGRM_in_b - Msub_MAFge_minMAFtoConstructGRM_singleVar_b) + tauVec(0)/wVec;
         //diagVec = tauVec(1)* (*geno.Get_Diagof_StdGeno_LOCO()) /(Msub_MAFge_minMAFtoConstructGRM) + tauVec(0)/wVec;
         for(unsigned int i=0; i< Nnomissing; i++){
                 if(diagVec(i) < 1e-4){
@@ -1926,6 +2113,8 @@ arma::fvec getPCG1ofSigmaAndVector(arma::fvec& wVec,  arma::fvec& tauVec, arma::
 	arma::fvec xVec(Nnomissing);
         xVec.zeros();
 
+
+
 if(isUseSparseSigmaforInitTau){
 	cout << "use sparse kinship to estimate initial tau " <<  endl;
 	xVec = gen_spsolve_v4(wVec, tauVec, bVec);
@@ -1934,14 +2123,12 @@ if(isUseSparseSigmaforInitTau){
         xVec = gen_spsolve_v4(wVec, tauVec, bVec);
 }else{
         arma::fvec rVec = bVec;
-        //cout << "HELLOa: "  << endl;
         arma::fvec r1Vec;
         //cout << "HELLOb: "  << endl;
         //int Nnomissing = geno.getNnomissing();
         //cout << "HELL1: "  << endl;
 
         arma::fvec crossProdVec(Nnomissing);
-//        cout << "HELL2: "  << endl;
 
         //arma::SpMat<float> precondM = sparseGRMinC;
         arma::fvec zVec(Nnomissing);
@@ -1955,14 +2142,16 @@ if(isUseSparseSigmaforInitTau){
         if (!isUsePrecondM){
 		double wall1_gDiag = get_wall_time();
 		double cpu1_gDiag  = get_cpu_time();
-//		for(int i = 0; i < 10; i++){
-//                	cout << "wVec[i]: " << i << " " << wVec[i] << endl;
-//                	cout << "bVec[i]: " << i << " " << bVec[i] << endl;
-//        	}
-                minvVec = 1/getDiagOfSigma(wVec, tauVec);
-		//for(int i = 0; i < 10; i++){
-                //	cout << "minvVec[i]: " << i << " " << minvVec[i] << endl;
-        	//}
+/*		for(int i = 0; i < 10; i++){
+                	cout << "wVec[i]: " << i << " " << wVec[i] << endl;
+                	cout << "bVec[i]: " << i << " " << bVec[i] << endl;
+        	}
+*/
+		minvVec = 1/getDiagOfSigma(wVec, tauVec);
+	//	for(int i = 0; i < 10; i++){
+          //      	cout << "minvVec[i]: " << i << " " << minvVec[i] << endl;
+        //	}
+
 		double wall1_gDiag_2 = get_wall_time();
 		double cpu1_gDiag_2  = get_cpu_time();
 //		 cout << "Wall Time getDiagOfSigma = " << wall1_gDiag_2 - wall1_gDiag << endl;
@@ -2288,11 +2477,11 @@ arma::fvec getPCG1ofSigmaAndVector_LOCO(arma::fvec& wVec,  arma::fvec& tauVec, a
 
 //    cout << "Wall Time 1= " << wall1 - wall0 << endl;
 //    cout << "CPU Time 1 = " << cpu1  - cpu0  << endl;
-
-	//for(int i = 0; i < 10; i++){
-	//	cout << "minvVec[i]: " << minvVec[i] << endl;
-        //} 
- 
+/*
+	for(int i = 0; i < 10; i++){
+		cout << "minvVec[i]: " << minvVec[i] << endl;
+        } 
+*/ 
   	float sumr2 = sum(rVec % rVec);
 
   	arma::fvec zVec = minvVec % rVec;
@@ -2404,7 +2593,7 @@ void setStartEndIndex(int startIndex, int endIndex, int chromIndex){
 
 
 // [[Rcpp::export]]
-void setStartEndIndexVec( arma::ivec & startIndex_vec,  arma::ivec & endIndex_vec){
+void setStartEndIndexVec( arma::ivec & startIndex_vec,  arma::ivec & endIndex_vec){	
   geno.startIndexVec = startIndex_vec;
   geno.endIndexVec = endIndex_vec;
   //geno.Msub = geno.M - (endIndex - startIndex + 1);
@@ -2481,7 +2670,6 @@ Rcpp::List getCoefficients(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& wVec,
 
   	int Nnomissing = geno.getNnomissing();
   	arma::fvec Sigma_iY;
-
   	Sigma_iY = getPCG1ofSigmaAndVector(wVec, tauVec, Yvec, maxiterPCG, tolPCG);
   	int colNumX = Xmat.n_cols;
   	arma::fmat Sigma_iX(Nnomissing,colNumX);
@@ -2525,11 +2713,9 @@ Rcpp::List getCoefficients_LOCO(arma::fvec& Yvec, arma::fmat& Xmat, arma::fvec& 
         arma::fvec XmatVecTemp;
         for(int i = 0; i < colNumX; i++){
                 XmatVecTemp = Xmat.col(i);
-
                 Sigma_iX.col(i) = getPCG1ofSigmaAndVector_LOCO(wVec, tauVec, XmatVecTemp, maxiterPCG, tolPCG);
 
         }
-
         arma::fmat Xmatt = Xmat.t();
         //arma::fmat cov = inv_sympd(Xmatt * Sigma_iX);
         arma::fmat cov;
@@ -4072,7 +4258,7 @@ void muliplyMailman_NbyM(arma::fvec & bvec, arma::fvec & tGbvec){
 void freqOverStd(arma::fcolvec& freqOverStdVec){
 	freqOverStdVec = 2 * (geno.alleleFreqVec) % (geno.invstdvVec);
 
-	 int M = geno.getM();
+	 //int M = geno.getM();
 /*
 	for (unsigned int j = 0; j < M; j++){
 		std::cout << "geno.alleleFreqVec " << j << " " << geno.alleleFreqVec[j] << std::endl; 
@@ -4168,6 +4354,11 @@ void setminMAFforGRM(float minMAFforGRM){
   minMAFtoConstructGRM = minMAFforGRM;
 }
 
+// [[Rcpp::export]]
+void setmaxMissingRateforGRM(float maxMissingforGRM){
+  geno.maxMissingRate = maxMissingforGRM;
+}
+
 
 // [[Rcpp::export]]
 void set_Diagof_StdGeno_LOCO(){
@@ -4176,7 +4367,7 @@ void set_Diagof_StdGeno_LOCO(){
   int Nnomissing = geno.getNnomissing();
   int chrlength = geno.startIndexVec.n_elem;
   (geno.mtx_DiagStd_LOCO).zeros(Nnomissing, chrlength);
-  (geno.Msub_MAFge_minMAFtoConstructGRM_LOCO).zeros(chrlength);
+  (geno.Msub_MAFge_minMAFtoConstructGRM_byChr).zeros(chrlength);
 //  std::cout << "debug1" << std::endl;
     int starti, endi;
     arma::fvec * temp = &geno.m_OneSNP_StdGeno;
@@ -4186,20 +4377,14 @@ for(size_t k=0; k< chrlength; k++){
 //  std::cout << "debug2" << std::endl;
   if((starti != -1) && (endi != -1)){
   	for(int i=starti; i<= endi; i++){
-    		//if(geno.alleleFreqVec[i] >= minMAFtoConstructGRM && geno.alleleFreqVec[i] <= 1-minMAFtoConstructGRM){
          		geno.Get_OneSNP_StdGeno(i, temp);
 	 		(geno.mtx_DiagStd_LOCO).col(k) = (geno.mtx_DiagStd_LOCO).col(k) + (*temp) % (*temp);
-	 		geno.Msub_MAFge_minMAFtoConstructGRM_LOCO[k] = geno.Msub_MAFge_minMAFtoConstructGRM_LOCO[k] + 1;
+	 		geno.Msub_MAFge_minMAFtoConstructGRM_byChr[k] = geno.Msub_MAFge_minMAFtoConstructGRM_byChr[k] + 1;
 
-     		//}	    
   	}
-  //}  
-//  std::cout << "debug3" << std::endl;
   (geno.mtx_DiagStd_LOCO).col(k) = *geno.Get_Diagof_StdGeno() -  (geno.mtx_DiagStd_LOCO).col(k);
   }
-  //  std::cout << "debug4" << std::endl;
 }	
-
 }
 
 

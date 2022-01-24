@@ -417,6 +417,10 @@ setminMAFforGRM <- function(minMAFforGRM) {
     invisible(.Call('_SAIGE_setminMAFforGRM', PACKAGE = 'SAIGE', minMAFforGRM))
 }
 
+setmaxMissingRateforGRM <- function(maxMissingforGRM) {
+    invisible(.Call('_SAIGE_setmaxMissingRateforGRM', PACKAGE = 'SAIGE', maxMissingforGRM))
+}
+
 set_Diagof_StdGeno_LOCO <- function() {
     invisible(.Call('_SAIGE_set_Diagof_StdGeno_LOCO', PACKAGE = 'SAIGE'))
 }

@@ -34,7 +34,7 @@ updateChrStartEndIndexVec <- function(chrVec){
  cat("WARNING: Genetic variants needs to be ordered by chromosome and position in the Plink file\n")
  #bimData = data.table:::fread(paste0(plinkFile,".bim"), header = F)
  for (i in 1:22) {
-    if (length(which(bimData[, 1] == i)) > 0) {
+    if (length(which(chrVec == i)) > 0) {
     	chromosomeStartIndexVec = c(chromosomeStartIndexVec,min(which(chrVec == i)) - 1)
         chromosomeEndIndexVec = c(chromosomeEndIndexVec,max(which(chrVec == i)) - 1)
         if (i > 1) {
@@ -59,6 +59,7 @@ updateChrStartEndIndexVec <- function(chrVec){
  chromosomeStartIndexVec_forcpp[is.na(chromosomeStartIndexVec_forcpp)] = -1
  chromosomeEndIndexVec_forcpp = chromosomeEndIndexVec
  chromosomeEndIndexVec_forcpp[is.na(chromosomeEndIndexVec_forcpp)] = -1
+
  setStartEndIndexVec(chromosomeStartIndexVec_forcpp, chromosomeEndIndexVec_forcpp)
  return(list(LOCO = LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, chromosomeEndIndexVec = chromosomeEndIndexVec))
 }

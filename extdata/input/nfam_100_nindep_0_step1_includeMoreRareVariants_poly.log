@@ -1,0 +1,23 @@
+PLINK v2.00a3LM 64-bit Intel (20 Apr 2021)
+Options in effect:
+  --bfile ./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly
+  --export A
+  --out ./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly
+
+Hostname: mendel
+Working directory: /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_old_check/SAIGE/extdata
+Start time: Sun Jan 23 02:08:36 2022
+
+Random number seed: 1642921716
+257569 MiB RAM detected; reserving 128784 MiB for main workspace.
+Allocated 54330 MiB successfully, after larger attempt(s) failed.
+Using up to 88 threads (change this with --threads).
+1000 samples (0 females, 0 males, 1000 ambiguous; 1000 founders) loaded from
+./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly.fam.
+128868 variants loaded from
+./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly.bim.
+Note: No phenotype data present.
+--export A: ./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly.raw
+written.
+
+End time: Sun Jan 23 02:08:37 2022

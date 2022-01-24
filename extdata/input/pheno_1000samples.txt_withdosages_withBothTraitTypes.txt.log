@@ -1,0 +1,19 @@
+PLINK v2.00a3LM 64-bit Intel (20 Apr 2021)
+Options in effect:
+  --bfile ./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt
+  --export A
+  --out ./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt
+
+Hostname: mendel
+Working directory: /net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_old_check/SAIGE/extdata
+Start time: Sun Jan 23 02:08:26 2022
+
+Random number seed: 1642921706
+257569 MiB RAM detected; reserving 128784 MiB for main workspace.
+Allocated 54330 MiB successfully, after larger attempt(s) failed.
+Using up to 88 threads (change this with --threads).
+Error: Failed to open
+./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt.fam : No such
+file or directory.
+
+End time: Sun Jan 23 02:08:26 2022
