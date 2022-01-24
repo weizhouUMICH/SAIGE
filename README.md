@@ -13,6 +13,8 @@ Table of Contents
 # Introduction
 ## Manuscript for SAIGE-GENE+: https://www.medrxiv.org/content/10.1101/2021.07.12.21260400v1
 
+## Current version is 0.45 (Updated on January 24, 2022) - comment out the part to estimate the effective sample sizes, which may not convert and take very long; put <= instead of < for maxMAF in the gene-based tests
+
 ## Current version is 0.44.6.5 (Updated on August 18, 2021) - 0.44.6.2 add extdata/extractNglmm.R to extract the effective sample size without running Step 1. extdata/cmd_extractNeff.sh has the pipeline. The effective sample size (Nglmm) is differently calculated than the previous versions.
 
 ## Previous version is 0.44.6.1 (Updated on July 16, 2021) - SAIGE-GENE+: for group tests, collpasing ultra-rare variants with MAC <= 10. Set --method_to_CollapseUltraRare="absence_or_presence" as default to collpase ultra-rare varaints with MAC <= 10. SAIGE-GENE+ has well controlled type I error rates when the maximum MAF cutoff (maxMAFforGroupTest) is lower than 1%, e.g. 0.01% or 0.1%. Tests with multiple MAF cutoffs and variant annotations can be combined using the Cauchy combination (function CCT)
@@ -195,6 +197,8 @@ https://www.leelabsg.org/resources
 
 
 # Log for fixing bugs
+
+* 0.45 (January-24-2022). comment out the part to estimate the effective sample sizes, which may not convert and take very long; put <= instead of < for maxMAF in the gene-based tests
 
 * 0.44.6.5 (August-19-2021). fix the SE=0 issue when IsOutputlogPforSingle=TRUE
 
