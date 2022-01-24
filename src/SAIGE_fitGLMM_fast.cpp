@@ -1384,7 +1384,7 @@ float innerProductFun(std::vector<float> &x, std::vector<float> & y) {
 }
 
 
-
+/*
 // [[Rcpp::export]]
 arma::fvec parallelCrossProd_LOCO_2(arma::fcolvec & bVec) {
 
@@ -1409,7 +1409,7 @@ arma::fvec parallelCrossProd_LOCO_2(arma::fcolvec & bVec) {
         //return CorssProd_LOCO.m_bout/Msub;
 	return CorssProd_LOCO.m_bout/(CorssProd_LOCO.m_Msub_mafge1perc);
 }
-
+*/
 
 
 
@@ -1678,7 +1678,7 @@ struct sparseGRMUsingOneMarker : public Worker {
    // output matrix to write to
    arma::fvec & GRMvec;
 
-   int M = geno.getM();
+   //int M = geno.getM();
    // initialize from Rcpp input and output matrixes (the RMatrix class
    // can be automatically converted to from the Rcpp matrix type)
 //   sparseGRMUsingOneMarker(arma::imat & iMat, arma::fvec &GRMvec)
@@ -1744,7 +1744,7 @@ struct sumTwoVec : public Worker
    
    arma::fvec &sumVec;
   
-   int M = geno.getM(); 
+   //int M = geno.getM(); 
    // constructors
    sumTwoVec(arma::fvec &x,arma::fvec &sumVec) 
       : x(x), sumVec(sumVec) {}
@@ -3439,7 +3439,8 @@ Rcpp::List createSparseKin(arma::fvec& markerIndexVec, float relatednessCutoff, 
         kinValueVec.resize(ni);
         std::fill(kinValueVec.begin(), kinValueVec.end(), 0);
 
-        int Mmarker = geno.getM();
+        int Mmarker = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM();
+		//geno.getM();
         for(size_t i=0; i< Mmarker; i++){
                 geno.Get_OneSNP_StdGeno(i, temp);
                 for(size_t j=0; j < ni; j++){
@@ -3645,8 +3646,9 @@ Rcpp::List refineKin(float relatednessCutoff){
 //        kinValueVec.resize(ni);
 //        std::fill(kinValueVec.begin(), kinValueVec.end(), 0);
 
-        int Mmarker = geno.getM();
-        
+        //int Mmarker = geno.getM();
+        int Marker = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM(); 
+
         //for(size_t i=0; i< Mmarker; i++){
         //        geno.Get_OneSNP_StdGeno(i, temp);
         //        for(size_t j=0; j < ni; j++){
@@ -3657,15 +3659,15 @@ Rcpp::List refineKin(float relatednessCutoff){
 	arma::fvec kinValueVecTemp2;
 	arma::fvec GRMvec;
 	GRMvec.set_size(ni);
-	int Mmarker_mafgr1perc = 0;
+	//int Mmarker_mafgr1perc = 0;
   	for(size_t i=0; i< Mmarker; i++){
 //		std::cout << "OKKK: "  << std::endl;
 //		std::cout << "Mmarker: " << std::endl;
 
 //                geno.Get_OneSNP_StdGeno(i, temp);
 		float freqv = geno.alleleFreqVec[i];
-		if(freqv >= minMAFtoConstructGRM && freqv <= 1-minMAFtoConstructGRM){
-		Mmarker_mafgr1perc = Mmarker_mafgr1perc + 1;
+		//if(freqv >= minMAFtoConstructGRM && freqv <= 1-minMAFtoConstructGRM){
+		//Mmarker_mafgr1perc = Mmarker_mafgr1perc + 1;
 
                 geno.Get_OneSNP_Geno(i);
 		float invstdv = geno.invstdvVec[i];
@@ -3691,7 +3693,7 @@ Rcpp::List refineKin(float relatednessCutoff){
 //			(geno.kinValueVecFinal)[j] = (geno.kinValueVecFinal)[j] + GRMvec(j);
 //		}
 		(*temp).clear();
-	   }//if(freqv >= 0.01 && freqv <= 0.99){
+	   //}//if(freqv >= 0.01 && freqv <= 0.99){
 		//kinValueVecTemp.clear();
         }
 
@@ -3706,7 +3708,7 @@ Rcpp::List refineKin(float relatednessCutoff){
 	int a1;
 	int a2;
         for(size_t j=0; j < ni; j++){
-		geno.kinValueVecFinal[j] = (geno.kinValueVecFinal[j]) /(Mmarker_mafgr1perc);
+		geno.kinValueVecFinal[j] = (geno.kinValueVecFinal[j]) /(Mmarker);
 
 //		std::cout << "j: " << j << " geno.kinValueVecFinal[j]: " << geno.kinValueVecFinal[j] << std::endl;
             //    if(geno.kinValueVecFinal[j] >= relatednessCutoff){
@@ -3824,7 +3826,7 @@ arma::vec gen_spsolve_inR(const arma::sp_mat& a, arma::vec & y) {
 
 // [[Rcpp::export]]
 arma::fvec get_DiagofKin(){
-    int M = geno.getM();
+    //int M = geno.getM();
     int Nnomissing = geno.getNnomissing();
         //cout << "MminMAF=" << MminMAF << endl;
         //cout << "M=" << M << endl; 
