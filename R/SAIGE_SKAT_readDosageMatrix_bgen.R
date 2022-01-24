@@ -35,7 +35,7 @@ getGenoOfGene_bgen = function(bgenFile,bgenFileIndex,marker_group_line, minMAF=0
         MAF = AF
         MAC = AC
       }
-    if(MAF >= minMAF & MAF < maxMAF & markerInfo >= minInfo){
+    if(MAF >= minMAF & MAF <= maxMAF & markerInfo >= minInfo){
         Gvec = c(Gvec, Gx$dosages)
 	#print(object.size(Gvec))
         markerIDs = c(markerIDs, Gx$variants$rsid)
