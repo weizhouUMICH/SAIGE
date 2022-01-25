@@ -318,6 +318,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getMsub_MAFge_minMAFtoConstructGRM_singleChr
+int getMsub_MAFge_minMAFtoConstructGRM_singleChr();
+RcppExport SEXP _SAIGE_getMsub_MAFge_minMAFtoConstructGRM_singleChr() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getMsub_MAFge_minMAFtoConstructGRM_singleChr());
+    return rcpp_result_gen;
+END_RCPP
+}
 // Get_MultiMarkersBySample_StdGeno_Mat
 void Get_MultiMarkersBySample_StdGeno_Mat();
 RcppExport SEXP _SAIGE_Get_MultiMarkersBySample_StdGeno_Mat() {
@@ -358,17 +368,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector<float>& >::type x(xSEXP);
     Rcpp::traits::input_parameter< std::vector<float>& >::type y(ySEXP);
     rcpp_result_gen = Rcpp::wrap(innerProductFun(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// parallelCrossProd_LOCO_2
-arma::fvec parallelCrossProd_LOCO_2(arma::fcolvec& bVec);
-RcppExport SEXP _SAIGE_parallelCrossProd_LOCO_2(SEXP bVecSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::fcolvec& >::type bVec(bVecSEXP);
-    rcpp_result_gen = Rcpp::wrap(parallelCrossProd_LOCO_2(bVec));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1912,11 +1911,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_getSubMarkerNum", (DL_FUNC) &_SAIGE_getSubMarkerNum, 0},
     {"_SAIGE_getNnomissingOut", (DL_FUNC) &_SAIGE_getNnomissingOut, 0},
     {"_SAIGE_getMsub_MAFge_minMAFtoConstructGRM", (DL_FUNC) &_SAIGE_getMsub_MAFge_minMAFtoConstructGRM, 0},
+    {"_SAIGE_getMsub_MAFge_minMAFtoConstructGRM_singleChr", (DL_FUNC) &_SAIGE_getMsub_MAFge_minMAFtoConstructGRM_singleChr, 0},
     {"_SAIGE_Get_MultiMarkersBySample_StdGeno_Mat", (DL_FUNC) &_SAIGE_Get_MultiMarkersBySample_StdGeno_Mat, 0},
     {"_SAIGE_Get_MultiMarkersBySample_StdGeno", (DL_FUNC) &_SAIGE_Get_MultiMarkersBySample_StdGeno, 2},
     {"_SAIGE_parallelCrossProd", (DL_FUNC) &_SAIGE_parallelCrossProd, 1},
     {"_SAIGE_innerProductFun", (DL_FUNC) &_SAIGE_innerProductFun, 2},
-    {"_SAIGE_parallelCrossProd_LOCO_2", (DL_FUNC) &_SAIGE_parallelCrossProd_LOCO_2, 1},
     {"_SAIGE_parallelCrossProd_full", (DL_FUNC) &_SAIGE_parallelCrossProd_full, 2},
     {"_SAIGE_parallelCrossProd_LOCO", (DL_FUNC) &_SAIGE_parallelCrossProd_LOCO, 1},
     {"_SAIGE_setupSparseGRM", (DL_FUNC) &_SAIGE_setupSparseGRM, 3},

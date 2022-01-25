@@ -3647,7 +3647,7 @@ Rcpp::List refineKin(float relatednessCutoff){
 //        std::fill(kinValueVec.begin(), kinValueVec.end(), 0);
 
         //int Mmarker = geno.getM();
-        int Marker = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM(); 
+        int Mmarker = geno.getnumberofMarkerswithMAFge_minMAFtoConstructGRM(); 
 
         //for(size_t i=0; i< Mmarker; i++){
         //        geno.Get_OneSNP_StdGeno(i, temp);

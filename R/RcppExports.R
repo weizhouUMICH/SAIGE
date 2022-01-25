@@ -97,6 +97,10 @@ getMsub_MAFge_minMAFtoConstructGRM <- function() {
     .Call('_SAIGE_getMsub_MAFge_minMAFtoConstructGRM', PACKAGE = 'SAIGE')
 }
 
+getMsub_MAFge_minMAFtoConstructGRM_singleChr <- function() {
+    .Call('_SAIGE_getMsub_MAFge_minMAFtoConstructGRM_singleChr', PACKAGE = 'SAIGE')
+}
+
 Get_MultiMarkersBySample_StdGeno_Mat <- function() {
     invisible(.Call('_SAIGE_Get_MultiMarkersBySample_StdGeno_Mat', PACKAGE = 'SAIGE'))
 }
@@ -111,10 +115,6 @@ parallelCrossProd <- function(bVec) {
 
 innerProductFun <- function(x, y) {
     .Call('_SAIGE_innerProductFun', PACKAGE = 'SAIGE', x, y)
-}
-
-parallelCrossProd_LOCO_2 <- function(bVec) {
-    .Call('_SAIGE_parallelCrossProd_LOCO_2', PACKAGE = 'SAIGE', bVec)
 }
 
 parallelCrossProd_full <- function(bVec, markerNum) {

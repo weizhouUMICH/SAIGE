@@ -22,7 +22,7 @@ Get_Coef = function(y, X, tau, family, alpha0, eta0,  offset, maxiterPCG, tolPCG
 #print(t_end_getPCG1ofSigmaAndVector - t_begin_getPCG1ofSigmaAndVector)
 
 
-  alpha = re.coef$alpha
+    alpha = re.coef$alpha
     eta = re.coef$eta + offset
 
     if(verbose) {
@@ -691,6 +691,7 @@ fitNULLGLMM = function(plinkFile = "",
 		useSparseSigmaforInitTau = FALSE,
 		minCovariateCount = -1, 
 		minMAFforGRM = 0.01,
+		maxMissingRateforGRM = 0.15,
 		useSparseGRMtoFitNULL=FALSE,
 		includeNonautoMarkersforVarRatio = FALSE,
 		sexCol = "",
@@ -702,7 +703,7 @@ fitNULLGLMM = function(plinkFile = "",
 		skipVarianceRatioEstimation = FALSE)
 {
     setminMAFforGRM(minMAFforGRM)
-    setmaxMissingRateforGRM(0.15)
+    setmaxMissingRateforGRM(maxMissingRateforGRM)
 
     if (minMAFforGRM > 0) {
         cat("Markers in the Plink file with MAF >= ", minMAFforGRM, 
