@@ -15,7 +15,7 @@ library(SAIGE)
 
 print(sessionInfo())
 
-
+BLASctl_installed <- require(RhpcBLASctl)
 library(optparse)
 library(data.table)
 library(methods)
@@ -168,6 +168,15 @@ function_group_test = gsub(":",";",opt$function_group_test)
 function_group_test = unlist(strsplit(function_group_test,",")[[1]])
 
 #try(if(length(which(opt == "")) > 0) stop("Missing arguments"))
+
+##by Alex Petty @pettyalex
+if (BLASctl_installed){
+  # Set number of threads for BLAS to 1, this step does not benefit from multithreading or multiprocessing
+  original_num_threads <- blas_get_num_procs()
+  blas_set_num_threads(1)
+}
+
+
 
 SPAGMMATtest(vcfFile=opt$vcfFile,
              vcfFileIndex=opt$vcfFileIndex,
