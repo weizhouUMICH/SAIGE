@@ -64,7 +64,7 @@ ReadGroupFile<-function(groupFile){
 
 
 
-SPA_ER_kernel_related_Phiadj_fast_new<-function(p.new, Score, Phi, p.value_burden){ 
+SPA_ER_kernel_related_Phiadj_fast_new<-function(p.new, Score, Phi, p.value_burden, regionTestType){ 
 	#print("SPA_ER_kernel_related_Phiadj_fast_new 0")
 	#cat("p.value_burden ", p.value_burden, "\n")
 	p.m = length(Score)
@@ -74,7 +74,11 @@ SPA_ER_kernel_related_Phiadj_fast_new<-function(p.new, Score, Phi, p.value_burde
 	zscore.all_1<-rep(0, p.m)
 	#print("zscore.all_1")
 	#print(zscore.all_1)
-        VarS_org=diag(as.matrix(Phi))
+	if(regionTestType != "BURDEN"){
+        	VarS_org=diag(as.matrix(Phi))
+	}else{
+		VarS_org = as.vector(Phi)
+	}	
         stat.qtemp =Score^2/VarS_org
 	#print("SPA_ER_kernel_related_Phiadj_fast_new 1")
 	
@@ -99,13 +103,20 @@ SPA_ER_kernel_related_Phiadj_fast_new<-function(p.new, Score, Phi, p.value_burde
 	#print("SPA_ER_kernel_related_Phiadj_fast_new 3")
 
 	vars_inf=which(VarS==Inf)
-        if (length(vars_inf)>0){
-                VarS[vars_inf] = 0
-                zscore.all_1[vars_inf]=0
-                Phi[vars_inf,]=0
-                Phi[,vars_inf]=0
-        }
-
+	if(regionTestType != "BURDEN"){
+        	if (length(vars_inf)>0){
+                	VarS[vars_inf] = 0
+                	zscore.all_1[vars_inf]=0
+                	Phi[vars_inf,]=0
+                	Phi[,vars_inf]=0
+        	}
+	}else{
+		if (length(vars_inf)>0){
+			VarS[vars_inf] = 0
+                	zscore.all_1[vars_inf]=0
+                	Phi[vars_inf]=0
+		}
+	}	
 	#print("SPA_ER_kernel_related_Phiadj_fast_new 4")
 	scaleFactor = sqrt(VarS/VarS_org)
 
@@ -116,37 +127,45 @@ SPA_ER_kernel_related_Phiadj_fast_new<-function(p.new, Score, Phi, p.value_burde
 	#print(as.matrix(Phi))
 	#print(diag(as.vector(VarS/VarS_org)))
 	VarStoorg = as.vector(VarS/VarS_org)
+
+	if(regionTestType != "BURDEN"){
 	#t(sqrt(a)*t(b)*sqrt(a))
-	G2_adj_n=t(t(Phi * sqrt(VarStoorg)) * sqrt(VarStoorg))
-        v1=rep(1,nrow(G2_adj_n))
-        VarQ = sum(G2_adj_n)
-	#print("zscore.all_1")
-	#print(zscore.all_1)
-        Q_b=sum(zscore.all_1)^2
+		G2_adj_n=t(t(Phi * sqrt(VarStoorg)) * sqrt(VarStoorg))
+        	#v1=rep(1,nrow(G2_adj_n))
+	}else{
+		G2_adj_n = Phi * VarStoorg	
+	}
+        	VarQ = sum(G2_adj_n)
+		#print("zscore.all_1")
+		#print(zscore.all_1)
+        	Q_b=sum(zscore.all_1)^2
 	#print("SPA_ER_kernel_related_Phiadj_fast_new 6")
 	#cat("p.value_burden ", p.value_burden, "\n")
 	#cat("Q_b ", Q_b, "\n")
-        VarQ_2=Q_b/qchisq(p.value_burden, df=1, ncp = 0, lower.tail = FALSE, log.p = FALSE)
-        if (VarQ_2== 0) {
-                r=1
-        } else {
-                r=VarQ/VarQ_2
-        }
-        r=min(r,1)
+        	VarQ_2=Q_b/qchisq(p.value_burden, df=1, ncp = 0, lower.tail = FALSE, log.p = FALSE)
+        	if (VarQ_2== 0) {
+                	r=1
+        	}else{
+                	r=VarQ/VarQ_2
+        	}
+        	r=min(r,1)
+	if(regionTestType != "BURDEN"){
 
-        Phi_ccadj=as.matrix(G2_adj_n * 1/r)
-
+        	Phi_ccadj=as.matrix(G2_adj_n * 1/r)
+	}else{
+		Phi_ccadj=as.vector(G2_adj_n * 1/r)
+	}	
+		
         outlist=list();
         outlist$val = Phi_ccadj
         scaleFactor = scaleFactor /sqrt(r)
-
         outlist$scaleFactor = scaleFactor
         outlist$p.new = p.new
         return(outlist)
 }
 
 
-get_newPhi_scaleFactor = function(q.sum, mu.a, g.sum, p.new, Score, Phi){
+get_newPhi_scaleFactor = function(q.sum, mu.a, g.sum, p.new, Score, Phi, regionTestType){
 	#print("here0")
 	#q=q.sum
 	#m1 <- sum(mu.a * g.sum)
@@ -160,18 +179,19 @@ get_newPhi_scaleFactor = function(q.sum, mu.a, g.sum, p.new, Score, Phi){
 	#print(Score)
 	#print(Phi)
 	#print(p.value_burden)
-        re_phi= SPA_ER_kernel_related_Phiadj_fast_new(p.new, Score, Phi, p.value_burden)
+        re_phi= SPA_ER_kernel_related_Phiadj_fast_new(p.new, Score, Phi, p.value_burden, regionTestType)
 	#print("here2")
 	return(re_phi)
 }
 
-get_SKAT_pvalue = function(Score, Phi, r.corr){
+get_SKAT_pvalue = function(Score, Phi, r.corr, regionTestType){
                 out_SKAT_List = try(SKAT:::Met_SKAT_Get_Pvalue(Score = Score,
                                                          Phi = Phi,
                                                          r.corr = r.corr,
                                                          method = "optimal.adj",
                                                          Score.Resampling = NULL),
                               silent = TRUE)
+	if(regionTestType != "BURDEN"){
                 BETA_Burden = sum(Score)/(sum(diag(Phi)))
                 if(class(out_SKAT_List) == "try-error"){
                         Pvalue = c(NA, NA, NA)
@@ -193,7 +213,26 @@ get_SKAT_pvalue = function(Score, Phi, r.corr){
                         SE_Burden = abs(BETA_Burden/qnorm((out_SKAT_List$param$p.val.each[pos01])/2))
 
                 }
-
 		return(list(Pvalue_SKATO = Pvalue[1], Pvalue_Burden = Pvalue[3], Pvalue_SKAT = Pvalue[2], BETA_Burden = BETA_Burden, SE_Burden = SE_Burden))
+	}else{
+		BETA_Burden = sum(Score)/(sum(Phi))
+		Pvalue_Burden = out_SKAT_List$p.value
+		SE_Burden = abs(BETA_Burden/qnorm(Pvalue_Burden/2)
+		Pvalue_SKATO = NA
+		Pvalue_SKAT = NA
+		return(list(Pvalue_SKATO = NA, Pvalue_Burden = Pvalue_Burden, Pvalue_SKAT = NA, BETA_Burden = BETA_Burden, SE_Burden = SE_Burden))
+	}	
 
+}
+
+get_CCT_pvalue = function(pvalue){
+   pvals = pvalue
+   notna = which(!is.na(pvals))
+   if(length(notna) > 0){
+     pvals = pvals[!is.na(pvals)]
+     cctpval = CCT(pvals)
+   }else{
+     cctpval = NA
+   }
+   return(cctpval)
 }	

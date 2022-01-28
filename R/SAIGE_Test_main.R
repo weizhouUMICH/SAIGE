@@ -108,8 +108,7 @@ SPAGMMATtest = function(bgenFile = "",
                  weightMAFcutoff = 0.01,
                  weightsIncludeinGroupFile=FALSE,
                  weights_for_G2_cond = NULL,
-                 r.corr=0,
-
+                 r.corr=NULL,
 		 dosage_zerod_cutoff = 0.2,
 		 dosage_zerod_MAC_cutoff = 10,
 		 is_output_moreDetails = FALSE, #new
@@ -367,6 +366,7 @@ SPAGMMATtest = function(bgenFile = "",
                      markerInfo,
 		     obj.model$traitType,
 		     is_imputed_data,
-		     isCondition)
+		     isCondition, 
+		     r.corr)
     }	    
 }

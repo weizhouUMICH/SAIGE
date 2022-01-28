@@ -699,7 +699,8 @@ Rcpp::List mainRegionInCPP(
 			   std::string t_traitType,
                            unsigned int t_n,           // sample size  
                            arma::mat P1Mat,            // edited on 2021-08-19: to avoid repeated memory allocation of P1Mat and P2Mat
-                           arma::mat P2Mat)
+                           arma::mat P2Mat, 
+			   std::string t_regionTestType)
 {
 
   //std::cout << "okk1" << std::endl;
@@ -785,7 +786,6 @@ Rcpp::List mainRegionInCPP(
   std::vector<double> varTVec(q, arma::datum::nan);
   std::vector<double> pvalNAVec(q, arma::datum::nan);  
   std::vector<bool>  isSPAConvergeVec(q);
-
 
 
   // example #1: (q = 999, m1 = 10) -> (nchunks = 100, m2 = 9)
@@ -927,9 +927,11 @@ Rcpp::List mainRegionInCPP(
 	//G1tilde_P_G2tilde_Mat.row(i) = G1tilde_P_G2tilde_Vec;	
       }
 
-      int n = GVec.size();      
-      P1Mat.row(i1InChunk) = sqrt(ptr_gSAIGEobj->m_varRatioVal)*gtildeVec.t();
-      P2Mat.col(i1InChunk) = sqrt(ptr_gSAIGEobj->m_varRatioVal)*P2Vec;
+      int n = GVec.size();
+      if(t_regionTestType != "BURDEN"){ 
+        P1Mat.row(i1InChunk) = sqrt(ptr_gSAIGEobj->m_varRatioVal)*gtildeVec.t();
+        P2Mat.col(i1InChunk) = sqrt(ptr_gSAIGEobj->m_varRatioVal)*P2Vec;
+      }
       //P1Mat.row(i1InChunk) = gtildeVec.t();
       //P2Mat.col(i1InChunk) = P2Vec;
     
@@ -1011,11 +1013,16 @@ Rcpp::List mainRegionInCPP(
       }	
       i2 += 1;
     }
+  
+
     
     if(i1InChunk == m1 ){
       std::cout << "In chunks 0-" << ichunk << ", " << i2 << " markers are ultra-rare and " << i1 << " markers are not ultra-rare." << std::endl;
-      P1Mat.save(t_outputFile + "_P1Mat_Chunk_" + std::to_string(ichunk) + ".bin");
-      P2Mat.save(t_outputFile + "_P2Mat_Chunk_" + std::to_string(ichunk) + ".bin");     
+      if(t_regionTestType != "BURDEN"){
+        P1Mat.save(t_outputFile + "_P1Mat_Chunk_" + std::to_string(ichunk) + ".bin");
+        P2Mat.save(t_outputFile + "_P2Mat_Chunk_" + std::to_string(ichunk) + ".bin");
+      }
+
       mPassCVVec.push_back(m1);
       ichunk += 1;
       i1InChunk = 0;
@@ -1049,14 +1056,17 @@ Rcpp::List mainRegionInCPP(
   std::cout << "ok2" << std::endl;
 */
 //the second last chunk
-  if(i1InChunk != 0){	  
+  if(i1InChunk != 0){
+
+    std::cout << "In chunks 0-" << ichunk << ", " << i2 << " markers are ultra-rare and " << i1 << " markers are not ultra-rare." << std::endl;
+   if(t_regionTestType != "BURDEN"){	  
     P1Mat = P1Mat.rows(0, i1InChunk - 1);
     P2Mat = P2Mat.cols(0, i1InChunk - 1);
     //std::cout << "nchunks " << nchunks << std::endl;
     //if(nchunks != 1){
-    std::cout << "In chunks 0-" << ichunk << ", " << i2 << " markers are ultra-rare and " << i1 << " markers are not ultra-rare." << std::endl;
     P1Mat.save(t_outputFile + "_P1Mat_Chunk_" + std::to_string(ichunk) + ".bin");
     P2Mat.save(t_outputFile + "_P2Mat_Chunk_" + std::to_string(ichunk) + ".bin");
+   }
     ichunk = ichunk + 1;
     //}
     mPassCVVec.push_back(i1InChunk);
@@ -1083,9 +1093,11 @@ Rcpp::List mainRegionInCPP(
   //arma::mat P2Mat0 = P1Mat;
 
   if(i2 > 0){
-  int m1new = std::max(m1, q_anno_maf); 
+  int m1new = std::max(m1, q_anno_maf);
+ if(t_regionTestType != "BURDEN"){
   P1Mat.resize(m1new, P1Mat.n_cols);
-  P2Mat.resize(P2Mat.n_rows,m1new);	  
+  P2Mat.resize(P2Mat.n_rows,m1new);
+ }  
   arma::mat XV, XXVX_inv;
   ptr_gSAIGEobj->extract_XV_XXVX_inv(XV, XXVX_inv);
   //the last chunk for UR
@@ -1200,8 +1212,10 @@ std::vector<uint32_t> indexForMissing;
     std::cout << P1Mat.n_cols << std::endl;
     std::cout << gtildeVec.n_elem << std::endl;
     */
-    P1Mat.row(i1InChunk) = sqrt(ptr_gSAIGEobj->m_varRatioVal)*gtildeVec.t();
-    P2Mat.col(i1InChunk) = sqrt(ptr_gSAIGEobj->m_varRatioVal)*P2Vec;
+    if(t_regionTestType != "BURDEN"){  
+      P1Mat.row(i1InChunk) = sqrt(ptr_gSAIGEobj->m_varRatioVal)*gtildeVec.t();
+      P2Mat.col(i1InChunk) = sqrt(ptr_gSAIGEobj->m_varRatioVal)*P2Vec;
+    }
     //P1Mat.row(i1InChunk) = gtildeVec.t();
     //P2Mat.col(i1InChunk) = P2Vec;
     //std::cout << "here11" << std::endl;
@@ -1223,11 +1237,13 @@ std::vector<uint32_t> indexForMissing;
   // std::cout << "P1Mat.n_rows ok1 " << P1Mat.n_rows << std::endl; 
   if(i1InChunk != 0){
     nchunks = nchunks + 1;
-    P1Mat = P1Mat.rows(0, i1InChunk - 1);
-    P2Mat = P2Mat.cols(0, i1InChunk - 1);
+    if(t_regionTestType != "BURDEN"){
+      P1Mat = P1Mat.rows(0, i1InChunk - 1);
+      P2Mat = P2Mat.cols(0, i1InChunk - 1);
 //if(nchunks != 1){
       P1Mat.save(t_outputFile + "_P1Mat_Chunk_" + std::to_string(ichunk) + ".bin");
       P2Mat.save(t_outputFile + "_P2Mat_Chunk_" + std::to_string(ichunk) + ".bin");
+    }
       ichunk = ichunk + 1;
 //    }
     mPassCVVec.push_back(i1InChunk);
@@ -1241,9 +1257,11 @@ std::vector<uint32_t> indexForMissing;
   //nchunks = ichunk + 1;
   //
   //std::cout << "i1 " << i1 << std::endl;
-  arma::mat VarMat(i1, i1);
   //std::cout << "VarMat.n_rows " << VarMat.n_rows << std::endl;
 
+
+arma::mat VarMat(i1, i1);
+if(t_regionTestType != "BURDEN"){
   if(nchunks == 1){
     VarMat = P1Mat * P2Mat;
   //std::cout << "VarMat.n_rows " << VarMat.n_rows << std::endl;
@@ -1313,7 +1331,7 @@ std::vector<uint32_t> indexForMissing;
     }
     
   }
-
+}
 
   Rcpp::List OutList = Rcpp::List::create(Rcpp::Named("VarMat") = VarMat,
 		  			  Rcpp::Named("annoMAFIndicatorMat") = annoMAFIndicatorMat,

@@ -30,7 +30,8 @@ SAIGE.Region = function(objNull,
 			markerInfo,
 			traitType,
 			isImputation,
-			isCondition){
+			isCondition, 
+			r.corr){
   OutputFileIndex = NULL	
   if(is.null(OutputFileIndex))
     OutputFileIndex = paste0(OutputFile, ".index")
@@ -52,13 +53,26 @@ SAIGE.Region = function(objNull,
 
   ## annotation in region
   ##need to revise
+  if(is.null(r.corr)){
+    out.method = SKAT:::SKAT_Check_Method(method="optimal.adj", r.corr=0)
+    method=out.method$method
+    r.corr=out.method$r.corr
+    cat("SKAT-O test will be performed. P-values for BUTDEN and SKAT tests will also be output\n.")
+    regionTestType = "SKAT-O"
+  }else if(r.corr == 0){
+    method = NULL
+    cat("SKAT test will be performed\n")
+    regionTestType = "SKAT"
+  }else if(r.corr == 1){	  
+    method = NULL
+    cat("BURDEN test will be performed\n")
+    regionTestType = "BURDEN"
+  }
 
-  out.method = SKAT:::SKAT_Check_Method(method="optimal.adj", r.corr=0)
-  method=out.method$method
-  r.corr=out.method$r.corr
 
   RegionList = SAIGE.getRegionList(groupFile, annolist, markerInfo)
   nRegions = length(RegionList)
+
 
   P1Mat = matrix(0, max_markers_region, n);
   P2Mat = matrix(0, n, max_markers_region);
@@ -68,7 +82,6 @@ SAIGE.Region = function(objNull,
   chrom1 = "FakeCHR";
 
   for(i in (indexChunk+1):nRegions){
-
 
     pval.Region = NULL
     region = RegionList[[i]]
@@ -97,7 +110,7 @@ SAIGE.Region = function(objNull,
     print(paste0("Analyzing Region of ", regionName, " (",i,"/",nRegions,")."))
     #print(paste(SNP, collapse = ", "))
 
-    outList0 = mainRegion(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, isImputation, annolist, isCondition)
+    outList0 = mainRegion(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, isImputation, annolist, isCondition, regionTestType)
     if(length(outList0) == 0){
       next
     } 
@@ -121,7 +134,11 @@ SAIGE.Region = function(objNull,
     notNAindice = which(!is.na(outList$TstatVec))
     StatVec = outList$TstatVec[notNAindice]
     #outList$VarMat = outList$VarMat[notNAindice, notNAindice, drop=F]
-    VarSVec = diag(outList$VarMat)
+    if(regionTestType == "BURDEN"){
+	VarSVec = outList$VarVec
+    }else{	    
+        VarSVec = diag(outList$VarMat)
+    }
     VarSVec = VarSVec[!is.na(VarSVec)]
     adjPVec = outList$pvalVec
     adjPVec = adjPVec[!is.na(adjPVec)]
@@ -137,12 +154,22 @@ SAIGE.Region = function(objNull,
     	weightMat_G1_G2 = AnnoWeights %*% t(outList$G2_Weight_cond)
     }	
     wStatVec = StatVec * AnnoWeights
-    wadjVarSMat = outList$VarMat * weightMat
 
-    if(isCondition){
+    if(regionTestType == "BURDEN"){
+      wadjVarSVec = outList$VarVec * AnnoWeights
+      if(isCondition){
+	  wStatVec_cond = wStatVec - outList$TstatAdjCond
+          wadjVarSVec_cond = wadjVarSVec - diag(outList$VarVecAdjCond)
+      }
+    }else{	    
+      wadjVarSMat = outList$VarMat * weightMat
+      if(isCondition){
 	  wStatVec_cond = wStatVec - outList$TstatAdjCond
           wadjVarSMat_cond = wadjVarSMat - outList$VarMatAdjCond	
+      }
     }
+
+
 
     annoMAFIndVec = c()
     for(j in 1:length(annolist)){
@@ -157,28 +184,31 @@ SAIGE.Region = function(objNull,
 #	        print(length(tempPos))
 	       if(length(tempPos) > 0){
 		annoMAFIndVec = c(annoMAFIndVec, jm)
-		Phi = wadjVarSMat[tempPos, tempPos, drop=F]
+	        if(regionTestType == "BURDEN"){
+			Phi = wadjVarSVec[tempPos]
+	        }else{		
+			Phi = wadjVarSMat[tempPos, tempPos, drop=F]
+		}
 		Score = wStatVec[tempPos]
 		if(traitType == "binary"){
 			p.new = adjPVec[tempPos]
 			g.sum = outList$genoSumMat[,jm]
 			q.sum<-sum(outList$gyVec[tempPos] * AnnoWeights[tempPos])
 			mu.a = objNull$mu
-			re_phi = get_newPhi_scaleFactor(q.sum, mu.a, g.sum, p.new, Score, Phi)
+			re_phi = get_newPhi_scaleFactor(q.sum, mu.a, g.sum, p.new, Score, Phi, regionTestType)
 		        Phi = re_phi$val
                 }
 #	        print("r.corr")
 #		print(r.corr)
 
 
-		groupOutList = get_SKAT_pvalue(Score, Phi, r.corr)
+		groupOutList = get_SKAT_pvalue(Score, Phi, r.corr, regionTestType)
 #		print("Score")
 #		print(Score)
 #		 print("Phi")
  #               print(Phi)
 #		print("groupOutList")
 #		print(groupOutList)
-
 		resultDF = data.frame(Region = regionName,
                                                     Group = AnnoName,
                                                     max_MAF = maxMAFName,
@@ -208,7 +238,7 @@ SAIGE.Region = function(objNull,
 			VarMatAdjCond = adjCondTemp %*% t(G1tilde_P_G2tilde_Mat_scaled)
 		#outList$TstatAdjCond = adjCondTemp %*% (outList$Tstat_G2_cond * outList$G2_Weight_cond)
 			TstatAdjCond = adjCondTemp %*% (outList$Tstat_G2_cond * outList$G2_Weight_cond)
-			Phi_cond = re_phi$val - VarMatAdjCond
+			Phi_cond = re_phi$val - diag(VarMatAdjCond)
 		#wadjVarSMat = re_phi$val
 			Score_cond = Score - TstatAdjCond
 		#wStatVec = wStatVec - outList$TstatAdjCond
@@ -219,7 +249,11 @@ SAIGE.Region = function(objNull,
 			Score_cond = wStatVec_cond[tempPos]
 			Phi_cond = wadjVarSMat_cond[tempPos, tempPos]
 		}
-		groupOutList_cond = get_SKAT_pvalue(Score_cond, Phi_cond, r.corr)
+
+
+			
+
+		groupOutList_cond = get_SKAT_pvalue(Score_cond, Phi_cond, r.corr, regionTestType)
 
 		resultDF$Pvalue_cond = groupOutList_cond$Pvalue_SKATO
 		resultDF$Pvalue_Burden_cond = groupOutList_cond$Pvalue_Burden
@@ -242,27 +276,35 @@ SAIGE.Region = function(objNull,
 	
    if(sum(!is.na(pval.Region$Pvalue)) > 0){
    ##Combined using the Cauchy combination
-   pvals = pval.Region$Pvalue
-   pvals = pvals[!is.na(pvals)]
-   cctpval = CCT(pvals)
-   pvals = pval.Region$Pvalue_Burden
-   pvals = pvals[!is.na(pvals)]
-   cctpval_Burden = CCT(pvals) 
-   pvals = pval.Region$Pvalue_SKAT
-   pvals = pvals[!is.na(pvals)]
-   cctpval_SKAT = CCT(pvals)
+   #pvals = pval.Region$Pvalue
+   #pvals = pvals[!is.na(pvals)]
+   #cctpval = CCT(pvals)
+   cctpval = get_CCT_pvalue(pval.Region$Pvalue
+   #pvals = pval.Region$Pvalue_Burden
+   #pvals = pvals[!is.na(pvals)]
+   #cctpval_Burden = CCT(pvals) 
+   cctpval_Burden = get_CCT_pvalue(pval.Region$Pvalue_Burden)
+   #pvals = pval.Region$Pvalue_SKAT
+   #pvals = pvals[!is.na(pvals)]
+   #cctpval_SKAT = CCT(pvals)
+   cctpval_SKAT = get_CCT_pvalue(pval.Region$Pvalue_SKAT)
+
    cctVec = c(regionName, "Cauchy", NA, cctpval, cctpval_Burden, cctpval_SKAT, NA, NA)
    if(isCondition){
-        pvals = pval.Region$Pvalue_cond
-   	pvals = pvals[!is.na(pvals)]
-   	cctpval = CCT(pvals)
-   	pvals = pval.Region$Pvalue_Burden_cond
-   	pvals = pvals[!is.na(pvals)]
-   	cctpval_Burden = CCT(pvals)
-   	pvals = pval.Region$Pvalue_SKAT_cond
-   	pvals = pvals[!is.na(pvals)]
-   	cctpval_SKAT = CCT(pvals)
-	cctVec = c(cctVec, cctpval, cctpval_Burden, cctpval_SKAT, NA, NA)
+        #pvals = pval.Region$Pvalue_cond
+   	#pvals = pvals[!is.na(pvals)]
+   	#cctpval = CCT(pvals)
+   	#pvals = pval.Region$Pvalue_Burden_cond
+   	#pvals = pvals[!is.na(pvals)]
+   	#cctpval_Burden = CCT(pvals)
+   	#pvals = pval.Region$Pvalue_SKAT_cond
+   	#pvals = pvals[!is.na(pvals)]
+   	#cctpval_SKAT = CCT(pvals)
+	cctpval = get_CCT_pvalue(pval.Region$Pvalue_cond
+   	cctpval_Burden = get_CCT_pvalue(pval.Region$Pvalue_Burden_cond)
+	cctpval_SKAT = get_CCT_pvalue(pval.Region$Pvalue_SKAT_cond)
+
+	 cctVec = c(cctVec, cctpval, cctpval_Burden, cctpval_SKAT, NA, NA)
    }
    cctVec = c(cctVec, NA)
    #cctVec = c(regionName, "Cauchy", NA, cctpval, cctpval_Burden, cctpval_SKAT, NA, NA, NA)
@@ -276,6 +318,10 @@ SAIGE.Region = function(objNull,
 
    #print(pval.Region)
    #print(info.Region)
+   ##remove columns with all NA
+   pval.Region <- pval.Region[,which(unlist(lapply(pval.Region, function(x)!all(is.na(x))))),with=F]
+
+
    writeOutputFile(Output = list(pval.Region,  info.Region),
                     OutputFile = list(OutputFile, paste0(OutputFile, ".markerInfo")),
                     OutputFileIndex = OutputFileIndex,
@@ -431,11 +477,11 @@ if(!is.null(markerInfo)){
 
 
 ##Working
-mainRegion = function(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, isImputation, annolist, isCondition)
+mainRegion = function(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, isImputation, annolist, isCondition, regionTestType)
 {
 
 
-  OutList = mainRegionInCPP(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat)
+  OutList = mainRegionInCPP(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, regionTestType)
   
  
  if(length(OutList) > 1){
@@ -515,6 +561,10 @@ mainRegion = function(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputF
   	OutList$TstatAdjCond = OutList$TstatAdjCond[noNAIndices]
 	OutList$G1tilde_P_G2tilde_Weighted_Mat = OutList$G1tilde_P_G2tilde_Weighted_Mat[noNAIndices,]
   }	  
+
+  if(regionTestType == "BURDEN"){
+    OutList$VarVec = OutList$varTVec
+  }
 
   obj.mainMarker = obj.mainMarker[noNAIndices,]
   OutList$gyVec = OutList$gyVec[noNAIndices]

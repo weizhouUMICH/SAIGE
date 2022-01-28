@@ -79,6 +79,20 @@ void Unified_getMarkerPval(
 			   arma::rowvec & t_G1tilde_P_G2tilde_Vec);
 
 
+Rcpp::List mainRegionInCPP(
+                           std::string t_genoType,     // "PLINK", "BGEN"
+                           std::vector<uint32_t> & t_genoIndex,
+                           arma::mat & annoIndicatorMat,
+                           arma::vec & maxMAFVec,
+                           std::string t_outputFile,
+                           std::string t_traitType,
+                           unsigned int t_n,           // sample size
+                           arma::mat P1Mat,            // edited on 2021-08-19: to avoid repeated memory allocation of P1Mat and P2Mat
+                           arma::mat P2Mat,
+                           std::string t_regionTestType);
+
+
+
 void setPLINKobjInCPP(std::string t_bimFile,
                       std::string t_famFile,
                       std::string t_bedFile,
