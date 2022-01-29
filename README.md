@@ -131,7 +131,7 @@ Thanks to Juha Karjalainen for sharing the Dockerfile.
 The docker image can be pulled
 
 ```
-docker pull wzhou88/saige:0.44.6.5
+docker pull wzhou88/saige:0.45
 ```
 
 Functions can be called
