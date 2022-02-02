@@ -1086,12 +1086,13 @@ Rcpp::List mainRegionInCPP(
     std::cout << "MACVec.at(mi) " << MACVec.at(maxi) << std::endl;
   }
 */
+/*
   if(i1 == 0){
     std::cout << "Only ultra-rare variants are found. This region will be skipped." << std::endl;
     Rcpp::List OutList = Rcpp::List::create();
     return OutList;
   }
-
+*/
 
 /*
   std::cout << "ok1" << std::endl;

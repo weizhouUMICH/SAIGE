@@ -99,17 +99,37 @@ SAIGE.Region = function(objNull,
 
   gc()
 
+
+  num_region = 0
+  total_num_region = nRegions-indexChunk
+  mth = 0
+  cat("total_num_region ", total_num_region, "\n")
+  cat("indexChunk ", indexChunk, "\n")
+  cat("nRegions ", nRegions, "\n")
+
+
   for(i in (indexChunk+1):nRegions){
+    if(mth %% 10 == 0){
+      if(i + 10 >= total_num_region){	    
+	      nlinetoread = (total_num_region - i + 1) * nline_per_gene
+	      cat("nlinetoread ", nlinetoread, "\n")    
+      }else{
+	      nlinetoread = 10 * nline_per_gene	
+      }	
+      #marker_group_line = readLines(gf, n = nline_per_gene)
+      marker_group_line = readLines(gf, n = nlinetoread)
+      RegionList = SAIGE.getRegionList_new(marker_group_line, nline_per_gene, annolist, markerInfo)
+      mth = 0
+      cat("i ", i, "\n")
+    }
 
-    marker_group_line = readLines(gf, n = nline_per_gene)
 
-
-    RegionList = SAIGE.getRegionList_new(marker_group_line, annolist, markerInfo)
-
+    mth = mth + 1
     pval.Region = NULL
-    region = RegionList[[1]]
-    regionName = names(RegionList)[1]
+    region = RegionList[[mth]]
+    regionName = names(RegionList)[mth]
     annolist = region$annoVec 
+    
     if(length(annolist) == 0){
       next
     }	    
@@ -134,7 +154,6 @@ SAIGE.Region = function(objNull,
     print(paste0("Analyzing Region ", regionName, " (",i,"/",nRegions,")."))
 
     rm(region)
-    rm(RegionList)
     gc()
 
     outList = mainRegionInCPP(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, regionTestType, isImputation) 
@@ -403,16 +422,42 @@ if(length(annolist) > 1 | length(maxMAFlist) > 1){
 
 
 SAIGE.getRegionList_new = function(marker_group_line,
+			nline_per_gene,	   
                          annoVec, #c("lof","lof;missense"
                          markerInfo)
 {
 
   # read group file
-   marker_group_line_list = strsplit(marker_group_line[1], split=c(" +", "\t"))[[1]]
-    gene=marker_group_line_list[1]
-    var=marker_group_line_list[3:length(marker_group_line_list)]
-   marker_group_line_list_anno = strsplit(marker_group_line[2], split=c(" +", "\t"))[[1]]
-    anno=marker_group_line_list_anno[3:length(marker_group_line_list_anno)]
+  ngroup<-length(marker_group_line)/nline_per_gene
+  cat("ngroup is ", ngroup, "\n")
+  RegionData = NULL
+  geneList = c() 
+  for(i in 1:ngroup){
+	  marker_group_line_list = strsplit(marker_group_line[1+(i-1)*nline_per_gene], split=c(" +", "\t"))[[1]]
+          gene=marker_group_line_list[1]
+          var=marker_group_line_list[3:length(marker_group_line_list)]
+          marker_group_line_list_anno = strsplit(marker_group_line[2+(i-1)*nline_per_gene], split=c(" +", "\t"))[[1]]
+	  anno=marker_group_line_list_anno[3:length(marker_group_line_list_anno)]
+	  RegionData = rbind(RegionData, cbind(rep(gene, length(var)), var, anno))
+	  if(gene %in% geneList){
+		stop(gene, " is duplicated in the group File\n")
+          }else{		  
+	  	geneList = c(geneList, gene)
+	  }
+  }
+    #print("RegionData")
+    #print(RegionData)
+    colnames(RegionData) = c("REGION", "SNP", "ANNO")
+    RegionData = as.data.frame(RegionData)
+     
+
+
+
+    #marker_group_line_list = strsplit(marker_group_line[1], split=c(" +", "\t"))[[1]]
+    #gene=marker_group_line_list[1]
+    #var=marker_group_line_list[3:length(marker_group_line_list)]
+   #marker_group_line_list_anno = strsplit(marker_group_line[2], split=c(" +", "\t"))[[1]]
+   # anno=marker_group_line_list_anno[3:length(marker_group_line_list_anno)]
 
 ##to read in weight
     #RegionData = NULL
@@ -422,9 +467,9 @@ SAIGE.getRegionList_new = function(marker_group_line,
   #print("RegionData")
   #print(RegionData)
   #colnames(RegionData) = c("REGION", "SNP", "ANNO")
-  RegionData = data.frame(REGION=rep(gene, length(var)), SNP = var, ANNO = anno)
+  #RegionData = data.frame(REGION=rep(gene, length(var)), SNP = var, ANNO = anno)
  
-  RegionData = as.data.frame(RegionData)
+  #RegionData = as.data.frame(RegionData)
   #print(RegionData)
 
 ##for non-VCF files

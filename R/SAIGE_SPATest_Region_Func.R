@@ -72,15 +72,15 @@ check_close= function(groupFile){
 #check Group file format and count the number of regions
 checkGroupFile<-function(groupFile){
 
-    cat("Start extracting marker-level information from 'groupFile' of", groupFile, "....\n")	
+  cat("Start extracting marker-level information from 'groupFile' of", groupFile, "....\n")	
   Check_File_Exist(groupFile, "RegionFile")	
   gf = file(groupFile, "r")
   marker_group_line = readLines(gf, n = 1)
   marker_group_line = readLines(gf, n = 1)
   is_weight_included = FALSE
   a = 2
-  if(TRUE){
-    marker_group_line = readLines(gf, n = 1)
+  marker_group_line = readLines(gf, n = 1)
+  if(length(marker_group_line) == 1){
     if (length(marker_group_line) == 0) {
       line = line - 1
       stop("Error, group file has emply lines\n")
@@ -182,6 +182,8 @@ checkGroupFile<-function(groupFile){
     #  group_info_list[[geneID]]<-list(geneID = geneID)
     #}
     #group_info_list[[geneID]][[type]] = marker_group_line_list[-c(1:2)]
+  
+  cat("nregion ", nregion, "\n")
 
   close(gf)	
   return(list(nRegions = nregion, is_weight_included = is_weight_included))
@@ -295,6 +297,7 @@ get_SKAT_pvalue = function(Score, Phi, r.corr, regionTestType){
                               silent = TRUE)
 	}
 
+
 	if(regionTestType != "BURDEN"){
                 BETA_Burden = sum(Score)/(sum(diag(Phi)))
                 if(class(out_SKAT_List) == "try-error"){
@@ -302,11 +305,14 @@ get_SKAT_pvalue = function(Score, Phi, r.corr, regionTestType){
                         error.code = 2
                         BETA_Burden = NA
                         SE_Burden = NA
-                }else if(!any(c(0,1) %in% out_SKAT_List$param$rho)){
-                        Pvalue = c(NA, NA, NA)
-                        error.code = 3
-                        BETA_Burden = NA
-                        SE_Burden = NA
+                }else if(!any(c(0,1) %in% out_SKAT_List$param$rho & !is.null(out_SKAT_List$p.value))){
+                        #Pvalue = c(NA, NA, NA)
+                        Pvalue = c(out_SKAT_List$p.value, out_SKAT_List$p.value, out_SKAT_List$p.value)
+                        #error.code = 3
+                        error.code = 0
+                        #BETA_Burden = NA
+                        #SE_Burden = NA
+			SE_Burden = abs(BETA_Burden/qnorm((out_SKAT_List$p.value)/2))
                 }else{
                         pos00 = which(out_SKAT_List$param$rho == 0)
                         pos01 = which(out_SKAT_List$param$rho == 1)
