@@ -127,6 +127,9 @@ SAIGE.Marker = function(objNull,
     genoIndex = markerInfo$genoIndex
     ##only for one chrom
     # all markers were split into multiple chunks,
+    #print(markerInfo[1:10,])
+    #print(genoIndex[1:10])    
+
     genoIndexList = splitMarker(genoIndex, nMarkersEachChunk, CHROM);
     nChunks = length(genoIndexList)
     cat("Number of all markers to test:\t", nrow(markerInfo), "\n")
@@ -149,7 +152,7 @@ SAIGE.Marker = function(objNull,
     isVcfEnd =  check_Vcf_end()
     if(!isVcfEnd){
     	#outIndex = 1
-    	genoIndex = rep(-1, nMarkersEachChunk) 
+    	genoIndex = rep("0", nMarkersEachChunk) 
 	#nChunks = outIndex + 1
 	is_marker_test = TRUE
         i = outIndex
@@ -167,7 +170,7 @@ SAIGE.Marker = function(objNull,
 #time_left = system.time({
     if(genoType != "vcf"){	
       tempList = genoIndexList[[i]]
-      genoIndex = as.integer(tempList$genoIndex)
+      genoIndex = as.character(tempList$genoIndex)
       tempChrom = tempList$chrom
     }
 

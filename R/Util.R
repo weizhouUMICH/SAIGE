@@ -521,7 +521,7 @@ writeOutputFile = function(Output,
 
   n1 = length(Output)
   n2 = length(OutputFile)
-  print("write Output 1")
+  print("write to output")
   #cat("n1 is ", n1, "\n")
   #cat("n2 is ", n2, "\n")
   if(n1 != n2)
@@ -537,7 +537,7 @@ writeOutputFile = function(Output,
       }
     }
   }
-  print("write Output 2")
+  #print("write Output 2")
   if(Start)
     write.table(c(message1, message2, message3), OutputFileIndex,
                 quote = F, sep = "\t", append = F, col.names = F, row.names = F)

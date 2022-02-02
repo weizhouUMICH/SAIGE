@@ -1,4 +1,3 @@
-
 // This includes the main codes to connect C++ and R
 
 // [[Rcpp::depends(RcppArmadillo)]]
@@ -69,8 +68,8 @@ void setMarker_GlobalVarsInCPP(std::string t_impute_method,
                                unsigned int t_omp_num_threads,
 			       bool t_isOutputMoreDetails,
 			       int t_marker_chunksize,
-			       double g_dosage_zerod_cutoff,
-			       double g_dosage_zerod_MAC_cutoff)
+			       double t_dosage_zerod_cutoff,
+			       double t_dosage_zerod_MAC_cutoff)
 
 {
   g_impute_method = t_impute_method;
@@ -81,8 +80,8 @@ void setMarker_GlobalVarsInCPP(std::string t_impute_method,
   g_omp_num_threads = t_omp_num_threads;
   g_isOutputMoreDetails = t_isOutputMoreDetails;
   g_marker_chunksize = t_marker_chunksize;
-  g_dosage_zerod_cutoff = g_dosage_zerod_cutoff;
-  g_dosage_zerod_MAC_cutoff = g_dosage_zerod_MAC_cutoff;
+  g_dosage_zerod_cutoff = t_dosage_zerod_cutoff;
+  g_dosage_zerod_MAC_cutoff = t_dosage_zerod_MAC_cutoff;
 }
 
 
@@ -96,8 +95,8 @@ void setRegion_GlobalVarsInCPP(std::string t_impute_method,
 			       std::string t_method_to_CollapseUltraRare,
 			       double t_MACCutoff_to_CollapseUltraRare,
 			       double t_DosageCutoff_for_UltraRarePresence,
-			       double g_dosage_zerod_cutoff,
-                               double g_dosage_zerod_MAC_cutoff)
+			       double t_dosage_zerod_cutoff,
+                               double t_dosage_zerod_MAC_cutoff)
 {
   g_impute_method = t_impute_method;
   g_missingRate_cutoff = t_missing_cutoff;
@@ -108,8 +107,8 @@ void setRegion_GlobalVarsInCPP(std::string t_impute_method,
   g_method_to_CollapseUltraRare = t_method_to_CollapseUltraRare;
   g_region_minMAC_cutoff = t_MACCutoff_to_CollapseUltraRare;
   g_DosageCutoff_for_UltraRarePresence = t_DosageCutoff_for_UltraRarePresence;
-    g_dosage_zerod_cutoff = g_dosage_zerod_cutoff;
-  g_dosage_zerod_MAC_cutoff = g_dosage_zerod_MAC_cutoff;
+  g_dosage_zerod_cutoff = t_dosage_zerod_cutoff;
+  g_dosage_zerod_MAC_cutoff = t_dosage_zerod_MAC_cutoff;
 }
 
 
@@ -121,13 +120,15 @@ void setRegion_GlobalVarsInCPP(std::string t_impute_method,
 Rcpp::DataFrame mainMarkerInCPP(
                            std::string & t_genoType,     // "PLINK", "BGEN"
 			   std::string & t_traitType,
-			   arma::ivec & t_genoIndex,
+			   std::vector<std::string> & t_genoIndex,
 			   bool & t_isMoreOutput,
 			   bool & t_isImputation)
 {
 
-  int q = t_genoIndex.n_elem;  // number of markers
-  //std::cout << "q is " << q << std::endl;
+  int q = t_genoIndex.size();  // number of markers
+  std::cout << "q is " << q << std::endl;
+  std::cout << "t_genoIndex[0] is " << t_genoIndex.at(0) << std::endl;
+  //t_genoIndex.print();
   // set up output
   std::vector<std::string> markerVec(q);  // marker IDs
   std::vector<std::string> chrVec(q);  // marker IDs
@@ -193,10 +194,16 @@ Rcpp::DataFrame mainMarkerInCPP(
     std::string chr, ref, alt, marker;
     uint32_t pd, N_case, N_ctrl, N;
     bool flip = false;
-    uint32_t gIndex = t_genoIndex[i];
+    std::string t_genoIndex_str = t_genoIndex.at(i);
+
+    char* end;
+    uint64_t gIndex = std::strtoull( t_genoIndex_str.c_str(), &end,10 );
+    //free(end);
+    std::remove(end);
+
     //Main.cpp
     //PLINK or BGEN 
-   
+    //uint32_t gIndex_temp = gIndex; 
     bool isOutputIndexForMissing = true;
     bool isOnlyOutputNonZero = false; 
    
@@ -206,8 +213,7 @@ Rcpp::DataFrame mainMarkerInCPP(
    indexForMissing.clear();
    //t_GVec0.clear();
    //t_GVec.clear();
-   arma::vec timeoutput1 = getTime();
-	
+   //arma::vec timeoutput1 = getTime();
    bool isReadMarker = Unified_getOneMarker(t_genoType, gIndex, ref, alt, marker, pd, chr, altFreq, altCounts, missingRate, imputeInfo,
                                           isOutputIndexForMissing, // bool t_isOutputIndexForMissing,
                                           indexForMissing,
@@ -296,7 +302,7 @@ Rcpp::DataFrame mainMarkerInCPP(
     flip = imputeGenoAndFlip(t_GVec, altFreq, altCounts,indexForMissing, g_impute_method, g_dosage_zerod_cutoff, g_dosage_zerod_MAC_cutoff, MAC, indexZeroVec, indexNonZeroVec);
    
 
-arma::vec timeoutput4 = getTime();
+//arma::vec timeoutput4 = getTime();
 //printTime(timeoutput3, timeoutput4, "imputeGenoAndFlip");
 
 
@@ -466,7 +472,7 @@ arma::vec timeoutput6 = getTime();
 
 // a unified function to get single marker from genotype file
 bool Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN", "Vcf"
-                               uint32_t & t_gIndex,        // different meanings for different genoType
+                               uint64_t & t_gIndex,        // different meanings for different genoType
                                std::string& t_ref,       // REF allele
                                std::string& t_alt,       // ALT allele (should probably be minor allele, otherwise, computation time will increase)
                                std::string& t_marker,    // marker ID extracted from genotype file
@@ -692,7 +698,7 @@ Rcpp::List RegionSetUpConditional_binary_InCPP(){
 // [[Rcpp::export]]
 Rcpp::List mainRegionInCPP(
                            std::string t_genoType,     // "PLINK", "BGEN"
-                           std::vector<uint32_t> & t_genoIndex,
+                           std::vector<std::string> & t_genoIndex,
 			   arma::mat & annoIndicatorMat,
 			   arma::vec & maxMAFVec, 
                            std::string t_outputFile,
@@ -700,8 +706,11 @@ Rcpp::List mainRegionInCPP(
                            unsigned int t_n,           // sample size  
                            arma::mat P1Mat,            // edited on 2021-08-19: to avoid repeated memory allocation of P1Mat and P2Mat
                            arma::mat P2Mat, 
-			   std::string t_regionTestType)
+			   std::string t_regionTestType, 
+			   bool t_isImputation)
 {
+
+	
 
   //std::cout << "okk1" << std::endl;
   unsigned int q0 = t_genoIndex.size();                 // number of markers (before QC) in one region
@@ -766,6 +775,12 @@ Rcpp::List mainRegionInCPP(
   // added on 09-18-2021
   arma::uvec indicatorVec(q, arma::fill::zeros);       // 0: does not pass QC, 1: non-URV, 2: URV
   std::vector<std::string> markerVec(q);
+
+  std::vector<std::string> chrVec(q);  // marker IDs
+  std::vector<std::string> posVec(q);  // marker IDs
+  std::vector<std::string> refVec(q);  // marker IDs
+  std::vector<std::string> altVec(q);  // marker IDs
+
   std::vector<std::string> infoVec(q);    // marker information: CHR:POS:REF:ALT
   std::vector<double> altFreqVec(q, arma::datum::nan);      // allele frequencies of ALT allele, this is not always < 0.5.
   std::vector<double> MACVec(q, arma::datum::nan);      // allele frequencies of ALT allele, this is not always < 0.5.
@@ -782,6 +797,7 @@ Rcpp::List mainRegionInCPP(
   std::vector<double> seBetaVec(q, arma::datum::nan);
   std::vector<double> pvalVec(q, arma::datum::nan);
   std::vector<double> TstatVec(q, arma::datum::nan);
+  std::vector<double> TstatVec_flip(q, arma::datum::nan);
   std::vector<double> gyVec(q, arma::datum::nan);
   std::vector<double> varTVec(q, arma::datum::nan);
   std::vector<double> pvalNAVec(q, arma::datum::nan);  
@@ -838,8 +854,13 @@ Rcpp::List mainRegionInCPP(
     std::string chr, ref, alt, marker;
     uint32_t pd;
     bool flip = false;
-    
-    uint32_t gIndex = t_genoIndex.at(i);
+   
+    std::string t_genoIndex_str = t_genoIndex.at(i);
+
+    char* end;
+    uint64_t gIndex = std::strtoull( t_genoIndex_str.c_str(), &end,10 );
+    std::remove(end);
+
     bool isOutputIndexForMissing = true;
     bool isOnlyOutputNonZero = false;
     //  std::vector<uint> indexZeroVec;
@@ -855,9 +876,10 @@ Rcpp::List mainRegionInCPP(
     }	    
    //arma::vec GVec(GVec0);
    //GVec0.clear();
-
+    std::string pds = std::to_string(pd);
     std::string info = chr+":"+std::to_string(pd)+":"+ref+":"+alt;
-    
+
+
     double MAF = std::min(altFreq, 1 - altFreq);
     double w0 = boost::math::pdf(beta_dist, MAF);
     double MAC = MAF * 2 * t_n * (1 - missingRate);   // checked on 08-10-2021
@@ -869,7 +891,14 @@ Rcpp::List mainRegionInCPP(
 
 
     MAF = std::min(altFreq, 1 - altFreq);
+    MAC = std::min(altCounts, t_n *2 - altCounts);
     // Quality Control (QC)
+    chrVec.at(i) = chr;
+    posVec.at(i) = pds;
+    refVec.at(i) = ref;
+    altVec.at(i) = alt;
+
+
     markerVec.at(i) = marker;             // marker IDs
     infoVec.at(i) = info;                 // marker information: CHR:POS:REF:ALT
     altFreqVec.at(i) = altFreq;           // allele frequencies of ALT allele, this is not always < 0.5.
@@ -878,9 +907,17 @@ Rcpp::List mainRegionInCPP(
     MACVec.at(i) = MAC;
     MAFVec.at(i) = MAF;
     imputationInfoVec.at(i) = imputeInfo;
+    
+
     if((missingRate > g_missingRate_cutoff) || (MAF > g_maxMAFLimit) || MAF == 0 || (imputeInfo < g_marker_minINFO_cutoff)){
       continue;  // does not pass QC
     }
+
+
+
+    //std::cout << "MAF " << MAF << std::endl;
+    //std::cout << "g_maxMAFLimit " << g_maxMAFLimit << std::endl;
+
 
     /*
     markerVec.at(i) = marker;             // marker IDs
@@ -900,7 +937,8 @@ Rcpp::List mainRegionInCPP(
       if(i1InChunk == 0){
         std::cout << "Start analyzing chunk " << ichunk << "....." << std::endl;
       }
-      
+     
+       
   //std::cout << "okk3b" << std::endl;
       Unified_getMarkerPval(
                     GVec,
@@ -912,7 +950,9 @@ Rcpp::List mainRegionInCPP(
       pvalVec.at(i) = pval;
       pvalNAVec.at(i) = pval_noSPA;
       TstatVec.at(i) = Tstat * (1 - 2*flip);
-      gyVec.at(i) = gy * (1-2*flip);
+      //gyVec.at(i) = gy * (1-2*flip);
+      TstatVec_flip.at(i) = Tstat;
+      gyVec.at(i) = gy;
       varTVec.at(i) = varT;
       isSPAConvergeVec.at(i) = isSPAConverge;
 
@@ -996,6 +1036,7 @@ Rcpp::List mainRegionInCPP(
 
       
     }else{   // Ultra-Rare Variants (URV)
+      //std::cout << "MAC: " << MAC << std::endl;	    
       indicatorVec.at(i) = 2;
       arma::vec MAFIndicatorVec(maxMAFVec.n_elem);
       MAFIndicatorVec.zeros();
@@ -1006,6 +1047,10 @@ Rcpp::List mainRegionInCPP(
                         if(MAFIndicatorVec(m) == 1){
                         	jm = j*q_maf + m;
 				genoURMat.col(jm) = arma::max(genoURMat.col(jm), GVec);
+				//arma::vec genoURMatcol_jm = genoURMat.col(jm);
+				//arma::uvec genoURMatcol_jm_nonzero = arma::find(genoURMatcol_jm != 0);
+				//arma::vec genoURMatcol_jm_sub = genoURMatcol_jm(genoURMatcol_jm_nonzero);
+				//genoURMatcol_jm_sub.print();
 				NumUltraRare_GroupVec(jm) = NumUltraRare_GroupVec(jm) + 1;
 			}
 		}
@@ -1107,6 +1152,14 @@ Rcpp::List mainRegionInCPP(
 	jm = j*q_maf+m;
 	arma::vec genoURVec = genoURMat.col(jm);
 	arma::uvec indexForNonZero = arma::find(genoURVec != 0);
+//arma::uvec indexForNonZero = arma::find(genoURVec > 0.2);
+//std::cout << "indexForNonZero " << std::endl;
+//std::cout << "genoURVecNonZero " << std::endl;
+//arma::uvec indexForNonZero_sort = arma::sort(indexForNonZero);
+//indexForNonZero_sort.print();
+//arma::vec genoURVecNonZero = genoURVec(indexForNonZero);
+//genoURVecNonZero.print();
+//std::cout << genoURVec[indexForNonZero_sort[0]] << std::endl;
 //	std::cout << "jm " << jm << std::endl;
 //	std::cout << "indexForNonZero.n_elem" << indexForNonZero.n_elem << std::endl;
 	if(indexForNonZero.n_elem > 0){
@@ -1141,9 +1194,9 @@ Rcpp::List mainRegionInCPP(
 	missingRateVec.at(i) = missingRate;
     	MACVec.at(i) = MAC;
     	MAFVec.at(i) = MAF;
-std::vector<uint32_t> indexForMissing;
+	std::vector<uint32_t> indexForMissing;
 
-    flip = imputeGenoAndFlip(genoURVec, altFreq, altCounts, indexForMissing, g_impute_method, g_dosage_zerod_cutoff, g_dosage_zerod_MAC_cutoff, MAC, indexZeroVec, indexNonZeroVec);
+    	flip = imputeGenoAndFlip(genoURVec, altFreq, altCounts, indexForMissing, g_impute_method, g_dosage_zerod_cutoff, g_dosage_zerod_MAC_cutoff, MAC, indexZeroVec, indexNonZeroVec);
 
 
      arma::uvec indexZeroVec_arma, indexNonZeroVec_arma;
@@ -1160,12 +1213,14 @@ std::vector<uint32_t> indexForMissing;
         //                  false, // bool t_isOnlyOutputNonZero,
         //                  indexForNonZero, Beta, seBeta, pval, pval_noSPA, Tstat, varT, altFreq, isSPAConverge, gtildeVec, is_gtilde, true, P2Vec);
 
-      BetaVec.at(i) = Beta;
+      BetaVec.at(i) = Beta* (1 - 2*flip);
       seBetaVec.at(i) = seBeta;
       pvalVec.at(i) = pval;
       pvalNAVec.at(i) = pval_noSPA;
       TstatVec.at(i) = Tstat * (1 - 2*flip);
-      gyVec.at(i) = gy * (1 - 2*flip);
+      TstatVec_flip.at(i) = Tstat;
+      gyVec.at(i) = gy;
+      //gyVec.at(i) = gy * (1 - 2*flip);
       varTVec.at(i) = varT;
       isSPAConvergeVec.at(i) = isSPAConverge;
       if(isCondition){
@@ -1256,11 +1311,11 @@ std::vector<uint32_t> indexForMissing;
   // not so many markers in the region, so all matrix is in memory
   //nchunks = ichunk + 1;
   //
-  //std::cout << "i1 " << i1 << std::endl;
   //std::cout << "VarMat.n_rows " << VarMat.n_rows << std::endl;
 
 
 arma::mat VarMat(i1, i1);
+
 if(t_regionTestType != "BURDEN"){
   if(nchunks == 1){
     VarMat = P1Mat * P2Mat;
@@ -1333,15 +1388,76 @@ if(t_regionTestType != "BURDEN"){
   }
 }
 
-  Rcpp::List OutList = Rcpp::List::create(Rcpp::Named("VarMat") = VarMat,
+   Rcpp::DataFrame OUT_DF = Rcpp::DataFrame::create(
+  //Rcpp::List OutList = Rcpp::List::create(
+          Rcpp::Named("CHR") = chrVec,
+          Rcpp::Named("POS") = posVec,
+          Rcpp::Named("MarkerID") = markerVec,
+          Rcpp::Named("Allele1") = refVec,
+          Rcpp::Named("Allele2") = altVec,
+          Rcpp::Named("AC_Allele2") = altCountsVec,
+          Rcpp::Named("AF_Allele2") = altFreqVec);
+
+    if(t_isImputation){
+                OUT_DF["imputationInfo"] = imputationInfoVec;
+         }else{
+                OUT_DF["MissingRate"] = missingRateVec;
+         }
+
+        OUT_DF["BETA"] = BetaVec;
+        OUT_DF["SE"] = seBetaVec;
+        OUT_DF["Tstat"] = TstatVec;
+        OUT_DF["var"] = varTVec;
+        OUT_DF["p.value"] = pvalVec;
+
+        if(t_traitType == "binary"){
+                OUT_DF["p.value.NA"] = pvalNAVec;
+                OUT_DF["Is.SPA.converge"] = isSPAConvergeVec;
+            if(isCondition){
+                OUT_DF["BETAi_c"] = Beta_cVec;
+                OUT_DF["SE_c"] = seBeta_cVec;
+                OUT_DF["Tstat_c"] = Tstat_cVec;
+                OUT_DF["var_c"] = varT_cVec;
+                OUT_DF["p.value_c"] = pval_cVec;
+                OUT_DF["p.value.NA_c"] = pvalNA_cVec;
+             }
+             OUT_DF["AF_caseVec"] = AF_caseVec;
+             OUT_DF["AF_ctrlVec"] = AF_ctrlVec;
+             OUT_DF["N_caseVec"] = N_caseVec;
+             OUT_DF["N_ctrlVec"] = N_ctrlVec;
+
+	     /*
+             if(t_isMoreOutput){
+                OUT_DF["N_case_hom"] = N_case_homVec;
+                OUT_DF["N_case_het"] = N_case_hetVec;
+                OUT_DF["N_ctrl_hom"] = N_ctrl_homVec;
+                OUT_DF["N_ctrl_het"] = N_ctrl_hetVec;
+             }
+	     */
+        }else if(t_traitType == "quantitative"){
+            if(isCondition){
+                OUT_DF["BETAi_c"] = Beta_cVec;
+                OUT_DF["SE_c"] = seBeta_cVec;
+                OUT_DF["Tstat_c"] = Tstat_cVec;
+                OUT_DF["var_c"] = varT_cVec;
+                OUT_DF["p.value_c"] = pval_cVec;
+            }
+             OUT_DF["N"] = N_Vec;
+        }
+  
+
+  Rcpp::List OutList = Rcpp::List::create(Rcpp::Named("OUT_DF") = OUT_DF,
+		  			  Rcpp::Named("VarMat") = VarMat,
 		  			  Rcpp::Named("annoMAFIndicatorMat") = annoMAFIndicatorMat,
 					  Rcpp::Named("MAC_GroupVec") = MAC_GroupVec,
-					  Rcpp::Named("NumRare_GroupVec") =NumRare_GroupVec,
-					  Rcpp::Named("NumUltraRare_GroupVec") = NumUltraRare_GroupVec,
-		  			  Rcpp::Named("markerVec") = markerVec,
-                                          Rcpp::Named("infoVec") = infoVec,
-                                          Rcpp::Named("altFreqVec") = altFreqVec,
 					  Rcpp::Named("MAFVec") = MAFVec,
+                                          Rcpp::Named("TstatVec_flip") = TstatVec_flip,
+					  Rcpp::Named("NumRare_GroupVec") =NumRare_GroupVec,
+					  Rcpp::Named("NumUltraRare_GroupVec") = NumUltraRare_GroupVec
+/*
+					  Rcpp::Named("markerVec") = markerVec,
+              				  Rcpp::Named("infoVec") = infoVec,
+                                          Rcpp::Named("altFreqVec") = altFreqVec,
                                           Rcpp::Named("altCountsVec") = altCountsVec,
                                           Rcpp::Named("missingRateVec") = missingRateVec,
 					  Rcpp::Named("imputationInfoVec") =imputationInfoVec,
@@ -1350,21 +1466,26 @@ if(t_regionTestType != "BURDEN"){
                                           Rcpp::Named("BetaVec") = BetaVec,
                                           Rcpp::Named("seBetaVec") = seBetaVec,
                                           Rcpp::Named("TstatVec") = TstatVec,
-                                          Rcpp::Named("varTVec") = varTVec);
+                                          Rcpp::Named("varTVec") = varTVec
+					  */
+					  );
 
   if(t_traitType == "binary"){
     OutList.push_back(MACCase_GroupVec, "MACCase_GroupVec");
     OutList.push_back(MACControl_GroupVec, "MACCtrl_GroupVec");
+    /*
     OutList.push_back(pvalNAVec, "pvalNAVec");
     OutList.push_back(AF_caseVec, "AF_caseVec");
     OutList.push_back(AF_ctrlVec, "AF_ctrlVec");
     OutList.push_back(N_caseVec, "N_caseVec");
     OutList.push_back(N_ctrlVec, "N_ctrlVec");
+    */
     OutList.push_back(genoSumMat, "genoSumMat");
     OutList.push_back(gyVec, "gyVec");
-  }else if(t_traitType == "quantitative"){
-    OutList.push_back(N_Vec, "N_Vec");
   }
+  //else if(t_traitType == "quantitative"){
+  //  OutList.push_back(N_Vec, "N_Vec");
+  //}
 
   //arma::mat scaled_m_VarInvMat_cond;
   if(isCondition){
@@ -1379,15 +1500,15 @@ if(t_regionTestType != "BURDEN"){
     OutList.push_back(ptr_gSAIGEobj->m_G2_Weight_cond, "G2_Weight_cond");
     OutList.push_back(TstatAdjCond, "TstatAdjCond");
     OutList.push_back(VarMatAdjCond, "VarMatAdjCond"); 
-    OutList.push_back(Beta_cVec, "Beta_cVec");
-    OutList.push_back(seBeta_cVec, "seBeta_cVec");
-    OutList.push_back(pval_cVec, "pval_cVec");
-    OutList.push_back(Tstat_cVec, "Tstat_cVec");
-    OutList.push_back(varT_cVec, "varT_cVec");
+    //OutList.push_back(Beta_cVec, "Beta_cVec");
+    //OutList.push_back(seBeta_cVec, "seBeta_cVec");
+    //OutList.push_back(pval_cVec, "pval_cVec");
+    //OutList.push_back(Tstat_cVec, "Tstat_cVec");
+    //OutList.push_back(varT_cVec, "varT_cVec");
   }  
-    if(t_traitType == "binary"){
-    	OutList.push_back(pvalNA_cVec, "pvalNA_cVec");
-     }
+    //if(t_traitType == "binary"){
+    //	OutList.push_back(pvalNA_cVec, "pvalNA_cVec");
+    // }
 //}
 
   return OutList;
@@ -1395,17 +1516,10 @@ if(t_regionTestType != "BURDEN"){
 
 
 
-
-
-
-
-
-
-
 // [[Rcpp::export]]
 void assign_conditionMarkers_factors(
                            std::string t_genoType,     // "plink", "bgen", "vcf"
-                           std::vector<uint32_t> & t_genoIndex,
+                           std::vector<std::string> & t_genoIndex,
                            unsigned int t_n)           // sample size
 {
   unsigned int q = t_genoIndex.size();
@@ -1443,8 +1557,12 @@ void assign_conditionMarkers_factors(
 
     bool isOutputIndexForMissing = true;
     bool isOnlyOutputNonZero = false; 
-    uint32_t gIndex = t_genoIndex.at(i);
-    
+    std::string t_genoIndex_str = t_genoIndex.at(i);
+
+    char* end;
+    uint64_t gIndex = std::strtoull( t_genoIndex_str.c_str(), &end,10 );
+    std::remove(end);
+
     bool isReadMarker = Unified_getOneMarker(t_genoType, gIndex, ref, alt, marker, pd, chr, altFreq, altCounts, missingRate, imputeInfo,
                                           isOutputIndexForMissing, // bool t_isOutputIndexForMissing,
                                           indexForMissing,

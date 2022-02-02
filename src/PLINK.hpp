@@ -82,7 +82,7 @@ public:
   void setPosSampleInPlink(std::vector<std::string> t_SampleInModel);
   std::vector<uint32_t> getPosMarkerInPlink(std::vector<std::string> t_MarkerReqstd);
   
-  void getOneMarker(uint32_t & t_gIndex,        // different meanings for different genoType
+  void getOneMarker(uint64_t & t_gIndex,        // different meanings for different genoType
                          std::string& t_ref,       // REF allele
                          std::string& t_alt,       // ALT allele (should probably be minor allele, otherwise, computation time will increase)
                          std::string& t_marker,    // marker ID extracted from genotype file
@@ -99,7 +99,7 @@ public:
                          bool & t_isTrueGenotype, // only used in PLINK. check m_genoMaps for details about the genotype mapping in PLINK
 			 arma::vec & OneMarkerG1);
 			 //std::vector<double>& OneMarkerG1);
-  void getOneMarker(uint32_t t_gIndex,
+  void getOneMarker(uint64_t t_gIndex,
                          double& t_altFreq,
                          double& t_missingRate,
                          std::string& t_chr,
@@ -116,7 +116,7 @@ public:
                                          isOutputIndexForMissing, indexForMissing, isOnlyOutputNonZero, indexForNonZero, isTrueGenotype, OneMarkerG1);
   }
 
-  void getOneMarker(uint32_t t_gIndex,
+  void getOneMarker(uint64_t t_gIndex,
                          double& t_altFreq,
                          double& t_missingRate,
                          std::vector<uint>& t_indexForMissing,

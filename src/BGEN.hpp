@@ -58,7 +58,7 @@ public:
   //void Parse2(unsigned char *buf, unsigned int bufLen, const unsigned char *zBuf, unsigned int zBufLen,std::string & snpName,std::vector< double > & dosages, double & AC, double & AF, std::vector<uint> & indexforMissing, double & info, std::vector<uint> & iIndex);
   void Parse2(unsigned char *buf, unsigned int bufLen, const unsigned char *zBuf, unsigned int zBufLen,std::string & snpName, arma::vec & dosages, double & AC, double & AF, std::vector<uint> & indexforMissing, double & info, std::vector<uint> & iIndex);
 
-  void getOneMarker(uint32_t & t_gIndex,        // different meanings for different genoType
+  void getOneMarker(uint64_t & t_gIndex,        // different meanings for different genoType
                          std::string& t_ref,       // REF allele
                          std::string& t_alt,       // ALT allele (should probably be minor allele, otherwise, computation time will increase)
                          std::string& t_marker,    // marker ID extracted from genotype file

@@ -50,7 +50,7 @@ dosage_zerod_MAC_cutoff){
 
 	checkArgNumeric(start, deparse(substitute(start)), 1, 250000000)
         checkArgNumeric(end, deparse(substitute(end)), 1, 250000000)
-	checkArgNumeric(max_missing, deparse(substitute(max_missing,)), 0, 0.5)
+	checkArgNumeric(max_missing, deparse(substitute(max_missing,)), 0, 1)
 	checkArgNumeric(min_MAC, deparse(substitute(min_MAC,)), minVal=0.5, incMin=T)
 	checkArgNumeric(min_MAF, deparse(substitute(min_MAF,)), 0, 0.5)
 	checkArgNumeric(min_Info, deparse(substitute(min_Info,)), 0, 1)

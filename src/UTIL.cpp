@@ -69,6 +69,7 @@ bool imputeGenoAndFlip(arma::vec& t_GVec,
   t_indexZero.clear();
   int nMissing = t_indexForMissing.size();
   uint dosagesSize = t_GVec.size();
+  double imputeG = 0;
   if(t_altFreq > 0.5){
     //t_GVec = 2 - t_GVec;
     flip = true;
@@ -90,41 +91,52 @@ bool imputeGenoAndFlip(arma::vec& t_GVec,
 
 if(nMissing > 0){
 
-  double imputeG = 0;
   if(t_impute_method == "mean"){
     imputeG = 2 * t_altFreq;
   }
   //
   //
   //need further check  
-  if(t_impute_method == "minor"){
-    if(t_altFreq > 0.5){
-      imputeG = 2;
-    }else{
-      imputeG = 0;
+  if(t_dosage_zerod_cutoff > 0){
+    if(t_MAC <= t_dosage_zerod_MAC_cutoff){
+      t_impute_method = "minor"	;	
+      //t_GVec.clean(t_dosage_zerod_cutoff);
     }
   }
 
+
+  if(t_impute_method == "minor"){
+    //if(t_altFreq > 0.5){
+    //  imputeG = 2;
+    //}else{
+      imputeG = 0;
+    //}
+  }
 
   for(int i = 0; i < nMissing; i++){
     uint32_t j = t_indexForMissing.at(i);
     t_GVec.at(j) = imputeG;
   }
 
+ t_MAC = t_MAC + imputeG * nMissing;
+
+}
+  
+  
   if(t_dosage_zerod_cutoff > 0){ 
     if(t_MAC <= t_dosage_zerod_MAC_cutoff){
       t_GVec.clean(t_dosage_zerod_cutoff);
     }	  
   } 
-}
 
   //if(nMissing > 0 || t_dosage_zerod_cutoff > 0){
      t_altCount = arma::sum(t_GVec);
      //t_MAC = std::min(t_altCount, 2*dosagesSize - t_altCount);     
      t_altFreq = t_altCount / (2*dosagesSize);
      if(flip){
-	t_altFreq = 1 - t_altFreq; 
-	t_altCount = 2 * t_altFreq * dosagesSize;
+	t_altFreq = 1 - t_altFreq;
+        t_altCount = 2*dosagesSize - t_altCount;	
+	//t_altCount = 2 * t_altFreq * dosagesSize;
      }	     
   //}
 

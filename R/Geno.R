@@ -200,7 +200,6 @@ setGenoInput = function(bgenFile = "",
     if(ncol(IDsToInclude) != 1)
       stop("'idstoIncludeFile' of ", idstoIncludeFile, " should only include one column.")
     IDsToInclude = IDsToInclude[,1]
-
     posRows = which(markerInfo$ID %in% IDsToInclude)
     if(length(posRows) != 0)
       markersInclude = c(markersInclude, markerInfo$ID[posRows])
@@ -274,8 +273,6 @@ setGenoInput = function(bgenFile = "",
   anyQueue = anyInclude | anyExclude
 
   #genoList = list(genoType = genoType, markerInfo = markerInfo, SampleIDs = SampleIDs, AlleleOrder = AlleleOrder, GenoFile = GenoFile, GenoFileIndex = GenoFileIndex, anyQueue = anyQueue)
-
-
   genoList = list(dosageFileType = dosageFileType, markerInfo = markerInfo, anyQueue = anyQueue, genoType = dosageFileType)
   return(genoList)
 }

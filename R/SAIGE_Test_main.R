@@ -212,6 +212,9 @@ SPAGMMATtest = function(bgenFile = "",
 				dosage_zerod_cutoff,
                             	dosage_zerod_MAC_cutoff
                             )
+     cat("dosage_zerod_cutoff is ", dosage_zerod_cutoff, "\n")
+     cat("dosage_zerod_MAC_cutoff is ", dosage_zerod_MAC_cutoff, "\n")
+
 
     }
     
@@ -259,8 +262,6 @@ SPAGMMATtest = function(bgenFile = "",
 
     markerInfo = objGeno$markerInfo
     genoIndex = markerInfo$genoIndex
-    #print("genoIndex")
-    #print(genoIndex[1:10])
     genoType = objGeno$dosageFileType
 
 

@@ -179,6 +179,7 @@ void SAIGEClass::scoreTestFast(arma::vec & t_GVec,
                      double &t_Tstat,
                      double &t_var1,
                      double &t_var2){
+
     arma::vec g1 = t_GVec.elem(t_indexForNonZero);
     arma::mat X1 = m_X.rows(t_indexForNonZero);
     arma::mat A1 = m_XVX_inv_XV.rows(t_indexForNonZero);
@@ -208,6 +209,8 @@ void SAIGEClass::scoreTestFast(arma::vec & t_GVec,
     S2 = - arma::dot(S_a2,  Z);
     S = S1 + S2;
     S = S/m_tauvec[0];
+
+
     double stat = S*S/var1;
     double t_pval;
     if (var1 < std::pow(std::numeric_limits<double>::min(), 2)){

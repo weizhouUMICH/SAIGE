@@ -144,7 +144,7 @@ void PlinkClass::setPosSampleInPlink(std::vector<std::string> t_SampleInModel)
 //   return posMarkerInPlink;
 // }
 
-void PlinkClass::getOneMarker(uint32_t & t_gIndex,        // different meanings for different genoType
+void PlinkClass::getOneMarker(uint64_t & t_gIndex,        // different meanings for different genoType
                                    std::string& t_ref,       // REF allele
                                    std::string& t_alt,       // ALT allele (should probably be minor allele, otherwise, computation time will increase)
                                    std::string& t_marker,    // marker ID extracted from genotype file

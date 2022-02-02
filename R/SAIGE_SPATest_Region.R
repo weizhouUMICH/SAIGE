@@ -51,6 +51,7 @@ SAIGE.Region = function(objNull,
 
   n = length(objNull$y) #sample size 
 
+
   ## annotation in region
   ##need to revise
   if(is.null(r.corr)){
@@ -69,85 +70,153 @@ SAIGE.Region = function(objNull,
     regionTestType = "BURDEN"
   }
 
+  ##check group file
+  region_list = checkGroupFile(groupFile)
+  nRegions = region_list$nRegions
+  is_weight_included = region_list$is_weight_included
+  if(is_weight_included){
+    nline_per_gene = 3
+  }else{
+    nline_per_gene = 2
+  }	  
 
-  RegionList = SAIGE.getRegionList(groupFile, annolist, markerInfo)
-  nRegions = length(RegionList)
+  gf = file(groupFile, "r")
+  if(indexChunk > 0 & indexChunk < nRegions){
+    marker_group_line_temp = readLines(gf, skip=indexChunk*nline_per_gene-1, n = 1) 
+  }
 
+  #RegionList = SAIGE.getRegionList(groupFile, annolist, markerInfo)
+  #nRegions = length(RegionList)
 
   P1Mat = matrix(0, max_markers_region, n);
   P2Mat = matrix(0, n, max_markers_region);
 
-
+  #rl = object.size(RegionList)
+  #print("rl")
+  #print(rl)
 
   chrom1 = "FakeCHR";
 
+  gc()
+
   for(i in (indexChunk+1):nRegions){
 
+    marker_group_line = readLines(gf, n = nline_per_gene)
+
+
+    RegionList = SAIGE.getRegionList_new(marker_group_line, annolist, markerInfo)
+
     pval.Region = NULL
-    region = RegionList[[i]]
-    regionName = names(RegionList)[i]
+    region = RegionList[[1]]
+    regionName = names(RegionList)[1]
     annolist = region$annoVec 
     if(length(annolist) == 0){
       next
     }	    
     SNP = region$SNP
     if(genoType != "vcf"){
-    	genoIndex = region$genoIndex
+    	genoIndex = as.character(region$genoIndex)
     }else{
         SNPlist = paste(c(regionName, SNP), collapse = "\t") 
         set_iterator_inVcf(SNPlist, chrom1, 1, 200000000)
         isVcfEnd =  check_Vcf_end()
     	if(!isVcfEnd){
-		genoIndex = rep(-1, length(SNP))
+		genoIndex = rep("0", length(SNP))
     	}else{
         	warning("No markers in region ", regionName, " are found in the VCF file")
 		next
     	}	
     }	    
     annoIndicatorMat = region$annoIndicatorMat
+
     chrom = region$chrom
 
-    print(paste0("Analyzing Region of ", regionName, " (",i,"/",nRegions,")."))
-    #print(paste(SNP, collapse = ", "))
+    print(paste0("Analyzing Region ", regionName, " (",i,"/",nRegions,")."))
 
-    outList0 = mainRegion(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, isImputation, annolist, isCondition, regionTestType)
-    if(length(outList0) == 0){
+    rm(region)
+    rm(RegionList)
+    gc()
+
+    outList = mainRegionInCPP(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, regionTestType, isImputation) 
+    rm(genoIndex)
+    gc()
+
+
+ if(length(outList) > 1){
+  OutList = as.data.frame(outList$OUT_DF) 	   
+  noNAIndices = which(!is.na(OutList$p.value))
+  URindices = which(OutList$MarkerID == "UR")
+  if(length(URindices) > 0){
+  OutList$CHR[URindices] = "UR"
+  OutList$POS[URindices] = "UR"
+  OutList$Allele1[URindices] = "UR"
+  OutList$Allele2[URindices] = "UR"
+  #OutList$infoVec[which(OutList$infoVec == "")] = "NA:NA:NA:NA"
+  #if(length(URindices) >= 1){
+  #      OutList$infoVec[URindices] = "UR:UR:UR:UR"
+  #      #URindices_adj = URindices - length(genoIndex)
+  #}
+  for(j in 1:length(annolist)){
+        AnnoName = annolist[j]
+        for(m in 1:length(maxMAFlist)){
+                jm = (j-1)*(length(maxMAFlist)) + m
+                maxMAFName = maxMAFlist[m]
+                OutList$MarkerID[URindices][jm] = paste0(regionName,":",AnnoName,":",maxMAFName)
+		
+        }
+  }
+  }
+  noNAIndices = which(!is.na(OutList$p.value))
+  OutList = OutList[noNAIndices, , drop=F]
+  outList$gyVec = outList$gyVec[noNAIndices]
+
+  if(regionTestType == "BURDEN"){
+    outList$VarVec = OutList$var
+  }
+
+   if(!is.null(outList$VarMatAdjCond)){
+        outList$VarMatAdjCond = outList$VarMatAdjCond[noNAIndices,noNAIndices]
+        outList$TstatAdjCond = outList$TstatAdjCond[noNAIndices]
+        outList$G1tilde_P_G2tilde_Weighted_Mat = outList$G1tilde_P_G2tilde_Weighted_Mat[noNAIndices,]
+  }
+
+ } 
+
+
+    #outList0 = mainRegion(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, isImputation, annolist, isCondition, regionTestType)
+    if(length(outList) == 0){
       next
     } 
-    outList = outList0$outList
-    #print("outList$VarMat")
-    #print(outList$VarMat)
+    #outList = outList0$outList
 
     if(isCondition){
       weightMat_G2_G2 = outList$G2_Weight_cond %*% t(outList$G2_Weight_cond)
     }	  
-    info.Region = outList0$info.Region
+    
+    
+    #info.Region = outList0$info.Region
     ### Get annotation maf indicators
     annoMAFIndicatorMat = outList$annoMAFIndicatorMat
-    #print("dim(annoMAFIndicatorMat)")
-    #print(dim(annoMAFIndicatorMat))
-    #annoMAFIndicatorMat = annoMAFIndicatorMat[complete.cases(annoMAFIndicatorMat),,drop=F]
-    #annoMAFIndicatorMat = annoMAFIndicatorMat[which(rowSums(annoMAFIndicatorMat) != 0),,drop=F]
-    #print(dim(annoMAFIndicatorMat))
 
     ### 3. Adjust for saddlepoint approximation
-    notNAindice = which(!is.na(outList$TstatVec))
-    StatVec = outList$TstatVec[notNAindice]
-    #outList$VarMat = outList$VarMat[notNAindice, notNAindice, drop=F]
+    notNAindice = which(!is.na(outList$TstatVec_flip))
+    StatVec = outList$TstatVec_flip[notNAindice]
+
+
+
     if(regionTestType == "BURDEN"){
 	VarSVec = outList$VarVec
     }else{	    
         VarSVec = diag(outList$VarMat)
     }
     VarSVec = VarSVec[!is.na(VarSVec)]
-    adjPVec = outList$pvalVec
-    adjPVec = adjPVec[!is.na(adjPVec)]
+    adjPVec = OutList$p.value
+    #adjPVec = adjPVec[!is.na(adjPVec)]
     
     varTestedIndices = which(rowSums(annoMAFIndicatorMat) > 0)
+
     annoMAFIndicatorMat = annoMAFIndicatorMat[varTestedIndices, , drop=F]
     MAFVec = outList$MAFVec[varTestedIndices]
-    #print("MAFVec")
-    #print(MAFVec)
     AnnoWeights = dbeta(MAFVec,1,25)
     weightMat = AnnoWeights %*% t(AnnoWeights)
     if(isCondition){    
@@ -156,12 +225,12 @@ SAIGE.Region = function(objNull,
     wStatVec = StatVec * AnnoWeights
 
     if(regionTestType == "BURDEN"){
-      wadjVarSVec = outList$VarVec * AnnoWeights
+      wadjVarSVec = outList$VarVec * (AnnoWeights^2)
       if(isCondition){
 	  wStatVec_cond = wStatVec - outList$TstatAdjCond
           wadjVarSVec_cond = wadjVarSVec - diag(outList$VarVecAdjCond)
       }
-    }else{	    
+    }else{
       wadjVarSMat = outList$VarMat * weightMat
       if(isCondition){
 	  wStatVec_cond = wStatVec - outList$TstatAdjCond
@@ -169,19 +238,15 @@ SAIGE.Region = function(objNull,
       }
     }
 
-
+    gc()
 
     annoMAFIndVec = c()
     for(j in 1:length(annolist)){
-	AnnoName = annolist[j]    
+	AnnoName = annolist[j]
 	for(m in 1:length(maxMAFlist)){
 		jm = (j-1)*(length(maxMAFlist)) + m
 		maxMAFName = maxMAFlist[m]
 		tempPos = which(annoMAFIndicatorMat[,jm] != 0)
-#	        print("tempPos")
-#	        print(tempPos)
-#		print("length(tempPos)")
-#	        print(length(tempPos))
 	       if(length(tempPos) > 0){
 		annoMAFIndVec = c(annoMAFIndVec, jm)
 	        if(regionTestType == "BURDEN"){
@@ -194,21 +259,17 @@ SAIGE.Region = function(objNull,
 			p.new = adjPVec[tempPos]
 			g.sum = outList$genoSumMat[,jm]
 			q.sum<-sum(outList$gyVec[tempPos] * AnnoWeights[tempPos])
+
 			mu.a = objNull$mu
 			re_phi = get_newPhi_scaleFactor(q.sum, mu.a, g.sum, p.new, Score, Phi, regionTestType)
 		        Phi = re_phi$val
+			#cat("scaleFactor is ", re_phi$scaleFactor, "\n")
+			#cat("p.new is ", re_phi$p.new, "\n")
                 }
-#	        print("r.corr")
-#		print(r.corr)
-
-
+		#cat("Score is ", Score, "\n")
+		#cat("Phi is ", diag(Phi), "\n")	
 		groupOutList = get_SKAT_pvalue(Score, Phi, r.corr, regionTestType)
-#		print("Score")
-#		print(Score)
-#		 print("Phi")
- #               print(Phi)
-#		print("groupOutList")
-#		print(groupOutList)
+   		gc()
 		resultDF = data.frame(Region = regionName,
                                                     Group = AnnoName,
                                                     max_MAF = maxMAFName,
@@ -217,41 +278,20 @@ SAIGE.Region = function(objNull,
                                                     Pvalue_SKAT = groupOutList$Pvalue_SKAT,
                                                     BETA_Burden = groupOutList$BETA_Burden,
                                                     SE_Burden = groupOutList$SE_Burden)
-#		print("Phi")
-#		print(Phi)
 	      if(isCondition){
 		if(traitType == "binary"){
-			#weightMat_G1_G2_sub = weightMat_G1_G2[tempPos,]
-			#weightMat_sub = weightMat[tempPos,tempPos]
 			G1tilde_P_G2tilde_Mat_scaled = t(t((outList$G1tilde_P_G2tilde_Weighted_Mat[tempPos,,drop=F]) * sqrt(as.vector(re_phi$scaleFactor))) * sqrt(as.vector(outList$scalefactor_G2_cond)))
 #t(t(b * sqrt(a1)) * sqrt(a2))
-			#G1tilde_P_G2tilde_Mat_scaled = diag(as.vector(re_phi$scaleFactor)) %*% (outList$G1tilde_P_G2tilde_Weighted_Mat) %*% diag(as.vector(outList$scalefactor_G2_cond))
-			#VarInvMat_cond_scaled = diag(as.vector(1/(outList$scalefactor_G2_cond))) %*% outList$VarInvMat_G2_cond %*% diag(as.vector(1/(outList$scalefactor_G2_cond))) * (1/weightMat_G2_G2)
-			#print("dim(G1tilde_P_G2tilde_Mat_scaled)")
-			#print(dim(G1tilde_P_G2tilde_Mat_scaled))
-			#print("dim(outList$VarInvMat_G2_cond_scaled)")
-			#print(dim(outList$VarInvMat_G2_cond_scaled))
 		        adjCondTemp = G1tilde_P_G2tilde_Mat_scaled %*% outList$VarInvMat_G2_cond_scaled	
-			#print("dim(adjCondTemp)")
-			#print(dim(adjCondTemp))
-		#outList$VarMatAdjCond = adjCondTemp %*% t(G1tilde_P_G2tilde_Mat_scaled)
 			VarMatAdjCond = adjCondTemp %*% t(G1tilde_P_G2tilde_Mat_scaled)
-		#outList$TstatAdjCond = adjCondTemp %*% (outList$Tstat_G2_cond * outList$G2_Weight_cond)
 			TstatAdjCond = adjCondTemp %*% (outList$Tstat_G2_cond * outList$G2_Weight_cond)
 			Phi_cond = re_phi$val - diag(VarMatAdjCond)
-		#wadjVarSMat = re_phi$val
 			Score_cond = Score - TstatAdjCond
-		#wStatVec = wStatVec - outList$TstatAdjCond
-	        #wadjVarSMat = wadjVarSMat - outList$VarMatAdjCond
-
 			
 		}else{
 			Score_cond = wStatVec_cond[tempPos]
 			Phi_cond = wadjVarSMat_cond[tempPos, tempPos]
 		}
-
-
-			
 
 		groupOutList_cond = get_SKAT_pvalue(Score_cond, Phi_cond, r.corr, regionTestType)
 
@@ -260,12 +300,13 @@ SAIGE.Region = function(objNull,
 		resultDF$Pvalue_SKAT_cond = groupOutList_cond$Pvalue_SKAT
 		resultDF$BETA_Burden_cond = groupOutList_cond$BETA_Burden
 		resultDF$SE_Burden_cond = groupOutList_cond$SE_Burden
-	    }
+	     }#if(isCondition){
 		pval.Region = rbind.data.frame(pval.Region, resultDF)
 
-	   }  
-	}
-    }
+	   }#if(length(tempPos) > 0){
+    }#for(m in 1:length(maxMAFlist)){
+}#for(j in 1:length(annolist)){
+    
     pval.Region$MAC = outList$MAC_GroupVec[annoMAFIndVec]
     if(traitType == "binary"){
     	pval.Region$MAC_case = outList$MACCase_GroupVec[annoMAFIndVec]
@@ -273,13 +314,18 @@ SAIGE.Region = function(objNull,
     }
     pval.Region$Number_rare = outList$NumRare_GroupVec[annoMAFIndVec]
     pval.Region$Number_ultra_rare = outList$NumUltraRare_GroupVec[annoMAFIndVec]
-	
-   if(sum(!is.na(pval.Region$Pvalue)) > 0){
+
+
+   #if(sum(!is.na(pval.Region$Pvalue)) > 0){
    ##Combined using the Cauchy combination
    #pvals = pval.Region$Pvalue
    #pvals = pvals[!is.na(pvals)]
    #cctpval = CCT(pvals)
-   cctpval = get_CCT_pvalue(pval.Region$Pvalue
+  
+
+if(length(annolist) > 1 | length(maxMAFlist) > 1){
+
+   cctpval = get_CCT_pvalue(pval.Region$Pvalue)
    #pvals = pval.Region$Pvalue_Burden
    #pvals = pvals[!is.na(pvals)]
    #cctpval_Burden = CCT(pvals) 
@@ -300,7 +346,7 @@ SAIGE.Region = function(objNull,
    	#pvals = pval.Region$Pvalue_SKAT_cond
    	#pvals = pvals[!is.na(pvals)]
    	#cctpval_SKAT = CCT(pvals)
-	cctpval = get_CCT_pvalue(pval.Region$Pvalue_cond
+	cctpval = get_CCT_pvalue(pval.Region$Pvalue_cond)
    	cctpval_Burden = get_CCT_pvalue(pval.Region$Pvalue_Burden_cond)
 	cctpval_SKAT = get_CCT_pvalue(pval.Region$Pvalue_SKAT_cond)
 
@@ -314,15 +360,22 @@ SAIGE.Region = function(objNull,
    cctVec = c(cctVec, NA, NA)
 
    pval.Region = rbind(pval.Region, cctVec)
+}
 
-
-   #print(pval.Region)
+   if(regionTestType == "BURDEN"){
+     #pval.Region = pval.Region[,-c("Pvalue","Pvalue_SKAT")]
+     pval.Region$Pvalue = NULL
+     pval.Region$Pvalue_SKAT = NULL
+   }else if(regionTestType == "SKAT"){
+     pval.Region$Pvalue = NULL
+     pval.Region$Pvalue_Burden = NULL
+   }	   
    #print(info.Region)
    ##remove columns with all NA
-   pval.Region <- pval.Region[,which(unlist(lapply(pval.Region, function(x)!all(is.na(x))))),with=F]
+   #pval.Region <- pval.Region[,which(unlist(lapply(pval.Region, function(x)!all(is.na(x))))),with=F]
 
 
-   writeOutputFile(Output = list(pval.Region,  info.Region),
+   writeOutputFile(Output = list(pval.Region,  OutList),
                     OutputFile = list(OutputFile, paste0(OutputFile, ".markerInfo")),
                     OutputFileIndex = OutputFileIndex,
                     AnalysisType = "Region",
@@ -330,16 +383,168 @@ SAIGE.Region = function(objNull,
                     indexChunk = i,
                     Start = (i==1),
                     End = (i==nRegions))
+
+   rm(outList)
+   rm(OutList)
+   rm(pval.Region)
+   rm(resultDF)
+
+   gc()
    }
 
-
-  }
+  #}
 
   message = paste0("Analysis done! The results have been saved to '", OutputFile,"' and '",
                    paste0(OutputFile, ".markerInfo"),"'.")
   return(message)
 
 }
+
+
+
+SAIGE.getRegionList_new = function(marker_group_line,
+                         annoVec, #c("lof","lof;missense"
+                         markerInfo)
+{
+
+  # read group file
+   marker_group_line_list = strsplit(marker_group_line[1], split=c(" +", "\t"))[[1]]
+    gene=marker_group_line_list[1]
+    var=marker_group_line_list[3:length(marker_group_line_list)]
+   marker_group_line_list_anno = strsplit(marker_group_line[2], split=c(" +", "\t"))[[1]]
+    anno=marker_group_line_list_anno[3:length(marker_group_line_list_anno)]
+
+##to read in weight
+    #RegionData = NULL
+    #print("RegionData Here")
+
+    #RegionData = rbind(RegionData, cbind(rep(gene, length(var)), var, anno))
+  #print("RegionData")
+  #print(RegionData)
+  #colnames(RegionData) = c("REGION", "SNP", "ANNO")
+  RegionData = data.frame(REGION=rep(gene, length(var)), SNP = var, ANNO = anno)
+ 
+  RegionData = as.data.frame(RegionData)
+  #print(RegionData)
+
+##for non-VCF files
+if(!is.null(markerInfo)){
+  # updated on 2021-08-05
+  colnames(markerInfo)[3] = "MARKER"
+  colnames(markerInfo)[6] = "genoIndex"
+  colnames(markerInfo)[1] = "CHROM"
+  RegionData = merge(RegionData, markerInfo, by.y = "MARKER", by.x = "SNP", all.x = T, sort = F)
+  posNA = which(is.na(RegionData$genoIndex))
+ # print("RegionData")
+ # print(RegionData)
+ # print("posNA")
+ # print(posNA)
+    if(length(posNA) != 0){
+    #print(head(RegionData[posNA,1:2]))
+    stop("Total ",length(posNA)," markers in 'RegionFile' are not in 'GenoFile'.
+         Please remove these markers before region-level analysis.")
+  }
+}
+
+  #HeaderInRegionData = colnames(RegionData)
+  HeaderInRegionData = unique(RegionData$ANNO)
+  RegionAnnoHeaderList = list()
+  if(length(annoVec) == 0){
+        stop("At least one annotation is required\n")
+  }
+  for(q in 1:length(annoVec)){
+        RegionAnnoHeaderList[[q]] = strsplit(annoVec[q],";")[[1]]
+  }
+
+  RegionList = list()
+  uRegion = unique(RegionData$REGION)
+  RegionData = as.data.frame(RegionData)
+
+  for(r in uRegion){
+             #print(paste0("Analyzing region ",r,"...."))
+    #print(RegionData$REGION)
+    #print(r)
+    #which(as.vector(RegionData$REGION) == r)
+    posSNP = which(RegionData$REGION == r)
+    SNP = RegionData$SNP[posSNP]
+
+
+    if(any(duplicated(SNP)))
+      stop("Please check RegionFile: in region ", r,": duplicated SNPs exist.")
+
+    if(!is.null(markerInfo)){
+      genoIndex = as.numeric(RegionData$genoIndex[posSNP])
+      chrom = RegionData$CHROM[posSNP]
+      uchrom = unique(chrom)
+      if(length(uchrom) != 1)
+        stop("In region ",r,", markers are from multiple chromosomes.")
+    }
+
+    annoIndicatorMat = matrix(0, nrow=length(posSNP), ncol=length(annoVec))
+    annoVecNew = c()
+        for(q in 1:length(annoVec)){
+        indiceVec = which(RegionData$ANNO[posSNP] %in% RegionAnnoHeaderList[[q]])
+        if(length(indiceVec) > 0){
+                annoVecNew = c(annoVecNew, annoVec[q])
+                annoIndicatorMat[indiceVec, q] = 1
+                #annoIndicatorMat[which(RegionData$ANNO[posSNP] %in% RegionAnnoHeaderList[[q]]), q] = 1
+        }
+    }
+
+  RegionAnnoHeaderListNew = list()
+  if(length(annoVecNew) == 0){
+        warning("No markers are found for at least one annotation, so region ", r, " is skipped\n")
+        #stop("At least one annotation is required\n")
+  }else{
+   if(length(annoVecNew) < length(annoVec)){
+        annoIndicatorMat = matrix(0, nrow=length(posSNP), ncol=length(annoVecNew))
+    for(q in 1:length(annoVecNew)){
+        RegionAnnoHeaderListNew[[q]] = strsplit(annoVecNew[q],";")[[1]]
+        indiceVec = which(RegionData$ANNO[posSNP] %in% RegionAnnoHeaderListNew[[q]])
+               #if(length(indiceVec) > 0){
+        annoIndicatorMat[indiceVec, q] = 1
+                #annoIndicatorMat[which(RegionData$ANNO[posSNP] %in% RegionAnnoHeaderList[[q]]), q] = 1
+    }
+   }else{
+        annoVecNew = annoVec
+   }
+
+
+  }
+
+  annoIndicatorMat_rmind = which(rowSums(annoIndicatorMat) == 0)
+  if(length(annoIndicatorMat_rmind) > 0){
+    SNP = SNP[-annoIndicatorMat_rmind]
+    annoIndicatorMat = annoIndicatorMat[-annoIndicatorMat_rmind,,drop=F]
+    if(!is.null(markerInfo)){
+      genoIndex = genoIndex[-annoIndicatorMat_rmind]
+    }
+  }
+
+   if(!is.null(markerInfo)){
+    RegionList[[r]] = list(SNP = SNP,
+                           annoIndicatorMat = annoIndicatorMat,
+                           genoIndex = genoIndex,
+#                           chrom = uchrom,
+                           annoVec = annoVecNew)
+   }else{
+    RegionList[[r]] = list(SNP = SNP,
+                           annoIndicatorMat = annoIndicatorMat,
+ #                          chrom = uchrom,
+                           annoVec = annoVecNew)
+      }
+
+  }
+
+
+  return(RegionList)
+}
+
+
+
+
+
+
 
 
 # extract region-marker mapping from regionFile
@@ -424,7 +629,8 @@ if(!is.null(markerInfo)){
 
     annoIndicatorMat = matrix(0, nrow=length(posSNP), ncol=length(annoVec)) 	 
     annoVecNew = c() 
-  for(q in 1:length(annoVec)){
+  
+    for(q in 1:length(annoVec)){
 	indiceVec = which(RegionData$ANNO[posSNP] %in% RegionAnnoHeaderList[[q]])
  	if(length(indiceVec) > 0){
 	        annoVecNew = c(annoVecNew, annoVec[q])
@@ -435,7 +641,7 @@ if(!is.null(markerInfo)){
 
   RegionAnnoHeaderListNew = list()
   if(length(annoVecNew) == 0){
-	warning("No markers are found for at least one annotation, so this group will be skipped\n")
+	warning("No markers are found for at least one annotation, so region ", r, " is skipped\n")
         #stop("At least one annotation is required\n")
   }else{
    if(length(annoVecNew) < length(annoVec)){
@@ -447,13 +653,22 @@ if(!is.null(markerInfo)){
         annoIndicatorMat[indiceVec, q] = 1
                 #annoIndicatorMat[which(RegionData$ANNO[posSNP] %in% RegionAnnoHeaderList[[q]]), q] = 1
     }
-  }else{
+   }else{
 	annoVecNew = annoVec
-  }	    
+   }	    
 
 
   }
 
+  annoIndicatorMat_rmind = which(rowSums(annoIndicatorMat) == 0) 
+  if(length(annoIndicatorMat_rmind) > 0){
+    SNP = SNP[-annoIndicatorMat_rmind]
+    annoIndicatorMat = annoIndicatorMat[-annoIndicatorMat_rmind,,drop=F]
+    if(!is.null(markerInfo)){
+      genoIndex = genoIndex[-annoIndicatorMat_rmind]
+    }
+  }
+	  
    if(!is.null(markerInfo)){ 
     RegionList[[r]] = list(SNP = SNP,
 			   annoIndicatorMat = annoIndicatorMat,
@@ -482,17 +697,18 @@ mainRegion = function(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputF
 
 
   OutList = mainRegionInCPP(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, regionTestType)
-  
+  #print(OutList)  
  
  if(length(OutList) > 1){
   noNAIndices = which(!is.na(OutList$pvalVec))
-  #print("dim(OutList$VarMat)")
-  #print(dim(OutList$VarMat))
+  print("diag(OutList$VarMat)")
+  print(diag(OutList$VarMat))
 
   URindices = which(OutList$infoVec == "UR")
+
   #print(length(which(OutList$infoVec == "")))
   OutList$infoVec[which(OutList$infoVec == "")] = "NA:NA:NA:NA"
-  if(length(URindices) > 1){
+  if(length(URindices) >= 1){
   	OutList$infoVec[URindices] = "UR:UR:UR:UR"
   	#URindices_adj = URindices - length(genoIndex)
   }
@@ -531,6 +747,8 @@ mainRegion = function(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputF
   obj.mainMarker$var = OutList$varTVec
   obj.mainMarker$p.value = OutList$pvalVec
 
+
+
   if(traitType == "binary"){
     obj.mainMarker$p.value.NA = OutList$pvalNAVec
     obj.mainMarker$Is.SPA.converge = OutList$isSPAConvergeVec
@@ -563,7 +781,7 @@ mainRegion = function(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputF
   }	  
 
   if(regionTestType == "BURDEN"){
-    OutList$VarVec = OutList$varTVec
+    OutList$VarVec = OutList$varTVec[noNAIndices]
   }
 
   obj.mainMarker = obj.mainMarker[noNAIndices,]

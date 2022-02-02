@@ -8,8 +8,8 @@
 using namespace Rcpp;
 
 // setMarker_GlobalVarsInCPP
-void setMarker_GlobalVarsInCPP(std::string t_impute_method, double t_missing_cutoff, double t_min_maf_marker, double t_min_mac_marker, double t_min_info_marker, unsigned int t_omp_num_threads, bool t_isOutputMoreDetails, int t_marker_chunksize, double g_dosage_zerod_cutoff, double g_dosage_zerod_MAC_cutoff);
-RcppExport SEXP _SAIGE_setMarker_GlobalVarsInCPP(SEXP t_impute_methodSEXP, SEXP t_missing_cutoffSEXP, SEXP t_min_maf_markerSEXP, SEXP t_min_mac_markerSEXP, SEXP t_min_info_markerSEXP, SEXP t_omp_num_threadsSEXP, SEXP t_isOutputMoreDetailsSEXP, SEXP t_marker_chunksizeSEXP, SEXP g_dosage_zerod_cutoffSEXP, SEXP g_dosage_zerod_MAC_cutoffSEXP) {
+void setMarker_GlobalVarsInCPP(std::string t_impute_method, double t_missing_cutoff, double t_min_maf_marker, double t_min_mac_marker, double t_min_info_marker, unsigned int t_omp_num_threads, bool t_isOutputMoreDetails, int t_marker_chunksize, double t_dosage_zerod_cutoff, double t_dosage_zerod_MAC_cutoff);
+RcppExport SEXP _SAIGE_setMarker_GlobalVarsInCPP(SEXP t_impute_methodSEXP, SEXP t_missing_cutoffSEXP, SEXP t_min_maf_markerSEXP, SEXP t_min_mac_markerSEXP, SEXP t_min_info_markerSEXP, SEXP t_omp_num_threadsSEXP, SEXP t_isOutputMoreDetailsSEXP, SEXP t_marker_chunksizeSEXP, SEXP t_dosage_zerod_cutoffSEXP, SEXP t_dosage_zerod_MAC_cutoffSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type t_impute_method(t_impute_methodSEXP);
@@ -20,15 +20,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type t_omp_num_threads(t_omp_num_threadsSEXP);
     Rcpp::traits::input_parameter< bool >::type t_isOutputMoreDetails(t_isOutputMoreDetailsSEXP);
     Rcpp::traits::input_parameter< int >::type t_marker_chunksize(t_marker_chunksizeSEXP);
-    Rcpp::traits::input_parameter< double >::type g_dosage_zerod_cutoff(g_dosage_zerod_cutoffSEXP);
-    Rcpp::traits::input_parameter< double >::type g_dosage_zerod_MAC_cutoff(g_dosage_zerod_MAC_cutoffSEXP);
-    setMarker_GlobalVarsInCPP(t_impute_method, t_missing_cutoff, t_min_maf_marker, t_min_mac_marker, t_min_info_marker, t_omp_num_threads, t_isOutputMoreDetails, t_marker_chunksize, g_dosage_zerod_cutoff, g_dosage_zerod_MAC_cutoff);
+    Rcpp::traits::input_parameter< double >::type t_dosage_zerod_cutoff(t_dosage_zerod_cutoffSEXP);
+    Rcpp::traits::input_parameter< double >::type t_dosage_zerod_MAC_cutoff(t_dosage_zerod_MAC_cutoffSEXP);
+    setMarker_GlobalVarsInCPP(t_impute_method, t_missing_cutoff, t_min_maf_marker, t_min_mac_marker, t_min_info_marker, t_omp_num_threads, t_isOutputMoreDetails, t_marker_chunksize, t_dosage_zerod_cutoff, t_dosage_zerod_MAC_cutoff);
     return R_NilValue;
 END_RCPP
 }
 // setRegion_GlobalVarsInCPP
-void setRegion_GlobalVarsInCPP(std::string t_impute_method, double t_missing_cutoff, arma::vec t_max_maf_region, unsigned int t_max_markers_region, unsigned int t_omp_num_threads, std::string t_method_to_CollapseUltraRare, double t_MACCutoff_to_CollapseUltraRare, double t_DosageCutoff_for_UltraRarePresence, double g_dosage_zerod_cutoff, double g_dosage_zerod_MAC_cutoff);
-RcppExport SEXP _SAIGE_setRegion_GlobalVarsInCPP(SEXP t_impute_methodSEXP, SEXP t_missing_cutoffSEXP, SEXP t_max_maf_regionSEXP, SEXP t_max_markers_regionSEXP, SEXP t_omp_num_threadsSEXP, SEXP t_method_to_CollapseUltraRareSEXP, SEXP t_MACCutoff_to_CollapseUltraRareSEXP, SEXP t_DosageCutoff_for_UltraRarePresenceSEXP, SEXP g_dosage_zerod_cutoffSEXP, SEXP g_dosage_zerod_MAC_cutoffSEXP) {
+void setRegion_GlobalVarsInCPP(std::string t_impute_method, double t_missing_cutoff, arma::vec t_max_maf_region, unsigned int t_max_markers_region, unsigned int t_omp_num_threads, std::string t_method_to_CollapseUltraRare, double t_MACCutoff_to_CollapseUltraRare, double t_DosageCutoff_for_UltraRarePresence, double t_dosage_zerod_cutoff, double t_dosage_zerod_MAC_cutoff);
+RcppExport SEXP _SAIGE_setRegion_GlobalVarsInCPP(SEXP t_impute_methodSEXP, SEXP t_missing_cutoffSEXP, SEXP t_max_maf_regionSEXP, SEXP t_max_markers_regionSEXP, SEXP t_omp_num_threadsSEXP, SEXP t_method_to_CollapseUltraRareSEXP, SEXP t_MACCutoff_to_CollapseUltraRareSEXP, SEXP t_DosageCutoff_for_UltraRarePresenceSEXP, SEXP t_dosage_zerod_cutoffSEXP, SEXP t_dosage_zerod_MAC_cutoffSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type t_impute_method(t_impute_methodSEXP);
@@ -39,21 +39,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type t_method_to_CollapseUltraRare(t_method_to_CollapseUltraRareSEXP);
     Rcpp::traits::input_parameter< double >::type t_MACCutoff_to_CollapseUltraRare(t_MACCutoff_to_CollapseUltraRareSEXP);
     Rcpp::traits::input_parameter< double >::type t_DosageCutoff_for_UltraRarePresence(t_DosageCutoff_for_UltraRarePresenceSEXP);
-    Rcpp::traits::input_parameter< double >::type g_dosage_zerod_cutoff(g_dosage_zerod_cutoffSEXP);
-    Rcpp::traits::input_parameter< double >::type g_dosage_zerod_MAC_cutoff(g_dosage_zerod_MAC_cutoffSEXP);
-    setRegion_GlobalVarsInCPP(t_impute_method, t_missing_cutoff, t_max_maf_region, t_max_markers_region, t_omp_num_threads, t_method_to_CollapseUltraRare, t_MACCutoff_to_CollapseUltraRare, t_DosageCutoff_for_UltraRarePresence, g_dosage_zerod_cutoff, g_dosage_zerod_MAC_cutoff);
+    Rcpp::traits::input_parameter< double >::type t_dosage_zerod_cutoff(t_dosage_zerod_cutoffSEXP);
+    Rcpp::traits::input_parameter< double >::type t_dosage_zerod_MAC_cutoff(t_dosage_zerod_MAC_cutoffSEXP);
+    setRegion_GlobalVarsInCPP(t_impute_method, t_missing_cutoff, t_max_maf_region, t_max_markers_region, t_omp_num_threads, t_method_to_CollapseUltraRare, t_MACCutoff_to_CollapseUltraRare, t_DosageCutoff_for_UltraRarePresence, t_dosage_zerod_cutoff, t_dosage_zerod_MAC_cutoff);
     return R_NilValue;
 END_RCPP
 }
 // mainMarkerInCPP
-Rcpp::DataFrame mainMarkerInCPP(std::string& t_genoType, std::string& t_traitType, arma::ivec& t_genoIndex, bool& t_isMoreOutput, bool& t_isImputation);
+Rcpp::DataFrame mainMarkerInCPP(std::string& t_genoType, std::string& t_traitType, std::vector<std::string>& t_genoIndex, bool& t_isMoreOutput, bool& t_isImputation);
 RcppExport SEXP _SAIGE_mainMarkerInCPP(SEXP t_genoTypeSEXP, SEXP t_traitTypeSEXP, SEXP t_genoIndexSEXP, SEXP t_isMoreOutputSEXP, SEXP t_isImputationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string& >::type t_genoType(t_genoTypeSEXP);
     Rcpp::traits::input_parameter< std::string& >::type t_traitType(t_traitTypeSEXP);
-    Rcpp::traits::input_parameter< arma::ivec& >::type t_genoIndex(t_genoIndexSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type t_genoIndex(t_genoIndexSEXP);
     Rcpp::traits::input_parameter< bool& >::type t_isMoreOutput(t_isMoreOutputSEXP);
     Rcpp::traits::input_parameter< bool& >::type t_isImputation(t_isImputationSEXP);
     rcpp_result_gen = Rcpp::wrap(mainMarkerInCPP(t_genoType, t_traitType, t_genoIndex, t_isMoreOutput, t_isImputation));
@@ -156,13 +156,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // mainRegionInCPP
-Rcpp::List mainRegionInCPP(std::string t_genoType, std::vector<uint32_t>& t_genoIndex, arma::mat& annoIndicatorMat, arma::vec& maxMAFVec, std::string t_outputFile, std::string t_traitType, unsigned int t_n, arma::mat P1Mat, arma::mat P2Mat);
-RcppExport SEXP _SAIGE_mainRegionInCPP(SEXP t_genoTypeSEXP, SEXP t_genoIndexSEXP, SEXP annoIndicatorMatSEXP, SEXP maxMAFVecSEXP, SEXP t_outputFileSEXP, SEXP t_traitTypeSEXP, SEXP t_nSEXP, SEXP P1MatSEXP, SEXP P2MatSEXP) {
+Rcpp::List mainRegionInCPP(std::string t_genoType, std::vector<std::string>& t_genoIndex, arma::mat& annoIndicatorMat, arma::vec& maxMAFVec, std::string t_outputFile, std::string t_traitType, unsigned int t_n, arma::mat P1Mat, arma::mat P2Mat, std::string t_regionTestType, bool t_isImputation);
+RcppExport SEXP _SAIGE_mainRegionInCPP(SEXP t_genoTypeSEXP, SEXP t_genoIndexSEXP, SEXP annoIndicatorMatSEXP, SEXP maxMAFVecSEXP, SEXP t_outputFileSEXP, SEXP t_traitTypeSEXP, SEXP t_nSEXP, SEXP P1MatSEXP, SEXP P2MatSEXP, SEXP t_regionTestTypeSEXP, SEXP t_isImputationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type t_genoType(t_genoTypeSEXP);
-    Rcpp::traits::input_parameter< std::vector<uint32_t>& >::type t_genoIndex(t_genoIndexSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type t_genoIndex(t_genoIndexSEXP);
     Rcpp::traits::input_parameter< arma::mat& >::type annoIndicatorMat(annoIndicatorMatSEXP);
     Rcpp::traits::input_parameter< arma::vec& >::type maxMAFVec(maxMAFVecSEXP);
     Rcpp::traits::input_parameter< std::string >::type t_outputFile(t_outputFileSEXP);
@@ -170,17 +170,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type t_n(t_nSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type P1Mat(P1MatSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type P2Mat(P2MatSEXP);
-    rcpp_result_gen = Rcpp::wrap(mainRegionInCPP(t_genoType, t_genoIndex, annoIndicatorMat, maxMAFVec, t_outputFile, t_traitType, t_n, P1Mat, P2Mat));
+    Rcpp::traits::input_parameter< std::string >::type t_regionTestType(t_regionTestTypeSEXP);
+    Rcpp::traits::input_parameter< bool >::type t_isImputation(t_isImputationSEXP);
+    rcpp_result_gen = Rcpp::wrap(mainRegionInCPP(t_genoType, t_genoIndex, annoIndicatorMat, maxMAFVec, t_outputFile, t_traitType, t_n, P1Mat, P2Mat, t_regionTestType, t_isImputation));
     return rcpp_result_gen;
 END_RCPP
 }
 // assign_conditionMarkers_factors
-void assign_conditionMarkers_factors(std::string t_genoType, std::vector<uint32_t>& t_genoIndex, unsigned int t_n);
+void assign_conditionMarkers_factors(std::string t_genoType, std::vector<std::string>& t_genoIndex, unsigned int t_n);
 RcppExport SEXP _SAIGE_assign_conditionMarkers_factors(SEXP t_genoTypeSEXP, SEXP t_genoIndexSEXP, SEXP t_nSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type t_genoType(t_genoTypeSEXP);
-    Rcpp::traits::input_parameter< std::vector<uint32_t>& >::type t_genoIndex(t_genoIndexSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type t_genoIndex(t_genoIndexSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type t_n(t_nSEXP);
     assign_conditionMarkers_factors(t_genoType, t_genoIndex, t_n);
     return R_NilValue;
@@ -1896,7 +1898,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_setSAIGEobjInCPP", (DL_FUNC) &_SAIGE_setSAIGEobjInCPP, 23},
     {"_SAIGE_setSparseSigmaInCPP", (DL_FUNC) &_SAIGE_setSparseSigmaInCPP, 3},
     {"_SAIGE_RegionSetUpConditional_binary_InCPP", (DL_FUNC) &_SAIGE_RegionSetUpConditional_binary_InCPP, 0},
-    {"_SAIGE_mainRegionInCPP", (DL_FUNC) &_SAIGE_mainRegionInCPP, 9},
+    {"_SAIGE_mainRegionInCPP", (DL_FUNC) &_SAIGE_mainRegionInCPP, 11},
     {"_SAIGE_assign_conditionMarkers_factors", (DL_FUNC) &_SAIGE_assign_conditionMarkers_factors, 3},
     {"_SAIGE_assign_conditionMarkers_factors_binary_region", (DL_FUNC) &_SAIGE_assign_conditionMarkers_factors_binary_region, 1},
     {"_SAIGE_set_iterator_inVcf", (DL_FUNC) &_SAIGE_set_iterator_inVcf, 4},

@@ -1,4 +1,3 @@
-
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
 
@@ -349,7 +348,7 @@ arma::vec timeoutput4 = getTime();
 
 }
 
-void BgenClass::getOneMarker(uint32_t & t_gIndex,        // different meanings for different genoType
+void BgenClass::getOneMarker(uint64_t & t_gIndex,        // different meanings for different genoType
                                   std::string& t_ref,       // REF allele
                                   std::string& t_alt,       // ALT allele (should probably be minor allele, otherwise, computation time will increase)
                                   std::string& t_marker,    // marker ID extracted from genotype file
@@ -368,7 +367,9 @@ void BgenClass::getOneMarker(uint32_t & t_gIndex,        // different meanings f
 {
 
   arma::vec timeoutput1 = getTime();	
-  if(t_gIndex > 0){fseek(m_fin, t_gIndex, SEEK_SET);}
+  if(t_gIndex > 0){
+	  fseek(m_fin, t_gIndex, SEEK_SET);
+  }
   arma::vec timeoutput2 = getTime();
 
   std::string SNPID, RSID, chromosome, first_allele,second_allele ;
@@ -408,12 +409,12 @@ void BgenClass::getOneMarker(uint32_t & t_gIndex,        // different meanings f
     
     uint physpos; fread(&physpos, 4, 1, m_fin); // cout << "physpos: " << physpos << " " << std::flush;
     position = physpos;
-    uint K; fread(&K, 2, 1, m_fin); //cout << "K: " << K << endl;
-          //std::cout << "chr:pos: " << chromosome << ":" << position << std::endl;
-    if (K != 2) {
-      std::cerr << "ERROR: Non-bi-allelic variant found: " << K << " alleles" << std::endl;
-      exit(1);
-    }
+    uint K; 
+    fread(&K, 2, 1, m_fin); 
+    //if (K != 2) {
+    //  std::cerr << "ERROR: Non-bi-allelic variant found: " << K << " alleles" << std::endl;
+    //  exit(1);
+   // }
     uint LA; fread(&LA, 4, 1, m_fin); // cout << "LA: " << LA << " " << std::flush;
     if (LA > maxLA) {
       maxLA = 2*LA;
@@ -443,8 +444,6 @@ void BgenClass::getOneMarker(uint32_t & t_gIndex,        // different meanings f
     info = 0;
     if (m_bufLens > m_buf.size()) m_buf.resize(m_bufLens); //fix the length
     arma::vec timeoutput3a = getTime();
-
-
 
     Parse2(&m_buf[0], m_bufLens, &m_zBuf[0], m_zBufLens, RSID, dosages, AC, AF, t_indexForMissing, info, t_indexForNonZero);
     arma::vec timeoutput3 = getTime();

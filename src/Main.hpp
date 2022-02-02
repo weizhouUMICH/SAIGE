@@ -12,8 +12,8 @@ void setMarker_GlobalVarsInCPP(std::string t_impute_method,
                                unsigned int t_omp_num_threads,
                                bool t_isOutputMoreDetails,
 			       int t_marker_chunksize,
-			       double g_dosage_zerod_cutoff,
-                               double g_dosage_zerod_MAC_cutoff);
+			       double t_dosage_zerod_cutoff,
+                               double t_dosage_zerod_MAC_cutoff);
 
 
 void setRegion_GlobalVarsInCPP(std::string t_impute_method,
@@ -24,18 +24,18 @@ void setRegion_GlobalVarsInCPP(std::string t_impute_method,
                                std::string t_method_to_CollapseUltraRare,
                                double t_MACCutoff_to_CollapseUltraRare,
                                double t_DosageCutoff_for_UltraRarePresence,
-			       double g_dosage_zerod_cutoff,
-                               double g_dosage_zerod_MAC_cutoff);
+			       double t_dosage_zerod_cutoff,
+                               double t_dosage_zerod_MAC_cutoff);
 
 Rcpp::DataFrame mainMarkerInCPP(
                            std::string & t_genoType,     // "PLINK", "BGEN"
                            std::string & t_traitType,
-                           arma::ivec & t_genoIndex,
+                           std::vector<std::string>  & t_genoIndex,
                            bool & t_isMoreOutput,
                            bool & t_isImputation);
 
 bool Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN"
-                               uint32_t & t_gIndex,        // different meanings for different genoType
+                               uint64_t & t_gIndex,        // different meanings for different genoType
                                std::string& t_ref,       // REF allele
                                std::string& t_alt,       // ALT allele (should probably be minor allele, otherwise, computation time will increase)
                                std::string& t_marker,    // marker ID extracted from genotype file
@@ -81,7 +81,7 @@ void Unified_getMarkerPval(
 
 Rcpp::List mainRegionInCPP(
                            std::string t_genoType,     // "PLINK", "BGEN"
-                           std::vector<uint32_t> & t_genoIndex,
+                           std::vector<std::string> & t_genoIndex,
                            arma::mat & annoIndicatorMat,
                            arma::vec & maxMAFVec,
                            std::string t_outputFile,
@@ -89,7 +89,8 @@ Rcpp::List mainRegionInCPP(
                            unsigned int t_n,           // sample size
                            arma::mat P1Mat,            // edited on 2021-08-19: to avoid repeated memory allocation of P1Mat and P2Mat
                            arma::mat P2Mat,
-                           std::string t_regionTestType);
+                           std::string t_regionTestType,
+			   bool t_isImputation);
 
 
 
@@ -141,7 +142,7 @@ void setSAIGEobjInCPP(arma::mat & t_XVX,
 
 void assign_conditionMarkers_factors(
                            std::string t_genoType,     // "PLINK", "BGEN"
-                           std::vector<uint32_t> & t_genoIndex,
+                           std::vector<std::string> & t_genoIndex,
                            unsigned int t_n);
 
 void assign_conditionMarkers_factors_binary_region(
