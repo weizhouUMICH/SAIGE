@@ -108,7 +108,7 @@ SPAGMMATtest = function(bgenFile = "",
                  weightMAFcutoff = 0.01,
                  weightsIncludeinGroupFile=FALSE,
                  weights_for_G2_cond = NULL,
-                 r.corr=NULL,
+                 r.corr=0,
 		 dosage_zerod_cutoff = 0.2,
 		 dosage_zerod_MAC_cutoff = 10,
 		 is_output_moreDetails = FALSE, #new
@@ -149,7 +149,7 @@ SPAGMMATtest = function(bgenFile = "",
                      numLinesOutput = numLinesOutput,
                      dosage_zerod_cutoff = dosage_zerod_cutoff,
 		     dosage_zerod_MAC_cutoff = dosage_zerod_MAC_cutoff)
-    if(file.exists(SAIGEOutputFile)) {print("ok -2 file exist")} 
+    #if(file.exists(SAIGEOutputFile)) {print("ok -2 file exist")} 
 
 
 
@@ -190,7 +190,7 @@ SPAGMMATtest = function(bgenFile = "",
 
 
 
-    if(file.exists(SAIGEOutputFile)) {print("ok -1 file exist")} 
+    #if(file.exists(SAIGEOutputFile)) {print("ok -1 file exist")} 
 
         IsOutputlogPforSingle = FALSE   #to check
         OUT_Filename_Single<-sprintf("%s.single",SAIGEOutputFile)
@@ -311,6 +311,9 @@ SPAGMMATtest = function(bgenFile = "",
         n = length(obj.model$y) #sample size
 
         condition_genoIndex = extract_genoIndex_condition(condition, markerInfo, genoType)
+
+
+	condition_genoIndex = as.character(condition_genoIndex)
 	assign_conditionMarkers_factors(genoType, condition_genoIndex,  n)
 	 #print("OK2")
 	if(obj.model$traitType == "binary" & isGroupTest){
@@ -318,7 +321,7 @@ SPAGMMATtest = function(bgenFile = "",
 	 #print("OK3")
 
 
-	G2condList = get_newPhi_scaleFactor(q.sum = outG2cond$qsum_G2_cond, mu.a = obj.model$mu, g.sum = outG2cond$gsum_G2_cond, p.new = outG2cond$pval_G2_cond, Score = outG2cond$Score_G2_cond, Phi = outG2cond$VarMat_G2_cond)
+	G2condList = get_newPhi_scaleFactor(q.sum = outG2cond$qsum_G2_cond, mu.a = obj.model$mu, g.sum = outG2cond$gsum_G2_cond, p.new = outG2cond$pval_G2_cond, Score = outG2cond$Score_G2_cond, Phi = outG2cond$VarMat_G2_cond, "SKAT-O")
 	#print(G2condList)
 	scaleFactorVec = as.vector(G2condList$scaleFactor)
 	#print(scaleFactorVec)
@@ -328,7 +331,7 @@ SPAGMMATtest = function(bgenFile = "",
     }
 
 
-    if(file.exists(SAIGEOutputFile)) {print("ok 0 file exist")} 
+    #if(file.exists(SAIGEOutputFile)) {print("ok 0 file exist")} 
 
 
     #cat("Number of all markers to test:\t", nrow(markerInfo), "\n")
@@ -340,7 +343,7 @@ SPAGMMATtest = function(bgenFile = "",
     OutputFile = SAIGEOutputFile
 
     nMarkersEachChunk = numLinesOutput
-    if(file.exists(SAIGEOutputFile)) {print("ok 2 file exist")}
+    #if(file.exists(SAIGEOutputFile)) {print("ok 2 file exist")}
         SAIGE.Marker(obj.model,
                    objGeno,
                    OutputFile,
@@ -367,7 +370,8 @@ SPAGMMATtest = function(bgenFile = "",
                      markerInfo,
 		     obj.model$traitType,
 		     is_imputed_data,
-		     isCondition, 
+		     isCondition,
+		     numLinesOutput, 
 		     r.corr)
     }	    
 }

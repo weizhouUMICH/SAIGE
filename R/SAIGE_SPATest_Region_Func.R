@@ -182,8 +182,6 @@ checkGroupFile<-function(groupFile){
     #  group_info_list[[geneID]]<-list(geneID = geneID)
     #}
     #group_info_list[[geneID]][[type]] = marker_group_line_list[-c(1:2)]
-  
-  cat("nregion ", nregion, "\n")
 
   close(gf)	
   return(list(nRegions = nregion, is_weight_included = is_weight_included))
@@ -283,10 +281,10 @@ get_newPhi_scaleFactor = function(q.sum, mu.a, g.sum, p.new, Score, Phi, regionT
 
 get_SKAT_pvalue = function(Score, Phi, r.corr, regionTestType){
 	if(regionTestType == "BURDEN"){
-		Q = SKAT:::SKAT_META_Optimal_Get_Q(Score, r.corr)$Q.r
+		Q = try((SKAT:::SKAT_META_Optimal_Get_Q(Score, r.corr)$Q.r), silent = TRUE)
 		Q.res = NULL
         	a <- as.matrix(sum(Phi))
-        	out_SKAT_List <- SKAT:::Get_Liu_PVal(Q, a, Q.res)
+        	out_SKAT_List <- try(SKAT:::Get_Liu_PVal(Q, a, Q.res), silent = TRUE)
 	}else{
 
                 out_SKAT_List = try(SKAT:::Met_SKAT_Get_Pvalue(Score = Score,

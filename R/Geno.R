@@ -152,19 +152,15 @@ setGenoInput = function(bgenFile = "",
     
     if(is.null(AlleleOrder)) AlleleOrder = "ref-first"
     
-    print("checkIfSampleIDsExist")  
     if(sampleFile != "" | !checkIfSampleIDsExist(bgenFile)){
 	print("Sample IDs were not found in the bgen file.")
 	Check_File_Exist(sampleFile)
 	sampleData = data.table::fread(sampleFile, header=F, colClasses = c("character"))
         samplesInGeno = as.character(sampleData[,1])
     }else{
-    print("checkIfSampleIDsExist 2")  
 	samplesInGeno = getSampleIDsFromBGEN(bgenFile)
  	print(samplesInGeno[1:100])		    
     }    
-    print("checkIfSampleIDsExist 3")  
-    
     db_con <- RSQLite::dbConnect(RSQLite::SQLite(), bgenFileIndex)
     on.exit(RSQLite::dbDisconnect(db_con), add = TRUE)
     bgiData = dplyr::tbl(db_con, "Variant")
@@ -348,6 +344,6 @@ extract_genoIndex_condition = function(condition, markerInfo, genoType){
        }
    }else{
 	stop("condition is empty!")
-   }	   
+   }
    return(cond_genoIndex)
 }	

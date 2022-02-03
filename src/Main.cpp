@@ -126,8 +126,8 @@ Rcpp::DataFrame mainMarkerInCPP(
 {
 
   int q = t_genoIndex.size();  // number of markers
-  std::cout << "q is " << q << std::endl;
-  std::cout << "t_genoIndex[0] is " << t_genoIndex.at(0) << std::endl;
+  //std::cout << "q is " << q << std::endl;
+  //std::cout << "t_genoIndex[0] is " << t_genoIndex.at(0) << std::endl;
   //t_genoIndex.print();
   // set up output
   std::vector<std::string> markerVec(q);  // marker IDs
@@ -847,7 +847,6 @@ Rcpp::List mainRegionInCPP(
   // cycle for q markers
   for(unsigned int i = 0; i < q0; i++)
   {
-  //std::cout << "i start " << i << std::endl; 
     // marker-level information
     double altFreq, altCounts, missingRate, imputeInfo;
     std::vector<uint32_t> indexForMissing;
@@ -915,9 +914,6 @@ Rcpp::List mainRegionInCPP(
 
 
 
-    //std::cout << "MAF " << MAF << std::endl;
-    //std::cout << "g_maxMAFLimit " << g_maxMAFLimit << std::endl;
-
 
     /*
     markerVec.at(i) = marker;             // marker IDs
@@ -939,12 +935,10 @@ Rcpp::List mainRegionInCPP(
       }
      
        
-  //std::cout << "okk3b" << std::endl;
       Unified_getMarkerPval(
                     GVec,
                           false, // bool t_isOnlyOutputNonZero,
                           indexNonZeroVec_arma, indexZeroVec_arma, Beta, seBeta, pval, pval_noSPA, Tstat, gy, varT, altFreq, isSPAConverge, gtildeVec, is_gtilde, true, P2Vec, isCondition, Beta_c, seBeta_c, pval_c, pval_noSPA_c, Tstat_c, varT_c, G1tilde_P_G2tilde_Vec);
-  //std::cout << "okk3c" << std::endl;
       BetaVec.at(i) = Beta * (1 - 2*flip);  // Beta if flip = false, -1 * Beta is flip = true       
       seBetaVec.at(i) = seBeta;       
       pvalVec.at(i) = pval;
@@ -1312,7 +1306,6 @@ Rcpp::List mainRegionInCPP(
   // not so many markers in the region, so all matrix is in memory
   //nchunks = ichunk + 1;
   //
-  //std::cout << "VarMat.n_rows " << VarMat.n_rows << std::endl;
 
 
 arma::mat VarMat(i1, i1);
@@ -1511,7 +1504,6 @@ if(t_regionTestType != "BURDEN"){
     //	OutList.push_back(pvalNA_cVec, "pvalNA_cVec");
     // }
 //}
-
   return OutList;
 }
 

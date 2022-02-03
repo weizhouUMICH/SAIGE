@@ -30,7 +30,8 @@ SAIGE.Region = function(objNull,
 			markerInfo,
 			traitType,
 			isImputation,
-			isCondition, 
+			isCondition,
+			numLinesOutput,	
 			r.corr){
   OutputFileIndex = NULL	
   if(is.null(OutputFileIndex))
@@ -54,21 +55,23 @@ SAIGE.Region = function(objNull,
 
   ## annotation in region
   ##need to revise
-  if(is.null(r.corr)){
+  if(r.corr==0){
     out.method = SKAT:::SKAT_Check_Method(method="optimal.adj", r.corr=0)
     method=out.method$method
     r.corr=out.method$r.corr
     cat("SKAT-O test will be performed. P-values for BUTDEN and SKAT tests will also be output\n.")
     regionTestType = "SKAT-O"
-  }else if(r.corr == 0){
-    method = NULL
-    cat("SKAT test will be performed\n")
-    regionTestType = "SKAT"
   }else if(r.corr == 1){	  
     method = NULL
     cat("BURDEN test will be performed\n")
     regionTestType = "BURDEN"
-  }
+  }else{
+    stop("r.corr needs to be either 1 (BURDEN test) or 0 (SKAT-O test)\n")
+  }	  
+  #else if(r.corr == 0){
+  #  method = NULL
+  #  cat("SKAT test will be performed\n")
+  #  regionTestType = "SKAT"
 
   ##check group file
   region_list = checkGroupFile(groupFile)
@@ -81,8 +84,16 @@ SAIGE.Region = function(objNull,
   }	  
 
   gf = file(groupFile, "r")
+
+
+  cat("indexChunk is ", indexChunk, "\n")
+
+  skipline = indexChunk*nline_per_gene
   if(indexChunk > 0 & indexChunk < nRegions){
-    marker_group_line_temp = readLines(gf, skip=indexChunk*nline_per_gene-1, n = 1) 
+    for(k in 1:skipline){
+    marker_group_line_temp = readLines(gf, n = 1) 
+    rm(marker_group_line_temp)
+    }
   }
 
   #RegionList = SAIGE.getRegionList(groupFile, annolist, markerInfo)
@@ -101,26 +112,23 @@ SAIGE.Region = function(objNull,
 
 
   num_region = 0
-  total_num_region = nRegions-indexChunk
+  #total_num_region = nRegions-indexChunk
   mth = 0
-  cat("total_num_region ", total_num_region, "\n")
-  cat("indexChunk ", indexChunk, "\n")
-  cat("nRegions ", nRegions, "\n")
-
 
   for(i in (indexChunk+1):nRegions){
-    if(mth %% 10 == 0){
-      if(i + 10 >= total_num_region){	    
-	      nlinetoread = (total_num_region - i + 1) * nline_per_gene
-	      cat("nlinetoread ", nlinetoread, "\n")    
+    if(mth %% numLinesOutput == 0){
+      if(i + numLinesOutput > nRegions){
+  	      nregions_ro_read = nRegions - i + 1	      
+	      #cat("nlinetoread ", nlinetoread, "\n")    
       }else{
-	      nlinetoread = 10 * nline_per_gene	
-      }	
+	      nregions_ro_read = numLinesOutput
+      }
+      nlinetoread = nregions_ro_read * nline_per_gene	
       #marker_group_line = readLines(gf, n = nline_per_gene)
       marker_group_line = readLines(gf, n = nlinetoread)
       RegionList = SAIGE.getRegionList_new(marker_group_line, nline_per_gene, annolist, markerInfo)
+      cat("Read in ", nregions_ro_read, " regions from the group file.\n")
       mth = 0
-      cat("i ", i, "\n")
     }
 
 
@@ -196,7 +204,7 @@ SAIGE.Region = function(objNull,
    if(!is.null(outList$VarMatAdjCond)){
         outList$VarMatAdjCond = outList$VarMatAdjCond[noNAIndices,noNAIndices]
         outList$TstatAdjCond = outList$TstatAdjCond[noNAIndices]
-        outList$G1tilde_P_G2tilde_Weighted_Mat = outList$G1tilde_P_G2tilde_Weighted_Mat[noNAIndices,]
+        outList$G1tilde_P_G2tilde_Weighted_Mat = outList$G1tilde_P_G2tilde_Weighted_Mat[noNAIndices,,drop=F]
   }
 
  } 
@@ -385,10 +393,11 @@ if(length(annolist) > 1 | length(maxMAFlist) > 1){
      #pval.Region = pval.Region[,-c("Pvalue","Pvalue_SKAT")]
      pval.Region$Pvalue = NULL
      pval.Region$Pvalue_SKAT = NULL
-   }else if(regionTestType == "SKAT"){
-     pval.Region$Pvalue = NULL
-     pval.Region$Pvalue_Burden = NULL
-   }	   
+	if(isCondition){
+		pval.Region$Pvalue_cond = NULL
+		 pval.Region$Pvalue_SKAT_cond = NULL
+	}	
+   }
    #print(info.Region)
    ##remove columns with all NA
    #pval.Region <- pval.Region[,which(unlist(lapply(pval.Region, function(x)!all(is.na(x))))),with=F]
@@ -429,7 +438,7 @@ SAIGE.getRegionList_new = function(marker_group_line,
 
   # read group file
   ngroup<-length(marker_group_line)/nline_per_gene
-  cat("ngroup is ", ngroup, "\n")
+  #cat("ngroup is ", ngroup, "\n")
   RegionData = NULL
   geneList = c() 
   for(i in 1:ngroup){
@@ -820,16 +829,16 @@ mainRegion = function(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputF
 
   obj.mainMarker = obj.mainMarker[which(obj.mainMarker$MarkerID != ""), ]
   if(!is.null(OutList$VarMatAdjCond)){
-	OutList$VarMatAdjCond = OutList$VarMatAdjCond[noNAIndices,noNAIndices]
+	OutList$VarMatAdjCond = OutList$VarMatAdjCond[noNAIndices,noNAIndices, drop=F]
   	OutList$TstatAdjCond = OutList$TstatAdjCond[noNAIndices]
-	OutList$G1tilde_P_G2tilde_Weighted_Mat = OutList$G1tilde_P_G2tilde_Weighted_Mat[noNAIndices,]
+	OutList$G1tilde_P_G2tilde_Weighted_Mat = OutList$G1tilde_P_G2tilde_Weighted_Mat[noNAIndices,,drop=F]
   }	  
 
   if(regionTestType == "BURDEN"){
     OutList$VarVec = OutList$varTVec[noNAIndices]
   }
 
-  obj.mainMarker = obj.mainMarker[noNAIndices,]
+  obj.mainMarker = obj.mainMarker[noNAIndices,,drop=F]
   OutList$gyVec = OutList$gyVec[noNAIndices]
   return(list(outList = OutList,
               info.Region = obj.mainMarker))

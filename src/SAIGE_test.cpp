@@ -344,7 +344,7 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
   if((t_altFreq > 0.05 && t_altFreq < 0.95) || m_flagSparseGRM || is_region){
     isScoreFast = false;
   }  
- arma::vec timeoutput3 = getTime();
+ //arma::vec timeoutput3 = getTime();
   if(!isScoreFast){
   	is_gtilde = true;
   	scoreTest(t_GVec, t_Beta, t_seBeta, t_pval_str, t_altFreq, t_Tstat, t_var1, t_var2, t_gtilde, m_flagSparseGRM, t_P2Vec, t_gy, is_region);
@@ -371,7 +371,7 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
   }
 
 
- arma::vec timeoutput3_a = getTime();
+ //arma::vec timeoutput3_a = getTime();
   double q, qinv, m1, NAmu, NAsigma, tol1, p_iIndexComVecSize;
 
   //arma::uvec iIndexComVec = arma::find(t_GVec == 0);
@@ -509,7 +509,7 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
         t_pval = t_pval_noSPA;
    }
 
- arma::vec timeoutput4 = getTime();
+ //arma::vec timeoutput4 = getTime();
  //printTime(timeoutput3, timeoutput3_a, "Test Marker  ScoreTest");
 //printTime(timeoutput3, timeoutput4, "Test Marker 3 to 4");
 //printTime(timeoutput3_a, timeoutput4, "Test Marker SPA");
@@ -533,6 +533,7 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
     double stat_c = S_c*S_c/t_varT_c;
      if (t_varT_c < std::pow(std::numeric_limits<double>::min(), 2)){
         t_pval_noSPA_c = 1;
+	stat_c = 0;
      }else{
         boost::math::chi_squared chisq_dist(1);
         t_pval_noSPA_c = boost::math::cdf(complement(chisq_dist, stat_c));
@@ -574,7 +575,10 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
   }
   t_pval_noSPA_c = pval_noSPA_c; 
 
-    if(m_traitType == "binary" && t_isSPAConverge){
+  //std::cout << "stat_c " << stat_c << std::endl;
+  //std::cout << "t_varT_c " << t_varT_c << std::endl;
+
+    if(m_traitType != "quantitative" && stat_c > std::pow(m_SPA_Cutoff,2)){
 	bool t_isSPAConverge_c;
 	double q_c, qinv_c, pval_noadj_c, SPApval_c;    
 	if(m_traitType == "binary"){
