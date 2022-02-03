@@ -855,11 +855,26 @@ fitNULLGLMM = function(plinkFile = "",
                 stringsAsFactors = FALSE, colClasses = list(character = sampleIDColinphenoFile))
         }
         data = data.frame(ydat)
-        for (i in c(phenoCol, covarColList, qCovarCol, sampleIDColinphenoFile)) {
+        for (i in c(phenoCol, covarColList, sampleIDColinphenoFile)) {
             if (!(i %in% colnames(data))) {
                 stop("ERROR! column for ", i, " does not exist in the phenoFile \n")
             }
         }
+
+	if(length(qCovarCol) > 0){
+	    cat(qCovarCol, "are categorical covariates\n")
+	    if(!all(qCovarCol %in% covarColList)){
+		stop("ERROR! all covariates in qCovarCol must be in covarColList\n")
+	    }else{
+		for(q in qCovarCol){
+			data[,q] = as.factor(data[,q])
+		}
+	    }
+	}
+
+
+
+
         if (FemaleOnly | MaleOnly) {
             if (!sexCol %in% colnames(data)) {
                 stop("ERROR! column for sex ", sexCol, " does not exist in the phenoFile \n")
@@ -895,7 +910,15 @@ fitNULLGLMM = function(plinkFile = "",
         }
         cat("formula is ", formula, "\n")
         formula.null = as.formula(formula)
-        mmat = model.frame(formula.null, data, na.action = NULL)
+        mmat = model.matrix(formula.null, data, na.action = NULL)
+	mmat = data.frame(mmat)
+
+	if (length(covarColList) > 0) {
+	    if(length(qCovarCol) > 0){
+		covarColList = colnames(mmat)[2:ncol(mmat)]
+            }
+	}
+
         mmat$IID = data[, which(sampleIDColinphenoFile == colnames(data))]
         mmat_nomissing = mmat[complete.cases(mmat), ]
         mmat_nomissing$IndexPheno = seq(1, nrow(mmat_nomissing), 
