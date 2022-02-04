@@ -31,7 +31,7 @@ SAIGE.Region = function(objNull,
 			traitType,
 			isImputation,
 			isCondition,
-			numLinesOutput,	
+			numLinesOutput,
 			r.corr){
   OutputFileIndex = NULL	
   if(is.null(OutputFileIndex))

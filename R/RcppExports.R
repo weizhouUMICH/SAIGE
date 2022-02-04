@@ -5,8 +5,8 @@ setMarker_GlobalVarsInCPP <- function(t_impute_method, t_missing_cutoff, t_min_m
     invisible(.Call('_SAIGE_setMarker_GlobalVarsInCPP', PACKAGE = 'SAIGE', t_impute_method, t_missing_cutoff, t_min_maf_marker, t_min_mac_marker, t_min_info_marker, t_omp_num_threads, t_isOutputMoreDetails, t_marker_chunksize, t_dosage_zerod_cutoff, t_dosage_zerod_MAC_cutoff))
 }
 
-setRegion_GlobalVarsInCPP <- function(t_impute_method, t_missing_cutoff, t_max_maf_region, t_max_markers_region, t_omp_num_threads, t_method_to_CollapseUltraRare, t_MACCutoff_to_CollapseUltraRare, t_DosageCutoff_for_UltraRarePresence, t_dosage_zerod_cutoff, t_dosage_zerod_MAC_cutoff) {
-    invisible(.Call('_SAIGE_setRegion_GlobalVarsInCPP', PACKAGE = 'SAIGE', t_impute_method, t_missing_cutoff, t_max_maf_region, t_max_markers_region, t_omp_num_threads, t_method_to_CollapseUltraRare, t_MACCutoff_to_CollapseUltraRare, t_DosageCutoff_for_UltraRarePresence, t_dosage_zerod_cutoff, t_dosage_zerod_MAC_cutoff))
+setRegion_GlobalVarsInCPP <- function(t_impute_method, t_missing_cutoff, t_max_maf_region, t_max_markers_region, t_omp_num_threads, t_method_to_CollapseUltraRare, t_MACCutoff_to_CollapseUltraRare, t_DosageCutoff_for_UltraRarePresence, t_dosage_zerod_cutoff, t_dosage_zerod_MAC_cutoff, t_weights_beta) {
+    invisible(.Call('_SAIGE_setRegion_GlobalVarsInCPP', PACKAGE = 'SAIGE', t_impute_method, t_missing_cutoff, t_max_maf_region, t_max_markers_region, t_omp_num_threads, t_method_to_CollapseUltraRare, t_MACCutoff_to_CollapseUltraRare, t_DosageCutoff_for_UltraRarePresence, t_dosage_zerod_cutoff, t_dosage_zerod_MAC_cutoff, t_weights_beta))
 }
 
 mainMarkerInCPP <- function(t_genoType, t_traitType, t_genoIndex, t_isMoreOutput, t_isImputation) {

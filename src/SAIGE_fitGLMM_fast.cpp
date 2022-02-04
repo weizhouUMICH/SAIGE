@@ -762,8 +762,8 @@ public:
 
     		}//end for(int i = 0; i < M; i++){
 
-		if( minMAFtoConstructGRM > 0){
-			cout << numberofMarkerswithMAFge_minMAFtoConstructGRM << " markers with MAF >= " << minMAFtoConstructGRM << " are used for GRM." << endl;
+		if( minMAFtoConstructGRM > 0 | maxMissingRate < 1){
+			cout << numberofMarkerswithMAFge_minMAFtoConstructGRM << " markers with MAF >= " << minMAFtoConstructGRM << " and missing rate <= " << maxMissingRate << " are used for GRM." << endl;
 		}else{
 			cout << M << " markers with MAF >= " << minMAFtoConstructGRM << " are used for GRM." << endl;
 		}

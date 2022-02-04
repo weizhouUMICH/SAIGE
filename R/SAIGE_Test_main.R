@@ -34,12 +34,7 @@
 #' @param condition character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input , marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input.
 #' @param sparseSigmaFile character. Path to the file containing the sparseSigma from step 1. The suffix of this file is ".mtx".
 #' @param groupFile character. Path to the file containing the group information for gene-based tests. Each line is for one gene/set of variants. The first element is for gene/set name. The rest of the line is for variant ids included in this gene/set. For vcf/sav, the genetic marker ids are in the format chr:pos_ref/alt. For bgen, the genetic marker ids should match the ids in the bgen file. Each element in the line is seperated by tab.
-#' @param kernel character. For gene-based test. By default, "linear.weighted". More options can be seen in the SKAT library
-#' @param method character. method for gene-based test p-values. By default, "optimal.adj". More options can be seen in the SKAT library
-#' @param weights.beta.rare vector of numeric. parameters for the beta distribution to weight genetic markers with MAF <= weightMAFcutoff in gene-based tests.By default, "c(1,25)". More options can be seen in the SKAT library
-#' @param weights.beta.common vector of numeric. parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests.By default, "c(1,25)". More options can be seen in the SKAT library. NOTE: this argument is not fully developed. currently, weights.beta.common is euqal to weights.beta.rare
-#' @param weightMAFcutoff numeric. Between 0 and 0.5. See document above for weights.beta.rare and weights.beta.common. By default, 0.01
-#' @param weightsIncludeinGroupFile logical. Whether to specify customized weight for makers in gene- or region-based tests. If TRUE, weights are included in the group file. For vcf/sav, the genetic marker ids and weights are in the format chr:pos_ref/alt;weight. For bgen, the genetic marker ids should match the ids in the bgen filE, e.g. SNPID;weight. Each element in the line is seperated by tab. By default, FALSE
+#' @param weights.beta vector of numeric. parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests.By default, "c(1,25)". More options can be seen in the SKAT library. NOTE: this argument is not fully developed. currently, weights.beta.common is euqal to weights.beta.rare
 #' @param weights_for_G2_cond vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. By default, "c(1,2)"
 #' @param r.corr numeric. bewteen 0 and 1. parameters for gene-based tests.  By default, 0.  More options can be seen in the SKAT library
 #' @param IsSingleVarinGroupTest logical. Whether to perform single-variant assoc tests for genetic markers included in the gene-based tests. By default, FALSE
@@ -59,76 +54,50 @@
 #' @export
 SPAGMMATtest = function(bgenFile = "",
                  bgenFileIndex = "",
-		 sampleFile = "",
-		 vcfFile = "",
+                 sampleFile = "",
+                 vcfFile = "",
                  vcfFileIndex = "",
                  vcfField = "DS",
-
-		 savFile = "",
+                 savFile = "",
                  savFileIndex = "",
-
-		 bedFile="",
+                 bedFile="",
                  bimFile="",
                  famFile="",
                  AlleleOrder = "alt-first", #new
-
-		 idstoExcludeFile = NULL,
                  idstoIncludeFile = NULL,
-                 rangestoExcludeFile = NULL,
                  rangestoIncludeFile = NULL,
-
-		 chrom = "", #for vcf file
-                 start = 1, #for vcf
-                 end = 250000000, #for vcf
-
-		 max_missing = 0.15,  #new
-		 impute_method = "mean",  #"drop", "mean", "minor"     #new
-
-		 min_MAC = 0.5,
+                 chrom = "", #for vcf file
+                 max_missing = 0.15,  #new
+                 impute_method = "mean",  #"drop", "mean", "minor"     #new
+                 min_MAC = 0.5,
                  min_MAF = 0,
                  min_Info = 0,
-		 is_imputed_data = FALSE, #new
-
-		 GMMATmodelFile = "",
+                 is_imputed_data = FALSE, #new
+                 GMMATmodelFile = "",
                  LOCO=TRUE,
                  varianceRatioFile = "",
-                 cateVarRatioMinMACVecExclude=c(0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5),
-                 cateVarRatioMaxMACVecInclude=c(1.5,2.5,3.5,4.5,5.5,10.5,20.5),
-
-		 SPAcutoff=2,
+                 cateVarRatioMinMACVecExclude=c(10.5,20.5),
+                 cateVarRatioMaxMACVecInclude=c(20.5),
+                 SPAcutoff=2,
                  SAIGEOutputFile = "",
                  numLinesOutput = 10,
                  condition="",
                  sparseSigmaFile="",
                  groupFile="",
-                 kernel="linear.weighted",
-                 method="optimal.adj",
-                 weights.beta.rare = c(1,25),
-                 weights.beta.common = c(1,25),
-                 weightMAFcutoff = 0.01,
-                 weightsIncludeinGroupFile=FALSE,
+                 weights.beta=c(1,25),
                  weights_for_G2_cond = NULL,
                  r.corr=0,
-		 dosage_zerod_cutoff = 0.2,
-		 dosage_zerod_MAC_cutoff = 10,
-		 is_output_moreDetails = FALSE, #new
-                 X_PARregion="60001-2699520,154931044-155270560",   ##not activate
-                 is_rewrite_XnonPAR_forMales=FALSE, #not activate
-                 sampleFile_male="", #not activate
-
-		 method_to_CollapseUltraRare="absence_or_presence",  #saige-gene+
-		 MACCutoff_to_CollapseUltraRare = 10,
-                 DosageCutoff_for_UltraRarePresence = 0.5,
-
-
+                 dosage_zerod_cutoff = 0.2,
+                 dosage_zerod_MAC_cutoff = 10,
+                 is_output_moreDetails = FALSE, #new
+                 MACCutoff_to_CollapseUltraRare = 10,
                  function_group_test =c("lof", "missense", "synonymous"),  #new
-                 maxMAFforGroupTest = c(0.1),
-
+                 maxMAFforGroupTest = c(0.01, 0.1),
                  max_markers_region = 100   #new
-		 ){
+){
 
-   if(!(impute_method %in% c("mean","minor","drop"))){
-     stop("impute_method should be 'mean', 'minor', or 'drop'.")
+   if(!(impute_method %in% c("mean","minor"))){
+     stop("impute_method should be 'mean' or 'minor'.")
    }
 
 
@@ -195,11 +164,11 @@ SPAGMMATtest = function(bgenFile = "",
         IsOutputlogPforSingle = FALSE   #to check
         OUT_Filename_Single<-sprintf("%s.single",SAIGEOutputFile)
         Check_OutputFile_Create(OUT_Filename_Single)
-      if (sum(weights.beta.rare != weights.beta.common) > 0) {
-        cat("WARNING:The option for weights.beta.common is not fully developed\n")
-        cat("weights.beta.common is set to be equal to weights.beta.rare\n")
-        weights.beta.common = weights.beta.rare
-      }
+      #if (sum(weights.beta.rare != weights.beta.common) > 0) {
+      #  cat("WARNING:The option for weights.beta.common is not fully developed\n")
+      #  cat("weights.beta.common is set to be equal to weights.beta.rare\n")
+      #  weights.beta.common = weights.beta.rare
+      #}
 
       setRegion_GlobalVarsInCPP(impute_method,
                                 max_missing,
@@ -210,7 +179,8 @@ SPAGMMATtest = function(bgenFile = "",
 				MACCutoff_to_CollapseUltraRare,
 				DosageCutoff_for_UltraRarePresence,
 				dosage_zerod_cutoff,
-                            	dosage_zerod_MAC_cutoff
+                            	dosage_zerod_MAC_cutoff,
+				weights.beta
                             )
      cat("dosage_zerod_cutoff is ", dosage_zerod_cutoff, "\n")
      cat("dosage_zerod_MAC_cutoff is ", dosage_zerod_MAC_cutoff, "\n")
@@ -250,13 +220,13 @@ SPAGMMATtest = function(bgenFile = "",
                  bedFile=bedFile,
                  bimFile=bimFile,
                  famFile=famFile,
-                 idstoExcludeFile = idstoExcludeFile,
+              #   idstoExcludeFile = idstoExcludeFile,
                  idstoIncludeFile = idstoIncludeFile,
-                 rangestoExcludeFile = rangestoExcludeFile,
+              #   rangestoExcludeFile = rangestoExcludeFile,
                  rangestoIncludeFile = rangestoIncludeFile,
                  chrom = chrom,
-                 start = start,
-                 end = end,
+              #   start = start,
+              #   end = end,
                  AlleleOrder = AlleleOrder,
                  sampleInModel = obj.model$sampleID)
 
@@ -371,7 +341,7 @@ SPAGMMATtest = function(bgenFile = "",
 		     obj.model$traitType,
 		     is_imputed_data,
 		     isCondition,
-		     numLinesOutput, 
+		     numLinesOutput,
 		     r.corr)
     }	    
 }

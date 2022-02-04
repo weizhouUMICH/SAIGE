@@ -605,7 +605,7 @@ solveSpMatrixUsingArma = function(sparseGRMtest){
 #' Fit the null logistic/linear mixed model and estimate the variance ratios by randomly selected variants 
 #'
 #' @param plinkFile character. Path to plink file to be used for calculating elements of the genetic relationship matrix (GRM). minMAFforGRM can be used to specify the minimum MAF of markers in the plink file to be used for constructing GRM. Genetic markers are also randomly selected from the plink file to estimate the variance ratios
-#' @param phenoFile character. Path to the phenotype file. The file can be either tab or space delimited. The phenotype file has a header and contains at least two columns. One column is for phentoype and the other column is for sample IDs. Additional columns can be included in the phenotype file for covariates in the null model. Please specify the names of the covariates using the argument covarColList and specify categorical covariates using the argument qCovarCol. All categorical covariates must also be included in covarColList.
+#' @param phenoFile character. Path to the phenotype file. The phenotype file has a header and contains at least two columns. One column is for phentoype and the other column is for sample IDs. Additional columns can be included in the phenotype file for covariates in the null model. Please note that covariates to be used in the null model need to specified using the argument covarColList.
 #' @param phenoCol character. Column name for the phenotype in phenoFile e.g. "CAD"
 #' @param traitType character. e.g. "binary" or "quantitative". By default, "binary"
 #' @param invNormalize logical. Whether to perform the inverse normalization for the phentoype or not. e.g. TRUE or FALSE. By default, FALSE
@@ -698,42 +698,12 @@ fitNULLGLMM = function(plinkFile = "",
 		noEstFixedEff = FALSE,
 		skipVarianceRatioEstimation = FALSE)
 {
-    ##set up output files
-    modelOut = paste0(outputPrefix, ".rda")
-    Check_OutputFile_Create(modelOut)
 
-    if(!skipVarianceRatioEstimation){
-    	SPAGMMATOut = paste0(outputPrefix, "_", numMarkersForVarRatio, "markers.SAIGE.results.txt")
-    	Check_OutputFile_Create(SPAGMMATOut)
-
-    	if (outputPrefix_varRatio == "") {
-            outputPrefix_varRatio = outputPrefix
-    	}    
-    	varRatioFile = paste0(outputPrefix_varRatio, ".varianceRatio.txt")
-
-    	if (!file.exists(varRatioFile)) {
-            file.create(varRatioFile, showWarnings = TRUE)
-    	}else {
-            if (!IsOverwriteVarianceRatioFile) {
-            stop("WARNING: The variance ratio file ", varRatioFile, 
-            " already exists. The new variance ratios will be output to ", 
-            varRatioFile, ". In order to avoid overwriting the file, please remove the ", 
-            varRatioFile, " or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s). Otherwise, specify IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten with new variance ratio(s)\n")
-            }else{
-                cat("The variance ratio file ", varRatioFile, " already exists. IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten\n")
-            }
-        }
-    }else{
-	cat("Variance ratio estimation will be skipped\n.")
-        useSparseGRMforVarRatio = FALSE
-    }
-
-    #set up parameters
     if (minMAFforGRM > 0) {
         cat("Markers in the Plink file with MAF < ", minMAFforGRM, 
             " will be removed before constructing GRM\n")
     }
-    if (maxMissingRateforGRM > 0){
+    if (maxMissingRateforGRM > 0{
 	cat("Markers in the Plink file with missing rate > ", maxMissingRateforGRM, " will be removed before constructing GRM\n")
     }	
 		
@@ -747,7 +717,6 @@ fitNULLGLMM = function(plinkFile = "",
 	cat("sparse GRM will be used to fit the NULL model\n")
 	cat("Leave-one-chromosome-out is not applied\n")
     }
-
 
     if (useSparseGRMtoFitNULL | useSparseGRMforVarRatio) {
         if (!file.exists(sparseGRMFile)) {
@@ -768,16 +737,46 @@ fitNULLGLMM = function(plinkFile = "",
     if (FemaleOnly & MaleOnly) {
         stop("Both FemaleOnly and MaleOnly are TRUE. Please specify only one of them as TRUE to run the sex-specific job\n")
     }
-    
     if (FemaleOnly) {
         outputPrefix = paste0(outputPrefix, "_FemaleOnly")
         cat("Female-specific model will be fitted. Samples coded as ", 
             FemaleCode, " in the column ", sexCol, " in the phenotype file will be included\n")
-    }else if (MaleOnly) {
+    }
+    else if (MaleOnly) {
         outputPrefix = paste0(outputPrefix, "_MaleOnly")
         cat("Male-specific model will be fitted. Samples coded as ", 
             MaleCode, " in the column ", sexCol, " in the phenotype file will be included\n")
     }
+
+    ##set up output files
+    modelOut = paste0(outputPrefix, ".rda")
+
+    file.create(modelOut, showWarnings = TRUE) 
+
+    SPAGMMATOut = paste0(outputPrefix, "_", numMarkersForVarRatio, "markers.SAIGE.results.txt")
+    if (outputPrefix_varRatio == "") {
+        outputPrefix_varRatio = outputPrefix
+    }    
+    varRatioFile = paste0(outputPrefix_varRatio, ".varianceRatio.txt")
+
+    if (!file.exists(varRatioFile)) {
+        file.create(varRatioFile, showWarnings = TRUE)
+    }else {
+        if (!IsOverwriteVarianceRatioFile) {
+            stop("WARNING: The variance ratio file ", varRatioFile, 
+                " already exists. The new variance ratios will be output to ", 
+                varRatioFile, ". In order to avoid overwriting the file, please remove the ", 
+                varRatioFile, " or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s). Otherwise, specify IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten with new variance ratio(s)\n")
+        }else {
+            cat("The variance ratio file ", varRatioFile, " already exists. IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten\n")
+        }
+    }
+
+    if (!file.exists(modelOut)) {
+        file.create(modelOut, showWarnings = TRUE)
+    }
+
+
 
 
     if (skipVarianceRatioEstimation & useSparseGRMtoFitNULL) {
@@ -791,7 +790,8 @@ fitNULLGLMM = function(plinkFile = "",
         sampleListwithGeno$IndexGeno = seq(1, nrow(sampleListwithGeno), 
             by = 1)
         cat(nrow(sampleListwithGeno), " samples are in the sparse GRM\n")
-    }else{
+    }
+    else {
         if (!file.exists(paste0(plinkFile, ".bed"))) {
             stop("ERROR! ", plinkFile, ".bed does not exsit\n")
         }
@@ -828,10 +828,10 @@ fitNULLGLMM = function(plinkFile = "",
             cat(nrow(sampleListwithGeno), " samples have genotypes\n")
         }
     }
-
     if (!file.exists(phenoFile)) {
         stop("ERROR! phenoFile ", phenoFile, " does not exsit\n")
-    }else{
+    }
+    else {
         if (grepl(".gz$", phenoFile) | grepl(".bgz$", phenoFile)) {
             ydat = data.table:::fread(cmd = paste0("gunzip -c ", 
                 phenoFile), header = T, stringsAsFactors = FALSE, 
@@ -860,6 +860,8 @@ fitNULLGLMM = function(plinkFile = "",
 	}
 
 
+
+
         if (FemaleOnly | MaleOnly) {
             if (!sexCol %in% colnames(data)) {
                 stop("ERROR! column for sex ", sexCol, " does not exist in the phenoFile \n")
@@ -884,7 +886,6 @@ fitNULLGLMM = function(plinkFile = "",
                 }
             }
         }
-
         if (length(covarColList) > 0) {
             formula = paste0(phenoCol, "~", paste0(covarColList, 
                 collapse = "+"))
@@ -894,21 +895,14 @@ fitNULLGLMM = function(plinkFile = "",
             formula = paste0(phenoCol, "~ 1")
             hasCovariate = FALSE
         }
-
         cat("formula is ", formula, "\n")
         formula.null = as.formula(formula)
         mmat = model.matrix(formula.null, data, na.action = NULL)
 	mmat = data.frame(mmat)
-        mmat = cbind(mmat,  data[, which(colnames(data) == phenoCol), drop=F])
-	colnames(mmat)[ncol(mmat)] = phenoCol
-	print(head(mmat))
-
 
 	if (length(covarColList) > 0) {
 	    if(length(qCovarCol) > 0){
-		covarColList = colnames(mmat)[2:(ncol(mmat)-1)]
-		formula = paste0(phenoCol, "~", paste0(covarColList, collapse = "+")) 
-		formula.null = as.formula(formula)
+		covarColList = colnames(mmat)[2:ncol(mmat)]
             }
 	}
 
@@ -923,7 +917,7 @@ fitNULLGLMM = function(plinkFile = "",
             ]
 
 	
-	indicatorGenoSamplesWithPheno = (sampleListwithGeno$IndexGeno %in% dataMerge_sort$IndexGeno)
+	indicatorGenoSamplesWithPheno =(sampleListwithGeno$IndexGeno %in% dataMerge_sort$IndexGeno)
 
         if (nrow(dataMerge_sort) < nrow(sampleListwithGeno)) {
             cat(nrow(sampleListwithGeno) - nrow(dataMerge_sort), 
@@ -931,7 +925,6 @@ fitNULLGLMM = function(plinkFile = "",
         }
         cat(nrow(dataMerge_sort), " samples will be used for analysis\n")
     }
-
     if (traitType == "quantitative" & invNormalize) {
         cat("Perform the inverse nomalization for ", phenoCol, 
             "\n")
@@ -940,7 +933,6 @@ fitNULLGLMM = function(plinkFile = "",
             which(colnames(dataMerge_sort) == phenoCol)])))
         dataMerge_sort[, which(colnames(dataMerge_sort) == phenoCol)] = invPheno
     }
-    print(head(dataMerge_sort))
     if (traitType == "binary" & (length(covarColList) > 0)) {
         out_checksep = checkPerfectSep(formula.null, data = dataMerge_sort, 
             minCovariateCount)
@@ -976,7 +968,6 @@ fitNULLGLMM = function(plinkFile = "",
         formula.null = as.formula(formula_nocov)
         hasCovariate = FALSE
     }
-
     if (isCovariateTransform & hasCovariate) {
         cat("qr transformation has been performed on covariates\n")
         out.transform <- Covariate_Transform(formula.null, data = dataMerge_sort)
@@ -994,7 +985,8 @@ fitNULLGLMM = function(plinkFile = "",
         cat("colnames(data.new) is ", colnames(data.new), "\n")
         cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), 
             "\n")
-    }else {
+    }
+    else {
         formula.new = formula.null
         data.new = dataMerge_sort
         out.transform = NULL
@@ -1027,11 +1019,28 @@ fitNULLGLMM = function(plinkFile = "",
             fit0 = glm(formula.new, data = data.new, offset = covoffset, 
                 family = binomial)
         }
-
         cat("glm:\n")
         print(fit0)
         obj.noK = NULL
         if (!skipModelFitting) {
+            if (useSparseSigmaforInitTau) {
+                setisUseSparseSigmaforInitTau(TRUE)
+                modglmm0 <- glmmkin.ai_PCG_Rcpp_Binary(plinkFile, 
+                  fit0, tau = c(0, 0), fixtau = c(0, 0), maxiter = maxiter, 
+                  tol = tol, verbose = TRUE, nrun = 30, tolPCG = tolPCG, 
+                  maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, indicatorGenoSamplesWithPheno = indicatorGenoSamplesWithPheno,  
+                  obj.noK = obj.noK, out.transform = out.transform, 
+                  tauInit = tauInit, memoryChunk = memoryChunk, 
+                  LOCO = LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, 
+                  chromosomeEndIndexVec = chromosomeEndIndexVec, 
+                  traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, 
+                  isDiagofKinSetAsOne = isDiagofKinSetAsOne)
+                tauInit = modglmm0$theta
+                cat("tauInit estimated using sparse Sigma is ", 
+                  tauInit, "\n")
+                rm(modglmm0)
+                closeGenoFile_plink()
+            }
             setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
             cat("Start fitting the NULL GLMM\n")
             t_begin = proc.time()
@@ -1046,15 +1055,14 @@ fitNULLGLMM = function(plinkFile = "",
                 chromosomeEndIndexVec = chromosomeEndIndexVec, 
                 traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, 
                 isDiagofKinSetAsOne = isDiagofKinSetAsOne))
-                modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
-            
-	    for (x in names(modglmm$obj.glm.null)) {
+            modglmm$obj.glm.null$model <- data.frame(modglmm$obj.glm.null$model)
+            for (x in names(modglmm$obj.glm.null)) {
                 attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
             }
-
             save(modglmm, file = modelOut)
             tau = modglmm$theta
-        	    
+            
+	    
 	    #varAll = tau[2] + (pi^2)/3
             ##tauVec_ss = c(((pi^2)/3)/varAll, (tau[2])/varAll)
 	    #tauVec_ss = c(0,1)
@@ -1076,7 +1084,10 @@ fitNULLGLMM = function(plinkFile = "",
             if (is.null(modglmm$LOCO)) {
                 modglmm$LOCO = FALSE
             }
-            setgeno(plinkFile, dataMerge_sort$IndexGeno, indicatorGenoSamplesWithPheno, memoryChunk, isDiagofKinSetAsOne)
+            setgeno(plinkFile, dataMerge_sort$IndexGeno, indicatorGenoSamplesWithPheno, memoryChunk, 
+                isDiagofKinSetAsOne)
+
+
             tau = modglmm$theta
             
 	    
@@ -1095,7 +1106,6 @@ fitNULLGLMM = function(plinkFile = "",
             #cat("Nglmm ", Nglmm, "\n")
             setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
         }
-
         if (!skipVarianceRatioEstimation) {
 	    if(LOCO){
     		MsubIndVec = getQCdMarkerIndex()
@@ -1118,7 +1128,7 @@ fitNULLGLMM = function(plinkFile = "",
                 plinkFile = plinkFile, chromosomeStartIndexVec = chromosomeStartIndexVec, 
                 chromosomeEndIndexVec = chromosomeEndIndexVec, 
                 isCateVarianceRatio = isCateVarianceRatio, cateVarRatioIndexVec = cateVarRatioIndexVec, 
-                useSparseGRMforVarRatio = useSparseGRMforVarRatio, sparseGRMFile = sparseGRMFile, 
+                IsSparseKin = IsSparseKin, sparseGRMFile = sparseGRMFile, 
                 sparseGRMSampleIDFile = sparseGRMSampleIDFile, 
                 numRandomMarkerforSparseKin = numRandomMarkerforSparseKin, 
                 relatednessCutoff = relatednessCutoff, useSparseGRMtoFitNULL = useSparseGRMtoFitNULL, 
@@ -1213,7 +1223,7 @@ fitNULLGLMM = function(plinkFile = "",
                 plinkFile = plinkFile, chromosomeStartIndexVec = chromosomeStartIndexVec, 
                 chromosomeEndIndexVec = chromosomeEndIndexVec, 
                 isCateVarianceRatio = isCateVarianceRatio, cateVarRatioIndexVec = cateVarRatioIndexVec, 
-                useSparseGRMforVarRatio = useSparseGRMforVarRatio, sparseGRMFile = sparseGRMFile, 
+                IsSparseKin = IsSparseKin, sparseGRMFile = sparseGRMFile, 
                 sparseGRMSampleIDFile = sparseGRMSampleIDFile, 
                 numRandomMarkerforSparseKin = numRandomMarkerforSparseKin, 
                 relatednessCutoff = relatednessCutoff, useSparseGRMtoFitNULL = useSparseGRMtoFitNULL, 
@@ -1243,7 +1253,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 						    chromosomeEndIndexVec,
 						    isCateVarianceRatio,
 						    cateVarRatioIndexVec,
-						    useSparseGRMforVarRatio,	
+                                                    IsSparseKin,
                                                     sparseGRMFile,
                                                     sparseGRMSampleIDFile,
                                                     numRandomMarkerforSparseKin,
@@ -1286,8 +1296,9 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
   y = obj.glm.null$y
   ##randomize the marker orders to be tested
 
+    #####sparse Kin
 
-  if(useSparseGRMtoFitNULL | useSparseGRMforVarRatio){
+  if(IsSparseKin | useSparseGRMtoFitNULL){
     sparseSigma = getSparseSigma(plinkFile = plinkFile, 
 		outputPrefix=varRatioOutFile,
                 sparseGRMFile=sparseGRMFile,
@@ -1477,20 +1488,20 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
     if(useSparseGRMtoFitNULL){
          var2 = innerProduct(mu*(1-mu), g*g)    
     }else{
-          if(useSparseGRMforVarRatio){
-            #t1 = proc.time()
-            #cat("t1\n")
-            #cat("t1again\n")
-	    #print("pcginvSigma")
+          if(IsSparseKin){
+            t1 = proc.time()
+            cat("t1\n")
+             cat("t1again\n")
+	     print("pcginvSigma")
 	     #pcginvSigma = pcg(sparseSigma, g)
-           pcginvSigma = solve(sparseSigma, g, sparse=T)
-            #t2 = proc.time()
-            #cat("t2-t1\n")
-            #print(t2-t1)
-           var2_a = t(g) %*% pcginvSigma
-           var2 = var2_a[1,1]
+             pcginvSigma = solve(sparseSigma, g, sparse=T)
+             t2 = proc.time()
+             cat("t2-t1\n")
+             print(t2-t1)
+             var2_a = t(g) %*% pcginvSigma
+             var2 = var2_a[1,1]
         }else{
-           var2 = innerProduct(mu*(1-mu), g*g)
+          var2 = innerProduct(mu*(1-mu), g*g)
         }
     }	
       var2q = innerProduct(mu*(1-mu), g*g)
@@ -1595,7 +1606,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
                                                     chromosomeEndIndexVec,
 						    isCateVarianceRatio,
 						    cateVarRatioIndexVec,
-						    useSparseGRMforVarRatio,
+						    IsSparseKin,
 						    sparseGRMFile,
                                                     sparseGRMSampleIDFile,
 						    numRandomMarkerforSparseKin,
@@ -1638,7 +1649,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 
     #####sparse Kin
 
-  if(useSparseGRMforVarRatio | useSparseGRMtoFitNULL){
+  if(IsSparseKin | useSparseGRMtoFitNULL){
        sparseSigma = getSparseSigma(plinkFile = plinkFile,
                 outputPrefix=varRatioOutFile,
                 sparseGRMFile=sparseGRMFile,
@@ -1788,13 +1799,13 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 	if(useSparseGRMtoFitNULL){
 		var2 = innerProduct(g, g)
 	}else{
-	  if(useSparseGRMforVarRatio){
-	     #t1 = proc.time()
-	     #cat("t1\n")
+	  if(IsSparseKin){
+	    t1 = proc.time()
+	    cat("t1\n")
 	     pcginvSigma = solve(sparseSigma, g, sparse=T)
-	     #t2 = proc.time()
-             #cat("t2-t1\n")
-	     #print(t2-t1)
+	     t2 = proc.time()
+             cat("t2-t1\n")
+	     print(t2-t1)
 	     var2_a = t(g) %*% pcginvSigma
 	     var2 = var2_a[1,1]
           }else{

@@ -25,7 +25,8 @@ void setRegion_GlobalVarsInCPP(std::string t_impute_method,
                                double t_MACCutoff_to_CollapseUltraRare,
                                double t_DosageCutoff_for_UltraRarePresence,
 			       double t_dosage_zerod_cutoff,
-                               double t_dosage_zerod_MAC_cutoff);
+                               double t_dosage_zerod_MAC_cutoff,
+			       arma::vec t_weights_beta);
 
 Rcpp::DataFrame mainMarkerInCPP(
                            std::string & t_genoType,     // "PLINK", "BGEN"

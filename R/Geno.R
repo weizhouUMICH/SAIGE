@@ -91,13 +91,13 @@ setGenoInput = function(bgenFile = "",
                  bedFile="",
                  bimFile="",
                  famFile="",
-		 idstoExcludeFile = NULL,
+#		 idstoExcludeFile = NULL,
                  idstoIncludeFile = NULL,
-                 rangestoExcludeFile = NULL,
+#                 rangestoExcludeFile = NULL,
                  rangestoIncludeFile = NULL,
-                 chrom = "",
-                 start = 1,
-                 end = 250000000, 
+#                 chrom = "",
+#                 start = 1,
+#                 end = 250000000, 
 		 AlleleOrder = NULL,
 		 sampleInModel = NULL)
 {
@@ -178,18 +178,19 @@ setGenoInput = function(bgenFile = "",
   
 
   if(dosageFileType == "vcf"){
-    setVCFobjInCPP(vcfFile, vcfFileIndex, vcfField, t_SampleInModel = sampleInModel)	  
-    markerInfo = NULL
+    if(!is.null(idstoIncludeFile) & !is.null(RangesToInclude)){
+      stop("We currently do not support both 'RangesToInclude' and 'RangesToInclude' at the same time for vcf files")
+    }
   }
 
 
-  Files = c("idstoIncludeFile", "idstoExcludeFile", "rangestoIncludeFile", "rangestoExcludeFile")
+  #Files = c("idstoIncludeFile", "idstoExcludeFile", "rangestoIncludeFile", "rangestoExcludeFile")
 
   anyInclude = FALSE
-  anyExclude = FALSE
+  #anyExclude = FALSE
 
   markersInclude = c()
-  markersExclude = c()
+  #markersExclude = c()
 
   if(!is.null(idstoIncludeFile)){
     IDsToInclude = data.table::fread(idstoIncludeFile, header = F, colClasses = c("character"))
@@ -219,6 +220,8 @@ setGenoInput = function(bgenFile = "",
     }
     anyInclude = TRUE
   }
+
+if(FALSE){
 
   if(!is.null(idstoExcludeFile)){
     if(anyInclude)
@@ -253,9 +256,10 @@ setGenoInput = function(bgenFile = "",
     }
     anyExclude = TRUE
   }
+}
 
   markersInclude = unique(markersInclude)
-  markersExclude = unique(markersExclude)
+#  markersExclude = unique(markersExclude)
 
   # return genotype
   #cat("Based on the 'GenoFile' and 'GenoFileIndex',", genoType, "format is used for genotype data.\n")
@@ -263,13 +267,33 @@ setGenoInput = function(bgenFile = "",
   if(anyInclude)
     markerInfo = subset(markerInfo, ID %in% markersInclude)
 
-  if(anyExclude)
-    markerInfo = subset(markerInfo, !ID %in% markersExclude)
+#  if(anyExclude)
+#    markerInfo = subset(markerInfo, !ID %in% markersExclude)
 
-  anyQueue = anyInclude | anyExclude
+#  anyQueue = anyInclude | anyExclude
 
+  if(dosageFileType == "vcf"){
+    setVCFobjInCPP(vcfFile, vcfFileIndex, vcfField, t_SampleInModel = sampleInModel)
+   
+    if(!is.null(idstoIncludeFile) & !is.null(RangesToInclude)){
+    }
+    if(!is.null(idstoIncludeFile)){  
+      SNPlist = paste(c("set1", IDsToInclude), collapse = "\t")
+      set_iterator_inVcf(SNPlist, "", 1, 200000000)  	 
+    }
+
+    if(!is.null(RangesToInclude)){
+      if(length(CHROM1) > 1){
+        stop("We do not support query with multiple regions for vcf file. Please only include one region in the ", rangestoIncludeFile, "\n")
+      }else{
+        set_iterator_inVcf("", CHROM1[1], START[1], END[1]) 
+      }
+    } 
+    markerInfo = NULL
+  }
   #genoList = list(genoType = genoType, markerInfo = markerInfo, SampleIDs = SampleIDs, AlleleOrder = AlleleOrder, GenoFile = GenoFile, GenoFileIndex = GenoFileIndex, anyQueue = anyQueue)
-  genoList = list(dosageFileType = dosageFileType, markerInfo = markerInfo, anyQueue = anyQueue, genoType = dosageFileType)
+  #genoList = list(dosageFileType = dosageFileType, markerInfo = markerInfo, anyQueue = anyQueue, genoType = dosageFileType)
+  genoList = list(dosageFileType = dosageFileType, markerInfo = markerInfo, genoType = dosageFileType)
   return(genoList)
 }
 

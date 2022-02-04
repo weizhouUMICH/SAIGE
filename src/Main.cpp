@@ -58,6 +58,8 @@ double g_DosageCutoff_for_UltraRarePresence;
 double g_dosage_zerod_MAC_cutoff;
 double g_dosage_zerod_cutoff;
 bool g_markerTestEnd = false;
+arma::vec g_weights_beta;
+
 
 // [[Rcpp::export]]
 void setMarker_GlobalVarsInCPP(std::string t_impute_method,
@@ -96,7 +98,8 @@ void setRegion_GlobalVarsInCPP(std::string t_impute_method,
 			       double t_MACCutoff_to_CollapseUltraRare,
 			       double t_DosageCutoff_for_UltraRarePresence,
 			       double t_dosage_zerod_cutoff,
-                               double t_dosage_zerod_MAC_cutoff)
+                               double t_dosage_zerod_MAC_cutoff,
+			       arma::vec t_weights_beta)
 {
   g_impute_method = t_impute_method;
   g_missingRate_cutoff = t_missing_cutoff;
@@ -109,6 +112,7 @@ void setRegion_GlobalVarsInCPP(std::string t_impute_method,
   g_DosageCutoff_for_UltraRarePresence = t_DosageCutoff_for_UltraRarePresence;
   g_dosage_zerod_cutoff = t_dosage_zerod_cutoff;
   g_dosage_zerod_MAC_cutoff = t_dosage_zerod_MAC_cutoff;
+  g_weights_beta = t_weights_beta;
 }
 
 
@@ -673,7 +677,7 @@ void setSparseSigmaInCPP(int r, arma::umat & t_locationMatinR, arma::vec & t_val
 Rcpp::List RegionSetUpConditional_binary_InCPP(){
 
 	unsigned int q_cond = (ptr_gSAIGEobj->m_VarInvMat_cond).n_rows;
-  	boost::math::beta_distribution<> beta_dist(1, 25);
+  	boost::math::beta_distribution<> beta_dist(g_weights_beta[0], g_weights_beta[1]);
   	arma::vec w0G2Vec_cond(q_cond);
   	double w0G2_cond;
         for(unsigned int ci = 0; ci < q_cond; ci++){
@@ -727,7 +731,7 @@ Rcpp::List mainRegionInCPP(
   unsigned int q_cond = (ptr_gSAIGEobj->m_VarInvMat_cond).n_rows;	
   arma::rowvec G1tilde_P_G2tilde_Vec(q_cond);
   //std::cout << "okk3" << std::endl;
-  boost::math::beta_distribution<> beta_dist(1, 25);
+  boost::math::beta_distribution<> beta_dist(g_weights_beta[0], g_weights_beta[1]);
 
   bool isCondition = ptr_gSAIGEobj->m_isCondition;
   arma::vec w0G2Vec_cond(q_cond);
@@ -1525,7 +1529,7 @@ void assign_conditionMarkers_factors(
   arma::vec gyVec(q);
   arma::vec w0G2_cond_Vec(q);
   arma::vec gsumVec(t_n, arma::fill::zeros);
-  boost::math::beta_distribution<> beta_dist(1, 25);
+  boost::math::beta_distribution<> beta_dist(g_weights_beta[0], g_weights_beta[1]);
   //std::vector<double> GVec0(t_n);
   arma::vec GVec(t_n);
   double Beta, seBeta, pval, pval_noSPA, Tstat, varT, gy, w0G2_cond;

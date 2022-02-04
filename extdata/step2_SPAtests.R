@@ -2,35 +2,30 @@
 
 #options(stringsAsFactors=F, scipen = 999)
 options(stringsAsFactors=F)
-#library(SAIGE)
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/old")
-#library(SAIGE, lib.loc="~/projects/Dec2021/install")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/SAIGE_new_dev")
-#library(SAIGE, lib.loc="../../install_dir/0.43.1")
-#library(SAIGE, lib.loc="../../install_dir/0.36.3.3")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.44.2.b")
-#library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_old_check/install")
-library(SAIGE)
-
-
-print(sessionInfo())
-
+library(SAIGE, lib.loc="../../install")
 BLASctl_installed <- require(RhpcBLASctl)
 library(optparse)
 library(data.table)
 library(methods)
+print(sessionInfo())
 
 option_list <- list(
   make_option("--vcfFile", type="character",default="",
     help="Path to vcf file."),
   make_option("--vcfFileIndex", type="character",default="",
-    help="Path to vcf index file. Indexed by tabix. Path to index for vcf file by tabix, .tbi file by tabix -p vcf file.vcf.gz"),
+    help="Path to vcf index file. Indexed by tabix. Path to index for vcf file by tabix, .csi file by tabix -p vcf csi file.vcf.gz"),
   make_option("--vcfField", type="character",default="DS",
     help="DS or GT, [default=DS]"),
+  make_option("--savFile", type="character",default="",
+    help="Path to the sav file."),
+  make_option("--savFileIndex", type="character",default="",
+    help="Path to the .s1r file (index of the sav file)."),
   make_option("--bgenFile", type="character",default="",
     help="Path to bgen file. Path to bgen file. Currently version 1.2 with 8 bit compression is supported"),
   make_option("--bgenFileIndex", type="character",default="",
     help="Path to the .bgi file (index of the bgen file)"),
+  make_option("--sampleFile", type="character",default="",
+    help="Path to the file that contains one column for IDs of samples in the dosage file. For version >= 0.38, this file is only needed for bgen files. "),
   make_option("--bedFile", type="character",default="",
     help="Path to bed file (PLINK)"),
   make_option("--bimFile", type="character",default="",
@@ -39,95 +34,75 @@ option_list <- list(
     help="Path to fam file (PLINK)"),
   make_option("--AlleleOrder", type="character",default="alt-first",
     help="alt-first or ref-first for bgen or PLINK files"),
-  make_option("--savFile", type="character",default="",
-    help="Path to the sav file."),
-  make_option("--savFileIndex", type="character",default="",
-    help="Path to the .s1r file (index of the sav file)."),
-  make_option("--idstoExcludeFile", type="character",default="",
-    help="Path to a file containing variant ids to be excluded from the bgen file. The file does not have a header and each line is for a marker ID."),
   make_option("--idstoIncludeFile", type="character",default="",
-    help="Path to a file containing variant ids to be included from the bgen file. The file does not have a header and each line is for a marker ID."),
-  make_option("--rangestoExcludeFile", type="character",default="",
-    help="Path to a file containing genome regions to be excluded from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header."),
+    help="Path to a file containing variant ids to be included from the dosage file. The file does not have a header and each line is for a marker ID."),
   make_option("--rangestoIncludeFile", type="character",default="",
-    help="Path to a file containing genome regions to be included from the bgen file. The file contains three columns for chromosome, start, and end respectively with no header."),
+    help="Path to a file containing genome regions to be included from the dosage file. The file contains three columns for chromosome, start, and end respectively with no header. Note for vcf and sav files, only the first line in the file will be used."),
   make_option("--chrom", type="character",default="0",
-    help="string chromosome in vcf to be tested. The string needs to exactly match the chromosome string in the vcf/sav file. For example, '1' does not match 'chr1'. If not specified, all markers in the vcf will be tested. If LOCO is specified, providing chrom will save computation cost."),
-  make_option("--start", type="numeric",default=1,
-    help="start genome position in the vcf to be tested [default=1]"),
-  make_option("--end", type="numeric",default=250000000,
-    help="end genome position in the vcf to be tested. If not specified, the whole genome will be tested [default=250000000]"),
+    help="If LOCO is specified, chrom is required."),
+
+  make_option("--is_imputed_data", type="logical",default=FALSE,
+    help="Whether the dosages/genotypes imputed are imputed. If TRUE, the program will output the imputed info score [default=FALSE]."),
+
   make_option("--minMAF", type="numeric", default=0,
     help="Minimum minor allele frequency for markers to be tested. The higher threshold between minMAC and minMAF will be used [default=0]."),
   make_option("--minMAC", type="numeric", default=0,
     help="Minimum minor allele count for markers to be tested. The higher threshold between minMAC and minMAF will be used [default=0.5]."),
-  make_option("--maxMAFforGroupTest", type="character",default="0.01",
-    help="Max MAF for markers tested in group test seperated by comma. e.g. 0.0001, 0.001, 0.01, [default=0.01]"),
-  make_option("--function_group_test", type="character",default="",
-    help="annotations of markers to be tested in the set-based tests. e.g. lof,missense;lof,missense;lof;synonymous"),	      
-   make_option("--minInfo", type="numeric", default=0,
-    help="Minimum Info for markers to be tested [default=0]"),
-  make_option("--sampleFile", type="character",default="",
-    help="Path to the file that contains one column for IDs of samples in the dosage file. For version >= 0.38, this file is only needed for bgen files. "),
+  make_option("--minInfo", type="numeric", default=0,
+    help="Minimum Info for markers to be tested if is_imputed_data=TRUE [default=0]"),
+  make_option("--maxMissing", type="numeric", default=0.15,
+    help="Maximum missing rate for markers to be tested [default=0.15]"),
+  make_option("--impute_method", type="character",default="minor",
+    help="Imputation method for missing dosages. mean or minor. mean: missing dosages are imputed as mean (2*allele frequency). minor: missing dosages are imputed as minor allele homozygotes [default=minor]"),
+  make_option("--LOCO", type="logical", default=TRUE,
+    help="Whether to apply the leave-one-chromosome-out option. If TRUE, --chrom is required [default=FALSE] "),
+
+
   make_option("--GMMATmodelFile", type="character",default="",
     help="Path to the input file containing the glmm model, which is output from previous step. Will be used by load()"),
   make_option("--varianceRatioFile", type="character",default="",
     help="Path to the input file containing the variance ratio, which is output from the previous step"),
   make_option("--SAIGEOutputFile", type="character", default="",
     help="Path to the output file containing assoc test results"),
-  make_option("--numLinesOutput", type="numeric",default=10000,
-    help="Number of  markers to be output each time [default=10000]"),
-  make_option("--IsSparse", type="logical",default=TRUE,
-    help="Whether to exploit the sparsity of the genotype vector for less frequent variants to speed up the SPA tests or not for binary traits [default=TRUE]."),
-  make_option("--SPAcutoff", type="numeric", default=2,
-    help=" If the test statistic lies within the standard deviation cutoff of the
-mean, p-value based on traditional score test is returned. Default value is 2."), 
+  make_option("--numLinesOutput", type="numeric",default=1000,
+    help="Number of  markers to be output each time [default=1000]"),
   make_option("--is_output_moreDetails", type="logical",default=TRUE,
     help="Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls will be output [default=TRUE]"),
-  make_option("--LOCO", type="logical", default=TRUE,
-    help="Whether to apply the leave-one-chromosome-out option. This option has not been extensively tested."),
-  make_option("--condition", type="character",default="",
-    help="For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input, marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input."),
-  make_option("--sparseSigmaFile", type="character", default="",
-    help="Path to the file containing the sparse Sigma output by step 1. The suffix of this file is .mtx"),
+
+  make_option("--maxMAFforGroupTest", type="character",default="0.01",
+    help="Max MAF for markers tested in group test seperated by comma. e.g. 0.0001, 0.001, 0.01, [default=0.01]"),
+  make_option("--function_group_test", type="character",default="",
+    help="annotations of markers to be tested in the set-based tests. e.g. lof,missense;lof,missense;lof;synonymous. default: all markers in the group file are tested"),
   make_option("--groupFile", type="character", default="",
     help="Path to the file containing the group information for gene-based tests. Each line is for one gene/set of variants. The first element is for gene/set name. The rest of the line is for variant ids included in this gene/set. For vcf/sav, the genetic marker ids are in the format chr:pos_ref/alt. For bgen, the genetic marker ids should match the ids in the bgen file. Each element in the line is seperated by tab."),
-  make_option("--kernel", type="character", default="linear.weighted",
-    help="More options can be seen in the SKAT library"),
-  make_option("--method", type="character",default="optimal.adj",
-    help="Method for gene-based test p-values. Methods other than optimal.adj have not been extensively tested. More options can be seen in the SKAT library"),
-  make_option("--weights.beta.rare", type="character", default="1,25",
-    help="parameters for the beta distribution to weight genetic markers with MAF <= weightMAFcutoff in gene-based tests. More options can be seen in the SKAT library"),
-  make_option("--weights.beta.common", type="character", default="1,25",
-    help="parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests. More options can be seen in the SKAT library. NOTE: this argument is not fully developed. currently, weights.beta.common is euqal to weights.beta.rare"),
-  make_option("--weightMAFcutoff", type="numeric", default="0.01",
-    help="See document above for weights.beta.rare and weights.beta.common"),
-  make_option("--r.corr", type="character", default=0,
-    help="More options can be seen in the SKAT library"),
-  make_option("--IsOutputMAFinCaseCtrlinGroupTest", type="logical", default=FALSE,
-    help="Whether to output minor allele frequency in cases and controls in set-based tests By default, FALSE"),
-  make_option("--cateVarRatioMinMACVecExclude",type="character", default="0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5",
-    help="vector of float. Lower bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. [default='0.5,1.5,2.5,3.5,4.5,5.5,10.5,20.5']"),
-  make_option("--cateVarRatioMaxMACVecInclude",type="character", default="1.5,2.5,3.5,4.5,5.5,10.5,20.5",
-    help="vector of float. Higher bound of MAC for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. [default='1.5,2.5,3.5,4.5,5.5,10.5,20.5']"),
-  make_option("--dosageZerodCutoff",type="numeric", default=0.2,
-    help="In gene- or region-based tests, for each variants with MAC <= 10, dosages <= dosageZerodCutoff with be set to 0. [default=0.2]"),
-  make_option("--weights_for_G2_cond",type="character", default=NULL, 
-    help="vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. e.g. '1,2,3"),
-  make_option("--IsOutputlogPforSingle", type="logical",default=FALSE,
-    help=" Whether to output log(Pvalue) for single-variant assoc tests. By default, FALSE"),	      
-  make_option("--sampleFile_male", type="character",default="",
-    help="Path to the file containing one column for IDs of MALE samples in the bgen or vcf file with NO header.Order does not matter"),
-  make_option("--X_PARregion", type="character",default="",
-    help="ranges of (pseudoautosomal) PAR region on chromosome X, which are seperated by comma and in the format start:end. By default: '60001-2699520,154931044-155260560' in the UCSC build hg19. For males, there are two X alleles in the PAR region, so PAR regions are treated the same as autosomes. In the NON-PAR regions (outside the specified PAR regions on chromosome X), for males, there is only one X allele. If is_rewrite_XnonPAR_forMales=TRUE, genotypes/dosages of all variants in the NON-PAR regions on chromosome X will be mutliplied by 2."),
-  make_option("--is_rewrite_XnonPAR_forMales", type="logical",default=FALSE,
-    help="Whether to rewrite gentoypes or dosages of variants in the NON-PAR regions on chromosome X for males (multiply by 2). By default, FALSE. Note, only use is_rewrite_XnonPAR_forMales=TRUE when the specified VCF or Bgen file only has variants on chromosome X. When is_rewrite_XnonPAR_forMales=TRUE, the program does not check the chromosome value by assuming all variants are on chromosome X"),
-  make_option("--method_to_CollapseUltraRare", type="character",default="absence_or_presence",
-    help="Method to collpase the ultra rare variants in the set-based association tests. This argument can be 'absence_or_presence', 'sum_geno', or ''. absence_or_presence:  For the resulted collpased marker, any individual having DosageCutoff_for_UltraRarePresence <= dosage < 1+DosageCutoff_for_UltraRarePresence for any ultra rare variant has 1 in the genotype vector, having dosage >= 1+DosageCutoff_for_UltraRarePresence for any ultra rare variant has 2 in the genotype vector, otherwise 0. sum_geno: Ultra rare variants with MAC <=  MACCutoff_to_CollapseUltraRare will be collpased for set-based tests in the 'sum_geno' way and the resulted collpased marker's genotype equals weighted sum of the genotypes of all ultra rare variants. NOTE: this option sum_geno currently is NOT active. By default, 'absence_or_presence' "),
+  make_option("--sparseSigmaFile", type="character", default="",
+    help="Path to the file containing the sparse Sigma output by step 1. The suffix of this file is .mtx"),
   make_option("--MACCutoff_to_CollapseUltraRare", type="numeric", default=10,
     help="MAC cutoff to collpase the ultra rare variants (<= MACCutoff_to_CollapseUltraRare) in the set-based association tests. By default, 10."),
-  make_option("--DosageCutoff_for_UltraRarePresence", type="numeric", default=0.5,
-    help="Dosage cutoff to determine whether the ultra rare variants are absent or present in the samples. Dosage >= DosageCutoff_for_UltraRarePresence indicates the varaint in present in the sample. 0< DosageCutoff_for_UltraRarePresence <= 2. By default, 0.5")	      
+  make_option("--cateVarRatioMinMACVecExclude",type="character", default="10,20.5",
+    help="Optional. vector of float. Lower bound for MAC categories. The length equals to the number of MAC categories for variance ratio estimation. [default='10,20.5']"),
+  make_option("--cateVarRatioMaxMACVecInclude",type="character", default="20.5",
+    help="Optional. vector of float. Higher bound for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. [default='20.5']"),
+  make_option("--weights.beta", type="character", default="1,25",
+    help="parameters for the beta distribution to weight genetic markers in gene-based tests."),
+  make_option("--r.corr", type="character", default=0,
+    help="More options can be seen in the SKAT library"),
+  make_option("--max_markers_region", type="numeric", default=100,
+    help="Number of markers in each chunk when calculating the variance covariance matrix in the gene-based tests  [default=100]."),
+
+
+  make_option("--condition", type="character",default="",
+    help="For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input, marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input."),
+  make_option("--weights_for_G2_cond",type="character", default=NULL,
+    help="vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. e.g. '1,2,3"),
+
+  make_option("--SPAcutoff", type="numeric", default=2,
+    help=" If the test statistic lies within the standard deviation cutoff of the
+mean, p-value based on traditional score test is returned. Default value is 2."),
+  make_option("--dosageZerodCutoff",type="numeric", default=0.2,
+    help="If is_imputed_data = TRUE, For variants with MAC <= dosage_zerod_MAC_cutoff, dosages <= dosageZerodCutoff with be set to 0. [default=0.2]"),
+  make_option("--dosage_zerod_MAC_cutoff", type="numeric", default=10,
+   help="If is_imputed_data = TRUE, For variants with MAC <= dosage_zerod_MAC_cutoff, dosages <= dosageZerodCutoff with be set to 0. [default=10]")
 )
 
 
@@ -150,9 +125,10 @@ convertoNumeric = function(x,stringOutput){
 
 
 #weights.beta.rare <- as.numeric(strsplit(opt$weights.beta.rare,",")[[1]])
-weights.beta.rare <- convertoNumeric(x=strsplit(opt$weights.beta.rare,",")[[1]], "weights.beta.rare")
-weights.beta.common <- convertoNumeric(x=strsplit(opt$weights.beta.common,",")[[1]], "weights.beta.common")
-if(sum(weights.beta.common!=weights.beta.rare) > 0){stop("weights.beta.common option is not functioning, so weights.beta.common needs to be equal to weights.beta.rare")}
+#weights.beta.rare <- convertoNumeric(x=strsplit(opt$weights.beta.rare,",")[[1]], "weights.beta.rare")
+#weights.beta.common <- convertoNumeric(x=strsplit(opt$weights.beta.common,",")[[1]], "weights.beta.common")
+#if(sum(weights.beta.common!=weights.beta.rare) > 0){stop("weights.beta.common option is not functioning, so weights.beta.common needs to be equal to weights.beta.rare")}
+weights.beta <- convertoNumeric(x=strsplit(opt$weights.beta,",")[[1]], "weights.beta")
 
 cateVarRatioMinMACVecExclude <- convertoNumeric(x=strsplit(opt$cateVarRatioMinMACVecExclude,",")[[1]], "cateVarRatioMinMACVecExclude")
 cateVarRatioMaxMACVecInclude <- convertoNumeric(x=strsplit(opt$cateVarRatioMaxMACVecInclude,",")[[1]], "cateVarRatioMaxMACVecInclude")
@@ -181,30 +157,53 @@ if (BLASctl_installed){
 SPAGMMATtest(vcfFile=opt$vcfFile,
              vcfFileIndex=opt$vcfFileIndex,
              vcfField=opt$vcfField,
+             savFile=opt$savFile,
+             savFileIndex=opt$savFileIndex,
              bgenFile=opt$bgenFile,
              bgenFileIndex=opt$bgenFileIndex,
+             sampleFile=opt$sampleFile,
 	     bedFile=opt$bedFile,
 	     bimFile=opt$bimFile,
 	     famFile=opt$famFile,
 	     AlleleOrder=opt$AlleleOrder,
-             savFile=opt$savFile,
-             savFileIndex=opt$savFileIndex,
-             chrom=opt$chrom,
-             start=opt$start,
-             end=opt$end,
-             sampleFile=opt$sampleFile,
+
+	     idstoIncludeFile = opt$idstoIncludeFile,
+	     rangestoIncludeFile = opt$rangestoIncludeFile,
+	     chrom=opt$chrom,
+
+             is_imputed_data=opt$is_imputed_data,
+             min_MAF = opt$minMAF,
+             min_MAC = opt$minMAC,
+             min_Info = opt$minInfo,
+             max_missing = opt$maxMissing,	
+	     impute_method = opt$impute_method,
+	     LOCO=opt$LOCO,
+
+
              GMMATmodelFile=opt$GMMATmodelFile,
              varianceRatioFile=opt$varianceRatioFile,
              SAIGEOutputFile=opt$SAIGEOutputFile,
+	     numLinesOutput=opt$numLinesOutput,
+	     is_output_moreDetails =opt$is_output_moreDetails,
+	     
+
 	     maxMAFforGroupTest = maxMAFforGroupTest,
 	     function_group_test = function_group_test,
 	     groupFile = opt$groupFile,
 	     sparseSigmaFile = opt$sparseSigmaFile,
+	     MACCutoff_to_CollapseUltraRare = opt$MACCutoff_to_CollapseUltraRare,	
 	     cateVarRatioMinMACVecExclude = cateVarRatioMinMACVecExclude,
              cateVarRatioMaxMACVecInclude = cateVarRatioMaxMACVecInclude,
-	     LOCO=opt$LOCO,
-	     numLinesOutput=opt$numLinesOutput,
-	     min_MAC = opt$minMAC,
-	     min_Info = opt$minInfo,
-	     is_output_moreDetails =opt$is_output_moreDetails
+	     weights.beta = weights.beta,
+	     r.corr = opt$r.corr,
+	     max_markers_region = opt$max_markers_region,
+
+
+	     
+	     condition = opt$condition,
+	     weights_for_G2_cond = weights_for_G2_cond, 
+	     
+	     SPAcutoff = opt$SPAcutoff,
+	     dosage_zerod_cutoff = opt$dosage_zerod_cutoff,
+	     dosage_zerod_MAC_cutoff = opt$dosage_zerod_MAC_cutoff 
 )

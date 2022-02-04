@@ -1,7 +1,7 @@
 Package: SAIGE
 Type: Package
 Title: Efficiently controlling for case-control imbalance and sample relatedness in single-variant assoc tests (SAIGE) and controlling for sample relatedness in region-based assoc tests in large cohorts and biobanks (SAIGE-GENE) 
-Version: 0.90
+Version: 0.91
 Date: 2022-01-16
 Author: Wei Zhou, Zhangchen Zhao, Wenjian Bi, Seunggeun Lee, Cristen Willer
 Maintainer: Wei Zhou <wzhou@broadinstitute.org>
