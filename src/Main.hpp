@@ -13,20 +13,21 @@ void setMarker_GlobalVarsInCPP(std::string t_impute_method,
                                bool t_isOutputMoreDetails,
 			       int t_marker_chunksize,
 			       double t_dosage_zerod_cutoff,
-                               double t_dosage_zerod_MAC_cutoff);
+                               double t_dosage_zerod_MAC_cutoff,
+			       arma::vec & t_weights_beta);
 
 
+                               //std::string t_method_to_CollapseUltraRare,
+                               //double t_DosageCutoff_for_UltraRarePresence,
 void setRegion_GlobalVarsInCPP(std::string t_impute_method,
                                double t_missing_cutoff,
                                arma::vec t_max_maf_region,
                                unsigned int t_max_markers_region,
                                unsigned int t_omp_num_threads,
-                               std::string t_method_to_CollapseUltraRare,
                                double t_MACCutoff_to_CollapseUltraRare,
-                               double t_DosageCutoff_for_UltraRarePresence,
 			       double t_dosage_zerod_cutoff,
                                double t_dosage_zerod_MAC_cutoff,
-			       arma::vec t_weights_beta);
+			       arma::vec & t_weights_beta);
 
 Rcpp::DataFrame mainMarkerInCPP(
                            std::string & t_genoType,     // "PLINK", "BGEN"

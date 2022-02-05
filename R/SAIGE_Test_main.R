@@ -64,8 +64,8 @@ SPAGMMATtest = function(bgenFile = "",
                  bimFile="",
                  famFile="",
                  AlleleOrder = "alt-first", #new
-                 idstoIncludeFile = NULL,
-                 rangestoIncludeFile = NULL,
+                 idstoIncludeFile = "",
+                 rangestoIncludeFile = "",
                  chrom = "", #for vcf file
                  max_missing = 0.15,  #new
                  impute_method = "mean",  #"drop", "mean", "minor"     #new
@@ -95,7 +95,7 @@ SPAGMMATtest = function(bgenFile = "",
                  maxMAFforGroupTest = c(0.01, 0.1),
                  max_markers_region = 100   #new
 ){
-
+   #cat("r.corr is ", r.corr, "\n")
    if(!(impute_method %in% c("mean","minor"))){
      stop("impute_method should be 'mean' or 'minor'.")
    }
@@ -103,13 +103,11 @@ SPAGMMATtest = function(bgenFile = "",
 
    checkArgsListBool(is_imputed_data = is_imputed_data,
                      LOCO = LOCO,
-		     is_output_moreDetails = is_output_moreDetails,
-		     is_rewrite_XnonPAR_forMales = is_rewrite_XnonPAR_forMales)
-
-
-
-   checkArgsListNumeric(start = start,
-                     end = end,
+		     is_output_moreDetails = is_output_moreDetails)
+		     #is_rewrite_XnonPAR_forMales = is_rewrite_XnonPAR_forMales)
+	cat("dosage_zerod_cutoff ", dosage_zerod_cutoff, "\n")
+   checkArgsListNumeric(start = 1,
+                     end = 20000000,
 		     max_missing = max_missing,
                      min_MAC = min_MAC,
                      min_MAF = min_MAF,
@@ -143,16 +141,18 @@ SPAGMMATtest = function(bgenFile = "",
 			    is_output_moreDetails,
 			    numLinesOutput,
 			    dosage_zerod_cutoff,
-			    dosage_zerod_MAC_cutoff
+			    dosage_zerod_MAC_cutoff,
+			    weights.beta
                             )
 
     }else{
       isGroupTest = TRUE
       Check_File_Exist(groupFile, "groupFile")
       cat("group-based test will be performed\n")
-      checkArgsList_for_Region(method_to_CollapseUltraRare,
+      #checkArgsList_for_Region(method_to_CollapseUltraRare,
+      checkArgsList_for_Region(
                                     MACCutoff_to_CollapseUltraRare,
-                                    DosageCutoff_for_UltraRarePresence,
+                                    #DosageCutoff_for_UltraRarePresence,
                                     maxMAFforGroupTest = maxMAFforGroupTest,
 				    max_markers_region = max_markers_region)
 
@@ -170,20 +170,20 @@ SPAGMMATtest = function(bgenFile = "",
       #  weights.beta.common = weights.beta.rare
       #}
 
+				#method_to_CollapseUltraRare,
+				#DosageCutoff_for_UltraRarePresence,
       setRegion_GlobalVarsInCPP(impute_method,
                                 max_missing,
 				maxMAFforGroupTest,
 				max_markers_region,
 				1,
-				method_to_CollapseUltraRare,
 				MACCutoff_to_CollapseUltraRare,
-				DosageCutoff_for_UltraRarePresence,
 				dosage_zerod_cutoff,
                             	dosage_zerod_MAC_cutoff,
 				weights.beta
                             )
-     cat("dosage_zerod_cutoff is ", dosage_zerod_cutoff, "\n")
-     cat("dosage_zerod_MAC_cutoff is ", dosage_zerod_MAC_cutoff, "\n")
+     #cat("dosage_zerod_cutoff is ", dosage_zerod_cutoff, "\n")
+     #cat("dosage_zerod_MAC_cutoff is ", dosage_zerod_MAC_cutoff, "\n")
 
 
     }
@@ -207,7 +207,7 @@ SPAGMMATtest = function(bgenFile = "",
     cateVarRatioMaxMACVecInclude = c(cateVarRatioMaxMACVecInclude, nsample)	
     #print(names(obj.model$obj.noK))
 
-
+    
      #in Geno.R
     objGeno = setGenoInput(bgenFile = bgenFile,
                  bgenFileIndex = bgenFileIndex,
@@ -220,22 +220,16 @@ SPAGMMATtest = function(bgenFile = "",
                  bedFile=bedFile,
                  bimFile=bimFile,
                  famFile=famFile,
-              #   idstoExcludeFile = idstoExcludeFile,
                  idstoIncludeFile = idstoIncludeFile,
-              #   rangestoExcludeFile = rangestoExcludeFile,
                  rangestoIncludeFile = rangestoIncludeFile,
                  chrom = chrom,
-              #   start = start,
-              #   end = end,
                  AlleleOrder = AlleleOrder,
                  sampleInModel = obj.model$sampleID)
-
     markerInfo = objGeno$markerInfo
     genoIndex = markerInfo$genoIndex
     genoType = objGeno$dosageFileType
 
 
-    cat("isSparseGRM ", isSparseGRM, "\n")
 
    if (condition != "") {
         isCondition = TRUE
@@ -248,7 +242,9 @@ SPAGMMATtest = function(bgenFile = "",
     }
     
     condition_genoIndex = c(-1)
-    cat("isCondition ", isCondition, "\n") 
+    if(isCondition){
+        cat("Conducting conditional analysis.\n")
+    }	    
     #set up the SAIGE object based on the null model results
     setSAIGEobjInCPP(t_XVX=obj.model$obj.noK$XVX,
 		     t_XXVX_inv=obj.model$obj.noK$XXVX_inv,
@@ -274,12 +270,10 @@ SPAGMMATtest = function(bgenFile = "",
 		     t_isCondition = isCondition,
 		     t_condition_genoIndex = condition_genoIndex)
 
-
    #process condition
     if (isCondition) {
 	 #print("OK1")
         n = length(obj.model$y) #sample size
-
         condition_genoIndex = extract_genoIndex_condition(condition, markerInfo, genoType)
 
 
@@ -325,13 +319,13 @@ SPAGMMATtest = function(bgenFile = "",
                    chrom,
 		   isCondition)
     }else{
+		     #method_to_CollapseUltraRare,
+                     #DosageCutoff_for_UltraRarePresence,
 	SAIGE.Region(obj.model,
 		     objGeno,
 		     sparseSigma,
 		     OutputFile,
-		     method_to_CollapseUltraRare,
 		     MACCutoff_to_CollapseUltraRare,
-                     DosageCutoff_for_UltraRarePresence,
                      groupFile,
                      function_group_test,
                      maxMAFforGroupTest,
@@ -343,5 +337,7 @@ SPAGMMATtest = function(bgenFile = "",
 		     isCondition,
 		     numLinesOutput,
 		     r.corr)
+
+
     }	    
 }

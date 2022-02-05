@@ -2,7 +2,7 @@
 
 #options(stringsAsFactors=F, scipen = 999)
 options(stringsAsFactors=F)
-library(SAIGE, lib.loc="../../install")
+library(SAIGE, lib.loc="../../install_0.91")
 BLASctl_installed <- require(RhpcBLASctl)
 library(optparse)
 library(data.table)
@@ -46,7 +46,7 @@ option_list <- list(
 
   make_option("--minMAF", type="numeric", default=0,
     help="Minimum minor allele frequency for markers to be tested. The higher threshold between minMAC and minMAF will be used [default=0]."),
-  make_option("--minMAC", type="numeric", default=0,
+  make_option("--minMAC", type="numeric", default=0.5,
     help="Minimum minor allele count for markers to be tested. The higher threshold between minMAC and minMAF will be used [default=0.5]."),
   make_option("--minInfo", type="numeric", default=0,
     help="Minimum Info for markers to be tested if is_imputed_data=TRUE [default=0]"),
@@ -69,10 +69,10 @@ option_list <- list(
   make_option("--is_output_moreDetails", type="logical",default=TRUE,
     help="Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls will be output [default=TRUE]"),
 
-  make_option("--maxMAFforGroupTest", type="character",default="0.01",
-    help="Max MAF for markers tested in group test seperated by comma. e.g. 0.0001, 0.001, 0.01, [default=0.01]"),
-  make_option("--function_group_test", type="character",default="",
-    help="annotations of markers to be tested in the set-based tests. e.g. lof,missense;lof,missense;lof;synonymous. default: all markers in the group file are tested"),
+  make_option("--maxMAFforGroupTest", type="character",default="0.0001,0.001,0.01",
+    help="Max MAF for markers tested in group test seperated by comma. e.g. 0.0001,0.001,0.01, [default=0.01]"),
+  make_option("--function_group_test", type="character",default="lof,missense;lof,missense;lof;synonymous",
+    help="annotations of markers to be tested in the set-based tests seperated by comma. using ; to combine multiple annotations in the same test, e.g. lof,missense;lof,missense;lof;synonymous will test lof variants only, missense+lof variants, and missense+lof+synonymous variants. default: lof,missense;lof,missense;lof;synonymous"),
   make_option("--groupFile", type="character", default="",
     help="Path to the file containing the group information for gene-based tests. Each line is for one gene/set of variants. The first element is for gene/set name. The rest of the line is for variant ids included in this gene/set. For vcf/sav, the genetic marker ids are in the format chr:pos_ref/alt. For bgen, the genetic marker ids should match the ids in the bgen file. Each element in the line is seperated by tab."),
   make_option("--sparseSigmaFile", type="character", default="",
@@ -85,7 +85,7 @@ option_list <- list(
     help="Optional. vector of float. Higher bound for MAC categories. The length equals to the number of MAC categories for variance ratio estimation minus 1. [default='20.5']"),
   make_option("--weights.beta", type="character", default="1,25",
     help="parameters for the beta distribution to weight genetic markers in gene-based tests."),
-  make_option("--r.corr", type="character", default=0,
+  make_option("--r.corr", type="numeric", default=0,
     help="More options can be seen in the SKAT library"),
   make_option("--max_markers_region", type="numeric", default=100,
     help="Number of markers in each chunk when calculating the variance covariance matrix in the gene-based tests  [default=100]."),
@@ -99,7 +99,7 @@ option_list <- list(
   make_option("--SPAcutoff", type="numeric", default=2,
     help=" If the test statistic lies within the standard deviation cutoff of the
 mean, p-value based on traditional score test is returned. Default value is 2."),
-  make_option("--dosageZerodCutoff",type="numeric", default=0.2,
+  make_option("--dosage_zerod_cutoff",type="numeric", default=0.2,
     help="If is_imputed_data = TRUE, For variants with MAC <= dosage_zerod_MAC_cutoff, dosages <= dosageZerodCutoff with be set to 0. [default=0.2]"),
   make_option("--dosage_zerod_MAC_cutoff", type="numeric", default=10,
    help="If is_imputed_data = TRUE, For variants with MAC <= dosage_zerod_MAC_cutoff, dosages <= dosageZerodCutoff with be set to 0. [default=10]")
@@ -117,9 +117,10 @@ convertoNumeric = function(x,stringOutput){
 	y= tryCatch(expr = as.numeric(x),warning = function(w) {return(NULL)})
 	if(is.null(y)){
 		stop(stringOutput, " is not numeric\n")
-	}else{
-		cat(stringOutput, " is ", y, "\n")
 	}
+	#else{
+	#	cat(stringOutput, " is ", y, "\n")
+	#}
 	return(y)	
 }
 
@@ -152,7 +153,8 @@ if (BLASctl_installed){
   blas_set_num_threads(1)
 }
 
-
+print("opt$r.corr")
+print(opt$r.corr)
 
 SPAGMMATtest(vcfFile=opt$vcfFile,
              vcfFileIndex=opt$vcfFileIndex,

@@ -58,7 +58,8 @@ double g_DosageCutoff_for_UltraRarePresence;
 double g_dosage_zerod_MAC_cutoff;
 double g_dosage_zerod_cutoff;
 bool g_markerTestEnd = false;
-arma::vec g_weights_beta;
+arma::vec g_weights_beta(2);
+
 
 
 // [[Rcpp::export]]
@@ -71,7 +72,8 @@ void setMarker_GlobalVarsInCPP(std::string t_impute_method,
 			       bool t_isOutputMoreDetails,
 			       int t_marker_chunksize,
 			       double t_dosage_zerod_cutoff,
-			       double t_dosage_zerod_MAC_cutoff)
+			       double t_dosage_zerod_MAC_cutoff,
+			       arma::vec & t_weights_beta)
 
 {
   g_impute_method = t_impute_method;
@@ -84,22 +86,25 @@ void setMarker_GlobalVarsInCPP(std::string t_impute_method,
   g_marker_chunksize = t_marker_chunksize;
   g_dosage_zerod_cutoff = t_dosage_zerod_cutoff;
   g_dosage_zerod_MAC_cutoff = t_dosage_zerod_MAC_cutoff;
+  g_weights_beta = t_weights_beta;
 }
 
 
+//double t_DosageCutoff_for_UltraRarePresence,
+			       //std::string t_method_to_CollapseUltraRare,
 
+  //g_method_to_CollapseUltraRare = t_method_to_CollapseUltraRare;
+  //g_DosageCutoff_for_UltraRarePresence = t_DosageCutoff_for_UltraRarePresence;
 // [[Rcpp::export]]
 void setRegion_GlobalVarsInCPP(std::string t_impute_method,
                                double t_missing_cutoff,
                                arma::vec t_max_maf_region,
                                unsigned int t_max_markers_region,
                                unsigned int t_omp_num_threads,
-			       std::string t_method_to_CollapseUltraRare,
 			       double t_MACCutoff_to_CollapseUltraRare,
-			       double t_DosageCutoff_for_UltraRarePresence,
 			       double t_dosage_zerod_cutoff,
                                double t_dosage_zerod_MAC_cutoff,
-			       arma::vec t_weights_beta)
+			       arma::vec & t_weights_beta)
 {
   g_impute_method = t_impute_method;
   g_missingRate_cutoff = t_missing_cutoff;
@@ -107,9 +112,7 @@ void setRegion_GlobalVarsInCPP(std::string t_impute_method,
   g_maxMAFLimit = g_region_maxMAF_cutoff.max();
   g_region_maxMarkers_cutoff = t_max_markers_region;
   g_omp_num_threads = t_omp_num_threads;
-  g_method_to_CollapseUltraRare = t_method_to_CollapseUltraRare;
   g_region_minMAC_cutoff = t_MACCutoff_to_CollapseUltraRare;
-  g_DosageCutoff_for_UltraRarePresence = t_DosageCutoff_for_UltraRarePresence;
   g_dosage_zerod_cutoff = t_dosage_zerod_cutoff;
   g_dosage_zerod_MAC_cutoff = t_dosage_zerod_MAC_cutoff;
   g_weights_beta = t_weights_beta;
@@ -230,7 +233,6 @@ Rcpp::DataFrame mainMarkerInCPP(
       //std::cout << "isReadMarker " << isReadMarker << std::endl;
       g_markerTestEnd = true;
       bool isEndFile = check_Vcf_end();
-      std::cout << "isEndFile " << isEndFile << std::endl;
       break;
     }
 
@@ -440,7 +442,7 @@ arma::vec timeoutput6 = getTime();
 		OUT_DF["p.value.NA"] = pvalNAVec;
 		OUT_DF["Is.SPA.converge"] = isSPAConvergeVec;
 	    if(isCondition){
-		OUT_DF["BETAi_c"] = Beta_cVec;
+		OUT_DF["BETA_c"] = Beta_cVec;
 		OUT_DF["SE_c"] = seBeta_cVec;
 		OUT_DF["Tstat_c"] = Tstat_cVec;
 		OUT_DF["var_c"] = varT_cVec;
@@ -460,7 +462,7 @@ arma::vec timeoutput6 = getTime();
 	     }
 	}else if(t_traitType == "quantitative"){	
 	    if(isCondition){
-		OUT_DF["BETAi_c"] = Beta_cVec;
+		OUT_DF["BETA_c"] = Beta_cVec;
 		OUT_DF["SE_c"] = seBeta_cVec;
 		OUT_DF["Tstat_c"] = Tstat_cVec;
 		OUT_DF["var_c"] = varT_cVec;
@@ -1161,6 +1163,8 @@ Rcpp::List mainRegionInCPP(
 //std::cout << genoURVec[indexForNonZero_sort[0]] << std::endl;
 //	std::cout << "jm " << jm << std::endl;
 //	std::cout << "indexForNonZero.n_elem" << indexForNonZero.n_elem << std::endl;
+	i = q0 + jm;
+	markerVec.at(i) = "UR";             // marker IDs
 	if(indexForNonZero.n_elem > 0){
 	//URindVec.push_back(jm+1);
 	double altFreq = arma::mean(genoURVec)/2;
@@ -1182,11 +1186,9 @@ Rcpp::List mainRegionInCPP(
 	double MAC = MAF * 2 * t_n * (1 - missingRate);   // checked on 08-10-2021
 
 	ptr_gSAIGEobj->assignVarianceRatio(MAC);
-	i = q0 + jm;
 	annoMAFIndicatorVec.zeros();
 	annoMAFIndicatorVec(jm) = 1;
 	annoMAFIndicatorMat.row(i) = annoMAFIndicatorVec.t();
-	markerVec.at(i) = "UR";             // marker IDs
     	infoVec.at(i) = info;                 // marker information: CHR:POS:REF:ALT
     	altFreqVec.at(i) = altFreq;	// allele frequencies of ALT allele, this is not always < 0.5.
 	altCountsVec.at(i) = altCounts;
@@ -1412,7 +1414,7 @@ if(t_regionTestType != "BURDEN"){
                 OUT_DF["p.value.NA"] = pvalNAVec;
                 OUT_DF["Is.SPA.converge"] = isSPAConvergeVec;
             if(isCondition){
-                OUT_DF["BETAi_c"] = Beta_cVec;
+                OUT_DF["BETA_c"] = Beta_cVec;
                 OUT_DF["SE_c"] = seBeta_cVec;
                 OUT_DF["Tstat_c"] = Tstat_cVec;
                 OUT_DF["var_c"] = varT_cVec;
@@ -1434,7 +1436,7 @@ if(t_regionTestType != "BURDEN"){
 	     */
         }else if(t_traitType == "quantitative"){
             if(isCondition){
-                OUT_DF["BETAi_c"] = Beta_cVec;
+                OUT_DF["BETA_c"] = Beta_cVec;
                 OUT_DF["SE_c"] = seBeta_cVec;
                 OUT_DF["Tstat_c"] = Tstat_cVec;
                 OUT_DF["var_c"] = varT_cVec;
@@ -1529,7 +1531,12 @@ void assign_conditionMarkers_factors(
   arma::vec gyVec(q);
   arma::vec w0G2_cond_Vec(q);
   arma::vec gsumVec(t_n, arma::fill::zeros);
+  //double beta1 = g_weights_beta[0];
+  //double beta2 = g_weights_beta[1];  
   boost::math::beta_distribution<> beta_dist(g_weights_beta[0], g_weights_beta[1]);
+  //boost::math::beta_distribution<> beta_dist(beta1, beta2);
+  //g_weights_beta.print();
+  //boost::math::beta_distribution<> beta_dist(1, 25);
   //std::vector<double> GVec0(t_n);
   arma::vec GVec(t_n);
   double Beta, seBeta, pval, pval_noSPA, Tstat, varT, gy, w0G2_cond;
@@ -1559,7 +1566,6 @@ void assign_conditionMarkers_factors(
     char* end;
     uint64_t gIndex = std::strtoull( t_genoIndex_str.c_str(), &end,10 );
     std::remove(end);
-
     bool isReadMarker = Unified_getOneMarker(t_genoType, gIndex, ref, alt, marker, pd, chr, altFreq, altCounts, missingRate, imputeInfo,
                                           isOutputIndexForMissing, // bool t_isOutputIndexForMissing,
                                           indexForMissing,

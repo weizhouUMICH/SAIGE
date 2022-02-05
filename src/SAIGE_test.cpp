@@ -140,12 +140,15 @@ void SAIGEClass::scoreTest(arma::vec & t_GVec,
     double var1 = var2 * m_varRatioVal;
     double stat = S*S/var1;
     double t_pval;
+
+
     if (var1 < std::pow(std::numeric_limits<double>::min(), 2)){
         t_pval = 1;
     }else{
         boost::math::chi_squared chisq_dist(1);
         t_pval = boost::math::cdf(complement(chisq_dist, stat));
     }
+
     char pValueBuf[100];
     if (t_pval != 0)
         sprintf(pValueBuf, "%.6E", t_pval);

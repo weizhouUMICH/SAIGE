@@ -228,8 +228,7 @@ SAIGE.Marker = function(objNull,
     #print(timeoutput)
     ptm <- proc.time()
     print(ptm)
-    print("gc()")
-    print(gc())
+    gc()
     #rm(resMarker)
 
 

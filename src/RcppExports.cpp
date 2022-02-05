@@ -8,8 +8,8 @@
 using namespace Rcpp;
 
 // setMarker_GlobalVarsInCPP
-void setMarker_GlobalVarsInCPP(std::string t_impute_method, double t_missing_cutoff, double t_min_maf_marker, double t_min_mac_marker, double t_min_info_marker, unsigned int t_omp_num_threads, bool t_isOutputMoreDetails, int t_marker_chunksize, double t_dosage_zerod_cutoff, double t_dosage_zerod_MAC_cutoff);
-RcppExport SEXP _SAIGE_setMarker_GlobalVarsInCPP(SEXP t_impute_methodSEXP, SEXP t_missing_cutoffSEXP, SEXP t_min_maf_markerSEXP, SEXP t_min_mac_markerSEXP, SEXP t_min_info_markerSEXP, SEXP t_omp_num_threadsSEXP, SEXP t_isOutputMoreDetailsSEXP, SEXP t_marker_chunksizeSEXP, SEXP t_dosage_zerod_cutoffSEXP, SEXP t_dosage_zerod_MAC_cutoffSEXP) {
+void setMarker_GlobalVarsInCPP(std::string t_impute_method, double t_missing_cutoff, double t_min_maf_marker, double t_min_mac_marker, double t_min_info_marker, unsigned int t_omp_num_threads, bool t_isOutputMoreDetails, int t_marker_chunksize, double t_dosage_zerod_cutoff, double t_dosage_zerod_MAC_cutoff, arma::vec& t_weights_beta);
+RcppExport SEXP _SAIGE_setMarker_GlobalVarsInCPP(SEXP t_impute_methodSEXP, SEXP t_missing_cutoffSEXP, SEXP t_min_maf_markerSEXP, SEXP t_min_mac_markerSEXP, SEXP t_min_info_markerSEXP, SEXP t_omp_num_threadsSEXP, SEXP t_isOutputMoreDetailsSEXP, SEXP t_marker_chunksizeSEXP, SEXP t_dosage_zerod_cutoffSEXP, SEXP t_dosage_zerod_MAC_cutoffSEXP, SEXP t_weights_betaSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type t_impute_method(t_impute_methodSEXP);
@@ -22,13 +22,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type t_marker_chunksize(t_marker_chunksizeSEXP);
     Rcpp::traits::input_parameter< double >::type t_dosage_zerod_cutoff(t_dosage_zerod_cutoffSEXP);
     Rcpp::traits::input_parameter< double >::type t_dosage_zerod_MAC_cutoff(t_dosage_zerod_MAC_cutoffSEXP);
-    setMarker_GlobalVarsInCPP(t_impute_method, t_missing_cutoff, t_min_maf_marker, t_min_mac_marker, t_min_info_marker, t_omp_num_threads, t_isOutputMoreDetails, t_marker_chunksize, t_dosage_zerod_cutoff, t_dosage_zerod_MAC_cutoff);
+    Rcpp::traits::input_parameter< arma::vec& >::type t_weights_beta(t_weights_betaSEXP);
+    setMarker_GlobalVarsInCPP(t_impute_method, t_missing_cutoff, t_min_maf_marker, t_min_mac_marker, t_min_info_marker, t_omp_num_threads, t_isOutputMoreDetails, t_marker_chunksize, t_dosage_zerod_cutoff, t_dosage_zerod_MAC_cutoff, t_weights_beta);
     return R_NilValue;
 END_RCPP
 }
 // setRegion_GlobalVarsInCPP
-void setRegion_GlobalVarsInCPP(std::string t_impute_method, double t_missing_cutoff, arma::vec t_max_maf_region, unsigned int t_max_markers_region, unsigned int t_omp_num_threads, std::string t_method_to_CollapseUltraRare, double t_MACCutoff_to_CollapseUltraRare, double t_DosageCutoff_for_UltraRarePresence, double t_dosage_zerod_cutoff, double t_dosage_zerod_MAC_cutoff, arma::vec t_weights_beta);
-RcppExport SEXP _SAIGE_setRegion_GlobalVarsInCPP(SEXP t_impute_methodSEXP, SEXP t_missing_cutoffSEXP, SEXP t_max_maf_regionSEXP, SEXP t_max_markers_regionSEXP, SEXP t_omp_num_threadsSEXP, SEXP t_method_to_CollapseUltraRareSEXP, SEXP t_MACCutoff_to_CollapseUltraRareSEXP, SEXP t_DosageCutoff_for_UltraRarePresenceSEXP, SEXP t_dosage_zerod_cutoffSEXP, SEXP t_dosage_zerod_MAC_cutoffSEXP, SEXP t_weights_betaSEXP) {
+void setRegion_GlobalVarsInCPP(std::string t_impute_method, double t_missing_cutoff, arma::vec t_max_maf_region, unsigned int t_max_markers_region, unsigned int t_omp_num_threads, double t_MACCutoff_to_CollapseUltraRare, double t_dosage_zerod_cutoff, double t_dosage_zerod_MAC_cutoff, arma::vec& t_weights_beta);
+RcppExport SEXP _SAIGE_setRegion_GlobalVarsInCPP(SEXP t_impute_methodSEXP, SEXP t_missing_cutoffSEXP, SEXP t_max_maf_regionSEXP, SEXP t_max_markers_regionSEXP, SEXP t_omp_num_threadsSEXP, SEXP t_MACCutoff_to_CollapseUltraRareSEXP, SEXP t_dosage_zerod_cutoffSEXP, SEXP t_dosage_zerod_MAC_cutoffSEXP, SEXP t_weights_betaSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type t_impute_method(t_impute_methodSEXP);
@@ -36,13 +37,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::vec >::type t_max_maf_region(t_max_maf_regionSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type t_max_markers_region(t_max_markers_regionSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type t_omp_num_threads(t_omp_num_threadsSEXP);
-    Rcpp::traits::input_parameter< std::string >::type t_method_to_CollapseUltraRare(t_method_to_CollapseUltraRareSEXP);
     Rcpp::traits::input_parameter< double >::type t_MACCutoff_to_CollapseUltraRare(t_MACCutoff_to_CollapseUltraRareSEXP);
-    Rcpp::traits::input_parameter< double >::type t_DosageCutoff_for_UltraRarePresence(t_DosageCutoff_for_UltraRarePresenceSEXP);
     Rcpp::traits::input_parameter< double >::type t_dosage_zerod_cutoff(t_dosage_zerod_cutoffSEXP);
     Rcpp::traits::input_parameter< double >::type t_dosage_zerod_MAC_cutoff(t_dosage_zerod_MAC_cutoffSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type t_weights_beta(t_weights_betaSEXP);
-    setRegion_GlobalVarsInCPP(t_impute_method, t_missing_cutoff, t_max_maf_region, t_max_markers_region, t_omp_num_threads, t_method_to_CollapseUltraRare, t_MACCutoff_to_CollapseUltraRare, t_DosageCutoff_for_UltraRarePresence, t_dosage_zerod_cutoff, t_dosage_zerod_MAC_cutoff, t_weights_beta);
+    Rcpp::traits::input_parameter< arma::vec& >::type t_weights_beta(t_weights_betaSEXP);
+    setRegion_GlobalVarsInCPP(t_impute_method, t_missing_cutoff, t_max_maf_region, t_max_markers_region, t_omp_num_threads, t_MACCutoff_to_CollapseUltraRare, t_dosage_zerod_cutoff, t_dosage_zerod_MAC_cutoff, t_weights_beta);
     return R_NilValue;
 END_RCPP
 }
@@ -1890,8 +1889,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_SAIGE_setMarker_GlobalVarsInCPP", (DL_FUNC) &_SAIGE_setMarker_GlobalVarsInCPP, 10},
-    {"_SAIGE_setRegion_GlobalVarsInCPP", (DL_FUNC) &_SAIGE_setRegion_GlobalVarsInCPP, 11},
+    {"_SAIGE_setMarker_GlobalVarsInCPP", (DL_FUNC) &_SAIGE_setMarker_GlobalVarsInCPP, 11},
+    {"_SAIGE_setRegion_GlobalVarsInCPP", (DL_FUNC) &_SAIGE_setRegion_GlobalVarsInCPP, 9},
     {"_SAIGE_mainMarkerInCPP", (DL_FUNC) &_SAIGE_mainMarkerInCPP, 5},
     {"_SAIGE_setPLINKobjInCPP", (DL_FUNC) &_SAIGE_setPLINKobjInCPP, 5},
     {"_SAIGE_setBGENobjInCPP", (DL_FUNC) &_SAIGE_setBGENobjInCPP, 5},

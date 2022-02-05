@@ -44,12 +44,12 @@ void PlinkClass::setPlinkobj(std::string t_bimFile,
   // setChrMaps();
   readBimFile();
   readFamFile();
+ 
   m_ibedFile.open(m_bedFile.c_str(), std::ios::binary);
-  
   m_ibedFile.seekg(2);
   char magicNumber3;
   m_ibedFile.read(&magicNumber3, 1);
-  
+
   if(magicNumber3 != 1)
     Rcpp::stop("The third magic number of the plink bed file is not 00000001. Please use SNP-major plink (plink version >= 1.9) files.");
 }

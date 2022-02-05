@@ -14,14 +14,14 @@ setSparseSigma = function(sparseSigmaFile){
 
 
 
+                        #DosageCutoff_for_UltraRarePresence, 
+			#method_to_CollapseUltraRare,
 ##working
 SAIGE.Region = function(objNull,
 			objGeno,
 			sparseSigma,
 			OutputFile,
-			method_to_CollapseUltraRare,
                         MACCutoff_to_CollapseUltraRare,
-                        DosageCutoff_for_UltraRarePresence, 
 			groupFile, 
 			annolist, 
 			maxMAFlist,
@@ -168,10 +168,10 @@ SAIGE.Region = function(objNull,
     rm(genoIndex)
     gc()
 
-
- if(length(outList) > 1){
   OutList = as.data.frame(outList$OUT_DF) 	   
   noNAIndices = which(!is.na(OutList$p.value))
+  if(length(noNAIndices) > 0){
+ #if(length(outList) > 1){
   URindices = which(OutList$MarkerID == "UR")
   if(length(URindices) > 0){
   OutList$CHR[URindices] = "UR"
@@ -191,9 +191,9 @@ SAIGE.Region = function(objNull,
                 OutList$MarkerID[URindices][jm] = paste0(regionName,":",AnnoName,":",maxMAFName)
 		
         }
+   }
   }
-  }
-  noNAIndices = which(!is.na(OutList$p.value))
+  #noNAIndices = which(!is.na(OutList$p.value))
   OutList = OutList[noNAIndices, , drop=F]
   outList$gyVec = outList$gyVec[noNAIndices]
 
@@ -765,7 +765,6 @@ mainRegion = function(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputF
   if(length(URindices) >= 1){
   	OutList$infoVec[URindices] = "UR:UR:UR:UR"
   	#URindices_adj = URindices - length(genoIndex)
-  }
   for(j in 1:length(annolist)){
         AnnoName = annolist[j]
         for(m in 1:length(maxMAFlist)){
@@ -775,6 +774,7 @@ mainRegion = function(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputF
    	}
   }
 
+  }
 
   OutList$CHR = sapply(strsplit(as.character(OutList$infoVec), ":"), "[[", 1)
   OutList$POS = sapply(strsplit(as.character(OutList$infoVec), ":"), "[[", 2)

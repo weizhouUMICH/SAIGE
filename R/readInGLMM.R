@@ -40,7 +40,7 @@ ReadModel = function(GMMATmodelFile = "", chrom="", LOCO=TRUE){
   obj.glmm.null$linear.predictors = NULL
   obj.glmm.null$coefficients = NULL
   obj.glmm.null$cov = NULL
-  gc(T)
+  gc()
   #traitType = obj.glmm.null$traitType
   #y = obj.glmm.null$y
   #X = obj.glmm.null$X

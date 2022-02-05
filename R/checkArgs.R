@@ -67,49 +67,54 @@ dosage_zerod_MAC_cutoff){
 
 checkArgsListBool = function(is_imputed_data,
                      LOCO,
-                     is_output_moreDetails,
-                     is_rewrite_XnonPAR_forMales){
+                     is_output_moreDetails){
+                     #is_rewrite_XnonPAR_forMales){
 
 	checkArgBool(is_imputed_data, deparse(substitute(is_imputed_data)))
 	checkArgBool(LOCO, deparse(substitute(LOCO)))
 	checkArgBool(is_output_moreDetails, deparse(substitute(is_output_moreDetails)))
-	checkArgBool(is_rewrite_XnonPAR_forMales, deparse(substitute(is_rewrite_XnonPAR_forMales)))		
+	#checkArgBool(is_rewrite_XnonPAR_forMales, deparse(substitute(is_rewrite_XnonPAR_forMales)))		
 }
 
 
 
-checkArgsList_for_Region = function(method_to_CollapseUltraRare, 
+#checkArgsList_for_Region = function(method_to_CollapseUltraRare, 
+				    #DosageCutoff_for_UltraRarePresence,
+checkArgsList_for_Region = function( 
 				    MACCutoff_to_CollapseUltraRare,
-				    DosageCutoff_for_UltraRarePresence,
 				    maxMAFforGroupTest,
 				    max_markers_region){
 
 
-    if (method_to_CollapseUltraRare != "") {
-        if (MACCutoff_to_CollapseUltraRare <= 0) {
-            stop("MACCutoff_to_CollapseUltraRare needs to be larger than 0\n")
+    #if (method_to_CollapseUltraRare != "") {
+        if (MACCutoff_to_CollapseUltraRare < 0) {
+            stop("MACCutoff_to_CollapseUltraRare must be >= 0\n")
         }
-        if (DosageCutoff_for_UltraRarePresence <= 0 | DosageCutoff_for_UltraRarePresence > 2) {
-            stop("DosageCutoff_for_UltraRarePresenc needs be to larger than 0 and less or equal to 2\n")
-        }
+        #if (DosageCutoff_for_UltraRarePresence <= 0 | DosageCutoff_for_UltraRarePresence > 2) {
+        #    stop("DosageCutoff_for_UltraRarePresenc needs be to larger than 0 and less or equal to 2\n")
+        #}
 
-        if (method_to_CollapseUltraRare == "absence_or_presence") {
+        #if (method_to_CollapseUltraRare == "absence_or_presence") {
                   cat("Ultra rare variants with MAC <= ", MACCutoff_to_CollapseUltraRare,
-                    " will be collpased for set-based tests in the 'absence or presence' way. ",
-                    "For the resulted collpased marker, any individual having ",
-                    DosageCutoff_for_UltraRarePresence, "<= dosage < ",
-                    (1 + DosageCutoff_for_UltraRarePresence),
-                    " for any ultra rare variant has 1 in the genotype vector, having dosage >= ",
-                    (1 + DosageCutoff_for_UltraRarePresence),
-                    " for any ultra rare variant has 2 in the genotype vector, otherwise 0. \n")
-        }else if (method_to_CollapseUltraRare == "sum_geno") {
-                  cat("Ultra rare variants with MAC <= ", MACCutoff_to_CollapseUltraRare,
-                    " will be collpased for set-based tests in the 'sum_geno' way. ",
-                    "The resulted collpased marker equals weighted sum of the genotypes of all ultra rare variantsi. NOTE: this option currently is not active\n")
-        }
-    }else {
-        cat("Ultra rare variants won't be collpased for set-based association tests\n")
-    }
+                    " will be collpased for set-based tests in the 'absence or presence' way.\n")
+                    
+		    
+		    #"For the resulted collpased marker, any individual having ",
+                    #DosageCutoff_for_UltraRarePresence, "<= dosage < ",
+                    #(1 + DosageCutoff_for_UltraRarePresence),
+                    #" for any ultra rare variant has 1 in the genotype vector, having dosage >= ",
+                    #(1 + DosageCutoff_for_UltraRarePresence),
+                    #" for any ultra rare variant has 2 in the genotype vector, otherwise 0. \n")
+        #}
+	#else if (method_to_CollapseUltraRare == "sum_geno") {
+        #          cat("Ultra rare variants with MAC <= ", MACCutoff_to_CollapseUltraRare,
+        #            " will be collpased for set-based tests in the 'sum_geno' way. ",
+        #            "The resulted collpased marker equals weighted sum of the genotypes of all ultra rare variantsi. NOTE: this option currently is not active\n")
+        #}
+    #}
+    #else {
+    #    cat("Ultra rare variants won't be collpased for set-based association tests\n")
+    #}
 
     if(length(maxMAFforGroupTest) < 1){
       stop("maxMAFforGroupTest should contain at least one numeric value between 0 and 0.5\n")

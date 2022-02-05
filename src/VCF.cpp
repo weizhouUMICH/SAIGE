@@ -106,7 +106,7 @@ namespace VCF {
 		isEndFile = true;
 	}
 	return(isEndFile);
-	std::cout << "isEndFile " << isEndFile << std::endl;	
+	//std::cout << "isEndFile " << isEndFile << std::endl;	
   }
 
   void VcfClass::setPosSampleInVcf(std::vector<std::string> & t_SampleInModel)

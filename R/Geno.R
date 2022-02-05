@@ -91,13 +91,9 @@ setGenoInput = function(bgenFile = "",
                  bedFile="",
                  bimFile="",
                  famFile="",
-#		 idstoExcludeFile = NULL,
-                 idstoIncludeFile = NULL,
-#                 rangestoExcludeFile = NULL,
-                 rangestoIncludeFile = NULL,
-#                 chrom = "",
-#                 start = 1,
-#                 end = 250000000, 
+                 idstoIncludeFile = "",
+                 rangestoIncludeFile = "",
+                 chrom = "",
 		 AlleleOrder = NULL,
 		 sampleInModel = NULL)
 {
@@ -178,8 +174,8 @@ setGenoInput = function(bgenFile = "",
   
 
   if(dosageFileType == "vcf"){
-    if(!is.null(idstoIncludeFile) & !is.null(RangesToInclude)){
-      stop("We currently do not support both 'RangesToInclude' and 'RangesToInclude' at the same time for vcf files")
+    if(idstoIncludeFile != "" & rangestoIncludeFile != ""){
+      stop("We currently do not support both 'idstoIncludeFile' and 'rangestoIncludeFile' at the same time for vcf files")
     }
   }
 
@@ -191,8 +187,9 @@ setGenoInput = function(bgenFile = "",
 
   markersInclude = c()
   #markersExclude = c()
-
-  if(!is.null(idstoIncludeFile)){
+  IDsToInclude = NULL
+  RangesToInclude = NULL
+  if(idstoIncludeFile != ""){
     IDsToInclude = data.table::fread(idstoIncludeFile, header = F, colClasses = c("character"))
     if(ncol(IDsToInclude) != 1)
       stop("'idstoIncludeFile' of ", idstoIncludeFile, " should only include one column.")
@@ -203,7 +200,7 @@ setGenoInput = function(bgenFile = "",
     anyInclude = TRUE
   }
 
-  if(!is.null(rangestoIncludeFile)){
+  if(rangestoIncludeFile != ""){
     RangesToInclude = data.table::fread(rangestoIncludeFile, header = F, colClasses = c("character", "numeric", "numeric"))
     if(ncol(RangesToInclude) != 3)
       stop("rangestoIncludeFile should only include three columns.")
@@ -274,19 +271,25 @@ if(FALSE){
 
   if(dosageFileType == "vcf"){
     setVCFobjInCPP(vcfFile, vcfFileIndex, vcfField, t_SampleInModel = sampleInModel)
-   
-    if(!is.null(idstoIncludeFile) & !is.null(RangesToInclude)){
-    }
-    if(!is.null(idstoIncludeFile)){  
+
+
+    if(!is.null(IDsToInclude)){
       SNPlist = paste(c("set1", IDsToInclude), collapse = "\t")
-      set_iterator_inVcf(SNPlist, "", 1, 200000000)  	 
+      in_chrom="fake_chrom"
+      in_beg_pd=1
+      in_end_pd=200000000
+      set_iterator_inVcf(SNPlist, in_chrom, in_beg_pd, in_end_pd)
     }
 
     if(!is.null(RangesToInclude)){
       if(length(CHROM1) > 1){
         stop("We do not support query with multiple regions for vcf file. Please only include one region in the ", rangestoIncludeFile, "\n")
       }else{
-        set_iterator_inVcf("", CHROM1[1], START[1], END[1]) 
+	inSNPlist=""
+        in_chrom=CHROM1[1]
+  	in_beg_pd=START[1]
+	in_end_pd=END[1]	
+        set_iterator_inVcf(inSNPlist, in_chrom, in_beg_pd, in_end_pd)
       }
     } 
     markerInfo = NULL
