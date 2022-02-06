@@ -77,6 +77,14 @@ getMACVec <- function() {
     .Call('_SAIGE_getMACVec', PACKAGE = 'SAIGE')
 }
 
+getMACVec_forVarRatio <- function() {
+    .Call('_SAIGE_getMACVec_forVarRatio', PACKAGE = 'SAIGE')
+}
+
+getIsVarRatioGeno <- function() {
+    .Call('_SAIGE_getIsVarRatioGeno', PACKAGE = 'SAIGE')
+}
+
 getSubMarkerIndex <- function() {
     .Call('_SAIGE_getSubMarkerIndex', PACKAGE = 'SAIGE')
 }
@@ -161,8 +169,8 @@ Get_OneSNP_Geno <- function(SNPIdx) {
     .Call('_SAIGE_Get_OneSNP_Geno', PACKAGE = 'SAIGE', SNPIdx)
 }
 
-Get_OneSNP_Geno_forVarianceRatio <- function(SNPIdx) {
-    .Call('_SAIGE_Get_OneSNP_Geno_forVarianceRatio', PACKAGE = 'SAIGE', SNPIdx)
+Get_OneSNP_Geno_forVarRatio <- function(SNPIdx) {
+    .Call('_SAIGE_Get_OneSNP_Geno_forVarRatio', PACKAGE = 'SAIGE', SNPIdx)
 }
 
 Get_OneSNP_StdGeno <- function(SNPIdx) {
@@ -423,6 +431,10 @@ setmaxMissingRateforGRM <- function(maxMissingforGRM) {
 
 set_Diagof_StdGeno_LOCO <- function() {
     invisible(.Call('_SAIGE_set_Diagof_StdGeno_LOCO', PACKAGE = 'SAIGE'))
+}
+
+setminMAC_VarianceRatio <- function(t_minMACVarRatio, t_maxMACVarRatio, t_isVarianceRatioinGeno) {
+    invisible(.Call('_SAIGE_setminMAC_VarianceRatio', PACKAGE = 'SAIGE', t_minMACVarRatio, t_maxMACVarRatio, t_isVarianceRatioinGeno))
 }
 
 SPA <- function(mu, g, q, qinv, pval_noadj, tol, logp, traitType, pval, isSPAConverge) {

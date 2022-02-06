@@ -81,10 +81,31 @@ Rscript step1_fitNULLGLMM.R     \
         --sampleIDColinphenoFile=IID \
         --traitType=binary        \
         --outputPrefix=./output/example_binary \
-        --nThreads=2    \
+        --nThreads=64    \
         --noEstFixedEff=TRUE	\
 	--isCateVarianceRatio=TRUE	\
-	--useSparseGRMforVarRatio=TRUE
+	--useSparseGRMforVarRatio=TRUE	\
+	--IsOverwriteVarianceRatioFile=TRUE
+
+Rscript step1_fitNULLGLMM.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly_22chr  \
+        --sparseGRMFile=output/sparseGRM_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseGRM.mtx   \
+        --sparseGRMSampleIDFile=output/sparseGRM_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt     \
+        --useSparseGRMtoFitNULL=FALSE    \
+        --phenoFile=./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt \
+        --phenoCol=y_quantitative \
+        --covarColList=x1,x2,a9,a10 \
+        --qCovarColList=a9,a10  \
+        --sampleIDColinphenoFile=IID \
+	--invNormalize=TRUE	\
+        --traitType=quantitative        \
+        --outputPrefix=./output/example_quantitative \
+        --nThreads=64    \
+        --noEstFixedEff=TRUE    \
+        --isCateVarianceRatio=FALSE      \
+        --useSparseGRMforVarRatio=TRUE  \
+        --IsOverwriteVarianceRatioFile=TRUE
+
 
 ########Step 2
 #single-variant assoc test

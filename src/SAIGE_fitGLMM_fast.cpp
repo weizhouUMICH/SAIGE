@@ -36,6 +36,20 @@ public:
         int numMarkersofLastArray;
         std::vector< std::vector<unsigned char>* > genoVecofPointers;
         ///////////
+        std::vector< std::vector<unsigned char>* > genoVecofPointers_forVarRatio;
+	//arma::fvec g_cateVarRatioMinMACVecExclude;
+	//arma::fvec g_cateVarRatioMaxMACVecInclude;
+	float g_minMACVarRatio;
+	float g_maxMACVarRatio;
+	bool isVarRatio = false;
+	int numberofMarkers_varRatio = 0;
+	std::vector<float>      invstdvVec0_forVarRatio;
+        arma::fvec      invstdvVec_forVarRatio;
+	 std::vector<float>      alleleFreqVec0_forVarRatio;
+        arma::fvec      alleleFreqVec_forVarRatio;
+	std::vector<int>      MACVec0_forVarRatio;
+	arma::ivec MACVec_forVarRatio;
+
 
 	//vector<unsigned char> genoVec; 	 
   	size_t M;
@@ -188,7 +202,7 @@ public:
                 size_t ind= 0;
                 unsigned char geno1;
                 int bufferGeno;
-                for(size_t i=Start_idx; i< Start_idx+m_size_of_esi; i++){
+                for(size_t i=Start_idx; i< Start_idx+m_size_of_esi - 1; i++){
                         //geno1 = genoVec[i];
 			geno1 = genoVecofPointers[indexOfVectorPointer]->at(i); //avoid large continuous memory usage
                         for(int j=0; j<4; j++){
@@ -199,18 +213,87 @@ public:
 				m_OneSNP_Geno[ind] = bufferGeno;
                                 ind++;
                                 geno1 = geno1 >> 1;
+                                //if(ind >= Nnomissing){
+
+                                ////printf("%d, %d-%d-%d-%f-%d\n",Start_idx, genoVec[i] ,a ,b , m_OneSNP_Geno[ind-1] , m_size_of_esi);
+                                //        return & m_OneSNP_Geno;
+                                //}
+                        }
+                }
+
+		size_t i = Start_idx+m_size_of_esi - 1;
+		geno1 = genoVecofPointers[indexOfVectorPointer]->at(i);
+		for(int j=0; j<4; j++){
+                                int b = geno1 & 1 ;
+                                geno1 = geno1 >> 1;
+                                int a = geno1 & 1 ;
+                                bufferGeno = 2-(a+b);
+                                m_OneSNP_Geno[ind] = bufferGeno;
+                                ind++;
+                                geno1 = geno1 >> 1;
                                 if(ind >= Nnomissing){
 
-                                //printf("%d, %d-%d-%d-%f-%d\n",Start_idx, genoVec[i] ,a ,b , m_OneSNP_Geno[ind-1] , m_size_of_esi);
+                                ////printf("%d, %d-%d-%d-%f-%d\n",Start_idx, genoVec[i] ,a ,b , m_OneSNP_Geno[ind-1] , m_size_of_esi);
                                         return & m_OneSNP_Geno;
                                 }
-                        }
                 }
 
                 return & m_OneSNP_Geno;
        }
    
-	void Get_OneSNP_Geno_atBeginning(size_t SNPIdx, vector<int> & indexNA, vector<unsigned char> & genoVecOneMarkerOld, float & altFreq, float & missingRate, int & alleleCount, bool & passQC, size_t SNPIdx_new){
+        arma::ivec * Get_OneSNP_Geno_forVarRatio(size_t SNPIdx){
+                m_OneSNP_Geno.zeros(Nnomissing);
+
+		//avoid large continuous memory usage
+		int indexOfVectorPointer = SNPIdx/numMarkersofEachArray;
+                int SNPIdxinVec = SNPIdx % numMarkersofEachArray;
+		////////////////
+
+                size_t Start_idx = m_size_of_esi * SNPIdxinVec;
+                size_t ind= 0;
+                unsigned char geno1;
+                int bufferGeno;
+                for(size_t i=Start_idx; i< Start_idx+m_size_of_esi-1; i++){
+                        //geno1 = genoVec[i];
+			geno1 = genoVecofPointers_forVarRatio[indexOfVectorPointer]->at(i); //avoid large continuous memory usage
+                        for(int j=0; j<4; j++){
+                                int b = geno1 & 1 ;
+                                geno1 = geno1 >> 1;
+                                int a = geno1 & 1 ;
+				bufferGeno = 2-(a+b);
+				m_OneSNP_Geno[ind] = bufferGeno;
+                                ind++;
+                                geno1 = geno1 >> 1;
+                                //if(ind >= Nnomissing){
+
+                                //printf("%d, %d-%d-%d-%f-%d\n",Start_idx, genoVec[i] ,a ,b , m_OneSNP_Geno[ind-1] , m_size_of_esi);
+                                //        return & m_OneSNP_Geno;
+                                //}
+                        }
+                }
+
+		size_t i = Start_idx+m_size_of_esi-1;
+		geno1 = genoVecofPointers_forVarRatio[indexOfVectorPointer]->at(i); //avoid large continuous memory usage
+                for(int j=0; j<4; j++){
+                                int b = geno1 & 1 ;
+                                geno1 = geno1 >> 1;
+                                int a = geno1 & 1 ;
+                                bufferGeno = 2-(a+b);
+                                m_OneSNP_Geno[ind] = bufferGeno;
+                                ind++;
+                                geno1 = geno1 >> 1;
+                                if(ind >= Nnomissing){
+
+                                //printf("%d, %d-%d-%d-%f-%d\n",Start_idx, genoVec[i] ,a ,b , m_OneSNP_Geno[ind-1] , m_size_of_esi);
+                                        return & m_OneSNP_Geno;
+                                }
+                  }
+
+                return & m_OneSNP_Geno;
+       }
+
+
+	void Get_OneSNP_Geno_atBeginning(size_t SNPIdx, vector<int> & indexNA, vector<unsigned char> & genoVecOneMarkerOld, float & altFreq, float & missingRate, int & mac,  int & alleleCount, bool & passQC, size_t SNPIdx_new, bool & passVarRatio , size_t SNPIdx_vr){
 
 		arma::ivec m_OneSNP_GenoTemp;
 		m_OneSNP_GenoTemp.zeros(N);
@@ -372,9 +455,23 @@ public:
 
 	      unsigned char geno2;
 	      passQC = false;
+	     passVarRatio = false;
 	     float maf = std::min(altFreq, 1-altFreq);
+	     mac = std::min(alleleCount, int(Nnomissing) * 2 - alleleCount);
 
 		if(maf >= minMAFtoConstructGRM && missingRate <= maxMissingRate){
+			passQC = true;
+		}
+		
+		if(isVarRatio){
+			if(mac >= g_minMACVarRatio && mac <= g_maxMACVarRatio){
+				passVarRatio = true;
+				genoVecofPointers_forVarRatio[SNPIdx_vr] = new vector<unsigned char>;
+				genoVecofPointers_forVarRatio[SNPIdx_vr]->reserve(numMarkersofEachArray*ceil(float(Nnomissing)/4));
+			}
+		}
+
+		if(passQC | passVarRatio){
 			for(int indx=0; indx < Nnomissing; indx++){
                                                 //cout << "HERE5\n";
                               u = indx & 3;
@@ -390,12 +487,16 @@ public:
                                         setGenotype(&geno2, u, HOM_REF);
                               }
 			      if(u == 3 || indx == (Nnomissing-1)){
-                                        genoVecofPointers[SNPIdx_new/numMarkersofEachArray]->push_back(geno2); //avoid large continuous memory usage
+				       if(passQC){
+                                        	genoVecofPointers[SNPIdx_new/numMarkersofEachArray]->push_back(geno2); //avoid large continuous memory usage
+				       }
+				       if(passVarRatio){
+						genoVecofPointers_forVarRatio[SNPIdx_vr/numMarkersofEachArray]->push_back(geno2); //avoid large continuous memory usage
+					}
                                         geno2 = 0;
                               }
+			}
 		}
-		passQC = true;
-	}
 	    // altFreq = alleleCount/float(Nnomissing * 2);
 
    }
@@ -650,28 +751,28 @@ public:
 		//numMarkersofEachArray = floor((memoryChunk*pow (10.0, 9.0))/(ceil(float(N)/4)));
 		//cout << "numMarkersofEachArray: " << numMarkersofEachArray << endl;
 		numMarkersofEachArray = 1;
-		if(M % numMarkersofEachArray == 0){
-                        numofGenoArray = M / numMarkersofEachArray;
+		//if(M % numMarkersofEachArray == 0){
+                        //numofGenoArray = M / numMarkersofEachArray;
+                        numofGenoArray = M;
 			genoVecofPointers.resize(numofGenoArray);
+			genoVecofPointers_forVarRatio.resize(numofGenoArray);
                         //cout << "size of genoVecofPointers: " << genoVecofPointers.size() << endl;
                         for (int i = 0; i < numofGenoArray ; i++){
                                 genoVecofPointers[i] = new vector<unsigned char>;
                                 genoVecofPointers[i]->reserve(numMarkersofEachArray*ceil(float(Nnomissing)/4));
                         }
 
-                }else{
+                //}
+		/*else{
                         numofGenoArray = M/numMarkersofEachArray + 1;
                         genoVecofPointers.resize(numofGenoArray);
 			numMarkersofLastArray = M - (numofGenoArray-1)*numMarkersofEachArray;
                         cout << "size of genoVecofPointers: " << genoVecofPointers.size() << endl;
 			try{	
                         for (int i = 0; i < numofGenoArray-1; i++){
-			//	cout << "i = " << i << endl;
                                 genoVecofPointers[i] = new vector<unsigned char>;
                                 genoVecofPointers[i]->reserve(numMarkersofEachArray*ceil(float(Nnomissing)/4));
-				//cout <<((*genoVecofPointers[i]).capacity()==numMarkersofEachArray*ceil(float(N)/4))<< endl;
                         }
-			//cout << "here\n";
 			genoVecofPointers[numofGenoArray-1] = new vector<unsigned char>;
 			genoVecofPointers[numofGenoArray-1]->reserve(numMarkersofLastArray*ceil(float(Nnomissing)/4));
 			}
@@ -680,30 +781,14 @@ public:
                                 std::cerr << "bad_alloc caught1: " << ba.what() << '\n';
                                 exit(EXIT_FAILURE);
                         }
-			/*
-			numMarkersofLastArray = M - (numofGenoArray-1)*numMarkersofEachArray;
-			cout << "numMarkersofLastArray " << numMarkersofLastArray << endl;
-    			cout << "numMarkersofLastArray*ceil(float(N)/4) " << numMarkersofLastArray*ceil(float(N)/4) << endl;
-			genoVecofPointers[numofGenoArray - 1] = new vector<unsigned char>;
-			cout << "setgeno mark0" << endl;
-			try{
-			genoVecofPointers[numofGenoArray - 1]->reserve(numMarkersofLastArray*ceil(float(N)/4));
-			}
-			 catch(std::bad_alloc& ba)
-  			{
-    				std::cerr << "bad_alloc caught1: " << ba.what() << '\n';
-    				exit(EXIT_FAILURE);
-  			}
-			*/
-			//cout << "setgeno mark0b" << endl;
-		}
+		}*/
 
 		cout << "setgeno mark1" << endl;
 		//alleleFreqVec.zeros(M);
 		//invstdvVec.zeros(M);
 		//MACVec.zeros(M);
         	float freq, Std, invStd, missingRate;
-        	int alleleCount;
+        	int alleleCount, mac;
 		std::vector<int> indexNA;
         	int lengthIndexNA;
         	int indexGeno;
@@ -719,8 +804,10 @@ public:
 		//std::vector<int> genoVec4Markers(4);
 		//test_bedfile.read((char*)(&genoVecTemp[0]),nbyteTemp*M);
 		bool isPassQC = false;
+		bool isPass_vr = false;
 		cout << "setgeno mark2" << endl;
 		size_t SNPIdx_new = 0;
+		size_t SNPIdx_vr = 0;
 		//Mmafge1perc = 0;
 		for(int i = 0; i < M; i++){
 			genoVecOneMarkerOld.clear();
@@ -735,7 +822,7 @@ public:
 
       			indexNA.clear();
 		//}	
-        		Get_OneSNP_Geno_atBeginning(i, indexNA, genoVecOneMarkerOld, freq, missingRate, alleleCount, isPassQC, SNPIdx_new);
+        		Get_OneSNP_Geno_atBeginning(i, indexNA, genoVecOneMarkerOld, freq, missingRate, mac, alleleCount, isPassQC, SNPIdx_new, isPass_vr, SNPIdx_vr);
 
 			//std::cout << "freq " << freq << std::endl;
 			//std::cout << "isPassQC " << isPassQC << std::endl;
@@ -751,12 +838,29 @@ public:
 				alleleFreqVec0.push_back(freq);
 				numberofMarkerswithMAFge_minMAFtoConstructGRM = numberofMarkerswithMAFge_minMAFtoConstructGRM + 1;
 		
-				MACVec0.push_back(std::min(alleleCount, (int((2*Nnomissing))-alleleCount)));	
+				MACVec0.push_back(mac);	
 				MarkerswithMAFge_minMAFtoConstructGRM_indVec.push_back(true);
 				SNPIdx_new = SNPIdx_new + 1;
 			}else{
 				MarkerswithMAFge_minMAFtoConstructGRM_indVec.push_back(false);
+			}
+
+			if(isVarRatio){
+				if(isPass_vr){
+					Std = std::sqrt(2*freq*(1-freq));
+                                	if(Std == 0){
+                                        	invStd= 0;
+                                	}else {
+                                        	invStd= 1/Std;
+                                	}
+					invstdvVec0_forVarRatio.push_back(invStd);
+					alleleFreqVec0_forVarRatio.push_back(freq);
+					MACVec0_forVarRatio.push_back(mac);
+					SNPIdx_vr = SNPIdx_vr + 1;
+					numberofMarkers_varRatio = numberofMarkers_varRatio + 1;
+				}
 			}	
+
 
 			//m_OneSNP_Geno.clear();
 
@@ -808,6 +912,21 @@ public:
 
 		}
                 //numMarkersofEachArray = floor((memoryChunk*pow (10.0, 9.0))/(ceil(float(Nnomissing)/4)));
+		
+	if(isVarRatio){
+		invstdvVec_forVarRatio.clear();
+                invstdvVec_forVarRatio.set_size(numberofMarkers_varRatio);
+		alleleFreqVec_forVarRatio.clear();
+                alleleFreqVec_forVarRatio.set_size(numberofMarkers_varRatio);
+		MACVec_forVarRatio.clear();
+		MACVec_forVarRatio.set_size(numberofMarkers_varRatio);	
+		for(int i = 0; i < numberofMarkers_varRatio; i++){
+			invstdvVec_forVarRatio[i] = invstdvVec0_forVarRatio.at(i);
+			alleleFreqVec_forVarRatio[i] =alleleFreqVec0_forVarRatio.at(i);
+			MACVec_forVarRatio[i] = MACVec0_forVarRatio.at(i);
+		}
+	}
+
         	test_bedfile.close();
 //		cout << "setgeno mark5" << endl;
 //		printAlleleFreqVec();
@@ -1018,6 +1137,16 @@ arma::ivec getMACVec(){
         return(geno.MACVec);
 }
 
+
+// [[Rcpp::export]]
+arma::ivec getMACVec_forVarRatio(){
+        return(geno.MACVec_forVarRatio);
+}
+
+// [[Rcpp::export]]
+bool getIsVarRatioGeno(){
+	return(geno.isVarRatio);
+}
 // [[Rcpp::export]]
 arma::ivec getSubMarkerIndex(){
 	return(geno.subMarkerIndex);
@@ -1506,11 +1635,12 @@ void setupSparseGRM(int r, arma::umat & locationMatinR, arma::vec & valueVecinR)
     std::cout << locationMat.n_rows << " locationMat.n_rows " << std::endl;
     std::cout << locationMat.n_cols << " locationMat.n_cols " << std::endl;
     std::cout << valueVec.n_elem << " valueVec.n_elem " << std::endl;
-    for(size_t i=0; i< 10; i++){
-        std::cout << valueVec(i) << std::endl;
-        std::cout << locationMat(0,i) << std::endl;
-        std::cout << locationMat(1,i) << std::endl;
-    }
+    
+    //for(size_t i=0; i< 10; i++){
+    //    std::cout << valueVec(i) << std::endl;
+    //    std::cout << locationMat(0,i) << std::endl;
+    //    std::cout << locationMat(1,i) << std::endl;
+    //}
 
     //arma::vec y = arma::linspace<arma::vec>(0, 5, r);
     //arma::sp_fmat A = sprandu<sp_fmat>(100, 200, 0.1);
@@ -1802,10 +1932,10 @@ arma::ivec Get_OneSNP_Geno(int SNPIdx)
 
 
 // [[Rcpp::export]]
-arma::ivec Get_OneSNP_Geno_forVarianceRatio(int SNPIdx)
+arma::ivec Get_OneSNP_Geno_forVarRatio(int SNPIdx)
 {
        
-        arma::ivec temp = * geno.Get_OneSNP_Geno(SNPIdx);
+        arma::ivec temp = * geno.Get_OneSNP_Geno_forVarRatio(SNPIdx);
         return(temp);
 
 }
@@ -4389,6 +4519,23 @@ for(size_t k=0; k< chrlength; k++){
 }	
 }
 
+/*
+// [[Rcpp::export]]
+void setminMAC_VarianceRatio(arma::fvec  t_cateVarRatioMinMACVecExclude, arma::fvec  t_cateVarRatioMaxMACVecInclude){
+  g_cateVarRatioMinMACVecExclude = t_cateVarRatioMinMACVecExclude;
+  g_cateVarRatioMaxMACVecInclude = t_cateVarRatioMaxMACVecInclude;
+}
+*/
+
+
+// [[Rcpp::export]]
+void setminMAC_VarianceRatio(float t_minMACVarRatio, float t_maxMACVarRatio, bool t_isVarianceRatioinGeno){ 
+	geno.g_minMACVarRatio = t_minMACVarRatio;
+	geno.g_maxMACVarRatio = t_maxMACVarRatio;
+	geno.isVarRatio = t_isVarianceRatioinGeno;
+	//std::cout << "geno.g_minMACVarRatio " << geno.g_minMACVarRatio << std::endl;
+	//std::cout << "geno.g_maxMACVarRatio " << geno.g_maxMACVarRatio << std::endl;	
+}
 
 // // [[Rcpp::export]] 
 //int getNumofMarkersforGRM(){

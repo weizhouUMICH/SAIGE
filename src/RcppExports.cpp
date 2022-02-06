@@ -270,6 +270,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getMACVec_forVarRatio
+arma::ivec getMACVec_forVarRatio();
+RcppExport SEXP _SAIGE_getMACVec_forVarRatio() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getMACVec_forVarRatio());
+    return rcpp_result_gen;
+END_RCPP
+}
+// getIsVarRatioGeno
+bool getIsVarRatioGeno();
+RcppExport SEXP _SAIGE_getIsVarRatioGeno() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(getIsVarRatioGeno());
+    return rcpp_result_gen;
+END_RCPP
+}
 // getSubMarkerIndex
 arma::ivec getSubMarkerIndex();
 RcppExport SEXP _SAIGE_getSubMarkerIndex() {
@@ -494,14 +514,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Get_OneSNP_Geno_forVarianceRatio
-arma::ivec Get_OneSNP_Geno_forVarianceRatio(int SNPIdx);
-RcppExport SEXP _SAIGE_Get_OneSNP_Geno_forVarianceRatio(SEXP SNPIdxSEXP) {
+// Get_OneSNP_Geno_forVarRatio
+arma::ivec Get_OneSNP_Geno_forVarRatio(int SNPIdx);
+RcppExport SEXP _SAIGE_Get_OneSNP_Geno_forVarRatio(SEXP SNPIdxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type SNPIdx(SNPIdxSEXP);
-    rcpp_result_gen = Rcpp::wrap(Get_OneSNP_Geno_forVarianceRatio(SNPIdx));
+    rcpp_result_gen = Rcpp::wrap(Get_OneSNP_Geno_forVarRatio(SNPIdx));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1349,6 +1369,18 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// setminMAC_VarianceRatio
+void setminMAC_VarianceRatio(float t_minMACVarRatio, float t_maxMACVarRatio, bool t_isVarianceRatioinGeno);
+RcppExport SEXP _SAIGE_setminMAC_VarianceRatio(SEXP t_minMACVarRatioSEXP, SEXP t_maxMACVarRatioSEXP, SEXP t_isVarianceRatioinGenoSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type t_minMACVarRatio(t_minMACVarRatioSEXP);
+    Rcpp::traits::input_parameter< float >::type t_maxMACVarRatio(t_maxMACVarRatioSEXP);
+    Rcpp::traits::input_parameter< bool >::type t_isVarianceRatioinGeno(t_isVarianceRatioinGenoSEXP);
+    setminMAC_VarianceRatio(t_minMACVarRatio, t_maxMACVarRatio, t_isVarianceRatioinGeno);
+    return R_NilValue;
+END_RCPP
+}
 // SPA
 void SPA(arma::vec& mu, arma::vec& g, double q, double qinv, double pval_noadj, double tol, bool logp, std::string traitType, double& pval, bool& isSPAConverge);
 RcppExport SEXP _SAIGE_SPA(SEXP muSEXP, SEXP gSEXP, SEXP qSEXP, SEXP qinvSEXP, SEXP pval_noadjSEXP, SEXP tolSEXP, SEXP logpSEXP, SEXP traitTypeSEXP, SEXP pvalSEXP, SEXP isSPAConvergeSEXP) {
@@ -1908,6 +1940,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_gettotalMarker", (DL_FUNC) &_SAIGE_gettotalMarker, 0},
     {"_SAIGE_getAlleleFreqVec", (DL_FUNC) &_SAIGE_getAlleleFreqVec, 0},
     {"_SAIGE_getMACVec", (DL_FUNC) &_SAIGE_getMACVec, 0},
+    {"_SAIGE_getMACVec_forVarRatio", (DL_FUNC) &_SAIGE_getMACVec_forVarRatio, 0},
+    {"_SAIGE_getIsVarRatioGeno", (DL_FUNC) &_SAIGE_getIsVarRatioGeno, 0},
     {"_SAIGE_getSubMarkerIndex", (DL_FUNC) &_SAIGE_getSubMarkerIndex, 0},
     {"_SAIGE_getQCdMarkerIndex", (DL_FUNC) &_SAIGE_getQCdMarkerIndex, 0},
     {"_SAIGE_getSubMarkerNum", (DL_FUNC) &_SAIGE_getSubMarkerNum, 0},
@@ -1929,7 +1963,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_parallelsumTwoVec", (DL_FUNC) &_SAIGE_parallelsumTwoVec, 1},
     {"_SAIGE_setgeno", (DL_FUNC) &_SAIGE_setgeno, 5},
     {"_SAIGE_Get_OneSNP_Geno", (DL_FUNC) &_SAIGE_Get_OneSNP_Geno, 1},
-    {"_SAIGE_Get_OneSNP_Geno_forVarianceRatio", (DL_FUNC) &_SAIGE_Get_OneSNP_Geno_forVarianceRatio, 1},
+    {"_SAIGE_Get_OneSNP_Geno_forVarRatio", (DL_FUNC) &_SAIGE_Get_OneSNP_Geno_forVarRatio, 1},
     {"_SAIGE_Get_OneSNP_StdGeno", (DL_FUNC) &_SAIGE_Get_OneSNP_StdGeno, 1},
     {"_SAIGE_getDiagOfSigma", (DL_FUNC) &_SAIGE_getDiagOfSigma, 2},
     {"_SAIGE_getDiagOfSigma_LOCO", (DL_FUNC) &_SAIGE_getDiagOfSigma_LOCO, 2},
@@ -1995,6 +2029,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_setminMAFforGRM", (DL_FUNC) &_SAIGE_setminMAFforGRM, 1},
     {"_SAIGE_setmaxMissingRateforGRM", (DL_FUNC) &_SAIGE_setmaxMissingRateforGRM, 1},
     {"_SAIGE_set_Diagof_StdGeno_LOCO", (DL_FUNC) &_SAIGE_set_Diagof_StdGeno_LOCO, 0},
+    {"_SAIGE_setminMAC_VarianceRatio", (DL_FUNC) &_SAIGE_setminMAC_VarianceRatio, 3},
     {"_SAIGE_SPA", (DL_FUNC) &_SAIGE_SPA, 10},
     {"_SAIGE_SPA_fast", (DL_FUNC) &_SAIGE_SPA_fast, 16},
     {"_SAIGE_Korg_Binom", (DL_FUNC) &_SAIGE_Korg_Binom, 3},

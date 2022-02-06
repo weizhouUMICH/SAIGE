@@ -700,11 +700,16 @@ fitNULLGLMM = function(plinkFile = "",
 {
     ##set up output files
     modelOut = paste0(outputPrefix, ".rda")
-    Check_OutputFile_Create(modelOut)
+    if(skipModelFitting){
+	if(!file.exists(modelOut)){
+		stop("skipModelFitting=TRUE but ", modelOut, " does not exist\n")	   }	
+    }else{
+	file.create(modelOut, showWarnings = TRUE)
+    }	    
 
     if(!skipVarianceRatioEstimation){
     	SPAGMMATOut = paste0(outputPrefix, "_", numMarkersForVarRatio, "markers.SAIGE.results.txt")
-    	Check_OutputFile_Create(SPAGMMATOut)
+    	#Check_OutputFile_Create(SPAGMMATOut)
 
     	if (outputPrefix_varRatio == "") {
             outputPrefix_varRatio = outputPrefix
@@ -833,19 +838,22 @@ fitNULLGLMM = function(plinkFile = "",
         stop("ERROR! phenoFile ", phenoFile, " does not exsit\n")
     }else{
         if (grepl(".gz$", phenoFile) | grepl(".bgz$", phenoFile)) {
-            ydat = data.table:::fread(cmd = paste0("gunzip -c ", 
+            data = data.table:::fread(cmd = paste0("gunzip -c ", 
                 phenoFile), header = T, stringsAsFactors = FALSE, 
-                colClasses = list(character = sampleIDColinphenoFile))
+                colClasses = list(character = sampleIDColinphenoFile), data.table=F)
         }
         else {
-            ydat = data.table:::fread(phenoFile, header = T, 
-                stringsAsFactors = FALSE, colClasses = list(character = sampleIDColinphenoFile))
+            data = data.table:::fread(phenoFile, header = T, 
+                stringsAsFactors = FALSE, colClasses = list(character = sampleIDColinphenoFile), data.table=F)
         }
-        data = data.frame(ydat)
+        #data = data.frame(ydat)
         for (i in c(phenoCol, covarColList, sampleIDColinphenoFile)) {
             if (!(i %in% colnames(data))) {
                 stop("ERROR! column for ", i, " does not exist in the phenoFile \n")
-            }
+            }else{
+		data = data[,which(colnames(data) %in% c(phenoCol, covarColList, sampleIDColinphenoFile)), drop=F]	
+		data = data[complete.cases(data),,drop=F]
+	    }		    
         }
 
 	if(length(qCovarCol) > 0){
@@ -885,6 +893,8 @@ fitNULLGLMM = function(plinkFile = "",
             }
         }
 
+
+
         if (length(covarColList) > 0) {
             formula = paste0(phenoCol, "~", paste0(covarColList, 
                 collapse = "+"))
@@ -901,7 +911,6 @@ fitNULLGLMM = function(plinkFile = "",
 	mmat = data.frame(mmat)
         mmat = cbind(mmat,  data[, which(colnames(data) == phenoCol), drop=F])
 	colnames(mmat)[ncol(mmat)] = phenoCol
-	print(head(mmat))
 
 
 	if (length(covarColList) > 0) {
@@ -1013,6 +1022,31 @@ fitNULLGLMM = function(plinkFile = "",
         setupSparseGRM(dim(m4)[1], locationMatinR, valueVecinR)
         rm(sparseGRMtest)
     }
+
+    if(!skipVarianceRatioEstimation){
+	    mac_inter = minMAFforGRM * 2 * nrow(dataMerge_sort) - 1
+	    cat("mac_inter ", mac_inter, "\n") 
+		if(isCateVarianceRatio){
+			minMAC_varRatio = min(cateVarRatioMinMACVecExclude)
+			maxMAC_varRatio = min(max(cateVarRatioMaxMACVecInclude), mac_inter)
+			isVarianceRatioinGeno = TRUE	
+		}else{
+			if(mac_inter <= 20){
+				isVarianceRatioinGeno = FALSE
+			}else{
+				isVarianceRatioinGeno = TRUE
+				minMAC_varRatio = 20
+				maxMAC_varRatio = mac_inter
+			}	
+		}
+	if(isVarianceRatioinGeno) {
+		setminMAC_VarianceRatio(minMAC_varRatio, maxMAC_varRatio, isVarianceRatioinGeno)
+	}	
+
+    }
+
+
+
 
     if (traitType == "binary") {
         cat(phenoCol, " is a binary trait\n")
@@ -1137,29 +1171,10 @@ fitNULLGLMM = function(plinkFile = "",
         cat("glm:\n")
         print(fit0)
         if (!skipModelFitting) {
-            if (useSparseSigmaforInitTau) {
-                setisUseSparseSigmaforInitTau(TRUE)
-                modglmm0 <- glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile, 
-                  fit0, tau = c(0, 0), fixtau = c(0, 0), maxiter = maxiter, 
-                  tol = tol, verbose = TRUE, nrun = 30, tolPCG = tolPCG, 
-                  maxiterPCG = maxiterPCG, subPheno = dataMerge_sort, indicatorGenoSamplesWithPheno = indicatorGenoSamplesWithPheno, 
-                  obj.noK = obj.noK, out.transform = out.transform, 
-                  tauInit = tauInit, memoryChunk = memoryChunk, 
-                  LOCO = LOCO, chromosomeStartIndexVec = chromosomeStartIndexVec, 
-                  chromosomeEndIndexVec = chromosomeEndIndexVec, 
-                  traceCVcutoff = traceCVcutoff, isCovariateTransform = isCovariateTransform, 
-                  isDiagofKinSetAsOne = isDiagofKinSetAsOne)
-                tauInit = modglmm0$theta
-                cat("tauInit estimated using sparse Sigma is ", 
-                  tauInit, "\n")
-                rm(modglmm0)
-                closeGenoFile_plink()
-            }
-            setisUseSparseSigmaforInitTau(FALSE)
-            cat("Start fitting the NULL GLMM\n")
             t_begin = proc.time()
             print(t_begin)
             setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
+            cat("Start fitting the NULL GLMM\n")
             system.time(modglmm <- glmmkin.ai_PCG_Rcpp_Quantitative(plinkFile, 
                 fit0, tau = c(0, 0), fixtau = c(0, 0), maxiter = maxiter, 
                 tol = tol, verbose = TRUE, nrun = 30, tolPCG = tolPCG, 
@@ -1305,18 +1320,21 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 #  listOfMarkersForVarRatio = sample(c(1:mMarkers), size = mMarkers, replace = FALSE)
   listOfMarkersForVarRatio = list()
   MACvector = getMACVec()
-#  freqVec = getAlleleFreqVec()
-#  Nnomissing = length(mu)
+  isVarianceRatioinGeno = getIsVarRatioGeno()
 
-#  OUTtotal = NULL
-#  OUT = NULL
-#  indexInMarkerList = 1
-#  numTestedMarker = 0
-#  ratioCV = ratioCVcutoff + 0.1
-
+  if(isVarianceRatioinGeno){
+	 MACvector_forVarRatio =  getMACVec_forVarRatio()
+  	 cat("length(MACvector): ", length(MACvector), "\n")
+	 cat("length(MACvector_forVarRatio): ", length(MACvector_forVarRatio), "\n")
+  	 MACdata = data.frame(MACvector = c(MACvector, MACvector_forVarRatio), geno_ind = c(rep(0, length(MACvector)), rep(1, length(MACvector_forVarRatio))), indexInGeno = c(seq(1,length(MACvector)), seq(1,length(MACvector_forVarRatio))))
+  }else{
+	 MACdata = data.frame(MACvector = MACvector, geno_ind = rep(0, length(MACvector)), indexInGeno = seq(1,length(MACvector)))
+  }	  
+  
   if(!isCateVarianceRatio){
     cat("Only one variance ratio will be estimated using randomly selected markers with MAC >= 20\n")
-    MACindex = which(MACvector >= 20)
+    #MACindex = which(MACvector >= 20)
+    MACindex = 1:nrow(MACdata)		
     listOfMarkersForVarRatio[[1]] = sample(MACindex, size = length(MACindex), replace = FALSE)
     cateVarRatioIndexVec=c(1)
   }else{
@@ -1325,27 +1343,20 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
     if(is.null(cateVarRatioIndexVec)){cateVarRatioIndexVec = rep(1, length(cateVarRatioMinMACVecExclude))}
     numCate = length(cateVarRatioIndexVec)
     for(i in 1:(numCate-1)){
-       #print("i 1:(numCate-1)")
-       #print(i)
-       #print(cateVarRatioMinMACVecExclude[i])
-       #print(cateVarRatioMaxMACVecInclude[i])
-       #print(length(MACvector))
-       #print(MACvector[1:10])
-       #print(min(MACvector))
-
-      MACindex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
-      #print(length(MACindex))
-      #tempindex = which(MACvector > 0.5 & MACvector <= 1.5)
-      #print(length(tempindex))
-
+      MACindex = which(MACdata$MACvector > cateVarRatioMinMACVecExclude[i] & MACdata$MACvector <= cateVarRatioMaxMACVecInclude[i])
       listOfMarkersForVarRatio[[i]] = sample(MACindex, size = length(MACindex), replace = FALSE)
+	print(MACdata$MACvector[1:10])
+      cat("cateVarRatioMinMACVecExclude[i] ", cateVarRatioMinMACVecExclude[i], "\n")
+	cat("cateVarRatioMaxMACVecInclude[i] ", cateVarRatioMaxMACVecInclude[i], "\n")
+	print(length(MACindex))      
+    }
 
-    }
     if(length(cateVarRatioMaxMACVecInclude) == (numCate-1)){
-      MACindex = which(MACvector > cateVarRatioMinMACVecExclude[numCate])
+      MACindex = which(MACdata$MACvector > cateVarRatioMinMACVecExclude[numCate])
     }else{
-      MACindex = which(MACvector > cateVarRatioMinMACVecExclude[numCate] & MACvector <= cateVarRatioMaxMACVecInclude[numCate])
+      MACindex = which(MACdata$MACvector > cateVarRatioMinMACVecExclude[numCate] & MACdata$MACvector <= cateVarRatioMaxMACVecInclude[numCate])
     }
+
     listOfMarkersForVarRatio[[numCate]] = sample(MACindex, size = length(MACindex), replace = FALSE)
 
     for(k in 1:length(cateVarRatioIndexVec)){
@@ -1370,8 +1381,6 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
   }# if(!isCateVarianceRatio){
 
   freqVec = getAlleleFreqVec()
-
-
 
   Nnomissing = length(mu)
   varRatioTable = NULL
@@ -1407,10 +1416,18 @@ scoreTest_SPAGMMAT_forVarianceRatio_binaryTrait = function(obj.glmm.null,
 
       while(ratioCV > ratioCVcutoff){
         while(numTestedMarker < numMarkers0){
-          i = listOfMarkersForVarRatio[[k]][indexInMarkerList]
-          cat(i, "th marker\n")
-          G0 = Get_OneSNP_Geno(i-1)
-          cat("G0", G0[1:10], "\n")
+          macdata_i = listOfMarkersForVarRatio[[k]][indexInMarkerList]
+	  i = (MACdata$indexInGeno)[macdata_i] 
+	  genoInd = (MACdata$geno_ind)[macdata_i]
+	  cat(i, "th marker in geno ", genoInd, "\n")
+	  cat("MAC: ", (MACdata$MACvector)[macdata_i], "\n")
+	  if(genoInd == 0){
+          	G0 = Get_OneSNP_Geno(i-1)
+	  }else if(genoInd == 1){
+		G0 = Get_OneSNP_Geno_forVarRatio(i-1)
+	  }
+          
+	  cat("G0", G0[1:10], "\n")
           CHR = bimPlink[i,1]
 
 	  if(sum(G0)/(2*Nnomissing) > 0.5){
@@ -1659,28 +1676,43 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 
   listOfMarkersForVarRatio = list()	
   MACvector = getMACVec()
+  isVarianceRatioinGeno = getIsVarRatioGeno()
+
+  if(isVarianceRatioinGeno){
+         MACvector_forVarRatio =  getMACVec_forVarRatio()
+         cat("length(MACvector): ", length(MACvector), "\n")
+         cat("length(MACvector_forVarRatio): ", length(MACvector_forVarRatio), "\n")
+         MACdata = data.frame(MACvector = c(MACvector, MACvector_forVarRatio), geno_ind = c(rep(0, length(MACvector)), rep(1, length(MACvector_forVarRatio))), indexInGeno = c(seq(1,length(MACvector)), seq(1,length(MACvector_forVarRatio))))
+  }else{
+         MACdata = data.frame(MACvector = MACvector, geno_ind = rep(0, length(MACvector)), indexInGeno = seq(1,length(MACvector)))
+  }
 
   if(!isCateVarianceRatio){
     cat("Only one variance ratio will be estimated using randomly selected markers with MAC >= 20\n")
-    MACindex = which(MACvector >= 20)
+    #MACindex = which(MACvector >= 20)
+    MACindex = 1:nrow(MACdata)
     listOfMarkersForVarRatio[[1]] = sample(MACindex, size = length(MACindex), replace = FALSE)
     cateVarRatioIndexVec=c(1)
   }else{
     cat("Categorical variance ratios will be estimated\n")
+
     if(is.null(cateVarRatioIndexVec)){cateVarRatioIndexVec = rep(1, length(cateVarRatioMinMACVecExclude))}
     numCate = length(cateVarRatioIndexVec)
     for(i in 1:(numCate-1)){
-
-      MACindex = which(MACvector > cateVarRatioMinMACVecExclude[i] & MACvector <= cateVarRatioMaxMACVecInclude[i])
-
+      MACindex = which(MACdata$MACvector > cateVarRatioMinMACVecExclude[i] & MACdata$MACvector <= cateVarRatioMaxMACVecInclude[i])
       listOfMarkersForVarRatio[[i]] = sample(MACindex, size = length(MACindex), replace = FALSE)
+        print(MACdata$MACvector[1:10])
+      cat("cateVarRatioMinMACVecExclude[i] ", cateVarRatioMinMACVecExclude[i], "\n")
+        cat("cateVarRatioMaxMACVecInclude[i] ", cateVarRatioMaxMACVecInclude[i], "\n")
+        print(length(MACindex))
+    }
 
-    }
     if(length(cateVarRatioMaxMACVecInclude) == (numCate-1)){
-      MACindex = which(MACvector > cateVarRatioMinMACVecExclude[numCate])
+      MACindex = which(MACdata$MACvector > cateVarRatioMinMACVecExclude[numCate])
     }else{
-      MACindex = which(MACvector > cateVarRatioMinMACVecExclude[numCate] & MACvector <= cateVarRatioMaxMACVecInclude[numCate])
+      MACindex = which(MACdata$MACvector > cateVarRatioMinMACVecExclude[numCate] & MACdata$MACvector <= cateVarRatioMaxMACVecInclude[numCate])
     }
+
     listOfMarkersForVarRatio[[numCate]] = sample(MACindex, size = length(MACindex), replace = FALSE)
 
     for(k in 1:length(cateVarRatioIndexVec)){
@@ -1692,7 +1724,7 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
           }
         }
       }else{
-        if(cateVarRatioIndexVec[k] == 1){	
+        if(cateVarRatioIndexVec[k] == 1){
           cat(cateVarRatioMinMACVecExclude[k], "< MAC\n")
           if(length(listOfMarkersForVarRatio[[k]]) < numMarkers){
             stop("ERROR! number of genetic variants in ", cateVarRatioMinMACVecExclude[k], "< MAC  is lower than ", numMarkers, "\n", "Please include more markers in this MAC category in the plink file\n")
@@ -1702,7 +1734,8 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
     }
 
 
-  }
+  }# if(!isCateVarianceRatio){
+
 
   freqVec = getAlleleFreqVec()
 
@@ -1729,9 +1762,18 @@ scoreTest_SPAGMMAT_forVarianceRatio_quantitativeTrait = function(obj.glmm.null,
 
       while(ratioCV > ratioCVcutoff){  
         while(numTestedMarker < numMarkers0){
-          i = listOfMarkersForVarRatio[[k]][indexInMarkerList]
-          cat(i, "th marker\n")
-          G0 = Get_OneSNP_Geno(i-1)
+
+          macdata_i = listOfMarkersForVarRatio[[k]][indexInMarkerList]
+          i = (MACdata$indexInGeno)[macdata_i]
+          genoInd = (MACdata$geno_ind)[macdata_i]
+          cat(i, "th marker in geno ", genoInd, "\n")
+          cat("MAC: ", (MACdata$MACvector)[macdata_i], "\n")
+          if(genoInd == 0){
+                G0 = Get_OneSNP_Geno(i-1)
+          }else if(genoInd == 1){
+                G0 = Get_OneSNP_Geno_forVarRatio(i-1)
+          }      
+
           cat("G0", G0[1:10], "\n")
 
           AC = sum(G0)
