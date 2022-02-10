@@ -52,8 +52,8 @@ option_list <- list(
     help="Minimum Info for markers to be tested if is_imputed_data=TRUE [default=0]"),
   make_option("--maxMissing", type="numeric", default=0.15,
     help="Maximum missing rate for markers to be tested [default=0.15]"),
-  make_option("--impute_method", type="character",default="minor",
-    help="Imputation method for missing dosages. mean or minor. mean: missing dosages are imputed as mean (2*allele frequency). minor: missing dosages are imputed as minor allele homozygotes [default=minor]"),
+  make_option("--impute_method", type="character",default="best_guess",
+    help="Imputation method for missing dosages. best_guess, mean or minor. best_guess: missing dosages imputed as best guessed genotyes round(2*allele frequency). mean: missing dosages are imputed as mean (2*allele frequency). minor: missing dosages are imputed as minor allele homozygotes [default=minor]"),
   make_option("--LOCO", type="logical", default=TRUE,
     help="Whether to apply the leave-one-chromosome-out option. If TRUE, --chrom is required [default=FALSE] "),
 
@@ -74,7 +74,7 @@ option_list <- list(
   make_option("--function_group_test", type="character",default="lof,missense;lof,missense;lof;synonymous",
     help="annotations of markers to be tested in the set-based tests seperated by comma. using ; to combine multiple annotations in the same test, e.g. lof,missense;lof,missense;lof;synonymous will test lof variants only, missense+lof variants, and missense+lof+synonymous variants. default: lof,missense;lof,missense;lof;synonymous"),
   make_option("--groupFile", type="character", default="",
-    help="Path to the file containing the group information for gene-based tests. Each gene/set has 2 or 3 lines in the group file. The first element is the gene/set name. The second element in the first line is to indicate whether this line contains variant IDs (var), annotations (anno), or weights (weight). The line for weights is optional. If not specified, the default weights will be generated based on beta(MAF, 1, 25). Use --weights.beta to change the parameters for the Beta distribution. The variant ids must be in the format chr:pos_ref/alt. Elements are seperated by tab or space.") 
+    help="Path to the file containing the group information for gene-based tests. Each gene/set has 2 or 3 lines in the group file. The first element is the gene/set name. The second element in the first line is to indicate whether this line contains variant IDs (var), annotations (anno), or weights (weight). The line for weights is optional. If not specified, the default weights will be generated based on beta(MAF, 1, 25). Use --weights.beta to change the parameters for the Beta distribution. The variant ids must be in the format chr:pos_ref/alt. Elements are seperated by tab or space."),
   make_option("--sparseSigmaFile", type="character", default="",
     help="Path to the file containing the sparse Sigma output by step 1. The suffix of this file is .mtx"),
   make_option("--MACCutoff_to_CollapseUltraRare", type="numeric", default=10,

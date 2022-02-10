@@ -122,7 +122,7 @@ Rscript step2_SPAtests.R	\
         --GMMATmodelFile=./output/example_binary.rda \
         --varianceRatioFile=./output/example_binary.varianceRatio.txt   \
         --numLinesOutput=10	\
-	--condition=rs13,rs79
+	--condition=1:13_A/C,1:79_A/C
 
 Rscript step2_SPAtests.R	\
 	--bedFile=./input/genotype_100markers.bed	\
@@ -132,12 +132,12 @@ Rscript step2_SPAtests.R	\
         --chrom=1	\
         --LOCO=TRUE	\
 	--minMAF=0 \
-        --minMAC=20 \
+        --minMAC=1 \
         --GMMATmodelFile=./output/example_binary.rda \
         --varianceRatioFile=./output/example_binary.varianceRatio.txt   \
         --AlleleOrder=alt-first	\
         --is_output_moreDetails=TRUE	\
-	--condition=rs13,rs79
+	--condition=1:13_A/C,1:79_A/C
 
 Rscript step2_SPAtests.R        \
 	--vcfFile=./input/genotype_100markers.vcf.gz	\
@@ -147,7 +147,7 @@ Rscript step2_SPAtests.R        \
 	--chrom=1       \
         --LOCO=TRUE     \
 	--minMAF=0 \
-        --minMAC=20 \
+        --minMAC=1 \
         --GMMATmodelFile=./output/example_binary.rda \
         --varianceRatioFile=./output/example_binary.varianceRatio.txt   \
         --is_output_moreDetails=TRUE	\
@@ -209,7 +209,7 @@ Rscript step2_SPAtests.R        \
         --GMMATmodelFile=./output/example_binary_fullGRM.rda \
         --varianceRatioFile=./output/example_binary_fullGRM_sparseGRM_categorical_varRatio.varianceRatio.txt   \
         --numLinesOutput=10     \
-        --groupFile=./input/group_new_snpid.txt \
+        --groupFile=./input/group_new_chrposa1a2.txt \
         --sparseSigmaFile=./output/example_binary_fullGRM_sparseGRM_categorical_varRatio.varianceRatio.txt_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseSigma.mtx       \
         --function_group_test="lof,missense;lof,missense;lof;synonymous"        \
         --maxMAFforGroupTest=0.0001,0.001,0.01	\
@@ -229,11 +229,11 @@ Rscript step2_SPAtests.R        \
         --GMMATmodelFile=./output/example_binary_fullGRM.rda \
         --varianceRatioFile=./output/example_binary_fullGRM_sparseGRM_categorical_varRatio.varianceRatio.txt   \
         --numLinesOutput=10     \
-        --groupFile=./input/group_new_snpid.txt \
+        --groupFile=./input/group_new_chrposa1a2.txt \
         --sparseSigmaFile=./output/example_binary_fullGRM_sparseGRM_categorical_varRatio.varianceRatio.txt_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseSigma.mtx       \
         --function_group_test="lof,missense;lof,missense;lof;synonymous"        \
         --maxMAFforGroupTest=0.0001,0.001,0.01	\
-	--condition=rs30,rs79
+	--condition=1:13_A/C,1:79_A/C
 
 
 
@@ -280,8 +280,21 @@ Rscript step2_SPAtests.R        \
 
 \
         
-	
-	
-	
-	--condition=rs13,rs79
-
+Rscript step2_SPAtests.R        \
+        --vcfFile=./input/genotype_10markers.missingness.vcf.gz	\
+	--vcfFileIndex=./input/genotype_10markers.missingness.vcf.gz.csi	\
+        --vcfField=GT   \
+        --SAIGEOutputFile=./output/genotype_100markers_vcf_groupTest_out.txt \
+        --chrom=1 \
+        --LOCO=TRUE    \
+        --AlleleOrder=alt-first \
+        --minMAF=0 \
+        --minMAC=0.5 \
+        --sampleFile=./input/samplelist.txt \
+        --GMMATmodelFile=./output/example_binary_fullGRM.rda \
+        --varianceRatioFile=./output/example_binary_fullGRM_sparseGRM_categorical_varRatio.varianceRatio.txt   \
+        --numLinesOutput=10     \
+        --groupFile=./input/group_new_chrposa1a2.txt \
+        --sparseSigmaFile=./output/example_binary_fullGRM_sparseGRM_categorical_varRatio.varianceRatio.txt_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseSigma.mtx       \
+        --function_group_test="lof,missense;lof,missense;lof;synonymous"        \
+        --maxMAFforGroupTest=0.0001,0.001,0.01

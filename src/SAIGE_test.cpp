@@ -147,8 +147,8 @@ void SAIGEClass::scoreTest(arma::vec & t_GVec,
     double stat = S*S/var1;
     double t_pval;
 
-
-    if (var1 < std::pow(std::numeric_limits<double>::min(), 2)){
+    //if (var1 <= std::pow(std::numeric_limits<double>::min(), 2)){
+    if (var1 <= std::numeric_limits<double>::min()){
         t_pval = 1;
     }else{
         boost::math::chi_squared chisq_dist(1);
@@ -222,12 +222,18 @@ void SAIGEClass::scoreTestFast(arma::vec & t_GVec,
 
     double stat = S*S/var1;
     double t_pval;
-    if (var1 < std::pow(std::numeric_limits<double>::min(), 2)){
+
+    std::cout << "OK1 " << std::endl;
+    //if (var1 <= std::pow(std::numeric_limits<double>::min(), 2)){
+    if (var1 <= std::numeric_limits<double>::min()){
         t_pval = 1;
     } else{
       boost::math::chi_squared chisq_dist(1);
       t_pval = boost::math::cdf(complement(chisq_dist, stat));
     }
+    std::cout << "OK2 " << std::endl;
+    
+
     char pValueBuf[100];
     if (t_pval != 0)
         sprintf(pValueBuf, "%.6E", t_pval);
@@ -555,7 +561,10 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
     double S_c = t_Tstat_c;
 
     double stat_c = S_c*S_c/t_varT_c;
-     if (t_varT_c < std::pow(std::numeric_limits<double>::min(), 2)){
+
+
+     //if (t_varT_c <= std::pow(std::numeric_limits<double>::min(), 2)){
+     if (t_varT_c <= std::numeric_limits<double>::min()){
         t_pval_noSPA_c = 1;
 	stat_c = 0;
      }else{
@@ -599,8 +608,6 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
   }
   t_pval_noSPA_c = pval_noSPA_c; 
 
-  //std::cout << "stat_c " << stat_c << std::endl;
-  //std::cout << "t_varT_c " << t_varT_c << std::endl;
 
     if(m_traitType != "quantitative" && stat_c > std::pow(m_SPA_Cutoff,2)){
 	bool t_isSPAConverge_c;
@@ -651,13 +658,16 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
 }
 
 
-void SAIGEClass::assignVarianceRatio(double MAC){
+bool SAIGEClass::assignVarianceRatio(double MAC){
+    bool hasVarRatio = false;
     for(unsigned int i = 0; i < m_cateVarRatioMaxMACVecInclude.n_elem; i++)
     {
         if(MAC <= m_cateVarRatioMaxMACVecInclude(i) && MAC > m_cateVarRatioMinMACVecExclude(i)){    	    
 		m_varRatioVal = m_varRatio(i);
+		hasVarRatio = true;
 	}	
-    }    
+    }
+    return(hasVarRatio);    
 }
 
 void SAIGEClass::assignSingleVarianceRatio(){ 
@@ -695,7 +705,6 @@ void SAIGEClass::assignConditionFactors_scalefactor(
 	arma::mat weightMat_G2_G2 = m_G2_Weight_cond * m_G2_Weight_cond.t(); 
 	arma::mat VarMat_cond_scaled = scalefactor_G2_cond_Mat * m_VarMat_cond * scalefactor_G2_cond_Mat;
 	arma::mat VarMat_cond_scaled_weighted = VarMat_cond_scaled % weightMat_G2_G2;
-       
 	m_VarInvMat_cond_scaled_weighted = VarMat_cond_scaled_weighted.i();
 	//m_VarInvMat_cond_region_binary = (1/scalefactor_G2_cond_Mat) * m_VarInvMat_cond	* (1/scalefactor_G2_cond_Mat);
 	

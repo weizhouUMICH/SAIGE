@@ -51,7 +51,8 @@ bool Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN"
                                std::vector<uint>& t_indexForMissing,     // index of missing genotype data
                                bool & t_isOnlyOutputNonZero,                   // if true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
                                std::vector<uint>& t_indexForNonZero,
-			       arma::vec & t_GVec);
+			       arma::vec & t_GVec,
+			       bool t_isImputation);
 
 void Unified_getMarkerPval(
                            arma::vec & t_GVec,
@@ -92,7 +93,9 @@ Rcpp::List mainRegionInCPP(
                            arma::mat P1Mat,            // edited on 2021-08-19: to avoid repeated memory allocation of P1Mat and P2Mat
                            arma::mat P2Mat,
                            std::string t_regionTestType,
-			   bool t_isImputation);
+			   bool t_isImputation,
+			   arma::vec & t_weight,
+			   arma::vec & t_weight_cond);
 
 
 
@@ -149,7 +152,7 @@ void assign_conditionMarkers_factors(
                            std::string t_genoType,     // "PLINK", "BGEN"
                            std::vector<std::string> & t_genoIndex,
                            unsigned int t_n,
-			    arma::vec & t_G2_cond);
+			    arma::vec & t_weight_cond);
 
 void assign_conditionMarkers_factors_binary_region(
                            arma::vec & scalefactor_G2_cond);
@@ -171,4 +174,8 @@ arma::vec fast_logistf_fit(arma::mat & x,
         double lconv,
         double gconv,
         double xconv);
+
+Rcpp::List RegionSetUpConditional_binary_InCPP(arma::vec & t_weight_cond);
+
+
 #endif

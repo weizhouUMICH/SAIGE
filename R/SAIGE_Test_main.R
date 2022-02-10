@@ -68,7 +68,7 @@ SPAGMMATtest = function(bgenFile = "",
                  rangestoIncludeFile = "",
                  chrom = "", #for vcf file
                  max_missing = 0.15,  #new
-                 impute_method = "mean",  #"drop", "mean", "minor"     #new
+                 impute_method = "best_guess",  #"mean", "minor", "best_guess"     #new
                  min_MAC = 0.5,
                  min_MAF = 0,
                  min_Info = 0,
@@ -98,9 +98,11 @@ SPAGMMATtest = function(bgenFile = "",
 		 pCutoffforFirth = 0.01 
 ){
    #cat("r.corr is ", r.corr, "\n")
-   if(!(impute_method %in% c("mean","minor"))){
-     stop("impute_method should be 'mean' or 'minor'.")
+   if(!(impute_method %in% c("best_guess", "mean","minor"))){
+     stop("impute_method should be 'best_guess', 'mean' or 'minor'.")
    }
+
+   	   
 
 
    checkArgsListBool(is_imputed_data = is_imputed_data,
@@ -279,14 +281,22 @@ SPAGMMATtest = function(bgenFile = "",
     if (isCondition) {
 	 #print("OK1")
         n = length(obj.model$y) #sample size
-        condition_genoIndex = extract_genoIndex_condition(condition, markerInfo, genoType)
-
+	condition_genoIndex=extract_genoIndex_condition(condition, markerInfo, genoType)
+	if(!is.null(weights_for_condition)){
+                condition_weights = unlist(strsplit(weights_for_condition, ","))
+		if(length(condition_weights) != length(condition_genoIndex)){
+			stop("The length of the provided weights for conditioning markers is not equal to the number of conditioning markers\n")
+		}	
+        }else{
+		condition_weights = rep(0, length(condition_genoIndex))
+	}	
 
 	condition_genoIndex = as.character(condition_genoIndex)
+
 	assign_conditionMarkers_factors(genoType, condition_genoIndex,  n, condition_weights)
 	 #print("OK2")
 	if(obj.model$traitType == "binary" & isGroupTest){
-		outG2cond = RegionSetUpConditional_binary_InCPP()
+		outG2cond = RegionSetUpConditional_binary_InCPP(condition_weights)
 	 #print("OK3")
 
 
@@ -297,7 +307,9 @@ SPAGMMATtest = function(bgenFile = "",
 	assign_conditionMarkers_factors_binary_region(scaleFactorVec)
 	 #print("OK5")
 	}	
-    }
+    }else{
+	condition_weights = c(0)
+    }	    
 
 
     #if(file.exists(SAIGEOutputFile)) {print("ok 0 file exist")} 
@@ -340,6 +352,7 @@ SPAGMMATtest = function(bgenFile = "",
 		     obj.model$traitType,
 		     is_imputed_data,
 		     isCondition,
+		     condition_weights,
 		     numLinesOutput,
 		     r.corr)
 

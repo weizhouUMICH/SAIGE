@@ -135,8 +135,6 @@ Rcpp::DataFrame mainMarkerInCPP(
 {
 
   int q = t_genoIndex.size();  // number of markers
-  std::cout << "q is " << q << std::endl;
-  std::cout << "t_genoIndex[0] is " << t_genoIndex.size() << std::endl;
   // set up output
   std::vector<std::string> markerVec(q);  // marker IDs
   std::vector<std::string> chrVec(q);  // marker IDs
@@ -492,7 +490,8 @@ bool Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN", "Vcf"
                                std::vector<uint>& t_indexForMissing,     // index of missing genotype data
                                bool & t_isOnlyOutputNonZero,                   // if true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
                                std::vector<uint>& t_indexForNonZero, //
-			       arma::vec & t_GVec 
+			       arma::vec & t_GVec,
+			       bool t_isImputation 
 			       )     // the index of non-zero genotype in the all subjects. Only valid if t_isOnlyOutputNonZero == true.
 {
   //arma::vec GVec(ptr_gSAIGEobj->m_n);
@@ -508,12 +507,12 @@ bool Unified_getOneMarker(std::string & t_genoType,   // "PLINK", "BGEN", "Vcf"
     //bool isBoolRead = true;
     ptr_gBGENobj->getOneMarker(t_gIndex, t_ref, t_alt, t_marker, t_pd, t_chr, t_altFreq, t_altCounts, t_missingRate, t_imputeInfo, 
                                       t_isOutputIndexForMissing, t_indexForMissing, t_isOnlyOutputNonZero, t_indexForNonZero,
-                                      isBoolRead, t_GVec);
+                                      isBoolRead, t_GVec, t_isImputation);
   }
 
   if(t_genoType == "vcf"){
     ptr_gVCFobj->getOneMarker(t_ref, t_alt, t_marker, t_pd, t_chr, t_altFreq, t_altCounts, t_missingRate, t_imputeInfo,
-                                      t_isOutputIndexForMissing, t_indexForMissing, t_isOnlyOutputNonZero, t_indexForNonZero, isBoolRead, t_GVec);
+                                      t_isOutputIndexForMissing, t_indexForMissing, t_isOnlyOutputNonZero, t_indexForNonZero, isBoolRead, t_GVec, t_isImputation);
     ptr_gVCFobj->move_forward_iterator(1);
   }	  
   
@@ -682,15 +681,19 @@ void setSparseSigmaInCPP(int r, arma::umat & t_locationMatinR, arma::vec & t_val
 
 
 // [[Rcpp::export]]
-Rcpp::List RegionSetUpConditional_binary_InCPP(){
+Rcpp::List RegionSetUpConditional_binary_InCPP(arma::vec & t_weight_cond){
 
 	unsigned int q_cond = (ptr_gSAIGEobj->m_VarInvMat_cond).n_rows;
   	boost::math::beta_distribution<> beta_dist(g_weights_beta[0], g_weights_beta[1]);
   	arma::vec w0G2Vec_cond(q_cond);
-  	double w0G2_cond;
+  	double w0G2_cond, MAFG2_cond;
         for(unsigned int ci = 0; ci < q_cond; ci++){
-                double MAFG2_cond = (ptr_gSAIGEobj->m_MAF_cond)[ci];
-                w0G2_cond = boost::math::pdf(beta_dist, MAFG2_cond);
+		if(!(t_weight_cond.is_zero())){
+			w0G2_cond = t_weight_cond(ci);
+		}else{
+                	MAFG2_cond = (ptr_gSAIGEobj->m_MAF_cond)[ci];
+                	w0G2_cond = boost::math::pdf(beta_dist, MAFG2_cond);
+		}
                 w0G2Vec_cond.at(ci) = w0G2_cond;
         }
 	arma::mat m_VarMat_weighted_cond = (w0G2Vec_cond * (w0G2Vec_cond.t())) % (ptr_gSAIGEobj->m_VarMat_cond);
@@ -719,17 +722,27 @@ Rcpp::List mainRegionInCPP(
                            arma::mat P1Mat,            // edited on 2021-08-19: to avoid repeated memory allocation of P1Mat and P2Mat
                            arma::mat P2Mat, 
 			   std::string t_regionTestType, 
-			   bool t_isImputation)
+			   bool t_isImputation,
+			   arma::vec & t_weight,
+			   arma::vec & t_weight_cond)
 {
 
+  bool isWeightCustomized = false;
 	
 
   //std::cout << "okk1" << std::endl;
   unsigned int q0 = t_genoIndex.size();                 // number of markers (before QC) in one region
+  if(!(t_weight.is_zero()) && t_weight.n_elem == q0){
+     isWeightCustomized = true;	
+  } 	  
   unsigned int q_anno = annoIndicatorMat.n_cols;
   unsigned int q_maf = maxMAFVec.n_elem;
   unsigned int q_anno_maf = q_anno*q_maf;
   arma::mat genoURMat(t_n, q_anno_maf, arma::fill::zeros);
+
+  arma::vec weightURVec(q_anno_maf, arma::fill::zeros);
+
+
   unsigned int q = q0 + q_anno_maf;
   arma::imat annoMAFIndicatorMat(q, q_anno_maf, arma::fill::zeros);
   //std::cout << "okk2" << std::endl;
@@ -743,11 +756,15 @@ Rcpp::List mainRegionInCPP(
 
   bool isCondition = ptr_gSAIGEobj->m_isCondition;
   arma::vec w0G2Vec_cond(q_cond);
-  double w0G2_cond;
+  double w0G2_cond, MAFG2_cond;
   if(isCondition){
 	for(unsigned int ci = 0; ci < q_cond; ci++){
-		double MAFG2_cond = (ptr_gSAIGEobj->m_MAF_cond)[ci];	
-  		w0G2_cond = boost::math::pdf(beta_dist, MAFG2_cond);
+		if(!(t_weight_cond.is_zero())){
+			w0G2_cond = t_weight_cond(ci);
+		}else{	
+			MAFG2_cond = (ptr_gSAIGEobj->m_MAF_cond)[ci];	
+  			w0G2_cond = boost::math::pdf(beta_dist, MAFG2_cond);
+		}	
 		w0G2Vec_cond.at(ci) = w0G2_cond;
 	}
   }
@@ -892,7 +909,13 @@ Rcpp::List mainRegionInCPP(
 
 
     double MAF = std::min(altFreq, 1 - altFreq);
-    double w0 = boost::math::pdf(beta_dist, MAF);
+    double w0;
+    if(isWeightCustomized){
+	w0 = t_weight(i);
+    }else{
+	w0 = boost::math::pdf(beta_dist, MAF);
+    }
+    //double w0 = boost::math::pdf(beta_dist, MAF);
     double MAC = MAF * 2 * t_n * (1 - missingRate);   // checked on 08-10-2021
     flip = imputeGenoAndFlip(GVec, altFreq, altCounts, indexForMissing, g_impute_method, g_dosage_zerod_cutoff, g_dosage_zerod_MAC_cutoff, MAC, indexZeroVec, indexNonZeroVec);
 
@@ -1053,6 +1076,10 @@ Rcpp::List mainRegionInCPP(
                         if(MAFIndicatorVec(m) == 1){
                         	jm = j*q_maf + m;
 				genoURMat.col(jm) = arma::max(genoURMat.col(jm), GVec);
+
+				if(isWeightCustomized){
+					weightURVec(jm) = std::max(weightURVec(jm), t_weight(i));  
+				}	
 				//arma::vec genoURMatcol_jm = genoURMat.col(jm);
 				//arma::uvec genoURMatcol_jm_nonzero = arma::find(genoURMatcol_jm != 0);
 				//arma::vec genoURMatcol_jm_sub = genoURMatcol_jm(genoURMatcol_jm_nonzero);
@@ -1182,7 +1209,13 @@ Rcpp::List mainRegionInCPP(
     	bool flip = false;
 	std::string info = "UR";	
     	double MAF = std::min(altFreq, 1 - altFreq);
-	double w0 = boost::math::pdf(beta_dist, MAF);	
+	double w0;
+	if(isWeightCustomized){
+            w0 = weightURVec(jm);		    
+    	}else{
+            w0 = boost::math::pdf(beta_dist, MAF);
+    	}
+	//double w0 = boost::math::pdf(beta_dist, MAF);	
 	genoSumMat.col(jm) = genoSumMat.col(jm) + genoURVec * w0;
 	arma::vec genoSumMatvec1 = genoSumMat.col(jm);
 	arma::vec genoSumMatvec2 = XV * genoSumMatvec1;
@@ -1526,7 +1559,7 @@ void assign_conditionMarkers_factors(
                            std::string t_genoType,     // "plink", "bgen", "vcf"
                            std::vector<std::string> & t_genoIndex,
                            unsigned int t_n, 
-			   arma::vec & t_G2_cond
+			   arma::vec & t_weight_cond
 			   )           // sample size
 {
   unsigned int q = t_genoIndex.size();
@@ -1585,15 +1618,19 @@ void assign_conditionMarkers_factors(
       break;
     }
 
-    std::string info = chr+":"+std::to_string(pd)+":"+ref+":"+alt;
-
+    std::string info = chr+":"+std::to_string(pd)+"_"+ref+"/"+alt;
 
   double MAF = std::min(altFreq, 1 - altFreq);
   double MAC = MAF * 2 * t_n * (1 - missingRate);
+  bool hasVarRatio;
   if((ptr_gSAIGEobj->m_varRatio).n_elem == 1){
 	ptr_gSAIGEobj->assignSingleVarianceRatio();	
   }else{
-	ptr_gSAIGEobj->assignVarianceRatio(MAC);
+	hasVarRatio = ptr_gSAIGEobj->assignVarianceRatio(MAC);
+	if(!hasVarRatio){
+		std::cout << "Error! Conditioning marker " << info << " has MAC " << MAC << " and does not have variance ratio estimated." << std::endl;
+		exit(EXIT_FAILURE);
+	}	
   }	  
   
   flip = imputeGenoAndFlip(GVec, altFreq, altCounts, indexForMissing, g_impute_method, g_dosage_zerod_cutoff, g_dosage_zerod_MAC_cutoff, MAC, indexZeroVec, indexNonZeroVec);
@@ -1618,13 +1655,13 @@ void assign_conditionMarkers_factors(
       //P1Mat.row(i) = gtildeVec.t();
       //P2Mat.col(i) = P2Vec;
      MAFVec(i) = MAF;
-     w0G2_cond = boost::math::pdf(beta_dist, MAF);
-   	
-    if(t_G2_cond.n_elem > 0){
-	 w0G2_cond = t_G2_cond(i);
+     //w0G2_cond = boost::math::pdf(beta_dist, MAF);
+
+     if(!t_weight_cond.is_zero()){
+	 w0G2_cond = t_weight_cond(i);
     }else{
 	 w0G2_cond = boost::math::pdf(beta_dist, MAF);
-    } 	    
+    }
      w0G2_cond_Vec(i) = w0G2_cond;
      gyVec(i) = gy * w0G2_cond;
      gsumVec = gsumVec + GVec * w0G2_cond;
@@ -1632,6 +1669,7 @@ void assign_conditionMarkers_factors(
      pVec(i) = pval;
   }
   arma::mat VarMat = P1Mat * P2Mat;
+
   VarInvMat = VarMat.i();   
   double qsum = arma::accu(gyVec);
   arma::vec gsumtildeVec; 

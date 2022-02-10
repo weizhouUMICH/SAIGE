@@ -190,10 +190,11 @@ setGenoInput = function(bgenFile = "",
   IDsToInclude = NULL
   RangesToInclude = NULL
   if(idstoIncludeFile != ""){
-    IDsToInclude = data.table::fread(idstoIncludeFile, header = F, colClasses = c("character"))
+    IDsToInclude = data.table::fread(idstoIncludeFile, header = F, colClasses = c("character"), data.table=F)
     if(ncol(IDsToInclude) != 1)
       stop("'idstoIncludeFile' of ", idstoIncludeFile, " should only include one column.")
     IDsToInclude = IDsToInclude[,1]
+
     posRows = which(markerInfo$ID %in% IDsToInclude)
     if(length(posRows) != 0)
       markersInclude = c(markersInclude, markerInfo$ID[posRows])
@@ -201,7 +202,7 @@ setGenoInput = function(bgenFile = "",
   }
 
   if(rangestoIncludeFile != ""){
-    RangesToInclude = data.table::fread(rangestoIncludeFile, header = F, colClasses = c("character", "numeric", "numeric"))
+    RangesToInclude = data.table::fread(rangestoIncludeFile, header = F, colClasses = c("character", "numeric", "numeric"), data.table=F)
     if(ncol(RangesToInclude) != 3)
       stop("rangestoIncludeFile should only include three columns.")
 
@@ -355,11 +356,19 @@ getSampleIDsFromBGEN = function(bgenFile)
 extract_genoIndex_condition = function(condition, markerInfo, genoType){
    if(condition != ""){
        	condition_original = unlist(strsplit(condition, ","))
+	#if(!is.null(weight_cond)){
+	#	weight_original = unlist(strsplit(weight_cond, ","))
+	#}
+	conditionDat = data.frame(SNP = condition_original, condIndex = seq(1,length(condition_original)))
    	if(genoType != "vcf"){
-       		posInd = which(markerInfo$ID %in% condition_original)
-		if(length(posInd) == length(condition_original)){
-			genoIndex = markerInfo$genoIndex
-       			cond_genoIndex = genoIndex[posInd]
+		markerInfo_conditionDat = merge(conditionDat, markerInfo, by.x="SNP", by.y="ID", sort = F)
+		markerInfo_conditionDat = markerInfo_conditionDat[order(markerInfo_conditionDat$condIndex), ]	
+		#markerInfo_conditionDat = markerInfo_conditionDat[which()]
+       		#posInd = which(markerInfo$ID %in% condition_original)
+		#if(length(posInd) == length(condition_original)){
+		if(nrow(markerInfo_conditionDat) == length(condition_original)){
+			cond_genoIndex = markerInfo_conditionDat$genoIndex
+       			#cond_genoIndex = genoIndex[posInd]
 		}else{
 
 			stop(length(condition_original)-length(posInd), " conditioning markers are not found in the geno file. Please Check.\n")	

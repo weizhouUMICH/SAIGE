@@ -363,7 +363,8 @@ void BgenClass::getOneMarker(uint64_t & t_gIndex,        // different meanings f
                                   bool & t_isOnlyOutputNonZero,                   // is true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
                                   std::vector<uint>& t_indexForNonZero,
                                   bool & t_isBoolRead,        // only used in BGEN, Wei, if you want, you can add details here.
-				  arma::vec & dosages)
+				  arma::vec & dosages,
+				  bool t_isImputation)
 {
 
   arma::vec timeoutput1 = getTime();	

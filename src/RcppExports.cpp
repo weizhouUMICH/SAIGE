@@ -149,18 +149,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // RegionSetUpConditional_binary_InCPP
-Rcpp::List RegionSetUpConditional_binary_InCPP();
-RcppExport SEXP _SAIGE_RegionSetUpConditional_binary_InCPP() {
+Rcpp::List RegionSetUpConditional_binary_InCPP(arma::vec& t_weight_cond);
+RcppExport SEXP _SAIGE_RegionSetUpConditional_binary_InCPP(SEXP t_weight_condSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(RegionSetUpConditional_binary_InCPP());
+    Rcpp::traits::input_parameter< arma::vec& >::type t_weight_cond(t_weight_condSEXP);
+    rcpp_result_gen = Rcpp::wrap(RegionSetUpConditional_binary_InCPP(t_weight_cond));
     return rcpp_result_gen;
 END_RCPP
 }
 // mainRegionInCPP
-Rcpp::List mainRegionInCPP(std::string t_genoType, std::vector<std::string>& t_genoIndex, arma::mat& annoIndicatorMat, arma::vec& maxMAFVec, std::string t_outputFile, std::string t_traitType, unsigned int t_n, arma::mat P1Mat, arma::mat P2Mat, std::string t_regionTestType, bool t_isImputation);
-RcppExport SEXP _SAIGE_mainRegionInCPP(SEXP t_genoTypeSEXP, SEXP t_genoIndexSEXP, SEXP annoIndicatorMatSEXP, SEXP maxMAFVecSEXP, SEXP t_outputFileSEXP, SEXP t_traitTypeSEXP, SEXP t_nSEXP, SEXP P1MatSEXP, SEXP P2MatSEXP, SEXP t_regionTestTypeSEXP, SEXP t_isImputationSEXP) {
+Rcpp::List mainRegionInCPP(std::string t_genoType, std::vector<std::string>& t_genoIndex, arma::mat& annoIndicatorMat, arma::vec& maxMAFVec, std::string t_outputFile, std::string t_traitType, unsigned int t_n, arma::mat P1Mat, arma::mat P2Mat, std::string t_regionTestType, bool t_isImputation, arma::vec& t_weight, arma::vec& t_weight_cond);
+RcppExport SEXP _SAIGE_mainRegionInCPP(SEXP t_genoTypeSEXP, SEXP t_genoIndexSEXP, SEXP annoIndicatorMatSEXP, SEXP maxMAFVecSEXP, SEXP t_outputFileSEXP, SEXP t_traitTypeSEXP, SEXP t_nSEXP, SEXP P1MatSEXP, SEXP P2MatSEXP, SEXP t_regionTestTypeSEXP, SEXP t_isImputationSEXP, SEXP t_weightSEXP, SEXP t_weight_condSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -175,20 +176,22 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type P2Mat(P2MatSEXP);
     Rcpp::traits::input_parameter< std::string >::type t_regionTestType(t_regionTestTypeSEXP);
     Rcpp::traits::input_parameter< bool >::type t_isImputation(t_isImputationSEXP);
-    rcpp_result_gen = Rcpp::wrap(mainRegionInCPP(t_genoType, t_genoIndex, annoIndicatorMat, maxMAFVec, t_outputFile, t_traitType, t_n, P1Mat, P2Mat, t_regionTestType, t_isImputation));
+    Rcpp::traits::input_parameter< arma::vec& >::type t_weight(t_weightSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type t_weight_cond(t_weight_condSEXP);
+    rcpp_result_gen = Rcpp::wrap(mainRegionInCPP(t_genoType, t_genoIndex, annoIndicatorMat, maxMAFVec, t_outputFile, t_traitType, t_n, P1Mat, P2Mat, t_regionTestType, t_isImputation, t_weight, t_weight_cond));
     return rcpp_result_gen;
 END_RCPP
 }
 // assign_conditionMarkers_factors
-void assign_conditionMarkers_factors(std::string t_genoType, std::vector<std::string>& t_genoIndex, unsigned int t_n, arma::vec& t_G2_cond);
-RcppExport SEXP _SAIGE_assign_conditionMarkers_factors(SEXP t_genoTypeSEXP, SEXP t_genoIndexSEXP, SEXP t_nSEXP, SEXP t_G2_condSEXP) {
+void assign_conditionMarkers_factors(std::string t_genoType, std::vector<std::string>& t_genoIndex, unsigned int t_n, arma::vec& t_weight_cond);
+RcppExport SEXP _SAIGE_assign_conditionMarkers_factors(SEXP t_genoTypeSEXP, SEXP t_genoIndexSEXP, SEXP t_nSEXP, SEXP t_weight_condSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type t_genoType(t_genoTypeSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string>& >::type t_genoIndex(t_genoIndexSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type t_n(t_nSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type t_G2_cond(t_G2_condSEXP);
-    assign_conditionMarkers_factors(t_genoType, t_genoIndex, t_n, t_G2_cond);
+    Rcpp::traits::input_parameter< arma::vec& >::type t_weight_cond(t_weight_condSEXP);
+    assign_conditionMarkers_factors(t_genoType, t_genoIndex, t_n, t_weight_cond);
     return R_NilValue;
 END_RCPP
 }
@@ -1956,8 +1959,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SAIGE_setVCFobjInCPP", (DL_FUNC) &_SAIGE_setVCFobjInCPP, 4},
     {"_SAIGE_setSAIGEobjInCPP", (DL_FUNC) &_SAIGE_setSAIGEobjInCPP, 26},
     {"_SAIGE_setSparseSigmaInCPP", (DL_FUNC) &_SAIGE_setSparseSigmaInCPP, 3},
-    {"_SAIGE_RegionSetUpConditional_binary_InCPP", (DL_FUNC) &_SAIGE_RegionSetUpConditional_binary_InCPP, 0},
-    {"_SAIGE_mainRegionInCPP", (DL_FUNC) &_SAIGE_mainRegionInCPP, 11},
+    {"_SAIGE_RegionSetUpConditional_binary_InCPP", (DL_FUNC) &_SAIGE_RegionSetUpConditional_binary_InCPP, 1},
+    {"_SAIGE_mainRegionInCPP", (DL_FUNC) &_SAIGE_mainRegionInCPP, 13},
     {"_SAIGE_assign_conditionMarkers_factors", (DL_FUNC) &_SAIGE_assign_conditionMarkers_factors, 4},
     {"_SAIGE_assign_conditionMarkers_factors_binary_region", (DL_FUNC) &_SAIGE_assign_conditionMarkers_factors_binary_region, 1},
     {"_SAIGE_set_iterator_inVcf", (DL_FUNC) &_SAIGE_set_iterator_inVcf, 4},

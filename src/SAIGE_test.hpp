@@ -165,7 +165,7 @@ class SAIGEClass
 
     arma::sp_mat gen_sp_SigmaMat();
 
-    void assignVarianceRatio(double MAC);
+    bool assignVarianceRatio(double MAC);
 
     void assignSingleVarianceRatio();
 

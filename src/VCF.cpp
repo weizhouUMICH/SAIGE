@@ -157,7 +157,8 @@ namespace VCF {
                                   std::vector<uint32_t>& t_indexForNonZero,
 				  //if true, the marker has been read successfully
 				  bool & t_isBoolRead,
-				  arma::vec & dosages)
+				  arma::vec & dosages,
+				  bool t_isImputation)
 				  //std::vector<double> & t_dosage) 
    {
 
@@ -175,10 +176,12 @@ namespace VCF {
        t_alt = m_it_->alts()[0];
        t_marker = m_it_->id(); 
        float markerInfo = 1.f;
-       m_it_->get_info("R2", markerInfo);
-       t_imputeInfo = double(markerInfo);
-
-
+       if(t_isImputation){
+       	m_it_->get_info("R2", markerInfo);
+       	t_imputeInfo = double(markerInfo);
+       }else{
+	t_imputeInfo = 1.0;
+       }
 
        double dosage;
        t_altCounts = 0;

@@ -31,6 +31,7 @@ SAIGE.Region = function(objNull,
 			traitType,
 			isImputation,
 			isCondition,
+			weight_cond,
 			numLinesOutput,
 			r.corr){
   OutputFileIndex = NULL	
@@ -155,7 +156,9 @@ SAIGE.Region = function(objNull,
         	warning("No markers in region ", regionName, " are found in the VCF file")
 		next
     	}	
-    }	    
+    }
+	
+    WEIGHT = region$WEIGHT
     annoIndicatorMat = region$annoIndicatorMat
 
     chrom = region$chrom
@@ -165,7 +168,7 @@ SAIGE.Region = function(objNull,
     rm(region)
     gc()
 
-    outList = mainRegionInCPP(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, regionTestType, isImputation) 
+    outList = mainRegionInCPP(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, regionTestType, isImputation, WEIGHT, weight_cond) 
     rm(genoIndex)
     gc()
 
@@ -448,7 +451,14 @@ SAIGE.getRegionList_new = function(marker_group_line,
           var=marker_group_line_list[3:length(marker_group_line_list)]
           marker_group_line_list_anno = strsplit(marker_group_line[2+(i-1)*nline_per_gene], split=c(" +", "\t"))[[1]]
 	  anno=marker_group_line_list_anno[3:length(marker_group_line_list_anno)]
-	  RegionData = rbind(RegionData, cbind(rep(gene, length(var)), var, anno))
+	  if(nline_per_gene == 3){
+              marker_group_line_list_weight = strsplit(marker_group_line[3+(i-1)*nline_per_gene], split=c(" +", "\t"))[[1]]
+              weight=marker_group_line_list_weight[3:length(marker_group_line_list_weight)]
+	      RegionData = rbind(RegionData, cbind(rep(gene, length(var)), var, anno, weight))
+          }else if(nline_per_gene == 2){
+	      RegionData = rbind(RegionData, cbind(rep(gene, length(var)), var, anno))
+	  }
+
 	  if(gene %in% geneList){
 		stop(gene, " is duplicated in the group File\n")
           }else{		  
@@ -457,12 +467,13 @@ SAIGE.getRegionList_new = function(marker_group_line,
   }
     #print("RegionData")
     #print(RegionData)
-    colnames(RegionData) = c("REGION", "SNP", "ANNO")
+    if(nline_per_gene == 2){
+    	colnames(RegionData) = c("REGION", "SNP", "ANNO")
+    }else if(nline_per_gene == 3){
+	colnames(RegionData) = c("REGION", "SNP", "ANNO", "WEIGHT")
+    }	    
     RegionData = as.data.frame(RegionData)
      
-
-
-
     #marker_group_line_list = strsplit(marker_group_line[1], split=c(" +", "\t"))[[1]]
     #gene=marker_group_line_list[1]
     #var=marker_group_line_list[3:length(marker_group_line_list)]
@@ -498,7 +509,7 @@ if(!is.null(markerInfo)){
     #print(head(RegionData[posNA,1:2]))
     stop("Total ",length(posNA)," markers in 'RegionFile' are not in 'GenoFile'.
          Please remove these markers before region-level analysis.")
-  }
+    }
 }
 
   #HeaderInRegionData = colnames(RegionData)
@@ -523,6 +534,9 @@ if(!is.null(markerInfo)){
     posSNP = which(RegionData$REGION == r)
     SNP = RegionData$SNP[posSNP]
 
+    if(nline_per_gene == 3){	
+      WEIGHT = RegionData$WEIGHT[posSNP]
+    }
 
     if(any(duplicated(SNP)))
       stop("Please check RegionFile: in region ", r,": duplicated SNPs exist.")
@@ -570,20 +584,31 @@ if(!is.null(markerInfo)){
   annoIndicatorMat_rmind = which(rowSums(annoIndicatorMat) == 0)
   if(length(annoIndicatorMat_rmind) > 0){
     SNP = SNP[-annoIndicatorMat_rmind]
+
+    if(nline_per_gene == 3){
+      WEIGHT = WEIGHT[-annoIndicatorMat_rmind]
+    }
+
     annoIndicatorMat = annoIndicatorMat[-annoIndicatorMat_rmind,,drop=F]
     if(!is.null(markerInfo)){
       genoIndex = genoIndex[-annoIndicatorMat_rmind]
     }
   }
 
+  if(nline_per_gene != 3){
+	WEIGHT = c(0)
+  }	  
+
    if(!is.null(markerInfo)){
     RegionList[[r]] = list(SNP = SNP,
+			   WEIGHT=WEIGHT,
                            annoIndicatorMat = annoIndicatorMat,
                            genoIndex = genoIndex,
 #                           chrom = uchrom,
                            annoVec = annoVecNew)
    }else{
     RegionList[[r]] = list(SNP = SNP,
+			   WEIGHT=WEIGHT,
                            annoIndicatorMat = annoIndicatorMat,
  #                          chrom = uchrom,
                            annoVec = annoVecNew)
@@ -747,6 +772,7 @@ if(!is.null(markerInfo)){
 
 
 ##Working
+if(FALSE){
 mainRegion = function(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputFile, traitType, n, P1Mat, P2Mat, isImputation, annolist, isCondition, regionTestType)
 {
 
@@ -848,7 +874,7 @@ mainRegion = function(genoType, genoIndex, annoIndicatorMat, maxMAFlist, OutputF
  }	 
 }
 
-
+}
 
 mainRegionURV = function(NullModelClass = "SAIGE_NULL_Model",
                          genoType,

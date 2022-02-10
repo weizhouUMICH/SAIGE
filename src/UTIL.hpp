@@ -6,6 +6,12 @@
 #include <RcppArmadillo.h>
 #include <sys/time.h>
 
+const static std::unordered_map<std::string,int> string_to_case{
+   {"best_guess",1},
+   {"mean",2},
+   {"minor",3}
+};
+
 double getWeights(std::string t_kernel, 
                   double t_freq, 
                   arma::vec t_wBeta);

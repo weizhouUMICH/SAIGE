@@ -73,7 +73,8 @@ public:
                          bool & t_isOnlyOutputNonZero,                   // is true, only output a vector of non-zero genotype. (NOTE: if ALT allele is not minor allele, this might take much computation time)
                          std::vector<uint>& t_indexForNonZero,
                          bool& t_isBoolRead,        // only used in BGEN, Wei, if you want, you can add details here.
- 			arma::vec & dosages);
+ 			arma::vec & dosages,
+			bool t_isImputation);
  			//std::vector<double> & dosages);
 
 

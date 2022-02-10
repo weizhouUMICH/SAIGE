@@ -102,11 +102,11 @@ Get_Variance_Ratio<-function(varianceRatioFile, sparseSigmaFile, cateVarRatioMin
     ratioVec = c(1)
     # check variance ratio
     if (!file.exists(varianceRatioFile)) {
-        if (sparseSigmaFile == "") {
-            stop("ERROR! varianceRatioFile ", varianceRatioFile, " does not exsit but sparseSigmaFile also does not exist \n")
-        }else {
-            cat("varianceRatioFile is not specified so variance ratio won't be used\n")
-        }
+        #if (sparseSigmaFile == "") {
+        #    stop("ERROR! varianceRatioFile ", varianceRatioFile, " does not exsit but sparseSigmaFile also does not exist \n")
+        #}else {
+        cat("varianceRatioFile is not specified so variance ratio won't be used\n")
+        #}
         ratioVec = c(1)
     }else {
         varRatioData = data.frame(data.table:::fread(varianceRatioFile, header = F, stringsAsFactors = FALSE))

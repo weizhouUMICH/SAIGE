@@ -86,7 +86,8 @@ namespace VCF {
                                   std::vector<uint32_t>& t_indexForNonZero,
                                   //if true, the marker has been read successfully
                                   bool & t_isBoolRead,
-                                  arma::vec & dosages);
+                                  arma::vec & dosages,
+				  bool t_isImputation);
 
 
     void getSampleIDlist_vcfMatrix(); 
