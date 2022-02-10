@@ -85,7 +85,7 @@ SPAGMMATtest = function(bgenFile = "",
                  sparseSigmaFile="",
                  groupFile="",
                  weights.beta=c(1,25),
-                 weights_for_G2_cond = NULL,
+                 weights_for_condition = NULL,
                  r.corr=0,
                  dosage_zerod_cutoff = 0.2,
                  dosage_zerod_MAC_cutoff = 10,
@@ -144,9 +144,7 @@ SPAGMMATtest = function(bgenFile = "",
 			    numLinesOutput,
 			    dosage_zerod_cutoff,
 			    dosage_zerod_MAC_cutoff,
-			    weights.beta,
-			    is_Firth_beta,
-                 	    pCutoffforFirth
+			    weights.beta
                             )
 
     }else{
@@ -285,7 +283,7 @@ SPAGMMATtest = function(bgenFile = "",
 
 
 	condition_genoIndex = as.character(condition_genoIndex)
-	assign_conditionMarkers_factors(genoType, condition_genoIndex,  n)
+	assign_conditionMarkers_factors(genoType, condition_genoIndex,  n, condition_weights)
 	 #print("OK2")
 	if(obj.model$traitType == "binary" & isGroupTest){
 		outG2cond = RegionSetUpConditional_binary_InCPP()

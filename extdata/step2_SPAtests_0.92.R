@@ -2,7 +2,7 @@
 
 #options(stringsAsFactors=F, scipen = 999)
 options(stringsAsFactors=F)
-library(SAIGE, lib.loc="../../install_0.93")
+library(SAIGE, lib.loc="../../install_0.92")
 BLASctl_installed <- require(RhpcBLASctl)
 library(optparse)
 library(data.table)
@@ -74,7 +74,7 @@ option_list <- list(
   make_option("--function_group_test", type="character",default="lof,missense;lof,missense;lof;synonymous",
     help="annotations of markers to be tested in the set-based tests seperated by comma. using ; to combine multiple annotations in the same test, e.g. lof,missense;lof,missense;lof;synonymous will test lof variants only, missense+lof variants, and missense+lof+synonymous variants. default: lof,missense;lof,missense;lof;synonymous"),
   make_option("--groupFile", type="character", default="",
-    help="Path to the file containing the group information for gene-based tests. Each gene/set has 2 or 3 lines in the group file. The first element is the gene/set name. The second element in the first line is to indicate whether this line contains variant IDs (var), annotations (anno), or weights (weight). The line for weights is optional. If not specified, the default weights will be generated based on beta(MAF, 1, 25). Use --weights.beta to change the parameters for the Beta distribution. The variant ids must be in the format chr:pos_ref/alt. Elements are seperated by tab or space.") 
+    help="Path to the file containing the group information for gene-based tests. Each line is for one gene/set of variants. The first element is for gene/set name. The rest of the line is for variant ids included in this gene/set. For vcf/sav, the genetic marker ids are in the format chr:pos_ref/alt. For bgen, the genetic marker ids should match the ids in the bgen file. Each element in the line is seperated by tab."),
   make_option("--sparseSigmaFile", type="character", default="",
     help="Path to the file containing the sparse Sigma output by step 1. The suffix of this file is .mtx"),
   make_option("--MACCutoff_to_CollapseUltraRare", type="numeric", default=10,
@@ -92,9 +92,10 @@ option_list <- list(
 
 
   make_option("--condition", type="character",default="",
-    help="For conditional analysis. Variant ids are in the format chr:pos_ref/alt and seperated by by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A"),
-  make_option("--weights_for_condition",type="character", default=NULL,
-    help="vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. e.g. '1,2,3. If not specified, the default weights will be generated based on beta(MAF, 1, 25). Use --weights.beta to change the parameters for the Beta distribution."),
+    help="For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input, marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input."),
+  make_option("--weights_for_G2_cond",type="character", default=NULL,
+    help="vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. e.g. '1,2,3"),
+
   make_option("--SPAcutoff", type="numeric", default=2,
     help=" If the test statistic lies within the standard deviation cutoff of the
 mean, p-value based on traditional score test is returned. Default value is 2."),
@@ -137,10 +138,10 @@ weights.beta <- convertoNumeric(x=strsplit(opt$weights.beta,",")[[1]], "weights.
 
 cateVarRatioMinMACVecExclude <- convertoNumeric(x=strsplit(opt$cateVarRatioMinMACVecExclude,",")[[1]], "cateVarRatioMinMACVecExclude")
 cateVarRatioMaxMACVecInclude <- convertoNumeric(x=strsplit(opt$cateVarRatioMaxMACVecInclude,",")[[1]], "cateVarRatioMaxMACVecInclude")
-if(is.null(opt$weights_for_condition)){
-	weights_for_condition=NULL
+if(is.null(opt$weights_for_G2_cond)){
+	weights_for_G2_cond=NULL
 }else{
-	weights_for_condition <- convertoNumeric(x=strsplit(opt$weights_for_condition,",")[[1]], "weights_for_condition")
+	weights_for_G2_cond <- convertoNumeric(x=strsplit(opt$weights_for_G2_cond,",")[[1]], "weights_for_G2_cond")
 }
 
 maxMAFforGroupTest <- convertoNumeric(x=strsplit(opt$maxMAFforGroupTest,",")[[1]], "maxMAFforGroupTest")
@@ -207,12 +208,9 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
 
 	     
 	     condition = opt$condition,
-	     weights_for_condition = weights_for_condition, 
+	     weights_for_G2_cond = weights_for_G2_cond, 
 	     
 	     SPAcutoff = opt$SPAcutoff,
 	     dosage_zerod_cutoff = opt$dosage_zerod_cutoff,
-	     dosage_zerod_MAC_cutoff = opt$dosage_zerod_MAC_cutoff,
-
-	     is_Firth_beta = opt$is_Firth_beta,
-	     pCutoffforFirth = opt$pCutoffforFirth  
+	     dosage_zerod_MAC_cutoff = opt$dosage_zerod_MAC_cutoff
 )

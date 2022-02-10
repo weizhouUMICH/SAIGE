@@ -523,10 +523,14 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
                 getadjG(t_GVec, t_gtilde);
                 is_gtilde = true;
         }
-	arma::mat x(t_GVec.n_elem, 2, arma::fill::zeros);	
+	arma::mat x(t_GVec.n_elem, 2, arma::fill::ones);	
 	x.col(1) = t_gtilde;
 	arma::vec init(2, arma::fill::zeros);
+	//std::cout << "t_Beta " << t_Beta << std::endl;
+	//std::cout << "t_seBeta " << t_seBeta << std::endl;
 	fast_logistf_fit_simple(x, m_y, m_offset, true, init, 50, 15, 15, 1e-5, 1e-5, 1e-5, t_Beta ,t_seBeta);	
+	//std::cout << "t_Beta after " << t_Beta << std::endl;
+	//std::cout << "t_seBeta after " << t_seBeta << std::endl;
    }
    
  //arma::vec timeoutput4 = getTime();
@@ -761,12 +765,13 @@ void SAIGEClass::fast_logistf_fit_simple(arma::mat & x,
         }
         arma::mat XX_Fisher = XX_XW2.t() * (XX_XW2);
         bool isinv = arma::inv_sympd (XX_covs, XX_Fisher);
-        if(!isinv){
+        
+	if(!isinv){
                 break;
         }
         //}
         arma::vec delta = XX_covs * U_star;
-        delta.replace(arma::datum::nan, 0);
+        //delta.replace(arma::datum::nan, 0);
 
         double mx = arma::max(arma::abs(delta))/maxstep;
         if(mx > 1){
@@ -791,6 +796,9 @@ void SAIGEClass::fast_logistf_fit_simple(arma::mat & x,
                 beta_G = beta(1);
                 sebeta_G = sqrt(XX_covs(1,1));
         }
+
+	//std::cout << "beta_G " << beta_G << std::endl;
+	//std::cout << "sebeta_G " << sebeta_G << std::endl;
         //return beta;
 }
 

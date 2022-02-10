@@ -647,7 +647,7 @@ solveSpMatrixUsingArma = function(sparseGRMtest){
 #' @param FemaleCode character. Values in the column for sex (sexCol) in the phenotype file are used for females. By default, '1' 
 #' @param MaleCode character. Values in the column for sex (sexCol) in the phenotype file are used for males. By default, '0'
 #' @param sexCol character. Coloumn name for sex in the phenotype file, e.g Sex. By default, '' 
-#' @param noEstFixedEff logical. Whether to estimate fixed effect coeffciets. By default, FALSE.  
+#' @param isCovariateOffset logical. Whether to estimate fixed effect coeffciets. By default, FALSE.  
 #' @return a file ended with .rda that contains the glmm model information, a file ended with .varianceRatio.txt that contains the variance ratio values, and a file ended with #markers.SPAOut.txt that contains the SPAGMMAT tests results for the markers used for estimating the variance ratio.
 #' @export
 fitNULLGLMM = function(plinkFile = "", 
@@ -695,7 +695,7 @@ fitNULLGLMM = function(plinkFile = "",
 		FemaleOnly = FALSE,
 		MaleCode = 0,	
 		MaleOnly = FALSE,
-		noEstFixedEff = FALSE,
+		isCovariateOffset = FALSE,
 		skipVarianceRatioEstimation = FALSE)
 {
     ##set up output files
@@ -969,7 +969,7 @@ fitNULLGLMM = function(plinkFile = "",
             out_checksep)]
     }
     if (!hasCovariate) {
-        noEstFixedEff = FALSE
+        isCovariateOffset = FALSE
     }
 
     if (isCovariateTransform & hasCovariate) {
@@ -1009,8 +1009,8 @@ fitNULLGLMM = function(plinkFile = "",
 	covoffset = rep(0,nrow(data.new))
     }	    
 
-    if (noEstFixedEff & hasCovariate) {
-        print("noEstFixedEff=TRUE, so fixed effects coefficnets won't be estimated.")
+    if (isCovariateOffset & hasCovariate) {
+        print("isCovariateOffset=TRUE, so fixed effects coefficnets won't be estimated.")
 
         data.new$covoffset = covoffset
         formula_nocov = paste0(phenoCol, "~ 1")
@@ -1067,7 +1067,7 @@ fitNULLGLMM = function(plinkFile = "",
 	print(formula.new)
 	print("head(data.new)")
 	print(head(data.new))
-        if (!noEstFixedEff) {
+        if (!isCovariateOffset) {
             fit0 = glm(formula.new, data = data.new, family = binomial)
         }else{
             fit0 = glm(formula.new, data = data.new, offset = covoffset, 
@@ -1098,7 +1098,7 @@ fitNULLGLMM = function(plinkFile = "",
                 attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
             }
 	    modglmm$offset = covoffset
-	    #if(noEstFixedEff){
+	    #if(isCovariateOffset){
 	    #		modglmm$offset = covoffset
 	    #}else{
 	    #	if(hasCovariate){
@@ -1190,7 +1190,7 @@ fitNULLGLMM = function(plinkFile = "",
         cat(phenoCol, " is a quantitative trait\n")
         obj.noK = NULL
 
-	if (!noEstFixedEff) {
+	if (!isCovariateOffset) {
             fit0 = glm(formula.new, data = data.new, family = gaussian(link = "identity"))
         }else{
             fit0 = glm(formula.new, data = data.new, offset = covoffset,
@@ -1224,7 +1224,7 @@ fitNULLGLMM = function(plinkFile = "",
                 attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
             }
 
-	    #if(noEstFixedEff){
+	    #if(isCovariateOffset){
              #           modglmm$offset = covoffset
             #}else{
                 #if(hasCovariate){

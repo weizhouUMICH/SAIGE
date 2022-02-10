@@ -22,7 +22,7 @@ Rscript step1_fitNULLGLMM.R     \
         --outputPrefix=./output/example_binary \
         --nThreads=2 
 
-#set all covariates as offset --noEstFixedEff=TRUE. The step 1 will be faster
+#set all covariates as offset --isCovariateOffset=TRUE. The step 1 will be faster
 Rscript step1_fitNULLGLMM.R     \
         --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly_22chr  \
         --phenoFile=./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt \
@@ -33,7 +33,7 @@ Rscript step1_fitNULLGLMM.R     \
         --traitType=binary        \
         --outputPrefix=./output/example_binary \
         --nThreads=30	\
-	--noEstFixedEff=TRUE	\
+	--isCovariateOffset=TRUE	\
         --IsOverwriteVarianceRatioFile=TRUE	
 
 #Fit the null model using a sparse GRM
@@ -50,7 +50,7 @@ Rscript step1_fitNULLGLMM.R     \
         --traitType=binary        \
         --outputPrefix=./output/example_binary \
         --nThreads=2    \
-        --noEstFixedEff=TRUE	
+        --isCovariateOffset=TRUE	
 
 #Fit the null model using a sparse GRM and do not estiamte variance ratios
 Rscript step1_fitNULLGLMM.R     \
@@ -65,7 +65,7 @@ Rscript step1_fitNULLGLMM.R     \
         --traitType=binary        \
         --outputPrefix=./output/example_binary \
         --nThreads=2    \
-        --noEstFixedEff=TRUE	\
+        --isCovariateOffset=TRUE	\
 	--skipVarianceRatioEstimation=TRUE
 
 #Estimate categorical variance ratios (--isCateVarianceRatio=TRUE)
@@ -82,7 +82,7 @@ Rscript step1_fitNULLGLMM.R     \
         --traitType=binary        \
         --outputPrefix=./output/example_binary \
         --nThreads=64    \
-        --noEstFixedEff=TRUE	\
+        --isCovariateOffset=TRUE	\
 	--isCateVarianceRatio=TRUE	\
 	--useSparseGRMforVarRatio=TRUE	\
 	--IsOverwriteVarianceRatioFile=TRUE
@@ -101,7 +101,7 @@ Rscript step1_fitNULLGLMM.R     \
         --traitType=quantitative        \
         --outputPrefix=./output/example_quantitative \
         --nThreads=64    \
-        --noEstFixedEff=TRUE    \
+        --isCovariateOffset=TRUE    \
         --isCateVarianceRatio=FALSE      \
         --useSparseGRMforVarRatio=TRUE  \
         --IsOverwriteVarianceRatioFile=TRUE
@@ -170,7 +170,7 @@ Rscript step1_fitNULLGLMM.R     \
         --outputPrefix=./output/example_binary_fullGRM \
 	--outputPrefix_varRatio=./output/example_binary_fullGRM_sparseGRM_categorical_varRatio	\
         --nThreads=2    \
-        --noEstFixedEff=TRUE    \
+        --isCovariateOffset=TRUE    \
         --isCateVarianceRatio=TRUE      \
         --useSparseGRMforVarRatio=TRUE
 

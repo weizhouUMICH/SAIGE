@@ -41,8 +41,8 @@ mainRegionInCPP <- function(t_genoType, t_genoIndex, annoIndicatorMat, maxMAFVec
     .Call('_SAIGE_mainRegionInCPP', PACKAGE = 'SAIGE', t_genoType, t_genoIndex, annoIndicatorMat, maxMAFVec, t_outputFile, t_traitType, t_n, P1Mat, P2Mat, t_regionTestType, t_isImputation)
 }
 
-assign_conditionMarkers_factors <- function(t_genoType, t_genoIndex, t_n) {
-    invisible(.Call('_SAIGE_assign_conditionMarkers_factors', PACKAGE = 'SAIGE', t_genoType, t_genoIndex, t_n))
+assign_conditionMarkers_factors <- function(t_genoType, t_genoIndex, t_n, t_G2_cond) {
+    invisible(.Call('_SAIGE_assign_conditionMarkers_factors', PACKAGE = 'SAIGE', t_genoType, t_genoIndex, t_n, t_G2_cond))
 }
 
 assign_conditionMarkers_factors_binary_region <- function(scalefactor_G2_cond) {

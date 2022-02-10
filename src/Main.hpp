@@ -148,7 +148,8 @@ void setSAIGEobjInCPP(arma::mat & t_XVX,
 void assign_conditionMarkers_factors(
                            std::string t_genoType,     // "PLINK", "BGEN"
                            std::vector<std::string> & t_genoIndex,
-                           unsigned int t_n);
+                           unsigned int t_n,
+			    arma::vec & t_G2_cond);
 
 void assign_conditionMarkers_factors_binary_region(
                            arma::vec & scalefactor_G2_cond);

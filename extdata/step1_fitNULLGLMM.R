@@ -99,7 +99,7 @@ option_list <- list(
    help="Optional. Values in the column for sex in the phenotype file are used for females [default, '1']"),
   make_option("--MaleCode", type="character", default="0",
    help="Optional. Values in the column for sex in the phenotype file are used for males [default, '0']"),
-  make_option("--noEstFixedEff", type="logical", default=FALSE,
+  make_option("--isCovariateOffset", type="logical", default=FALSE,
    help="Optional. Whether to estimate fixed effect coeffciets. [default, 'FALSE']")
 )
 
@@ -141,7 +141,7 @@ fitNULLGLMM(plinkFile=opt$plinkFile,
             sampleIDColinphenoFile = opt$sampleIDColinphenoFile,
             traitType = opt$traitType,
             outputPrefix = opt$outputPrefix,
-	    noEstFixedEff=opt$noEstFixedEff,
+	    isCovariateOffset=opt$isCovariateOffset,
             nThreads = opt$nThreads,
 	    useSparseGRMforVarRatio = opt$useSparseGRMforVarRatio,
             invNormalize = opt$invNormalize,

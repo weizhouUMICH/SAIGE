@@ -135,9 +135,8 @@ Rcpp::DataFrame mainMarkerInCPP(
 {
 
   int q = t_genoIndex.size();  // number of markers
-  //std::cout << "q is " << q << std::endl;
-  //std::cout << "t_genoIndex[0] is " << t_genoIndex.at(0) << std::endl;
-  //t_genoIndex.print();
+  std::cout << "q is " << q << std::endl;
+  std::cout << "t_genoIndex[0] is " << t_genoIndex.size() << std::endl;
   // set up output
   std::vector<std::string> markerVec(q);  // marker IDs
   std::vector<std::string> chrVec(q);  // marker IDs
@@ -1526,7 +1525,9 @@ if(t_regionTestType != "BURDEN"){
 void assign_conditionMarkers_factors(
                            std::string t_genoType,     // "plink", "bgen", "vcf"
                            std::vector<std::string> & t_genoIndex,
-                           unsigned int t_n)           // sample size
+                           unsigned int t_n, 
+			   arma::vec & t_G2_cond
+			   )           // sample size
 {
   unsigned int q = t_genoIndex.size();
   arma::mat P1Mat(q, t_n);
@@ -1618,6 +1619,12 @@ void assign_conditionMarkers_factors(
       //P2Mat.col(i) = P2Vec;
      MAFVec(i) = MAF;
      w0G2_cond = boost::math::pdf(beta_dist, MAF);
+   	
+    if(t_G2_cond.n_elem > 0){
+	 w0G2_cond = t_G2_cond(i);
+    }else{
+	 w0G2_cond = boost::math::pdf(beta_dist, MAF);
+    } 	    
      w0G2_cond_Vec(i) = w0G2_cond;
      gyVec(i) = gy * w0G2_cond;
      gsumVec = gsumVec + GVec * w0G2_cond;
