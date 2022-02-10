@@ -252,7 +252,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
   converged = ifelse(i < maxiter, TRUE, FALSE)
   res = y - mu
   #if(isCovariateTransform & hasCovariate){
-  if(!is.null(out.transform)){
+  if(!is.null(out.transform) & is.null(fit0$offset)){
     coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
   }else{
     coef.alpha = alpha
@@ -292,7 +292,7 @@ glmmkin.ai_PCG_Rcpp_Binary = function(genofile, fit0, tau=c(0,0), fixtau = c(0,0
         mu = re.coef_LOCO$mu
 	mu2 = mu * (1-mu)
 	res = y - mu
-        if(!is.null(out.transform)){
+        if(!is.null(out.transform) & is.null(fit0$offset)){
           coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
 	}else{
 	  coef.alpha = alpha
@@ -931,7 +931,9 @@ fitNULLGLMM = function(plinkFile = "",
         dataMerge_sort = dataMerge[with(dataMerge, order(IndexGeno)), 
             ]
 
-	
+        rm(mmat)
+	rm(mmat_nomissing)
+	gc()	
 	indicatorGenoSamplesWithPheno = (sampleListwithGeno$IndexGeno %in% dataMerge_sort$IndexGeno)
 
         if (nrow(dataMerge_sort) < nrow(sampleListwithGeno)) {
@@ -969,27 +971,11 @@ fitNULLGLMM = function(plinkFile = "",
     if (!hasCovariate) {
         noEstFixedEff = FALSE
     }
-    if (noEstFixedEff) {
-        print("noEstFixedEff=TRUE, so fixed effects coefficnets won't be estimated.")
-        if (traitType == "binary") {
-            modwitcov = glm(formula.null, data = dataMerge_sort, 
-                family = binomial)
-            covoffset = modwitcov$linear.predictors
-            dataMerge_sort$covoffset = covoffset
-        }else {
-            modwitcov = lm(formula.null, data = dataMerge_sort)
-            dataMerge_sort[, which(colnames(dataMerge_sort) == 
-                phenoCol)] = modwitcov$residuals
-        }
-        formula_nocov = paste0(phenoCol, "~ 1")
-        formula.null = as.formula(formula_nocov)
-        hasCovariate = FALSE
-    }
 
     if (isCovariateTransform & hasCovariate) {
         cat("qr transformation has been performed on covariates\n")
         out.transform <- Covariate_Transform(formula.null, data = dataMerge_sort)
-        formulaNewList = c("Y ~ ", out.transform$Param.transform$X_name[1])
+        formulaNewList = c(phenoCol, " ~ ", out.transform$Param.transform$X_name[1])
         if (length(out.transform$Param.transform$X_name) > 1) {
             for (i in c(2:length(out.transform$Param.transform$X_name))) {
                 formulaNewList = c(formulaNewList, "+", out.transform$Param.transform$X_name[i])
@@ -999,7 +985,7 @@ fitNULLGLMM = function(plinkFile = "",
         formulaNewList = paste0(formulaNewList, "-1")
         formula.new = as.formula(paste0(formulaNewList, collapse = ""))
         data.new = data.frame(cbind(out.transform$Y, out.transform$X1))
-        colnames(data.new) = c("Y", out.transform$Param.transform$X_name)
+        colnames(data.new) = c(phenoCol, out.transform$Param.transform$X_name)
         cat("colnames(data.new) is ", colnames(data.new), "\n")
         cat("out.transform$Param.transform$qrr: ", dim(out.transform$Param.transform$qrr), 
             "\n")
@@ -1007,6 +993,29 @@ fitNULLGLMM = function(plinkFile = "",
         formula.new = formula.null
         data.new = dataMerge_sort
         out.transform = NULL
+    }
+
+    mmat = model.matrix(formula.new, data=data.new, na.action = NULL)
+    if (traitType == "binary") {
+            modwitcov = glm(formula.new, data = data.new, 
+                family = binomial)
+    }else {
+	    modwitcov = glm(formula.new, data = data.new,
+                family = gaussian(link = "identity"))	
+    }
+    if(hasCovariate){ 		
+    	covoffset = mmat[,-1] %*%  modwitcov$coefficients[-1]  
+    }else{
+	covoffset = rep(0,nrow(data.new))
+    }	    
+
+    if (noEstFixedEff & hasCovariate) {
+        print("noEstFixedEff=TRUE, so fixed effects coefficnets won't be estimated.")
+
+        data.new$covoffset = covoffset
+        formula_nocov = paste0(phenoCol, "~ 1")
+        formula.new = as.formula(formula_nocov)
+        hasCovariate = FALSE
     }
 
 
@@ -1050,11 +1059,14 @@ fitNULLGLMM = function(plinkFile = "",
 
     if (traitType == "binary") {
         cat(phenoCol, " is a binary trait\n")
-        uniqPheno = sort(unique(dataMerge_sort[, which(colnames(dataMerge_sort) == 
-            phenoCol)]))
+        uniqPheno = sort(unique(dataMerge_sort[, which(colnames(dataMerge_sort) == phenoCol)]))
         if (uniqPheno[1] != 0 | uniqPheno[2] != 1) {
             stop("ERROR! phenotype value needs to be 0 or 1 \n")
         }
+	print("formula.new")
+	print(formula.new)
+	print("head(data.new)")
+	print(head(data.new))
         if (!noEstFixedEff) {
             fit0 = glm(formula.new, data = data.new, family = binomial)
         }else{
@@ -1085,7 +1097,17 @@ fitNULLGLMM = function(plinkFile = "",
 	    for (x in names(modglmm$obj.glm.null)) {
                 attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
             }
-
+	    modglmm$offset = covoffset
+	    #if(noEstFixedEff){
+	    #		modglmm$offset = covoffset
+	    #}else{
+	    #	if(hasCovariate){
+	    #	    	modglmm$offset = covoffset	
+	    #		#modglmm$offset = modglmm$X[,-1]%*%(modglmm$coefficients[-1])
+	#	}else{
+	#		modglmm$offset = NULL
+	#	}	
+	 #   } 		    
             save(modglmm, file = modelOut)
             tau = modglmm$theta
         	    
@@ -1167,9 +1189,21 @@ fitNULLGLMM = function(plinkFile = "",
     }else if (traitType == "quantitative") {
         cat(phenoCol, " is a quantitative trait\n")
         obj.noK = NULL
-        fit0 = glm(formula.new, data = data.new, family = gaussian(link = "identity"))
+
+	if (!noEstFixedEff) {
+            fit0 = glm(formula.new, data = data.new, family = gaussian(link = "identity"))
+        }else{
+            fit0 = glm(formula.new, data = data.new, offset = covoffset,
+                family = gaussian(link = "identity"))
+        }
+
         cat("glm:\n")
         print(fit0)
+
+
+        #fit0 = glm(formula.new, data = data.new, family = gaussian(link = "identity"))
+        #cat("glm:\n")
+        #print(fit0)
         if (!skipModelFitting) {
             t_begin = proc.time()
             print(t_begin)
@@ -1189,6 +1223,19 @@ fitNULLGLMM = function(plinkFile = "",
             for (x in names(modglmm$obj.glm.null)) {
                 attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
             }
+
+	    #if(noEstFixedEff){
+             #           modglmm$offset = covoffset
+            #}else{
+                #if(hasCovariate){
+		#	modglmm$offset = covoffset
+            #            #modglmm$offset = modglmm$X[,-1]%*%(modglmm$coefficients[-1])
+            #    }else{
+            #            modglmm$offset = NULL
+            #    }
+            #}
+	    modglmm$offset = covoffset
+
             save(modglmm, file = modelOut)
             t_end = proc.time()
             print(t_end)

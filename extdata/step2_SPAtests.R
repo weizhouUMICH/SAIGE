@@ -2,7 +2,7 @@
 
 #options(stringsAsFactors=F, scipen = 999)
 options(stringsAsFactors=F)
-library(SAIGE, lib.loc="../../install_0.91")
+library(SAIGE, lib.loc="../../install_0.92")
 BLASctl_installed <- require(RhpcBLASctl)
 library(optparse)
 library(data.table)

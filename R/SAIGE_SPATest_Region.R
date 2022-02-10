@@ -115,6 +115,7 @@ SAIGE.Region = function(objNull,
   #total_num_region = nRegions-indexChunk
   mth = 0
 
+
   for(i in (indexChunk+1):nRegions){
     if(mth %% numLinesOutput == 0){
       if(i + numLinesOutput > nRegions){

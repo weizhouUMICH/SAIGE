@@ -45,7 +45,10 @@ SAIGEClass::SAIGEClass(
 	arma::vec & t_valueVec,
         int t_dimNum,
 	bool t_isCondition,
-        std::vector<uint32_t> & t_condition_genoIndex){
+        std::vector<uint32_t> & t_condition_genoIndex,
+	bool t_is_Firth_beta,
+        double t_pCutoffforFirth,
+        arma::vec & t_offset){
 
     m_XVX = t_XVX;
     m_XV = t_XV;
@@ -85,6 +88,9 @@ SAIGEClass::SAIGEClass(
         m_ctrl_indices = arma::find(m_y == 0);
 	m_n_case = m_case_indices.n_elem;
 	m_n_ctrl = m_ctrl_indices.n_elem;
+	m_is_Firth_beta = t_is_Firth_beta;
+	m_pCutoffforFirth = t_pCutoffforFirth;
+	m_offset = t_offset;
       //}
     }
     m_dimNum = t_dimNum;
@@ -119,7 +125,7 @@ void SAIGEClass::scoreTest(arma::vec & t_GVec,
 		     bool t_is_region){
     arma::vec Sm, var2m;
     double S, var2;
-   getadjG(t_GVec, t_gtilde);
+    getadjG(t_GVec, t_gtilde);
     if(t_is_region && m_traitType == "binary"){
       t_gy = dot(t_gtilde, m_y);
     }
@@ -512,6 +518,17 @@ void SAIGEClass::getMarkerPval(arma::vec & t_GVec,
         t_pval = t_pval_noSPA;
    }
 
+   if(m_traitType!="quantitative" & m_is_Firth_beta & t_pval <= m_pCutoffforFirth){
+	if(!is_gtilde){
+                getadjG(t_GVec, t_gtilde);
+                is_gtilde = true;
+        }
+	arma::mat x(t_GVec.n_elem, 2, arma::fill::zeros);	
+	x.col(1) = t_gtilde;
+	arma::vec init(2, arma::fill::zeros);
+	fast_logistf_fit_simple(x, m_y, m_offset, true, init, 50, 15, 15, 1e-5, 1e-5, 1e-5, t_Beta ,t_seBeta);	
+   }
+   
  //arma::vec timeoutput4 = getTime();
  //printTime(timeoutput3, timeoutput3_a, "Test Marker  ScoreTest");
 //printTime(timeoutput3, timeoutput4, "Test Marker 3 to 4");
@@ -684,5 +701,105 @@ void SAIGEClass::extract_XV_XXVX_inv(arma::mat & t_XV, arma::mat & t_XXVX_inv){
 	t_XV = m_XV;
 	t_XXVX_inv = m_XXVX_inv;	
 }
+
+
+
+void SAIGEClass::fast_logistf_fit_simple(arma::mat & x,
+                arma::vec & y,
+                arma::vec & offset,
+                bool firth,
+        arma::vec init,
+        int maxit,
+        int maxstep,
+        int maxhs,
+        double lconv,
+        double gconv,
+        double xconv,
+        double & beta_G,
+        double & sebeta_G){
+  int n = x.n_rows;
+  int k = x.n_cols;
+  arma::vec beta = init;
+  int iter = 0;
+  arma::vec pi_0 = -x * beta - offset;
+  pi_0 = arma::exp(pi_0) + 1;
+  arma::vec pi = 1/pi_0;
+  int evals = 1;
+  arma::vec beta_old;
+  arma::mat oneVec(k, 1 , arma::fill::ones);
+  arma::mat XX_covs(k, k, arma::fill::zeros);
+  while(iter <= maxit){
+        beta_old = beta;
+        arma::vec wpi = pi % (1 - pi);
+        arma::vec W2 = arma::sqrt(wpi);
+        //arma::vec wpi_sqrt = arma::sqrt(wpi);
+        //arma::vec W2 = weight % wpi_sqrt;
+        arma::mat XW2(n, k, arma::fill::zeros);
+        for(int j = 0; j < k; j++){
+                XW2.col(j) = x.col(j) % W2;
+        }
+
+        arma::mat Q;
+        arma::mat R;
+        arma::qr_econ(Q, R, XW2);
+        arma::vec h = Q % Q * oneVec;
+        arma::vec U_star(2, arma::fill::zeros);
+        arma::vec ypih;
+        if(firth){
+                ypih = (y - pi) + (h % (0.5 - pi));
+        }else{
+                ypih = (y - pi);
+        }
+        //ypih.print();
+        arma::vec xcol(n, arma::fill::zeros);
+        U_star = x.t() * ypih;
+
+        arma::mat XX_XW2(n, k, arma::fill::zeros);
+        for(int j = 0; j < k; j++){
+                xcol = x.col(j);
+                XX_XW2.col(j) = xcol % W2;
+        }
+        arma::mat XX_Fisher = XX_XW2.t() * (XX_XW2);
+        bool isinv = arma::inv_sympd (XX_covs, XX_Fisher);
+        if(!isinv){
+                break;
+        }
+        //}
+        arma::vec delta = XX_covs * U_star;
+        delta.replace(arma::datum::nan, 0);
+
+        double mx = arma::max(arma::abs(delta))/maxstep;
+        if(mx > 1){
+                delta = delta/mx;
+        }
+        evals = evals + 1;
+        iter = iter + 1;
+        beta = beta + delta;
+        pi_0 = -x * beta - offset;
+        pi_0 = arma::exp(pi_0) + 1;
+        pi = 1/pi_0;
+        if((iter == maxit) || ( (arma::max(arma::abs(delta)) <= xconv) & (abs(U_star).is_zero(gconv)))){
+                break;
+        }
+  }
+        arma::mat var;
+        if(XX_covs.has_nan()){
+                var = XX_covs;
+                beta_G = arma::datum::nan;
+                sebeta_G = arma::datum::nan;
+        }else{
+                beta_G = beta(1);
+                sebeta_G = sqrt(XX_covs(1,1));
+        }
+        //return beta;
+}
+
+
+
+
+
+
+
+
 
 }

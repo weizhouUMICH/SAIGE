@@ -64,7 +64,9 @@ class SAIGEClass
       arma::mat m_VarInvMat_cond_scaled_weighted;
       //arma::mat m_VarInvMat_cond_region_binary;
       bool m_isCondition;
-
+      bool m_is_Firth_beta;
+      double m_pCutoffforFirth;
+     arma::vec  m_offset;	
 
   ////////////////////// -------------------- functions ---------------------------------- //////////////////////
   
@@ -92,7 +94,10 @@ class SAIGEClass
         arma::vec & t_valueVec,
         int t_dimNum,
         bool t_isCondtiion,
-        std::vector<uint32_t> & t_condition_genoIndex);
+        std::vector<uint32_t> & t_condition_genoIndex,
+	bool t_is_Firth_beta,
+        double t_pCutoffforFirth,
+	arma::vec & t_offset);
 
    void set_seed(unsigned int seed);
 
@@ -180,6 +185,23 @@ class SAIGEClass
 
 
     void extract_XV_XXVX_inv(arma::mat & t_XV, arma::mat & t_XXVX_inv);
+
+    void fast_logistf_fit_simple(arma::mat & x,
+                arma::vec & y,
+                arma::vec & offset,
+                bool firth,
+        arma::vec init,
+        int maxit,
+        int maxstep,
+        int maxhs,
+        double lconv,
+        double gconv,
+        double xconv,
+        double & beta_G,
+        double & sebeta_G);	
+
+
+
 };
 }
 #endif

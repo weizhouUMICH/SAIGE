@@ -139,7 +139,10 @@ void setSAIGEobjInCPP(arma::mat & t_XVX,
         arma::vec & t_valueVec,
         int t_dimNum,
         bool t_isCondition,
-        std::vector<uint32_t> & t_condition_genoIndex);
+        std::vector<uint32_t> & t_condition_genoIndex,
+	bool t_is_Firth_beta,
+        double t_pCutoffforFirth, 
+	arma::vec & t_offset);
 
 
 void assign_conditionMarkers_factors(
@@ -154,4 +157,17 @@ void set_iterator_inVcf(std::string & variantList);
 
 bool check_Vcf_end();
 
+arma::vec fast_logistf_fit(arma::mat & x,
+                arma::vec & y,
+                arma::vec & weight,
+                arma::vec & offset,
+                bool firth,
+                arma::uvec & col_fit,
+        arma::vec init,
+        int maxit,
+        int maxstep,
+        int maxhs,
+        double lconv,
+        double gconv,
+        double xconv);
 #endif

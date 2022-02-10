@@ -137,7 +137,7 @@ setGenoInput = function(bgenFile = "",
     sampleInfo = data.table::fread(famFile)
     samplesInGeno = sampleInfo$V2
     #SampleIDs = updateSampleIDs(SampleIDs, samplesInGeno)
-      
+    markerInfo$ID = paste0(markerInfo$CHROM,":", markerInfo$POS ,"_", markerInfo$REF, "/", markerInfo$ALT) 
     setPLINKobjInCPP(bimFile, famFile, bedFile, sampleInModel, AlleleOrder)
   }
   
@@ -168,7 +168,7 @@ setGenoInput = function(bgenFile = "",
       markerInfo = bgiData[,c(1,2,3,5,6,7)]  # https://www.well.ox.ac.uk/~gav/bgen_format/spec/v1.2.html
     
     colnames(markerInfo) = c("CHROM", "POS", "ID", "REF", "ALT","genoIndex")
-    
+    markerInfo$ID = paste0(markerInfo$CHROM,":", markerInfo$POS ,"_", markerInfo$REF, "/", markerInfo$ALT)    
     setBGENobjInCPP(bgenFile, bgenFileIndex, t_SampleInBgen = samplesInGeno, t_SampleInModel = sampleInModel, AlleleOrder)
   }
   

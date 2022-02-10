@@ -60,7 +60,8 @@ double g_dosage_zerod_cutoff;
 bool g_markerTestEnd = false;
 arma::vec g_weights_beta(2);
 
-
+bool  g_is_Firth_beta;
+double g_pCutoffforFirth;
 
 // [[Rcpp::export]]
 void setMarker_GlobalVarsInCPP(std::string t_impute_method,
@@ -73,7 +74,8 @@ void setMarker_GlobalVarsInCPP(std::string t_impute_method,
 			       int t_marker_chunksize,
 			       double t_dosage_zerod_cutoff,
 			       double t_dosage_zerod_MAC_cutoff,
-			       arma::vec & t_weights_beta)
+			       arma::vec & t_weights_beta
+			       )
 
 {
   g_impute_method = t_impute_method;
@@ -346,9 +348,8 @@ Rcpp::DataFrame mainMarkerInCPP(
                           indexNonZeroVec_arma, indexZeroVec_arma, Beta, seBeta, pval, pval_noSPA, Tstat, gy, varT,   
 			  altFreq, isSPAConverge, gtildeVec, is_gtilde, is_region, t_P2Vec, isCondition, Beta_c, seBeta_c, pval_c, pval_noSPA_c, Tstat_c, varT_c, G1tilde_P_G2tilde_Vec);
 
-arma::vec timeoutput6 = getTime();
+//arma::vec timeoutput6 = getTime();
 //printTime(timeoutput5, timeoutput6, "Unified_getMarkerPval");
-
 
    indexNonZeroVec_arma.clear();
    indexZeroVec_arma.clear();
@@ -634,7 +635,10 @@ void setSAIGEobjInCPP(arma::mat & t_XVX,
         arma::vec & t_valueVec,
         int t_dimNum,
 	bool t_isCondition,
-	std::vector<uint32_t> & t_condition_genoIndex)
+	std::vector<uint32_t> & t_condition_genoIndex,
+	bool t_is_Firth_beta,
+	double t_pCutoffforFirth,
+	arma::vec & t_offset)
 {
   // check SAIGE.cpp
   ptr_gSAIGEobj = new SAIGE::SAIGEClass(
@@ -660,7 +664,10 @@ void setSAIGEobjInCPP(arma::mat & t_XVX,
 	t_valueVec,
 	t_dimNum, 
 	t_isCondition,
-	t_condition_genoIndex);
+	t_condition_genoIndex,
+	t_is_Firth_beta,
+        t_pCutoffforFirth,
+	t_offset);
   //ptr_gSAIGEobj->m_flagSparseGRM = false;
 		 	  
 }
@@ -1663,4 +1670,93 @@ bool check_Vcf_end(){
 void move_forward_iterator_Vcf(int i){
 	ptr_gVCFobj->move_forward_iterator(i);
 }
+
+
+
+// [[Rcpp::export]]
+arma::vec fast_logistf_fit(arma::mat & x,
+		arma::vec & y,
+		arma::vec & weight,
+		arma::vec & offset,
+		bool firth,
+		arma::uvec & col_fit,
+    	arma::vec init, 
+	int maxit, 
+	int maxstep, 
+	int maxhs, 
+	double lconv, 
+	double gconv, 
+	double xconv){
+  int n = x.n_rows;
+  int k = x.n_cols;
+  arma::vec beta = init;
+  int iter = 0;
+  arma::vec pi_0 = -x * beta - offset; 
+  pi_0 = arma::exp(pi_0) + 1;
+  arma::vec pi = 1/pi_0;
+  int evals = 1;
+  arma::vec beta_old;
+  arma::mat oneVec(k, 1 , arma::fill::ones);
+  arma::mat XX_covs(k, k, arma::fill::zeros);
+  while(iter <= maxit){
+	beta_old = beta;
+	arma::vec wpi = weight % pi % (1 - pi);
+	arma::vec wpi_sqrt = arma::sqrt(wpi);
+	arma::vec W2 = weight % wpi_sqrt;
+	arma::mat XW2(n, k, arma::fill::zeros);
+	for(int j = 0; j < k; j++){
+                XW2.col(j) = x.col(j) % W2;
+        }       
+
+	arma::mat Q;
+	arma::mat R;
+	arma::qr_econ(Q, R, XW2);
+	arma::vec h = Q % Q * oneVec;
+	arma::vec U_star(2, arma::fill::zeros);
+	arma::vec ypih;
+	if(firth){
+		ypih = (weight % (y - pi)) + (h % (0.5 - pi));
+	}else{
+		ypih = (weight % (y - pi));
+	}
+	//ypih.print();
+	arma::vec xcol(n, arma::fill::zeros);
+	U_star = x.t() * ypih;
+	
+	arma::mat XX_XW2(n, k, arma::fill::zeros);
+	for(int j = 0; j < k; j++){
+		xcol = x.col(j);
+		XX_XW2.col(j) = xcol % wpi_sqrt; 	
+	}
+	arma::mat XX_Fisher = XX_XW2.t() * (XX_XW2);
+	bool isinv = arma::inv_sympd (XX_covs, XX_Fisher); 
+	if(!isinv){
+		break;
+	}	
+	//}
+	arma::vec delta = XX_covs * U_star;
+	delta.replace(arma::datum::nan, 0);	
+
+	double mx = arma::max(arma::abs(delta))/maxstep;
+	if(mx > 1){
+		delta = delta/mx;
+	}
+	evals = evals + 1;
+	iter = iter + 1;
+	beta = beta + delta;
+	pi_0 = -x * beta - offset;
+  	pi_0 = arma::exp(pi_0) + 1;
+  	pi = 1/pi_0;
+	if((iter == maxit) || ( (arma::max(arma::abs(delta)) <= xconv) & (abs(U_star).is_zero(gconv)))){
+		break;
+	}
+  }
+	arma::mat var;
+	if(XX_covs.has_nan()){
+		var = XX_covs;
+		beta = arma::datum::nan;
+	}
+	return beta;
+}
+
 

@@ -93,7 +93,9 @@ SPAGMMATtest = function(bgenFile = "",
                  MACCutoff_to_CollapseUltraRare = 10,
                  function_group_test =c("lof", "missense", "synonymous"),  #new
                  maxMAFforGroupTest = c(0.01, 0.1),
-                 max_markers_region = 100   #new
+                 max_markers_region = 100,   #new
+		 is_Firth_beta = FALSE,
+		 pCutoffforFirth = 0.01 
 ){
    #cat("r.corr is ", r.corr, "\n")
    if(!(impute_method %in% c("mean","minor"))){
@@ -142,7 +144,9 @@ SPAGMMATtest = function(bgenFile = "",
 			    numLinesOutput,
 			    dosage_zerod_cutoff,
 			    dosage_zerod_MAC_cutoff,
-			    weights.beta
+			    weights.beta,
+			    is_Firth_beta,
+                 	    pCutoffforFirth
                             )
 
     }else{
@@ -268,7 +272,10 @@ SPAGMMATtest = function(bgenFile = "",
         	     t_valueVec = sparseSigmaRList$values,
         	     t_dimNum = sparseSigmaRList$nSubj, 
 		     t_isCondition = isCondition,
-		     t_condition_genoIndex = condition_genoIndex)
+		     t_condition_genoIndex = condition_genoIndex,
+		     t_is_Firth_beta = is_Firth_beta,
+		     t_pCutoffforFirth = pCutoffforFirth,
+		     t_offset = obj.model$offset)
 
    #process condition
     if (isCondition) {

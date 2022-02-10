@@ -4,12 +4,12 @@
 #For Binary traits
 
 #For single-variant association tests.
-#Not use sparse GRM and not use categorical variance ratios#
 #randomly selected markers with MAC >= 20 in the plink file are used to estimate the variance ratio
 #--minMAFforGRM can be used for specify the minimum MAF of markers in the plink file used for GRM, by default=0.01
 #step 1: fit the NULL glmm
 
-#Fit the null model using a full GRM
+# Step 1: Fit the null model using a full GRM
+
 #specify categorical covariates using --qCovarColList
 Rscript step1_fitNULLGLMM.R     \
 	--plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly_22chr	\
@@ -189,11 +189,12 @@ Rscript step2_SPAtests.R        \
         --GMMATmodelFile=./output/example_binary_fullGRM.rda \
         --varianceRatioFile=./output/example_binary_fullGRM_sparseGRM_categorical_varRatio.varianceRatio.txt   \
         --numLinesOutput=10     \
-	--groupFile=./input/group_new_snpid.txt	\
+	--groupFile=./input/group_new_chrposa1a2.txt	\
 	--sparseSigmaFile=./output/example_binary_fullGRM_sparseGRM_categorical_varRatio.varianceRatio.txt_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseSigma.mtx	\
 	--function_group_test="lof,missense;lof,missense;lof;synonymous"	\
 	--maxMAFforGroupTest=0.0001,0.001,0.01
 
+	#--groupFile=./input/group_new_snpid.txt	\
 ##if --r.corr=1 , only BURDEN test is performed
 Rscript step2_SPAtests.R        \
         --bgenFile=./input/genotype_100markers.bgen    \
