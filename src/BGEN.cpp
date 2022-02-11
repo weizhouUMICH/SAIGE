@@ -127,9 +127,9 @@ void BgenClass::setPosSampleInBgen(std::vector<std::string> & t_SampleInModel)
 
 void BgenClass::Parse2(unsigned char *buf, uint bufLen, const unsigned char *zBuf, uint zBufLen,std::string & snpName,arma::vec & dosages, double & AC, double & AF, 
                        std::vector<uint> & indexforMissing, 
-                       double & info, std::vector<uint> & indexNonZero) {
+                       double & info, std::vector<uint> & indexNonZero, bool isImputation) {
  
-  arma::vec timeoutput0 = getTime();
+  //arma::vec timeoutput0 = getTime();
        
   uLongf destLen = bufLen;
   if (uncompress(buf, &destLen, zBuf, zBufLen) != Z_OK || destLen != bufLen) {
@@ -160,7 +160,7 @@ void BgenClass::Parse2(unsigned char *buf, uint bufLen, const unsigned char *zBu
     exit(1);
   }
   
-  arma::vec timeoutput1 = getTime(); 
+  //arma::vec timeoutput1 = getTime(); 
   
   const unsigned char *ploidyMissBytes = bufAt;
 //  std::cout << "N " << N << std::endl;
@@ -195,7 +195,7 @@ void BgenClass::Parse2(unsigned char *buf, uint bufLen, const unsigned char *zBu
   for (int i = 0; i <= 255; i++)
     lut[i] = i/255.0;
 
-  arma::vec timeoutput2 = getTime();
+  //arma::vec timeoutput2 = getTime();
 
 /*
   double sum_eij = 0, sum_fij_minus_eij2 = 0, sum_eij_sub = 0; // sum_fij_minus_eij2_sub = 0; // for INFO
@@ -312,7 +312,7 @@ double dosage_new;
      }
     }	  
 
-   arma::vec timeoutput3 = getTime();
+   //arma::vec timeoutput3 = getTime();
    //printTime(timeoutput2, timeoutput3, "Parse2");
     //}
   //std::cout << "sum_eij_sub: " << sum_eij_sub << std::endl;
@@ -335,10 +335,13 @@ double dosage_new;
   double thetaHat = sum_eij / (2* (m_N - missing_cnt));
   //std::cout << "sum_eij " << sum_eij << std::endl;
   //std::cout << "missing_cnt " << sum_eij << std::endl;
+  if(isImputation){
   info = thetaHat==0 || thetaHat==1 ? 1 :
     1 - sum_fij_minus_eij2 / (2*(m_N - missing_cnt)*thetaHat*(1-thetaHat));
-  //}
-arma::vec timeoutput4 = getTime();
+  }else{
+	info=1.0;
+  }	  
+//arma::vec timeoutput4 = getTime();
 //}
 //printTime(timeoutput0, timeoutput1, "time 0 to 1 Parse2");
 //printTime(timeoutput1, timeoutput2, "time 1 to 2 Parse2");
@@ -367,11 +370,11 @@ void BgenClass::getOneMarker(uint64_t & t_gIndex,        // different meanings f
 				  bool t_isImputation)
 {
 
-  arma::vec timeoutput1 = getTime();	
+  //arma::vec timeoutput1 = getTime();	
   if(t_gIndex > 0){
 	  fseek(m_fin, t_gIndex, SEEK_SET);
   }
-  arma::vec timeoutput2 = getTime();
+  //arma::vec timeoutput2 = getTime();
 
   std::string SNPID, RSID, chromosome, first_allele,second_allele ;
   uint32_t position;
@@ -444,10 +447,10 @@ void BgenClass::getOneMarker(uint64_t & t_gIndex,        // different meanings f
     AF = 0;
     info = 0;
     if (m_bufLens > m_buf.size()) m_buf.resize(m_bufLens); //fix the length
-    arma::vec timeoutput3a = getTime();
+    //arma::vec timeoutput3a = getTime();
 
-    Parse2(&m_buf[0], m_bufLens, &m_zBuf[0], m_zBufLens, RSID, dosages, AC, AF, t_indexForMissing, info, t_indexForNonZero);
-    arma::vec timeoutput3 = getTime();
+    Parse2(&m_buf[0], m_bufLens, &m_zBuf[0], m_zBufLens, RSID, dosages, AC, AF, t_indexForMissing, info, t_indexForNonZero, t_isImputation);
+    //arma::vec timeoutput3 = getTime();
 //printTime(timeoutput1, timeoutput2, "time 1 to 2 Unified_getOneMarker");
 //printTime(timeoutput2, timeoutput3, "time 2 to 3 Unified_getOneMarker");
 //printTime(timeoutput3a, timeoutput3, "time 3a to 3 Unified_getOneMarker");

@@ -497,7 +497,8 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
   res = y - mu
   mu2 = rep((1/(tau[1])),length(res))
 
-  if(!is.null(out.transform)){
+  # if(!is.null(out.transform)){
+  if(!is.null(out.transform) & is.null(fit0$offset)){
     coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
   }else{
     coef.alpha = alpha
@@ -531,8 +532,8 @@ glmmkin.ai_PCG_Rcpp_Quantitative = function(genofile, fit0, tau = c(0,0), fixtau
 
         res = y - mu
 	mu2 = rep((1/(tau[1])),length(res))
-
-	if(!is.null(out.transform)){
+	  if(!is.null(out.transform) & is.null(fit0$offset)){
+	#if(!is.null(out.transform)){
         coef.alpha<-Covariate_Transform_Back(alpha, out.transform$Param.transform)
         }else{
         coef.alpha = alpha
@@ -698,6 +699,7 @@ fitNULLGLMM = function(plinkFile = "",
 		isCovariateOffset = FALSE,
 		skipVarianceRatioEstimation = FALSE)
 {
+
     ##set up output files
     modelOut = paste0(outputPrefix, ".rda")
     if(skipModelFitting){
@@ -706,6 +708,11 @@ fitNULLGLMM = function(plinkFile = "",
     }else{
 	file.create(modelOut, showWarnings = TRUE)
     }	    
+
+    if (useSparseGRMtoFitNULL & plinkFile == ""){
+	cat("Sparse GRM is used to fit the null model and plinkFile is not specified, so variance ratios won't be estimated\n")    
+	skipVarianceRatioEstimation = TRUE
+    } 
 
     if(!skipVarianceRatioEstimation){
     	SPAGMMATOut = paste0(outputPrefix, "_", numMarkersForVarRatio, "markers.SAIGE.results.txt")
@@ -723,7 +730,7 @@ fitNULLGLMM = function(plinkFile = "",
             stop("WARNING: The variance ratio file ", varRatioFile, 
             " already exists. The new variance ratios will be output to ", 
             varRatioFile, ". In order to avoid overwriting the file, please remove the ", 
-            varRatioFile, " or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s). Otherwise, specify IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten with new variance ratio(s)\n")
+            varRatioFile, " or use the argument outputPrefix_varRatio to specify a different prefix to output the variance ratio(s). Otherwise, specify --IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten with new variance ratio(s)\n")
             }else{
                 cat("The variance ratio file ", varRatioFile, " already exists. IsOverwriteVarianceRatioFile=TRUE so the file will be overwritten\n")
             }
@@ -749,7 +756,10 @@ fitNULLGLMM = function(plinkFile = "",
     if (useSparseGRMtoFitNULL){
         useSparseGRMforVarRatio = FALSE
         LOCO = FALSE
-	cat("sparse GRM will be used to fit the NULL model\n")
+	nThreads = 1
+	if(plinkFile != ""){
+	  cat("sparse GRM will be used to fit the NULL model\n")
+	}
 	cat("Leave-one-chromosome-out is not applied\n")
     }
 

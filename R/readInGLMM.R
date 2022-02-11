@@ -34,12 +34,19 @@ ReadModel = function(GMMATmodelFile = "", chrom="", LOCO=TRUE){
     stop("LOCO should be TRUE or FALSE.")
   # load GMMATmodelFile
   load(GMMATmodelFile)
+  if(!modglmm$LOCO){
+	if(LOCO){
+		LOCO=FALSE
+	}	
+  }
+	  
   obj.glmm.null = modglmm
   obj.glmm.null$Y = NULL
   obj.glmm.null$offset = obj.glmm.null$linear.predictors - obj.glmm.null$coefficients[1]
   obj.glmm.null$linear.predictors = NULL
   obj.glmm.null$coefficients = NULL
   obj.glmm.null$cov = NULL
+  rm(modglmm)
   gc()
   #traitType = obj.glmm.null$traitType
   #y = obj.glmm.null$y

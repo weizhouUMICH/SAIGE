@@ -56,7 +56,7 @@ public:
   void setPosSampleInBgen(std::vector<std::string> & t_SampleInModel);
 
   //void Parse2(unsigned char *buf, unsigned int bufLen, const unsigned char *zBuf, unsigned int zBufLen,std::string & snpName,std::vector< double > & dosages, double & AC, double & AF, std::vector<uint> & indexforMissing, double & info, std::vector<uint> & iIndex);
-  void Parse2(unsigned char *buf, unsigned int bufLen, const unsigned char *zBuf, unsigned int zBufLen,std::string & snpName, arma::vec & dosages, double & AC, double & AF, std::vector<uint> & indexforMissing, double & info, std::vector<uint> & iIndex);
+  void Parse2(unsigned char *buf, unsigned int bufLen, const unsigned char *zBuf, unsigned int zBufLen,std::string & snpName, arma::vec & dosages, double & AC, double & AF, std::vector<uint> & indexforMissing, double & info, std::vector<uint> & iIndex, bool isImputation);
 
   void getOneMarker(uint64_t & t_gIndex,        // different meanings for different genoType
                          std::string& t_ref,       // REF allele

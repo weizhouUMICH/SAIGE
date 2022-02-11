@@ -223,7 +223,6 @@ void SAIGEClass::scoreTestFast(arma::vec & t_GVec,
     double stat = S*S/var1;
     double t_pval;
 
-    std::cout << "OK1 " << std::endl;
     //if (var1 <= std::pow(std::numeric_limits<double>::min(), 2)){
     if (var1 <= std::numeric_limits<double>::min()){
         t_pval = 1;
@@ -231,7 +230,6 @@ void SAIGEClass::scoreTestFast(arma::vec & t_GVec,
       boost::math::chi_squared chisq_dist(1);
       t_pval = boost::math::cdf(complement(chisq_dist, stat));
     }
-    std::cout << "OK2 " << std::endl;
     
 
     char pValueBuf[100];

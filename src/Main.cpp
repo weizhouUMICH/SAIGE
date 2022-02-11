@@ -224,7 +224,7 @@ Rcpp::DataFrame mainMarkerInCPP(
                                           isOutputIndexForMissing, // bool t_isOutputIndexForMissing,
                                           indexForMissing,
                                           isOnlyOutputNonZero, // bool t_isOnlyOutputNonZero,
-                                          indexNonZeroVec, t_GVec);
+                                          indexNonZeroVec, t_GVec, t_isImputation);
    //arma::vec timeoutput2 = getTime();   
 //printTime(timeoutput1, timeoutput2, "Unified_getOneMarker"); 
 //
@@ -447,10 +447,10 @@ Rcpp::DataFrame mainMarkerInCPP(
 		OUT_DF["p.value_c"] = pval_cVec;
 		OUT_DF["p.value.NA_c"] = pvalNA_cVec;
 	     }
-	     OUT_DF["AF_caseVec"] = AF_caseVec;
-	     OUT_DF["AF_ctrlVec"] = AF_ctrlVec;
-	     OUT_DF["N_caseVec"] = N_caseVec;
-	     OUT_DF["N_ctrlVec"] = N_ctrlVec;
+	     OUT_DF["AF_case"] = AF_caseVec;
+	     OUT_DF["AF_ctrl"] = AF_ctrlVec;
+	     OUT_DF["N_case"] = N_caseVec;
+	     OUT_DF["N_ctrl"] = N_ctrlVec;
 	     
 	     if(t_isMoreOutput){
 		OUT_DF["N_case_hom"] = N_case_homVec;
@@ -898,7 +898,8 @@ Rcpp::List mainRegionInCPP(
                                           indexForMissing,
                                           isOnlyOutputNonZero, // bool t_isOnlyOutputNonZero,
                                           indexNonZeroVec,
-					  GVec);
+					  GVec,
+					  t_isImputation);
     if(!isReadMarker){
       break;
     }	    
@@ -1562,6 +1563,7 @@ void assign_conditionMarkers_factors(
 			   arma::vec & t_weight_cond
 			   )           // sample size
 {
+  bool isImpute = false;	
   unsigned int q = t_genoIndex.size();
   arma::mat P1Mat(q, t_n);
   arma::mat P2Mat(t_n, q);
@@ -1611,7 +1613,7 @@ void assign_conditionMarkers_factors(
                                           isOutputIndexForMissing, // bool t_isOutputIndexForMissing,
                                           indexForMissing,
                                           isOnlyOutputNonZero, // bool t_isOnlyOutputNonZero,
-                                          indexNonZeroVec, GVec);
+                                          indexNonZeroVec, GVec, isImpute);
      //arma::vec GVec(GVec0);
      //GVec0.clear();
     if(!isReadMarker){

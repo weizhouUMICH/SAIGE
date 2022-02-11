@@ -448,7 +448,8 @@ Check_GenoFile<-function(GenoFile,
 checkOutputFile = function(OutputFile,
                            OutputFileIndex,
                            AnalysisType,      ## "Marker" or "Region"
-                           nEachChunk)
+                           nEachChunk,
+			   isOverwriteOutput)
 {
   ## The following messages are for 'OutputFileIndex'
   message1 = "This is the output index file for SAIGE package to record the end point in case users want to restart the analysis. Please do not modify this file."
@@ -458,21 +459,20 @@ checkOutputFile = function(OutputFile,
   message5 = "Have completed the analyses of all chunks."
 
   ## an R list of output
-  if(missing(OutputFile))
+  if(OutputFile == "")
     stop("Argument of 'OutputFile' is required.")
 
-  if(file.exists(OutputFile)){
+  if(file.exists(OutputFile) & !isOverwriteOutput){
     if(!file.exists(OutputFileIndex)){
       stop(paste0("'OutputFile' of '", OutputFile,"' has existed.
-                  Please use another 'OutputFile' or remove the existing one."))
-    }
-    else{
+                  Please use another 'OutputFile' or specify --is_overwrite_output=TRUE to overwrite the OutputFile or specify --is_overwrite_output=TRUE to overwrite the OutputFile."))
+    }else{
       outIndexData = read.table(OutputFileIndex, header = F, sep="\t")
 
       if(outIndexData[1,1] != message1 | outIndexData[2,1] != message2 | outIndexData[3,1] != message3)
         stop(paste0("'OutputFileIndex' of '", OutputFileIndex, "' is not as expected.
                     Probably, it has been modified by user, which is not permitted.
-                    Please remove the existing files of 'OutputFile' and 'OutputFileIndex'."))
+                    Please remove the existing files of 'OutputFile' and 'OutputFileIndex' or specify --is_overwrite_output=TRUE to overwrite the OutputFile."))
 
       lastMessage = outIndexData[nrow(outIndexData), 1]
       if(lastMessage == message5){
@@ -489,6 +489,7 @@ checkOutputFile = function(OutputFile,
     }
     Start = FALSE
   }else{
+    Check_OutputFile_Create(OutputFile)	  
     Start = TRUE;
     End = FALSE;
     indexChunk = 0;

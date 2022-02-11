@@ -43,7 +43,6 @@ option_list <- list(
 
   make_option("--is_imputed_data", type="logical",default=FALSE,
     help="Whether the dosages/genotypes imputed are imputed. If TRUE, the program will output the imputed info score [default=FALSE]."),
-
   make_option("--minMAF", type="numeric", default=0,
     help="Minimum minor allele frequency for markers to be tested. The higher threshold between minMAC and minMAF will be used [default=0]."),
   make_option("--minMAC", type="numeric", default=0.5,
@@ -66,9 +65,10 @@ option_list <- list(
     help="Path to the output file containing assoc test results"),
   make_option("--numLinesOutput", type="numeric",default=1000,
     help="Number of  markers to be output each time [default=1000]"),
-  make_option("--is_output_moreDetails", type="logical",default=TRUE,
+  make_option("--is_output_moreDetails", type="logical",default=FALSE,
     help="Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns homN_Allele2_cases, hetN_Allele2_cases, homN_Allele2_ctrls, hetN_Allele2_ctrls will be output [default=TRUE]"),
-
+  make_option("--is_overwrite_output", type="logical",default=TRUE,
+    help="Whether to overwrite the output file if it exists. If FALSE, the program will continue the unfinished analysis instead of starting over from the beginining [default=TRUE]"),				
   make_option("--maxMAFforGroupTest", type="character",default="0.0001,0.001,0.01",
     help="Max MAF for markers tested in group test seperated by comma. e.g. 0.0001,0.001,0.01, [default=0.01]"),
   make_option("--function_group_test", type="character",default="lof,missense;lof,missense;lof;synonymous",
@@ -103,7 +103,7 @@ mean, p-value based on traditional score test is returned. Default value is 2.")
   make_option("--dosage_zerod_MAC_cutoff", type="numeric", default=10,
    help="If is_imputed_data = TRUE, For variants with MAC <= dosage_zerod_MAC_cutoff, dosages <= dosageZerodCutoff with be set to 0. [default=10]"),
 
-  make_option("--is_Firth_beta", type="logical", default=TRUE,
+  make_option("--is_Firth_beta", type="logical", default=FALSE,
     help="Whether to estimate effect sizes using approx Firth, only for binary traits [default=FALSE]"),
   make_option("--pCutoffforFirth", type="numeric", default=0.01,
     help="p-value cutoff to use approx Firth to estiamte the effect sizes. Only for binary traits. The effect sizes of markers with p-value <= pCutoffforFirth will be estimated using approx Firth [default=0.01]") 
@@ -191,6 +191,7 @@ SPAGMMATtest(vcfFile=opt$vcfFile,
              SAIGEOutputFile=opt$SAIGEOutputFile,
 	     numLinesOutput=opt$numLinesOutput,
 	     is_output_moreDetails =opt$is_output_moreDetails,
+	     is_overwrite_output = opt$is_overwrite_output,
 	     
 
 	     maxMAFforGroupTest = maxMAFforGroupTest,

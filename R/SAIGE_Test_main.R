@@ -95,7 +95,8 @@ SPAGMMATtest = function(bgenFile = "",
                  maxMAFforGroupTest = c(0.01, 0.1),
                  max_markers_region = 100,   #new
 		 is_Firth_beta = FALSE,
-		 pCutoffforFirth = 0.01 
+		 pCutoffforFirth = 0.01,
+		 is_overwrite_output = TRUE 
 ){
    #cat("r.corr is ", r.corr, "\n")
    if(!(impute_method %in% c("best_guess", "mean","minor"))){
@@ -107,7 +108,8 @@ SPAGMMATtest = function(bgenFile = "",
 
    checkArgsListBool(is_imputed_data = is_imputed_data,
                      LOCO = LOCO,
-		     is_output_moreDetails = is_output_moreDetails)
+		     is_output_moreDetails = is_output_moreDetails,
+		     is_overwrite_output = is_overwrite_output)
 		     #is_rewrite_XnonPAR_forMales = is_rewrite_XnonPAR_forMales)
 	cat("dosage_zerod_cutoff ", dosage_zerod_cutoff, "\n")
    checkArgsListNumeric(start = 1,
@@ -193,7 +195,8 @@ SPAGMMATtest = function(bgenFile = "",
     }
     
     ratioVec = Get_Variance_Ratio(varianceRatioFile, sparseSigmaFile, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, isGroupTest) #readInGLMM.R
-  
+
+
     sparseSigmaRList = list()
     isSparseGRM = TRUE
     if(sparseSigmaFile != ""){ 
@@ -205,6 +208,11 @@ SPAGMMATtest = function(bgenFile = "",
     }	    
 
     obj.model = ReadModel(GMMATmodelFile, chrom, LOCO) #readInGLMM.R
+    if(!obj.model$LOCO){
+	LOCO = FALSE
+        print("LOCO = FASLE and leave-one-chromosome-out is not applied")
+    }	    
+
 
 
     nsample = length(obj.model$y)
@@ -334,7 +342,8 @@ SPAGMMATtest = function(bgenFile = "",
 		   is_imputed_data,
                    LOCO,
                    chrom,
-		   isCondition)
+		   isCondition,
+		   is_overwrite_output)
     }else{
 		     #method_to_CollapseUltraRare,
                      #DosageCutoff_for_UltraRarePresence,
@@ -354,7 +363,8 @@ SPAGMMATtest = function(bgenFile = "",
 		     isCondition,
 		     condition_weights,
 		     numLinesOutput,
-		     r.corr)
+		     r.corr,
+		     is_overwrite_output)
 
 
     }	    

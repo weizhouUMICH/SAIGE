@@ -103,7 +103,8 @@ SAIGE.Marker = function(objNull,
 			isImputation,
 			LOCO,
 			chrom,
-			isCondition)
+			isCondition,
+			isOverWriteOutput)
 {
 
   if(is.null(OutputFileIndex))
@@ -111,7 +112,7 @@ SAIGE.Marker = function(objNull,
   
   genoType = objGeno$genoType
 
-  outIndex = checkOutputFile(OutputFile, OutputFileIndex, "Marker", format(nMarkersEachChunk, scientific=F))    # this function is in 'Util.R'
+  outIndex = checkOutputFile(OutputFile, OutputFileIndex, "Marker", format(nMarkersEachChunk, scientific=F), isOverWriteOutput)    # this function is in 'Util.R'
   outIndex = outIndex$indexChunk
   if(outIndex != 1)
     cat("Restart the analysis from chunk:\t", outIndex, "\n")

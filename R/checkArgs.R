@@ -67,12 +67,14 @@ dosage_zerod_MAC_cutoff){
 
 checkArgsListBool = function(is_imputed_data,
                      LOCO,
-                     is_output_moreDetails){
+                     is_output_moreDetails,
+		     is_overwrite_output){
                      #is_rewrite_XnonPAR_forMales){
 
 	checkArgBool(is_imputed_data, deparse(substitute(is_imputed_data)))
 	checkArgBool(LOCO, deparse(substitute(LOCO)))
 	checkArgBool(is_output_moreDetails, deparse(substitute(is_output_moreDetails)))
+	checkArgBool(is_overwrite_output, deparse(substitute(is_overwrite_output)))
 	#checkArgBool(is_rewrite_XnonPAR_forMales, deparse(substitute(is_rewrite_XnonPAR_forMales)))		
 }
 

@@ -33,12 +33,13 @@ SAIGE.Region = function(objNull,
 			isCondition,
 			weight_cond,
 			numLinesOutput,
-			r.corr){
+			r.corr,
+			isOverWriteOutput){
   OutputFileIndex = NULL	
   if(is.null(OutputFileIndex))
     OutputFileIndex = paste0(OutputFile, ".index")
 
-  outList = checkOutputFile(OutputFile, OutputFileIndex, "Region", 1) # Check 'Util.R'
+  outList = checkOutputFile(OutputFile, OutputFileIndex, "Region", 1, isOverWriteOutput) # Check 'Util.R'
 
   indexChunk = outList$indexChunk
   Start = outList$Start

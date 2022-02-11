@@ -99,8 +99,8 @@ option_list <- list(
    help="Optional. Values in the column for sex in the phenotype file are used for females [default, '1']"),
   make_option("--MaleCode", type="character", default="0",
    help="Optional. Values in the column for sex in the phenotype file are used for males [default, '0']"),
-  make_option("--isCovariateOffset", type="logical", default=FALSE,
-   help="Optional. Whether to estimate fixed effect coeffciets. [default, 'FALSE']")
+  make_option("--isCovariateOffset", type="logical", default=TRUE,
+   help="Optional. Whether to estimate fixed effect coeffciets. [default, 'TRUE']")
 )
 
 
