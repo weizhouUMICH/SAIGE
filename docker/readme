@@ -1,0 +1,3 @@
+docker build -t "saige0.93" .
+docker tag saige0.93  wzhou88/saige:0.93
+docker push wzhou88/saige:0.93
