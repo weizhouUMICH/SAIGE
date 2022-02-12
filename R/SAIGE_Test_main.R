@@ -170,8 +170,8 @@ SPAGMMATtest = function(bgenFile = "",
     #if(file.exists(SAIGEOutputFile)) {print("ok -1 file exist")} 
 
         IsOutputlogPforSingle = FALSE   #to check
-        OUT_Filename_Single<-sprintf("%s.single",SAIGEOutputFile)
-        Check_OutputFile_Create(OUT_Filename_Single)
+        #OUT_Filename_Single<-sprintf("%s.single",SAIGEOutputFile)
+        #Check_OutputFile_Create(OUT_Filename_Single)
       #if (sum(weights.beta.rare != weights.beta.common) > 0) {
       #  cat("WARNING:The option for weights.beta.common is not fully developed\n")
       #  cat("weights.beta.common is set to be equal to weights.beta.rare\n")
