@@ -1251,7 +1251,6 @@ fitNULLGLMM = function(plinkFile = "",
             print(t_end)
             cat("t_end - t_begin, fitting the NULL model took\n")
             print(t_end - t_begin)
-            print("step2")
         }else{
             cat("Skip fitting the NULL GLMM\n")
             load(modelOut)

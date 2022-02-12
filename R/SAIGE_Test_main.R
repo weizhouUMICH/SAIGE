@@ -31,8 +31,9 @@
 #' @param IsOutputHetHomCountsinCaseCtrl logical. Whether to output heterozygous and homozygous counts in cases and controls. By default, FALSE. If True, the columns "homN_Allele2_cases", "hetN_Allele2_cases", "homN_Allele2_ctrls", "hetN_Allele2_ctrls" will be output.
 #' @param IsOutputlogPforSingle logical. Whether to output log(Pvalue) for single-variant assoc tests. By default, FALSE. If TRUE, the log(Pvalue) instead of original P values will be output
 #' @param LOCO logical. Whether to apply the leave-one-chromosome-out option. By default, TRUE
+#' @param sparseGRMFile character. Path to the pre-calculated sparse GRM file. By default, ""
+#' @param sparseGRMSampleIDFile character. Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to the order of samples in the sparse GRM. By default, ""
 #' @param condition character. For conditional analysis. Genetic marker ids (chr:pos_ref/alt if sav/vcf dosage input , marker id if bgen input) seperated by comma. e.g.chr3:101651171_C/T,chr3:101651186_G/A, Note that currently conditional analysis is only for bgen,vcf,sav input.
-#' @param sparseSigmaFile character. Path to the file containing the sparseSigma from step 1. The suffix of this file is ".mtx".
 #' @param groupFile character. Path to the file containing the group information for gene-based tests. Each line is for one gene/set of variants. The first element is for gene/set name. The rest of the line is for variant ids included in this gene/set. For vcf/sav, the genetic marker ids are in the format chr:pos_ref/alt. For bgen, the genetic marker ids should match the ids in the bgen file. Each element in the line is seperated by tab.
 #' @param weights.beta vector of numeric. parameters for the beta distribution to weight genetic markers with MAF > weightMAFcutoff in gene-based tests.By default, "c(1,25)". More options can be seen in the SKAT library. NOTE: this argument is not fully developed. currently, weights.beta.common is euqal to weights.beta.rare
 #' @param weights_for_G2_cond vector of float. weights for conditioning markers for gene- or region-based tests. The length equals to the number of conditioning markers, delimited by comma. By default, "c(1,2)"
@@ -82,7 +83,8 @@ SPAGMMATtest = function(bgenFile = "",
                  SAIGEOutputFile = "",
                  numLinesOutput = 10,
                  condition="",
-                 sparseSigmaFile="",
+		 sparseGRMFile="",
+                 sparseGRMSampleIDFile="",
                  groupFile="",
                  weights.beta=c(1,25),
                  weights_for_condition = NULL,
@@ -194,18 +196,9 @@ SPAGMMATtest = function(bgenFile = "",
 
     }
     
-    ratioVec = Get_Variance_Ratio(varianceRatioFile, sparseSigmaFile, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, isGroupTest) #readInGLMM.R
+    ratioVec = Get_Variance_Ratio(varianceRatioFile, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, isGroupTest) #readInGLMM.R
 
 
-    sparseSigmaRList = list()
-    isSparseGRM = TRUE
-    if(sparseSigmaFile != ""){ 
-      sparseSigmaRList = setSparseSigma(sparseSigmaFile)
-      isSparseGRM = TRUE
-    }else{
-      sparseSigmaRList = list(nSubj = 0, locations = matrix(0,nrow=2,ncol=2), values = rep(0,2))  
-      isSparseGRM = FALSE 
-    }	    
 
     obj.model = ReadModel(GMMATmodelFile, chrom, LOCO) #readInGLMM.R
     if(!obj.model$LOCO){
@@ -213,6 +206,16 @@ SPAGMMATtest = function(bgenFile = "",
         print("LOCO = FASLE and leave-one-chromosome-out is not applied")
     }	    
 
+    sparseSigmaRList = list()
+    isSparseGRM = TRUE
+    if(sparseGRMFile != ""){ 
+      #sparseSigmaRList = setSparseSigma(sparseSigmaFile)
+      sparseSigmaRList = setSparseSigma_new(sparseGRMFile, sparseGRMSampleIDFile, obj.model$sampleID, obj.model$theta, obj.model$mu2,  obj.model$traitType)
+      isSparseGRM = TRUE
+    }else{
+      sparseSigmaRList = list(nSubj = 0, locations = matrix(0,nrow=2,ncol=2), values = rep(0,2))  
+      isSparseGRM = FALSE 
+    }	    
 
 
     nsample = length(obj.model$y)
@@ -237,6 +240,7 @@ SPAGMMATtest = function(bgenFile = "",
                  chrom = chrom,
                  AlleleOrder = AlleleOrder,
                  sampleInModel = obj.model$sampleID)
+
     markerInfo = objGeno$markerInfo
     genoIndex = markerInfo$genoIndex
     genoType = objGeno$dosageFileType
@@ -349,7 +353,6 @@ SPAGMMATtest = function(bgenFile = "",
                      #DosageCutoff_for_UltraRarePresence,
 	SAIGE.Region(obj.model,
 		     objGeno,
-		     sparseSigma,
 		     OutputFile,
 		     MACCutoff_to_CollapseUltraRare,
                      groupFile,

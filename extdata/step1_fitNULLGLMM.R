@@ -60,9 +60,9 @@ option_list <- list(
   make_option("--IsOverwriteVarianceRatioFile", type="logical", default=FALSE,
     help="Optional. Whether to overwrite the variance ratio file if the file exist.[default='FALSE']"),
 
-  make_option("--sparseGRMFile", type="character", default=NULL,
+  make_option("--sparseGRMFile", type="character", default="",
    help="Path to the pre-calculated sparse GRM file. If not specified and  IsSparseKin=TRUE, sparse GRM will be computed [default=NULL]"),
-  make_option("--sparseGRMSampleIDFile", type="character", default=NULL,
+  make_option("--sparseGRMSampleIDFile", type="character", default="",
    help="Path to the sample ID file for the pre-calculated sparse GRM. No header is included. The order of sample IDs is corresponding to sample IDs in the sparse GRM [default=NULL]"),
 
   make_option("--isCateVarianceRatio", type="logical", default=FALSE,

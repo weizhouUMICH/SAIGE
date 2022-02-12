@@ -673,6 +673,11 @@ void SAIGEClass::assignSingleVarianceRatio(){
 }
 
 
+void SAIGEClass::assignSingleVarianceRatio_withinput(double t_varRatioVal){
+        m_varRatioVal = t_varRatioVal;
+}
+
+
 void SAIGEClass::assignConditionFactors(
       arma::mat & t_P2Mat_cond,
       arma::mat & t_VarInvMat_cond,

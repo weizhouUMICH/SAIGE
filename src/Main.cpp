@@ -187,9 +187,14 @@ Rcpp::DataFrame mainMarkerInCPP(
   arma::vec gtildeVec(n);
   arma::vec t_P2Vec;
 //  }	  
-  ptr_gSAIGEobj->assignSingleVarianceRatio();
-
-
+  //ptr_gSAIGEobj->assignSingleVarianceRatio();
+  bool hasVarRatio = true;;
+  bool isSingleVarianceRatio = true;
+  if((ptr_gSAIGEobj->m_varRatio).n_elem == 1){
+        ptr_gSAIGEobj->assignSingleVarianceRatio();
+  }else{		
+	isSingleVarianceRatio = false;
+  }
 
   for(int i = 0; i < q; i++){
     if((i+1) % g_marker_chunksize == 0){
@@ -334,8 +339,13 @@ Rcpp::DataFrame mainMarkerInCPP(
    arma::vec timeoutput5 = getTime(); 
  
  
- 
- 
+   if(!isSingleVarianceRatio){ 
+        hasVarRatio = ptr_gSAIGEobj->assignVarianceRatio(MAC);
+        if(!hasVarRatio){
+                std::cout << "Error! Marker " << info << " has MAC " << MAC << " and does not have variance ratio estimated." << std::endl;
+                exit(EXIT_FAILURE);
+        }
+   } 
    
     //check 'Main.cpp'
     bool is_region = false; 
@@ -863,6 +873,15 @@ Rcpp::List mainRegionInCPP(
   std::vector<uint> indexNonZeroVec;
 
 
+  bool hasVarRatio = true;;
+  bool isSingleVarianceRatio = true;
+  if((ptr_gSAIGEobj->m_varRatio).n_elem == 1){
+        ptr_gSAIGEobj->assignSingleVarianceRatio();
+  }else{
+        isSingleVarianceRatio = false;
+  }
+
+
 
   // initiate chunk information
   unsigned int nchunks = 0; //number of chunks
@@ -961,8 +980,20 @@ Rcpp::List mainRegionInCPP(
     MAFVec.at(i) = MAF;
     imputationInfoVec.at(i) = imputeInfo;
     */
-    ptr_gSAIGEobj->assignVarianceRatio(MAC);
+    //ptr_gSAIGEobj->assignVarianceRatio(MAC);
+
+
+
+
     if(MAC > g_region_minMAC_cutoff){  // not Ultra-Rare Variants
+    
+      if(!isSingleVarianceRatio){	    
+        hasVarRatio = ptr_gSAIGEobj->assignVarianceRatio(MAC);
+        if(!hasVarRatio){
+                std::cout << "Error! Marker " << info << " has MAC " << MAC << " and does not have variance ratio estimated." << std::endl;
+                exit(EXIT_FAILURE);
+        }
+      }
       
       indicatorVec.at(i) = 1;
       
@@ -1225,7 +1256,23 @@ Rcpp::List mainRegionInCPP(
 
 	double MAC = MAF * 2 * t_n * (1 - missingRate);   // checked on 08-10-2021
 
-	ptr_gSAIGEobj->assignVarianceRatio(MAC);
+	if(!isSingleVarianceRatio){	
+        	hasVarRatio = ptr_gSAIGEobj->assignVarianceRatio(MAC);
+        	if(!hasVarRatio){
+                	//std::cout << "Error! Collapsed ultra rare marker with the annotation " << j+1 << " and MAF <= " << maxMAFVec(m) << " has MAC " << MAC << " and does not have variance ratio estimated." << std::endl;
+			//std::cout << "Please fit the null model in Step 1 using a sparse GRM without variance ratio estimation or fit the null model in Step 1 using a full GRM with variance ratio estimated for lower MAC categories." << std::endl;"
+			//exit(EXIT_FAILURE);
+			hasVarRatio = ptr_gSAIGEobj->assignVarianceRatio(g_region_minMAC_cutoff);
+		}
+
+		if(!hasVarRatio){
+			ptr_gSAIGEobj->assignSingleVarianceRatio_withinput(1.0);	
+
+		}	
+  	}
+
+
+
 	annoMAFIndicatorVec.zeros();
 	annoMAFIndicatorVec(jm) = 1;
 	annoMAFIndicatorMat.row(i) = annoMAFIndicatorVec.t();
@@ -1624,6 +1671,7 @@ void assign_conditionMarkers_factors(
 
   double MAF = std::min(altFreq, 1 - altFreq);
   double MAC = MAF * 2 * t_n * (1 - missingRate);
+
   bool hasVarRatio;
   if((ptr_gSAIGEobj->m_varRatio).n_elem == 1){
 	ptr_gSAIGEobj->assignSingleVarianceRatio();	

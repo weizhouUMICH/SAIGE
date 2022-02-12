@@ -169,6 +169,10 @@ class SAIGEClass
 
     void assignSingleVarianceRatio();
 
+
+    void assignSingleVarianceRatio_withinput(double t_varRatioVal);
+
+
     void assignConditionFactors(
       arma::mat & t_P2Mat_cond,
       arma::mat & t_VarInvMat_cond,

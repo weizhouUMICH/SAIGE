@@ -174,6 +174,26 @@ Rscript step1_fitNULLGLMM.R     \
         --isCateVarianceRatio=TRUE      \
         --useSparseGRMforVarRatio=TRUE
 
+
+
+Rscript step1_fitNULLGLMM.R     \
+        --plinkFile=./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly_22chr  \
+        --sparseGRMFile=output/sparseGRM_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseGRM.mtx   \
+        --sparseGRMSampleIDFile=output/sparseGRM_relatednessCutoff_0.125_1000_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt     \
+        --useSparseGRMtoFitNULL=FALSE    \
+        --phenoFile=./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt \
+        --phenoCol=y_quantitative \
+        --covarColList=x1,x2,a9,a10 \
+        --qCovarColList=a9,a10  \
+        --sampleIDColinphenoFile=IID \
+        --traitType=quantitative        \
+        --outputPrefix=./output/example_quantitative_fullGRM \
+        --outputPrefix_varRatio=./output/example_quantitative_fullGRM_sparseGRM_categorical_varRatio  \
+        --nThreads=2    \
+        --isCovariateOffset=TRUE    \
+        --isCateVarianceRatio=TRUE      \
+        --useSparseGRMforVarRatio=TRUE
+
 ##conduct group test. using --function_group_test to list different annotations and --maxMAFforGroupTest for different max MAF cutoffs.
 ##By default, SKAT-O, SKAT, and BURDEN tests are performed 
 Rscript step2_SPAtests.R        \

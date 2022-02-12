@@ -12,6 +12,53 @@ setSparseSigma = function(sparseSigmaFile){
 }	
 
 
+setSparseSigma_new = function(sparseGRMFile, sparseGRMSampleIDFile, sampleIDInModel, tauVec, W, traitType){
+
+  Check_File_Exist(sparseGRMFile, "sparseGRMFile")
+  Check_File_Exist(sparseGRMSampleIDFile, "sparseGRMSampleIDFile")
+
+  sparseGRM = Matrix:::readMM(sparseGRMFile)
+  sparseGRMSampleID = data.frame(data.table:::fread(sparseGRMSampleIDFile, header=F, stringsAsFactors=FALSE, colClasses=c("character")))
+  colnames(sparseGRMSampleID) = "sampleID"
+  sparseGRMSampleID$IndexGRM = c(1:nrow(sparseGRMSampleID))
+  cat("length(sparseGRMSampleID$IndexGRM): ", length(sparseGRMSampleID$IndexGRM), "\n")
+  cat("nrow(sparseGRMSampleID): ", nrow(sparseGRMSampleID), "\n")
+  sampleInModel = NULL
+  sampleInModel$IID = sampleIDInModel
+  #rm(sampleIDInModel)
+  sampleInModel = data.frame(sampleInModel)
+  sampleInModel$IndexInModel = seq(1,length(sampleInModel$IID), by=1)
+  cat(nrow(sampleInModel), " samples have been used to fit the glmm null model\n")
+  mergeID = merge(sampleInModel, sparseGRMSampleID, by.x="IID", by.y = "sampleID")
+  mergeID = mergeID[with(mergeID, order(IndexInModel)), ]
+  print(dim(mergeID))
+  print(head(mergeID))
+  indexIDofGRM=mergeID$IndexGRM
+  sparseGRM = sparseGRM[indexIDofGRM, indexIDofGRM]
+  if(length(indexIDofGRM) < nrow(sampleInModel)){
+    stop(nrow(sampleInModel)-length(indexIDofGRM), " samples were not found in the sparse GRM\n")
+  }else{
+    print("Subsetting GRM")
+  }
+  sparseGRM@x = sparseGRM@x * tauVec[2]  
+  #sparseSigma = sparseGRM * tauVec[2]
+  if(traitType == "binary"){
+	sparseGRM@x[which(sparseGRM@i == sparseGRM@j)] = sparseGRM@x[which(sparseGRM@i == sparseGRM@j)] + 1/W 
+   #diag(sparseSigma) = W + diag(sparseSigma)
+  }else if(traitType == "quantitative"){
+	sparseGRM@x[which(sparseGRM@i == sparseGRM@j)] = tauVec[1] + sparseGRM@x[which(sparseGRM@i == sparseGRM@j)]
+  }
+   #diag(sparseSigma) = tauVec[1] + diag(sparseSigma)
+
+  locations = rbind(sparseGRM@i, sparseGRM@j)
+  values = sparseGRM@x
+  nSubj = dim(sparseGRM)[1]
+  sigmaMatListR = list(locations = locations,
+                     values = values,
+                     nSubj = nSubj)
+  return(sigmaMatListR)
+}
+
 
 
                         #DosageCutoff_for_UltraRarePresence, 
@@ -19,7 +66,6 @@ setSparseSigma = function(sparseSigmaFile){
 ##working
 SAIGE.Region = function(objNull,
 			objGeno,
-			sparseSigma,
 			OutputFile,
                         MACCutoff_to_CollapseUltraRare,
 			groupFile, 

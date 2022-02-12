@@ -175,7 +175,10 @@ setGenoInput = function(bgenFile = "",
 
   if(dosageFileType == "vcf"){
     if(idstoIncludeFile != "" & rangestoIncludeFile != ""){
-      stop("We currently do not support both 'idstoIncludeFile' and 'rangestoIncludeFile' at the same time for vcf files")
+      stop("We currently do not support both 'idstoIncludeFile' and 'rangestoIncludeFile' at the same time for vcf files\n")
+    }
+    if(chrom==""){
+      stop("chrom needs to be specified for VCF/BCF/SAV input\n")
     }
   }
 

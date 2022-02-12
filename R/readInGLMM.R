@@ -104,7 +104,7 @@ ReadModel = function(GMMATmodelFile = "", chrom="", LOCO=TRUE){
 }
 
 
-Get_Variance_Ratio<-function(varianceRatioFile, sparseSigmaFile, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, isGroupTest){
+Get_Variance_Ratio<-function(varianceRatioFile, cateVarRatioMinMACVecExclude, cateVarRatioMaxMACVecInclude, isGroupTest){
 
     ratioVec = c(1)
     # check variance ratio
