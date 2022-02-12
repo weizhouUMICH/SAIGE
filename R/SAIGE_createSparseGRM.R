@@ -18,6 +18,7 @@ createSparseGRM = function(plinkFile = "",
 	        isDiagofKinSetAsOne = FALSE,
 		nThreads = 1,
 		minMAFforGRM = 0.01,
+		maxMissingRateforGRM = 0.15,
 		isSetGeno=TRUE,
 		isWritetoFiles=TRUE
                 ){
@@ -29,11 +30,16 @@ createSparseGRM = function(plinkFile = "",
   #cat("numRandomMarkerforSparseKin is ", numRandomMarkerforSparseKin, "\n")
   cat("sparse GRM will be created\n")
   setminMAFforGRM(minMAFforGRM)
-  if(minMAFforGRM > 0){
-    cat("Markers in the Plink file with MAF >= ", minMAFforGRM, " will be used to construct GRM\n")
-  }else{
-    cat("Markers in the Plink file with MAF > ", minMAFforGRM, " will be used to construct GRM\n")    
+
+  if (minMAFforGRM > 0) {
+    cat("Markers in the Plink file with MAF < ", minMAFforGRM,
+            " will be removed before constructing GRM\n")
   }
+  setmaxMissingRateforGRM(maxMissingRateforGRM)
+  if (maxMissingRateforGRM > 0){
+    cat("Markers in the Plink file with missing rate > ", maxMissingRateforGRM, " will be removed before constructing GRM\n")
+  }
+
   #  
   famFile = paste0(plinkFile, ".fam")
 

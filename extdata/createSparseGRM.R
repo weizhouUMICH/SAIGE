@@ -5,7 +5,7 @@ options(stringsAsFactors=F)
 ## load R libraries
 #library(SAIGE, lib.loc="/home/wei/install_dir/0.36.5.1")
 #library(SAIGE, lib.loc="../../../installSAIGEFolder/0.44.6.5")
-library(SAIGE)
+library(SAIGE, lib.loc="../../install_0.93")
 require(optparse) #install.packages("optparse")
 
 print(sessionInfo())
@@ -14,7 +14,7 @@ print(sessionInfo())
 option_list <- list(
   make_option("--plinkFile", type="character",default="",
     help="path to plink file for creating the genetic relationship matrix (GRM)"),
-    make_option("--nThreads", type="integer", default=16,
+  make_option("--nThreads", type="integer", default=16,
     help="Number of threads (CPUs) to use"),
   make_option("--memoryChunk", type="numeric", default=2,
    help="The size (Gb) for each memory chunk. By default, 2"),
@@ -27,7 +27,9 @@ option_list <- list(
   make_option("--isDiagofKinSetAsOne", type="logical", default=FALSE,
     help="Whether to set the diagnal elements in GRM to be 1 [default='FALSE']."),
   make_option("--minMAFforGRM", type="numeric", default=0.01,
-    help="minimum MAF of markers used for GRM")
+    help="minimum MAF of markers used for GRM"),
+  make_option("--maxMissingRateforGRM", type="numeric", default=0.15,
+    help="Optional. Maximum missing rate of markers used for GRM")
 )
 
 
@@ -47,4 +49,5 @@ createSparseGRM(plinkFile = opt$plinkFile,
                 memoryChunk = opt$memoryChunk,
                 isDiagofKinSetAsOne = opt$isDiagofKinSetAsOne,
                 nThreads = opt$nThreads,
-		minMAFforGRM = opt$minMAFforGRM)
+		minMAFforGRM = opt$minMAFforGRM,
+		maxMissingRateforGRM = opt$maxMissingRateforGRM)
