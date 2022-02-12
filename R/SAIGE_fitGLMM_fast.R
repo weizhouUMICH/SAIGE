@@ -2428,9 +2428,9 @@ getSparseSigma = function(plinkFile = plinkFile,
   sparseSigma = sparseGRM * tauVecNew[2]
   diag(sparseSigma) = getDiagOfSigma(W, tauVecNew)
 
-  sparseSigmaFile = paste0(outputPrefix, "_relatednessCutoff_",relatednessCutoff, "_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseSigma.mtx")
-  cat("write sparse Sigma to ", sparseSigmaFile ,"\n")
-  Matrix:::writeMM(sparseSigma, sparseSigmaFile)
+  #sparseSigmaFile = paste0(outputPrefix, "_relatednessCutoff_",relatednessCutoff, "_", numRandomMarkerforSparseKin, "_randomMarkersUsed.sparseSigma.mtx")
+  #cat("write sparse Sigma to ", sparseSigmaFile ,"\n")
+  #Matrix:::writeMM(sparseSigma, sparseSigmaFile)
   return(sparseSigma)
 }
 
