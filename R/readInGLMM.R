@@ -27,7 +27,7 @@ removeLOCOResult = function(chromList, obj.glmm.null){
 
 
 
-ReadModel = function(GMMATmodelFile = "", chrom="", LOCO=TRUE){	
+ReadModel = function(GMMATmodelFile = "", chrom="", LOCO=TRUE, is_Firth_beta=FALSE){	
   # Check file existence
   Check_File_Exist(GMMATmodelFile, "GMMATmodelFile")
   if(!LOCO %in% c(TRUE, FALSE))
@@ -42,7 +42,7 @@ ReadModel = function(GMMATmodelFile = "", chrom="", LOCO=TRUE){
 	  
   obj.glmm.null = modglmm
   obj.glmm.null$Y = NULL
-  obj.glmm.null$offset = obj.glmm.null$linear.predictors - obj.glmm.null$coefficients[1]
+  #obj.glmm.null$offset = obj.glmm.null$linear.predictors - obj.glmm.null$coefficients[1]
   obj.glmm.null$linear.predictors = NULL
   obj.glmm.null$coefficients = NULL
   obj.glmm.null$cov = NULL
@@ -82,8 +82,13 @@ ReadModel = function(GMMATmodelFile = "", chrom="", LOCO=TRUE){
    obj.glmm.null = removeLOCOResult(chromList, obj.glmm.null)
    obj.glmm.null$fitted.values = obj.glmm.null$LOCOResult[[chrom_v3]]$fitted.values
    obj.glmm.null$residuals = obj.glmm.null$LOCOResult[[chrom_v3]]$residuals
-   obj.glmm.null$offset = obj.glmm.null$LOCOResult[[chrom_v3]]$linear.predictors -  obj.glmm.null$LOCOResult[[chrom_v3]]$coefficients[1]
+   #obj.glmm.null$offset = obj.glmm.null$LOCOResult[[chrom_v3]]$linear.predictors -  obj.glmm.null$LOCOResult[[chrom_v3]]$coefficients[1]
    obj.glmm.null$obj.noK = obj.glmm.null$LOCOResult[[chrom_v3]]$obj.noK
+   if(is_Firth_beta){
+     if(!is.null(obj.glmm.null$LOCOResult[[chrom_v3]]$offset)){	   
+       obj.glmm.null$offset = obj.glmm.null$LOCOResult[[chrom_v3]]$offset
+     }
+   }
    obj.glmm.null$LOCOResult[chrom_v3] = list(NULL)
    gc() 
  }
@@ -97,9 +102,33 @@ ReadModel = function(GMMATmodelFile = "", chrom="", LOCO=TRUE){
            }else if(obj.glmm.null$traitType == "quantitative"){
              obj.glmm.null$mu2 = (1/tau[1])*rep(1,N)
            }
+ #if(FALSE){
+ if(is_Firth_beta){
+	if(obj.glmm.null$traitType == "binary"){
+		if(is.null(obj.glmm.null$offset)){
+			#if(FALSE){
+			print("WARNING. is_Firth_beta = TRUE, but offset was not computed in Step 1. Please re-run Step 1 using the more rencet version of SAIGE/SAIGE-GENE.")
+			cat("Applying is_Firth_beta = TRUE and note the results would be more accurate withe Step 1 results using the more rencet version of SAIGE/SAIGE-GENE. \n")
 
-
-
+			if(ncol(obj.glmm.null$X) == 1){
+				covoffset = rep(0,nrow(obj.glmm.null$X))
+			}else{	
+				formulastr = paste0("y ~ ", paste(colnames(obj.glmm.null$X)[-1], collapse="+"))
+				obj.glmm.null$X = cbind(obj.glmm.null$X, as.vector(obj.glmm.null$y))
+				colnames(obj.glmm.null$X)[ncol(obj.glmm.null$X)] = "y"
+				obj.glmm.null$X = as.data.frame(obj.glmm.null$X)
+				formula.new = as.formula(formulastr)
+				modwitcov = glm(formula.new, data = obj.glmm.null$X, family = binomial)
+				obj.glmm.null$X = obj.glmm.null$X[,-ncol(obj.glmm.null$X)]
+				covoffset = as.matrix(obj.glmm.null$X[,-1]) %*%  modwitcov$coefficients[-1]
+				obj.glmm.null$X = as.matrix(obj.glmm.null$X)
+			}
+			obj.glmm.null$offset = covoffset
+			#}
+		}
+	}	
+  }
+ #}	 
  return(obj.glmm.null)    
 }
 

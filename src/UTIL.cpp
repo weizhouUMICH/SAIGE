@@ -83,15 +83,15 @@ if(nMissing > 0){
 switch(string_to_case.at(t_impute_method)) {
   case 1:
     imputeG = std::round(2 * t_altFreq);
-    std::cout << "t_impute_method " << t_impute_method << std::endl;
+    //std::cout << "t_impute_method " << t_impute_method << std::endl;
     break;
   case 2:
     imputeG = 2 * t_altFreq;
-    std::cout << "t_impute_method " << t_impute_method << std::endl;
+    //std::cout << "t_impute_method " << t_impute_method << std::endl;
     break;
   case 3:
     imputeG = 0;
-    std::cout << "t_impute_method " << t_impute_method << std::endl;
+    //std::cout << "t_impute_method " << t_impute_method << std::endl;
     break;
 }
 

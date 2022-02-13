@@ -196,8 +196,7 @@ getNeff = function(plinkFile = "",
         sampleListwithGeno$IndexGeno = seq(1, nrow(sampleListwithGeno), 
             by = 1)
         cat(nrow(sampleListwithGeno), " samples are in the sparse GRM\n")
-    }
-    else {
+    }else {
         if (!file.exists(paste0(plinkFile, ".bed"))) {
             stop("ERROR! ", plinkFile, ".bed does not exsit\n")
         }
@@ -437,7 +436,12 @@ getNeff = function(plinkFile = "",
             fit0 = glm(formula.new, data = data.new, offset = covoffset, 
                 family = binomial)
         }
-	setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk,
+
+
+	indicatorGenoSamplesWithPheno = (sampleListwithGeno$IndexGeno %in% dataMerge_sort$IndexGeno)
+
+
+	setgeno(plinkFile, dataMerge_sort$IndexGeno, indicatorGenoSamplesWithPheno, memoryChunk,
                 FALSE)
 	setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
         cat("glm:\n")

@@ -200,7 +200,7 @@ SPAGMMATtest = function(bgenFile = "",
 
 
 
-    obj.model = ReadModel(GMMATmodelFile, chrom, LOCO) #readInGLMM.R
+    obj.model = ReadModel(GMMATmodelFile, chrom, LOCO, is_Firth_beta) #readInGLMM.R
     if(!obj.model$LOCO){
 	LOCO = FALSE
         print("LOCO = FASLE and leave-one-chromosome-out is not applied")

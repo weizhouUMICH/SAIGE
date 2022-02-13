@@ -979,6 +979,7 @@ fitNULLGLMM = function(plinkFile = "",
             out_checksep)]
     }
     if (!hasCovariate) {
+	print("No covariate is includes so isCovariateOffset = FALSE")
         isCovariateOffset = FALSE
     }
 
@@ -1013,21 +1014,21 @@ fitNULLGLMM = function(plinkFile = "",
 	    modwitcov = glm(formula.new, data = data.new,
                 family = gaussian(link = "identity"))	
     }
-    if(hasCovariate){ 		
-    	covoffset = mmat[,-1] %*%  modwitcov$coefficients[-1]  
-    }else{
-	covoffset = rep(0,nrow(data.new))
-    }	    
+    #if(!hasCovariate){ 		
+#	covoffset = rep(0,nrow(data.new))
+#    }	    
 
-    if (isCovariateOffset & hasCovariate) {
+    if (isCovariateOffset) {
+    	covoffset = mmat[,-1, drop=F] %*%  modwitcov$coefficients[-1]  
         print("isCovariateOffset=TRUE, so fixed effects coefficnets won't be estimated.")
 
-        data.new$covoffset = covoffset
         formula_nocov = paste0(phenoCol, "~ 1")
         formula.new = as.formula(formula_nocov)
         hasCovariate = FALSE
-    }
-
+    }else{
+	covoffset = rep(0,nrow(data.new))
+    }	    
+    data.new$covoffset = covoffset
 
     if (useSparseGRMtoFitNULL | useSparseGRMforVarRatio) {
         sparseGRMtest = getsubGRM(sparseGRMFile, sparseGRMSampleIDFile, 
@@ -1107,17 +1108,28 @@ fitNULLGLMM = function(plinkFile = "",
 	    for (x in names(modglmm$obj.glm.null)) {
                 attr(modglmm$obj.glm.null[[x]], ".Environment") <- c()
             }
-	    modglmm$offset = covoffset
-	    #if(isCovariateOffset){
-	    #		modglmm$offset = covoffset
-	    #}else{
-	    #	if(hasCovariate){
-	    #	    	modglmm$offset = covoffset	
-	    #		#modglmm$offset = modglmm$X[,-1]%*%(modglmm$coefficients[-1])
-	#	}else{
-	#		modglmm$offset = NULL
-	#	}	
-	 #   } 		    
+	    #modglmm$offset = covoffset
+	    if(isCovariateOffset){
+	    		modglmm$offset = covoffset
+	    }else{
+	    	if(hasCovariate){
+	    	    	#modglmm$offset = covoffset
+		        data.new = data.new[,-c(1,2), drop=F]
+			data.new = as.matrix(data.new[,-ncol(data.new), drop=F])
+	    		modglmm$offset = data.new%*%(as.vector(modglmm$coefficients[-1]))
+			if(LOCO){
+				for(j in 1:22){	
+					if(modglmm$LOCOResult[[j]]$isLOCO){
+						modglmm$LOCOResult[[j]]$offset = data.new %*%(as.vector(modglmm$LOCOResult[[j]]$coefficients[-1]))
+					}		       
+				}
+			}
+
+
+		}else{
+			modglmm$offset = covoffset
+		}	
+	    } 		    
             save(modglmm, file = modelOut)
             tau = modglmm$theta
         	    

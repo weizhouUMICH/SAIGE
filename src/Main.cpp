@@ -342,8 +342,10 @@ Rcpp::DataFrame mainMarkerInCPP(
    if(!isSingleVarianceRatio){ 
         hasVarRatio = ptr_gSAIGEobj->assignVarianceRatio(MAC);
         if(!hasVarRatio){
-                std::cout << "Error! Marker " << info << " has MAC " << MAC << " and does not have variance ratio estimated." << std::endl;
-                exit(EXIT_FAILURE);
+                //std::cout << "WARNING! Marker " << info << " has MAC " << MAC << " and does not have variance ratio estimated, so the first variance ratio in the variance ratio file is used." << std::endl;
+		//std::cout << ptr_gSAIGEobj->m_varRatio.front() << std::endl;
+                ptr_gSAIGEobj->assignSingleVarianceRatio_withinput(ptr_gSAIGEobj->m_varRatio.front());
+        //        exit(EXIT_FAILURE);
         }
    } 
    
@@ -397,7 +399,7 @@ Rcpp::DataFrame mainMarkerInCPP(
 
       arma::uvec N_case_ctrl_het_hom0;
       if(t_isMoreOutput){	
-   	N_case_ctrl_het_hom0 = arma::find(dosage_case <= 2 && dosage_case >=1.5);
+   	N_case_ctrl_het_hom0 = arma::find(dosage_case <= 2 && dosage_case >=1.5); 
     	N_case_homVec.at(i)  = N_case_ctrl_het_hom0.n_elem;
     	N_case_ctrl_het_hom0 = arma::find(dosage_case < 1.5 && dosage_case >= 0.5);
     	N_case_hetVec.at(i) = N_case_ctrl_het_hom0.n_elem;

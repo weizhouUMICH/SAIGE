@@ -55,8 +55,12 @@ createSparseGRM = function(plinkFile = "",
 
   genoSampleIndex = seq(1, nrow(fam))
 
+  cat("isDiagofKinSetAsOne ", isDiagofKinSetAsOne, "\n")
+
+  indicatorGenoSamplesWithPheno = rep(TRUE, nrow(fam))
+
   if(isSetGeno){
-    setgeno(plinkFile, genoSampleIndex, memoryChunk, isDiagofKinSetAsOne)
+    setgeno(plinkFile, genoSampleIndex, indicatorGenoSamplesWithPheno, memoryChunk, isDiagofKinSetAsOne)
   }
     freqVec = getAlleleFreqVec()
     if(minMAFforGRM > 0){

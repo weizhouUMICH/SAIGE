@@ -1,14 +1,5 @@
 This is the output index file for SAIGE package to record the end point in case users want to restart the analysis. Please do not modify this file.
 This is a Marker level analysis.
-nEachChunk = 10
+nEachChunk = 1000
 Have completed the analysis of chunk 1
-Have completed the analysis of chunk 2
-Have completed the analysis of chunk 3
-Have completed the analysis of chunk 4
-Have completed the analysis of chunk 5
-Have completed the analysis of chunk 6
-Have completed the analysis of chunk 7
-Have completed the analysis of chunk 8
-Have completed the analysis of chunk 9
-Have completed the analysis of chunk 10
 Have completed the analyses of all chunks.
