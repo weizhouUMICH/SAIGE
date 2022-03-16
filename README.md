@@ -1,4 +1,11 @@
 
+We have released a new version 1.0.0 (on March 15, 2022). It has substantial computation efficiency improvements for both Step 1 and Step 2 for single-variant and set-based tests. We have created a new program github page https://github.com/saigegit/SAIGE with the documentation provided https://saigegit.github.io/SAIGE-doc/
+The program will be maintained by multiple SAIGE developers there. The docker image has been updated. Please feel free to try the version 1.0.0 and report issues if any.
+
+Thanks!
+
+
+
 Table of Contents
 =================
 
