@@ -481,7 +481,7 @@ getNeff = function(plinkFile = "",
         #print(Rinv_1)
         t1_Rinv_1 = sum(Rinv_1)
         cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
-        Nglmm = length(fit0$y) * t1_Rinv_1
+        Nglmm = t1_Rinv_1
         cat("Nglmm ", Nglmm, "\n")
         closeGenoFile_plink()
     }

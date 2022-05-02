@@ -1,0 +1,215 @@
+Loading required package: optparse
+R version 3.6.1 (2019-07-05)
+Platform: x86_64-conda_cos6-linux-gnu (64-bit)
+Running under: Red Hat Enterprise Linux Server 7.9 (Maipo)
+
+Matrix products: default
+BLAS/LAPACK: /stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib/R/lib/libRblas.so
+
+locale:
+[1] C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] optparse_1.6.4 SAIGE_0.45    
+
+loaded via a namespace (and not attached):
+[1] compiler_3.6.1     Matrix_1.2-17      Rcpp_1.0.7         getopt_1.20.3     
+[5] grid_3.6.1         RcppParallel_4.4.4 lattice_0.20-38   
+$plinkFile
+[1] "./input/nfam_100_nindep_0_step1_includeMoreRareVariants_poly"
+
+$phenoFile
+[1] "./input/pheno_1000samples.txt_withdosages_withBothTraitTypes.txt"
+
+$phenoCol
+[1] "y_quantitative"
+
+$traitType
+[1] "quantitative"
+
+$invNormalize
+[1] FALSE
+
+$covarColList
+[1] "x1,x2"
+
+$sampleIDColinphenoFile
+[1] "IID"
+
+$tol
+[1] 0.02
+
+$maxiter
+[1] 20
+
+$tolPCG
+[1] 1e-05
+
+$maxiterPCG
+[1] 500
+
+$nThreads
+[1] 4
+
+$memoryChunk
+[1] 2
+
+$tauInit
+[1] "0,0"
+
+$outputPrefix
+[1] "~/"
+
+$IsSparseKin
+[1] FALSE
+
+$sparseGRMFile
+[1] "./output/sparseGRM_relatednessCutoff_0.05_2000_randomMarkersUsed.sparseGRM.mtx"
+
+$sparseGRMSampleIDFile
+[1] "./output/sparseGRM_relatednessCutoff_0.05_2000_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt"
+
+$numRandomMarkerforSparseKin
+[1] 2000
+
+$relatednessCutoff
+[1] 0.125
+
+$isCovariateTransform
+[1] TRUE
+
+$useSparseSigmaConditionerforPCG
+[1] FALSE
+
+$useSparseSigmaforInitTau
+[1] FALSE
+
+$useSparseGRMtoFitNULL
+[1] TRUE
+
+$minMAFforGRM
+[1] 0.01
+
+$minCovariateCount
+[1] -1
+
+$FemaleOnly
+[1] FALSE
+
+$MaleOnly
+[1] FALSE
+
+$sexCol
+[1] ""
+
+$FemaleCode
+[1] "1"
+
+$MaleCode
+[1] "0"
+
+$noEstFixedEff
+[1] FALSE
+
+$help
+[1] FALSE
+
+tauInit  is  0 0 
+Markers in the Plink file with MAF >=  0.01  will be used to construct GRM
+sparse GRM will be used to fit the NULL model
+4  threads are set to be used  
+[1] "a sparse GRM will be used to fit the null model and the variance ratio estimation will be skipped, so plink files are not required"
+1000  samples are in the sparse GRM
+formula is  y_quantitative~x1+x2 
+1000  samples have non-missing phenotypes
+1000  samples will be used for analysis
+qr transformation has been performed on covariates
+colnames(data.new) is  Y minus1 x1 x2 
+out.transform$Param.transform$qrr:  3 3 
+extract sparse GRM
+[1] 7192
+set elements in the sparse GRN <=  0.125  to zero
+[1] 6484
+1000  samples have been used to fit the glmm null model
+[1] "print m4"
+[1] 1000 1000
+2 locationMat.n_rows 
+6484 locationMat.n_cols 
+6484 valueVec.n_elem 
+0.975952
+0
+0
+0.490757
+2
+0
+0.48145
+3
+0
+0.240555
+6
+0
+0.248245
+7
+0
+0.237988
+8
+0
+0.247572
+9
+0
+1.00071
+1
+1
+0.497641
+2
+1
+0.505352
+3
+1
+y_quantitative  is a quantitative trait
+nbyte: 250
+nbyte: 250
+reserve: 32474736
+
+M: 128868, N: 1000
+size of genoVecofPointers: 1
+setgeno mark1
+setgeno mark2
+111305 markers with MAF >= 0.01 are used for GRM.
+setgeno mark5
+setgeno mark6
+time: 2580
+glm:
+
+Call:
+glm(formula = formula.new, family = gaussian(link = "identity"), 
+    data = data.new)
+
+Deviance Residuals: 
+     Min        1Q    Median        3Q       Max  
+-2.23364  -0.57272  -0.00438   0.56458   3.15806  
+
+Coefficients:
+         Estimate Std. Error t value Pr(>|t|)    
+minus1 -9.395e-17  2.616e-02   0.000        1    
+x1     -5.059e-01  2.616e-02 -19.341   <2e-16 ***
+x2     -2.461e-01  2.616e-02  -9.407   <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for gaussian family taken to be 0.6842524)
+
+    Null deviance: 998.7  on 1000  degrees of freedom
+Residual deviance: 682.2  on  997  degrees of freedom
+AIC: 2463.4
+
+Number of Fisher Scoring iterations: 2
+
+[1] 1000
+use sparse kinship to fit the model 
+t1_Rinv_1 is  398.9558 
+Nglmm  398.9558 
+closed the plinkFile!

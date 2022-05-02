@@ -1,19 +1,18 @@
-# project bgen (1.1.4) configured on Wed May 19 10:49:52 2021 by
-# waf 2.0.6 (abi 20, python 2070ff0 on linux2)
+# project bgen (1.1.4) configured on Mon May  2 03:59:35 2022 by
+# waf 2.0.6 (abi 20, python 20711f0 on linux2)
 # using ./waf configure
 #
 ----------------------------------------
 Setting top to
-/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_0.44.1/SAIGE/thirdParty/bgen
+/humgen/atgu1/fin/wzhou/tools/SAIGE/sourceCode_0.45/SAIGE/thirdParty/bgen
 ----------------------------------------
 Setting out to
-/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_0.44.1/SAIGE/thirdParty/bgen/build
+/humgen/atgu1/fin/wzhou/tools/SAIGE/sourceCode_0.45/SAIGE/thirdParty/bgen/build
 ----------------------------------------
 Checking for 'gcc' (C compiler)
-find program=['gcc', 'cc'] paths=['/net/dumbo/home/zhowei/anaconda2/bin', '/usr/cluster/bin', '/usr/cluster/software/bionic/perl/5.18.2/bin', '/net/dumbo/home/zhowei/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/snap/bin', '/usr/cluster/bin', '/usr/lib/jvm/java-8-oracle/bin', '/usr/lib/jvm/java-8-oracle/db/bin', '/usr/lib/jvm/java-8-oracle/jre/bin', '/opt/puppetlabs/bin', '/net/hunt/zhowei/script/bin/', '/usr/cluster/bin/'] var='CC' -> ['/usr/bin/gcc']
-['/usr/bin/gcc', '-dM', '-E', '-']
-out: #define __SSP_STRONG__ 3
-#define __DBL_MIN_EXP__ (-1021)
+find program=['gcc', 'cc'] paths=['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin', '/home/unix/wzhou/miniconda2/bin', '/home/unix/wzhou/miniconda2/bin', '/home/unix/wzhou/miniconda2/condabin', '/broad/software/free/Linux/redhat_7_x86_64/pkgs/google-cloud-sdk/bin', '/broad/uge/8.5.5/bin/lx-amd64', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/opt/puppetlabs/bin', '/home/unix/wzhou/bin'] var='CC' -> ['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-cc']
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-cc', '-dM', '-E', '-']
+out: #define __DBL_MIN_EXP__ (-1021)
 #define __FLT32X_MAX_EXP__ 1024
 #define __UINT_LEAST16_MAX__ 0xffff
 #define __ATOMIC_ACQUIRE 2
@@ -97,8 +96,6 @@ out: #define __SSP_STRONG__ 3
 #define __INT32_MAX__ 0x7fffffff
 #define __INT_WIDTH__ 32
 #define __SIZEOF_LONG__ 8
-#define __STDC_IEC_559__ 1
-#define __STDC_ISO_10646__ 201706L
 #define __UINT16_C(c) c
 #define __PTRDIFF_WIDTH__ 64
 #define __DECIMAL_DIG__ 21
@@ -136,7 +133,6 @@ out: #define __SSP_STRONG__ 3
 #define __ATOMIC_HLE_RELEASE 131072
 #define __PTRDIFF_MAX__ 0x7fffffffffffffffL
 #define __amd64 1
-#define __STDC_NO_THREADS__ 1
 #define __ATOMIC_HLE_ACQUIRE 65536
 #define __FLT32_HAS_QUIET_NAN__ 1
 #define __LONG_LONG_MAX__ 0x7fffffffffffffffLL
@@ -168,14 +164,12 @@ out: #define __SSP_STRONG__ 3
 #define __NO_INLINE__ 1
 #define __FLT_MANT_DIG__ 24
 #define __LDBL_DECIMAL_DIG__ 21
-#define __VERSION__ "7.5.0"
+#define __VERSION__ "7.2.0"
 #define __UINT64_C(c) c ## UL
-#define _STDC_PREDEF_H 1
 #define __GCC_ATOMIC_INT_LOCK_FREE 2
 #define __FLT128_MAX_EXP__ 16384
 #define __FLT32_MANT_DIG__ 24
 #define __FLOAT_WORD_ORDER__ __ORDER_LITTLE_ENDIAN__
-#define __STDC_IEC_559_COMPLEX__ 1
 #define __FLT128_HAS_DENORM__ 1
 #define __FLT128_DIG__ 33
 #define __SCHAR_WIDTH__ 8
@@ -329,7 +323,7 @@ out: #define __SSP_STRONG__ 3
 #define __DEC128_MAX_EXP__ 6145
 #define __FLT32X_HAS_QUIET_NAN__ 1
 #define __ATOMIC_CONSUME 1
-#define __GNUC_MINOR__ 5
+#define __GNUC_MINOR__ 2
 #define __INT_FAST16_WIDTH__ 64
 #define __UINTMAX_MAX__ 0xffffffffffffffffUL
 #define __DEC32_MANT_DIG__ 7
@@ -360,14 +354,13 @@ out: #define __SSP_STRONG__ 3
 #define __ATOMIC_ACQ_REL 4
 #define __ATOMIC_RELEASE 3
 
-find program=['ar'] paths=['/net/dumbo/home/zhowei/anaconda2/bin', '/usr/cluster/bin', '/usr/cluster/software/bionic/perl/5.18.2/bin', '/net/dumbo/home/zhowei/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/snap/bin', '/usr/cluster/bin', '/usr/lib/jvm/java-8-oracle/bin', '/usr/lib/jvm/java-8-oracle/db/bin', '/usr/lib/jvm/java-8-oracle/jre/bin', '/opt/puppetlabs/bin', '/net/hunt/zhowei/script/bin/', '/usr/cluster/bin/'] var='AR' -> ['/usr/bin/ar']
-/usr/bin/gcc
+find program=['ar'] paths=['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin', '/home/unix/wzhou/miniconda2/bin', '/home/unix/wzhou/miniconda2/bin', '/home/unix/wzhou/miniconda2/condabin', '/broad/software/free/Linux/redhat_7_x86_64/pkgs/google-cloud-sdk/bin', '/broad/uge/8.5.5/bin/lx-amd64', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/opt/puppetlabs/bin', '/home/unix/wzhou/bin'] var='AR' -> ['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-ar']
+/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-cc
 ----------------------------------------
 Checking for 'g++' (C++ compiler)
-find program=['g++', 'c++'] paths=['/net/dumbo/home/zhowei/anaconda2/bin', '/usr/cluster/bin', '/usr/cluster/software/bionic/perl/5.18.2/bin', '/net/dumbo/home/zhowei/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/snap/bin', '/usr/cluster/bin', '/usr/lib/jvm/java-8-oracle/bin', '/usr/lib/jvm/java-8-oracle/db/bin', '/usr/lib/jvm/java-8-oracle/jre/bin', '/opt/puppetlabs/bin', '/net/hunt/zhowei/script/bin/', '/usr/cluster/bin/'] var='CXX' -> ['/usr/bin/g++']
-['/usr/bin/g++', '-dM', '-E', '-']
-out: #define __SSP_STRONG__ 3
-#define __DBL_MIN_EXP__ (-1021)
+find program=['g++', 'c++'] paths=['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin', '/home/unix/wzhou/miniconda2/bin', '/home/unix/wzhou/miniconda2/bin', '/home/unix/wzhou/miniconda2/condabin', '/broad/software/free/Linux/redhat_7_x86_64/pkgs/google-cloud-sdk/bin', '/broad/uge/8.5.5/bin/lx-amd64', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/opt/puppetlabs/bin', '/home/unix/wzhou/bin'] var='CXX' -> ['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++']
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-dM', '-E', '-']
+out: #define __DBL_MIN_EXP__ (-1021)
 #define __FLT32X_MAX_EXP__ 1024
 #define __UINT_LEAST16_MAX__ 0xffff
 #define __ATOMIC_ACQUIRE 2
@@ -451,8 +444,6 @@ out: #define __SSP_STRONG__ 3
 #define __INT32_MAX__ 0x7fffffff
 #define __INT_WIDTH__ 32
 #define __SIZEOF_LONG__ 8
-#define __STDC_IEC_559__ 1
-#define __STDC_ISO_10646__ 201706L
 #define __UINT16_C(c) c
 #define __PTRDIFF_WIDTH__ 64
 #define __DECIMAL_DIG__ 21
@@ -490,7 +481,6 @@ out: #define __SSP_STRONG__ 3
 #define __ATOMIC_HLE_RELEASE 131072
 #define __PTRDIFF_MAX__ 0x7fffffffffffffffL
 #define __amd64 1
-#define __STDC_NO_THREADS__ 1
 #define __ATOMIC_HLE_ACQUIRE 65536
 #define __FLT32_HAS_QUIET_NAN__ 1
 #define __LONG_LONG_MAX__ 0x7fffffffffffffffLL
@@ -522,14 +512,12 @@ out: #define __SSP_STRONG__ 3
 #define __NO_INLINE__ 1
 #define __FLT_MANT_DIG__ 24
 #define __LDBL_DECIMAL_DIG__ 21
-#define __VERSION__ "7.5.0"
+#define __VERSION__ "7.2.0"
 #define __UINT64_C(c) c ## UL
-#define _STDC_PREDEF_H 1
 #define __GCC_ATOMIC_INT_LOCK_FREE 2
 #define __FLT128_MAX_EXP__ 16384
 #define __FLT32_MANT_DIG__ 24
 #define __FLOAT_WORD_ORDER__ __ORDER_LITTLE_ENDIAN__
-#define __STDC_IEC_559_COMPLEX__ 1
 #define __FLT128_HAS_DENORM__ 1
 #define __FLT128_DIG__ 33
 #define __SCHAR_WIDTH__ 8
@@ -683,7 +671,7 @@ out: #define __SSP_STRONG__ 3
 #define __DEC128_MAX_EXP__ 6145
 #define __FLT32X_HAS_QUIET_NAN__ 1
 #define __ATOMIC_CONSUME 1
-#define __GNUC_MINOR__ 5
+#define __GNUC_MINOR__ 2
 #define __INT_FAST16_WIDTH__ 64
 #define __UINTMAX_MAX__ 0xffffffffffffffffUL
 #define __DEC32_MANT_DIG__ 7
@@ -714,8 +702,8 @@ out: #define __SSP_STRONG__ 3
 #define __ATOMIC_ACQ_REL 4
 #define __ATOMIC_RELEASE 3
 
-find program=['ar'] paths=['/net/dumbo/home/zhowei/anaconda2/bin', '/usr/cluster/bin', '/usr/cluster/software/bionic/perl/5.18.2/bin', '/net/dumbo/home/zhowei/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/snap/bin', '/usr/cluster/bin', '/usr/lib/jvm/java-8-oracle/bin', '/usr/lib/jvm/java-8-oracle/db/bin', '/usr/lib/jvm/java-8-oracle/jre/bin', '/opt/puppetlabs/bin', '/net/hunt/zhowei/script/bin/', '/usr/cluster/bin/'] var='AR' -> ['/usr/bin/ar']
-/usr/bin/g++
+find program=['ar'] paths=['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin', '/home/unix/wzhou/miniconda2/bin', '/home/unix/wzhou/miniconda2/bin', '/home/unix/wzhou/miniconda2/condabin', '/broad/software/free/Linux/redhat_7_x86_64/pkgs/google-cloud-sdk/bin', '/broad/uge/8.5.5/bin/lx-amd64', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/opt/puppetlabs/bin', '/home/unix/wzhou/bin'] var='AR' -> ['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-ar']
+/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++
 ----------------------------------------
 zlib
 ==>
@@ -726,12 +714,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_66c0e9d48a5d427bdef9179ba47c21a1/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_c80fe8dafffe97dedc2ccc7f40b901d4/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_0.44.1/SAIGE/thirdParty/bgen/build/.conf_check_66c0e9d48a5d427bdef9179ba47c21a1/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_66c0e9d48a5d427bdef9179ba47c21a1/testbuild/testprog[0m
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE/sourceCode_0.45/SAIGE/thirdParty/bgen/build/.conf_check_c80fe8dafffe97dedc2ccc7f40b901d4/testbuild/test.cpp.1.o', '-I/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/include']
+[2/2] Linking [33mbuild/.conf_check_c80fe8dafffe97dedc2ccc7f40b901d4/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_0.44.1/SAIGE/thirdParty/bgen/build/.conf_check_66c0e9d48a5d427bdef9179ba47c21a1/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lz']
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', 'test.cpp.1.o', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE/sourceCode_0.45/SAIGE/thirdParty/bgen/build/.conf_check_c80fe8dafffe97dedc2ccc7f40b901d4/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lz', '-L/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib']
 yes
 ----------------------------------------
 rt
@@ -743,12 +731,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_8b1baeb35a32e72ef8c1441ce0d1b793/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_0ef1780a690d96cef870af899686be56/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_0.44.1/SAIGE/thirdParty/bgen/build/.conf_check_8b1baeb35a32e72ef8c1441ce0d1b793/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_8b1baeb35a32e72ef8c1441ce0d1b793/testbuild/testprog[0m
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE/sourceCode_0.45/SAIGE/thirdParty/bgen/build/.conf_check_0ef1780a690d96cef870af899686be56/testbuild/test.cpp.1.o', '-I/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/include']
+[2/2] Linking [33mbuild/.conf_check_0ef1780a690d96cef870af899686be56/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_0.44.1/SAIGE/thirdParty/bgen/build/.conf_check_8b1baeb35a32e72ef8c1441ce0d1b793/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt']
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', 'test.cpp.1.o', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE/sourceCode_0.45/SAIGE/thirdParty/bgen/build/.conf_check_0ef1780a690d96cef870af899686be56/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt', '-L/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib']
 yes
 ----------------------------------------
 pthread
@@ -760,12 +748,12 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_59de09f9733cc9f166f8c91ee413b28d/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_a8247b76542e3158e62e0d90df4bc614/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_0.44.1/SAIGE/thirdParty/bgen/build/.conf_check_59de09f9733cc9f166f8c91ee413b28d/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_59de09f9733cc9f166f8c91ee413b28d/testbuild/testprog[0m
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE/sourceCode_0.45/SAIGE/thirdParty/bgen/build/.conf_check_a8247b76542e3158e62e0d90df4bc614/testbuild/test.cpp.1.o', '-I/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/include']
+[2/2] Linking [33mbuild/.conf_check_a8247b76542e3158e62e0d90df4bc614/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_0.44.1/SAIGE/thirdParty/bgen/build/.conf_check_59de09f9733cc9f166f8c91ee413b28d/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread']
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', 'test.cpp.1.o', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE/sourceCode_0.45/SAIGE/thirdParty/bgen/build/.conf_check_a8247b76542e3158e62e0d90df4bc614/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread', '-L/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib']
 yes
 ----------------------------------------
 dl
@@ -777,10 +765,10 @@ int main(int argc, char **argv) {
 }
 
 <==
-[1/2] Compiling [32mbuild/.conf_check_7ec1c01ef6b2fc14df96544c36a03bef/test.cpp[0m
+[1/2] Compiling [32mbuild/.conf_check_b2b1a4d4f4050f0484f9190b7b890db2/test.cpp[0m
 
-['/usr/bin/g++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_0.44.1/SAIGE/thirdParty/bgen/build/.conf_check_7ec1c01ef6b2fc14df96544c36a03bef/testbuild/test.cpp.1.o']
-[2/2] Linking [33mbuild/.conf_check_7ec1c01ef6b2fc14df96544c36a03bef/testbuild/testprog[0m
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', '-Wall', '-pedantic', '-Wno-unused-local-typedefs', '-Wno-c++11-long-long', '-Wno-deprecated-declarations', '-Wno-long-long', '-fPIC', '-O3', '../test.cpp', '-c', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE/sourceCode_0.45/SAIGE/thirdParty/bgen/build/.conf_check_b2b1a4d4f4050f0484f9190b7b890db2/testbuild/test.cpp.1.o', '-I/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/include']
+[2/2] Linking [33mbuild/.conf_check_b2b1a4d4f4050f0484f9190b7b890db2/testbuild/testprog[0m
 
-['/usr/bin/g++', 'test.cpp.1.o', '-o/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/SAIGE_0.44.1/SAIGE/thirdParty/bgen/build/.conf_check_7ec1c01ef6b2fc14df96544c36a03bef/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-ldl']
+['/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/bin/x86_64-conda_cos6-linux-gnu-c++', 'test.cpp.1.o', '-o/humgen/atgu1/fin/wzhou/tools/SAIGE/sourceCode_0.45/SAIGE/thirdParty/bgen/build/.conf_check_b2b1a4d4f4050f0484f9190b7b890db2/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-ldl', '-L/stanley/genetics/users/wzhou/.conda/envs/RSAIGE/lib']
 yes

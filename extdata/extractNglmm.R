@@ -6,6 +6,7 @@ options(stringsAsFactors=F)
 #library(SAIGE, lib.loc="../../install_dir/0.38")
 #library(SAIGE, lib.loc="../../install_dir/0.36.6")
 #library(SAIGE, lib.loc="/net/hunt/zhowei/project/imbalancedCaseCtrlMixedModel/Rpackage_SPAGMMAT/installSAIGEFolder/0.44.6_Neff")
+#library(SAIGE, lib.loc="/humgen/atgu1/fin/wzhou/tools/SAIGE/install_v0.45.1")
 library(SAIGE)
 require(optparse) #install.packages("optparse")
 

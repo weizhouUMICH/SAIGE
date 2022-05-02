@@ -1,2 +1,2 @@
-statgen/savvy@v2.0.1
+statgen/savvy@b3dabf81e316b5eaf5650219e62bfa36e7bde4ea
 xiaoyeli/superlu@b6177d0b743c0f1f6765db535dd8b6ce30c00061
