@@ -457,5 +457,32 @@ getNeff = function(plinkFile = "",
         cat("Nglmm ", Nglmm, "\n")
 
         closeGenoFile_plink()
+    }else if (traitType == "quantitative"){
+        cat(phenoCol, " is a quantitative trait\n")
+        obj.noK = NULL
+        if (!noEstFixedEff) {
+            fit0 = glm(formula.new, data = data.new, family = gaussian(link = "identity"))
+        }else {
+            fit0 = glm(formula.new, data = data.new, offset = covoffset,
+                family = gaussian(link = "identity"))
+        }
+        setgeno(plinkFile, dataMerge_sort$IndexGeno, memoryChunk,
+                FALSE)
+        setisUseSparseSigmaforNullModelFitting(useSparseGRMtoFitNULL)
+        cat("glm:\n")
+        print(summary(fit0))
+        obj.noK = NULL
+        tauVec_ss = c(0, 1)
+        print(length(fit0$y))
+        wVec_ss = rep(1, length(fit0$y))
+        bVec_ss = rep(1, length(fit0$y))
+        #bVec_ss = c(1, rep(0, length(fit0$y)-1))
+        Rinv_1 = getPCG1ofSigmaAndVector(wVec_ss, tauVec_ss,bVec_ss, maxiterPCG, tolPCG)
+        #print(Rinv_1)
+        t1_Rinv_1 = sum(Rinv_1)
+        cat("t1_Rinv_1 is ", t1_Rinv_1, "\n")
+        Nglmm = length(fit0$y) * t1_Rinv_1
+        cat("Nglmm ", Nglmm, "\n")
+        closeGenoFile_plink()
     }
 }
